@@ -12,7 +12,10 @@
       ],
       "outputs": [
         ".next/**",
-        "!.next/cache/**"
+        "!.next/cache/**",
+        "dist/**",
+        "build/**",
+        "out/**"
       ],
       "env": [
         "ONLINE_API_KEY",

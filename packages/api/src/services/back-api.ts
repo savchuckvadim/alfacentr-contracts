@@ -12,7 +12,7 @@ export enum EBACK_ENDPOINT {
   // DOWNLOAD_REPORT = "kpi-report/download",
   // REPORT_GET = "kpi-report/get",
   // CALLING_STATISTIC_GET = "kpi-report/calling-statistic",
-  // QUEUE_PING = 'queue/ping',
+  QUEUE_PING = 'queue/ping',
   // INFOBLOCKS = 'infoblock/all',
   // COMPLECTS = 'complect',
   // GROUPS = 'infogroup',

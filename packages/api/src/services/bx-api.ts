@@ -113,7 +113,7 @@ export const bxAPI = {
 
     ) => {
       
-        let result = null;
+        let result = null as null | any;
         let response = null;
         try {
             if (inBitrix) {
@@ -132,7 +132,7 @@ export const bxAPI = {
                     EBACK_ENDPOINT.BITRIX_METHOD,
                     API_METHOD.POST, bxReqHookData
                 );
-                result = backReponse.data.result
+                result = backReponse?.data?.result || null
             }
             if (response) {
                 result = response;
