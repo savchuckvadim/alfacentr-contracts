@@ -112,7 +112,7 @@ export const bxAPI = {
         inBitrix: boolean = false
 
     ) => {
-      
+
         let result = null as null | any;
         let response = null;
         try {
@@ -120,15 +120,16 @@ export const bxAPI = {
                 const b24 = await getBxService();
                 const bxRresponse = await b24.callMethod(method, data) as Result;
                 response = bxRresponse.getData()
-
-
+                console.log('response')
+                console.log(response)
+              
             } else {
                 const bxReqHookData = {
                     domain,
                     method,
                     bxData: data,
                 };
-                const backReponse = await backAPI.service<{result: any}>(
+                const backReponse = await backAPI.service<{ result: any }>(
                     EBACK_ENDPOINT.BITRIX_METHOD,
                     API_METHOD.POST, bxReqHookData
                 );
@@ -136,6 +137,9 @@ export const bxAPI = {
             }
             if (response) {
                 result = response;
+            }
+            if (response && response.result) {
+                result = response.result
             }
 
             return result;
