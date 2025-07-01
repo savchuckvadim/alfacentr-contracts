@@ -1,0 +1,80 @@
+model fields {
+  id               BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  number           Int
+  name             String           @db.VarChar(255)
+  code             String           @db.VarChar(255)
+  type             String?          @db.VarChar(255)
+  isGeneral        Boolean          @default(false)
+  isDefault        Boolean          @default(false)
+  isRequired       Boolean          @default(false)
+  value            String?          @db.Text
+  description      String?          @db.Text
+  bitixId          String?          @db.VarChar(255)
+  bitrixTemplateId String?          @db.VarChar(255)
+  isActive         Boolean          @default(false)
+  isPlural         Boolean          @default(false)
+  created_at       DateTime?        @db.Timestamp(0)
+  updated_at       DateTime?        @db.Timestamp(0)
+  template_field   template_field[]
+  items            f_items[]
+}
+
+
+model f_items {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+  number      Int
+  code        String    @db.VarChar(255)
+  fieldId     BigInt    @db.UnsignedBigInt
+  order       Int
+  value       String?   @db.VarChar(255)
+  bitrixId    String?   @db.VarChar(255)
+  fieldNumber String    @db.VarChar(255)
+  fields      fields?   @relation(fields: [fieldsId], references: [id])
+  fieldsId    BigInt?   @db.UnsignedBigInt
+}
+
+
+model template_counter {
+  template_id BigInt    @db.UnsignedBigInt
+  counter_id  BigInt    @db.UnsignedBigInt
+  value       String?   @db.VarChar(255)
+  prefix      String?   @db.VarChar(255)
+  day         Boolean   @default(false)
+  year        Boolean   @default(false)
+  month       Boolean   @default(false)
+  count       Int       @default(0)
+  size        Int       @default(1)
+  counters    counters  @relation(fields: [counter_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "template_counter_counter_id_foreign")
+  templates   templates @relation(fields: [template_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "template_counter_template_id_foreign")
+
+  @@id([template_id, counter_id])
+  @@index([counter_id], map: "template_counter_counter_id_foreign")
+}
+
+model template_field {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+  template_id BigInt    @db.UnsignedBigInt
+  field_id    BigInt    @db.UnsignedBigInt
+  templates   templates @relation(fields: [template_id], references: [id])
+  fields      fields    @relation(fields: [field_id], references: [id])
+
+  @@index([template_id])
+  @@index([field_id])
+}
+
+model templates {
+  id               BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  created_at       DateTime?          @db.Timestamp(0)
+  updated_at       DateTime?          @db.Timestamp(0)
+  name             String             @db.VarChar(255)
+  code             String             @db.VarChar(255)
+  type             String             @db.VarChar(255)
+  link             String?            @db.VarChar(255)
+  portalId         BigInt             @db.UnsignedBigInt
+  template_counter template_counter[]
+  template_field   template_field[]
+}
