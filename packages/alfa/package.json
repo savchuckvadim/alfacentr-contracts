@@ -5,12 +5,16 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-     "build": "tsc",
-     "build:watch": "tsc --watch",
-     "lint": "eslint . --max-warnings 0"
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint . --max-warnings 0"
   },
+
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.12.4"
+  "packageManager": "pnpm@10.12.4",
+  "devDependencies": {
+    "@types/node": "^24.0.10"
+  }
 }

@@ -2,12 +2,12 @@ import { BXCompany, BXDeal, Placement } from "@workspace/bx"
 import { TESTING_DOMAIN, TESTING_PLACEMENT } from "../../consts/app-global"
 import { IN_BITRIX } from "../../model/AppThunk"
 import { bxAPI } from "@workspace/api";
-import { Bitrix, IBXDeal } from "@workspace/bitrix";
+import { Bitrix, IBXCompany, IBXDeal } from "@workspace/bitrix";
 
 
 export const bitrixInit = async (): Promise<{
-    deal: BXDeal
-    company: BXCompany
+    deal: IBXDeal
+    company: IBXCompany
 } | null> => {
 
     const inBitrix = IN_BITRIX
@@ -41,20 +41,20 @@ export const bitrixInit = async (): Promise<{
 
  
     const companyId = deal.COMPANY_ID
-    const company = await bxAPI.getProtectedMethod(
-        'crm.company.get',
-        {
-            ID: companyId
-        },
-        domain,
-        inBitrix
-    ) as BXCompany | null
-
+    // const company = await bxAPI.getProtectedMethod(
+    //     'crm.company.get',
+    //     {
+    //         ID: companyId
+    //     },
+    //     domain,
+    //     inBitrix
+    // ) as BXCompany | null
+    const company = await bitrix.company.get(Number(companyId))
     if (!company) {
         throw new Error('Company not found')
     }
     return {
-        // @ts-ignore
+     
         deal,
         company
     }

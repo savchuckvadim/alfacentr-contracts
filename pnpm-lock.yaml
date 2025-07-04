@@ -351,7 +351,11 @@ importers:
         specifier: ^5.7.3
         version: 5.7.3
 
-  packages/alfa: {}
+  packages/alfa:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.10
+        version: 24.0.10
 
   packages/api:
     dependencies:
@@ -3011,6 +3015,9 @@ packages:
 
   '@types/node@22.15.34':
     resolution: {integrity: sha512-8Y6E5WUupYy1Dd0II32BsWAx5MWdcnRd8L84Oys3veg1YrYtNtzgO4CFhiBg6MDSjk7Ay36HYOnU7/tuOzIzcw==}
+
+  '@types/node@24.0.10':
+    resolution: {integrity: sha512-ENHwaH+JIRTDIEEbDK6QSQntAYGtbvdDXnMXnZaZ6k13Du1dPMmprkEHIL7ok2Wl2aZevetwTAb5S+7yIF+enA==}
 
   '@types/node@24.0.8':
     resolution: {integrity: sha512-WytNrFSgWO/esSH9NbpWUfTMGQwCGIKfCmNlmFDNiI5gGhgMmEA+V1AEvKLeBNvvtBnailJtkrEa2OIISwrVAA==}
@@ -9934,6 +9941,10 @@ snapshots:
   '@types/node@22.15.34':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/node@24.0.10':
+    dependencies:
+      undici-types: 7.8.0
 
   '@types/node@24.0.8':
     dependencies:

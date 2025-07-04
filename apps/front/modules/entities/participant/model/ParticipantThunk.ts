@@ -4,30 +4,43 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { bxAPI } from "@workspace/api";
 import { TESTING_DOMAIN } from "@/modules/app/consts/app-global";
 import { validateApiResponse } from "@/modules/app/lib/thunk-error-handler";
+import { Bitrix } from "@bitrix/bitrix";
+import { IBXItem } from "@workspace/bitrix";
 
 export const fetchParticipants = createAsyncThunk(
     'participant/fetchParticipants',
     async (dealId: string, { rejectWithValue }) => {
         try {
-            const domain = TESTING_DOMAIN
-            const response = await bxAPI.getProtectedMethod(
-                'crm.item.list',
+            // const domain = TESTING_DOMAIN
+            // const response = await bxAPI.getProtectedMethod(
+            //     'crm.item.list',
+            //     {
+            //         entityTypeId: EntityTypeIdEnum.PARTICIPANT,
+            //         filter: {
+            //             parentId2: dealId
+            //         }
+            //     },
+            //     domain
+            // )
+            const bitrix = Bitrix.getService()
+            const response = await bitrix.item.list(EntityTypeIdEnum.PARTICIPANT as unknown as string,
                 {
-                    entityTypeId: EntityTypeIdEnum.PARTICIPANT,
-                    filter: {
-                        parentId2: dealId
-                    }
-                },
-                domain
-            )
-            
+                    parentId2: dealId
+                })
+
             // Проверяем различные случаи ошибок с помощью утилиты
             const validResponse = validateApiResponse(response, 'Ошибка получения участников: пустой ответ от сервера')
             const validItems = validateApiResponse(validResponse.items, 'Ошибка получения участников: отсутствуют данные в ответе')
-            
-            
-            const participants = validItems.map((participant: IAlfaParticipantSmartItem) => getParticipant(participant))
-            
+
+            const typedParticipant = validItems.map((participant: IBXItem) => {
+                return {
+                    ...participant,
+                    entityTypeId: EntityTypeIdEnum.PARTICIPANT as unknown as string
+                } as unknown as IAlfaParticipantSmartItem
+            }) as IAlfaParticipantSmartItem[]
+
+            const participants = typedParticipant.map((participant: IAlfaParticipantSmartItem) => getParticipant(participant))
+
             return participants;
         } catch (error) {
             // Обрабатываем сетевые ошибки и другие исключения

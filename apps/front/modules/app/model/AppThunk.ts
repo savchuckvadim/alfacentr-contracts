@@ -42,7 +42,7 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
         dispatch(fetchParticipants(deal.ID.toString()))
       }
 
-      initWSClient(user.ID, domain); // <- здесь создаёшь сокет
+      // initWSClient(user.ID, domain); // <- здесь создаёшь сокет
       // const socket = getWSClient()
       dispatch(
         socketThunk(

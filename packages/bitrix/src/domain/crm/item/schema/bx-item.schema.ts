@@ -2,6 +2,7 @@ import { EBxMethod } from "@bitrix/core";
 import { CrmItemAddRequestType, CrmItemGetRequestType, CrmItemListRequestType, CrmUpdateItemRequestType } from "../../type/crm-request.type";
 
 import { IBXItem } from "../interface/item.interface";
+import { BxItemListResponseDto, BxItemResponseDto } from "../dto/item-response.dto";
 
 
 export type BxItemSchema = {
@@ -14,16 +15,16 @@ export type BxItemSchema = {
 
     [EBxMethod.LIST]: {
         request: CrmItemListRequestType<IBXItem['entityTypeId']>;
-        response: { items: IBXItem[] };
+        response: BxItemListResponseDto;
     };
 
     [EBxMethod.GET]: {
         request: CrmItemGetRequestType<string | number>;
-        response: { item: IBXItem };
+        response: BxItemResponseDto;
     };
 
     [EBxMethod.ADD]: {
         request: CrmItemAddRequestType<IBXItem, string>;
-        response: { item: IBXItem };
+        response: BxItemResponseDto;
     };
 };
