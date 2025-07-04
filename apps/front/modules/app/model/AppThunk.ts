@@ -21,7 +21,7 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
     const isLoading = app.isLoading
     const __IN_BITRIX__ = inBitrix
     IN_BITRIX = __IN_BITRIX__
-    const bitrix = await Bitrix.start(TESTING_DOMAIN)
+    const bitrix = await Bitrix.start(TESTING_DOMAIN, TESTING_USER)
     console.log('bitrix', bitrix.api)
     console.log('bitrix initialized', bitrix.api.getInitializedData())
     
@@ -32,7 +32,7 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
 
       const domain: string = bitrix.api.getInitializedData().domain;
 
-      const user = __IN_BITRIX__ ? ((await bx.getCurrentUser()) as BXUser) : TESTING_USER;
+      const user = bitrix.api.getUser();
       console.log("user");
 
       console.log(user);
@@ -46,7 +46,7 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
       // const socket = getWSClient()
       dispatch(
         socketThunk(
-          user.ID,
+          Number(user.ID),
           domain
         )
       )

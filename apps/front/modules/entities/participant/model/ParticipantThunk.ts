@@ -11,17 +11,7 @@ export const fetchParticipants = createAsyncThunk(
     'participant/fetchParticipants',
     async (dealId: string, { rejectWithValue }) => {
         try {
-            // const domain = TESTING_DOMAIN
-            // const response = await bxAPI.getProtectedMethod(
-            //     'crm.item.list',
-            //     {
-            //         entityTypeId: EntityTypeIdEnum.PARTICIPANT,
-            //         filter: {
-            //             parentId2: dealId
-            //         }
-            //     },
-            //     domain
-            // )
+         
             const bitrix = Bitrix.getService()
             const response = await bitrix.item.list(EntityTypeIdEnum.PARTICIPANT as unknown as string,
                 {
@@ -40,7 +30,7 @@ export const fetchParticipants = createAsyncThunk(
             }) as IAlfaParticipantSmartItem[]
 
             const participants = typedParticipant.map((participant: IAlfaParticipantSmartItem) => getParticipant(participant))
-
+            console.log("PARTICIPANTS ALFA", participants)
             return participants;
         } catch (error) {
             // Обрабатываем сетевые ошибки и другие исключения

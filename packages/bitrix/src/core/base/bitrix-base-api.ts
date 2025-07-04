@@ -9,6 +9,7 @@ import { BXApiSchema, EBxNamespace, TBXRequest, TBXResponse } from '../domain';
 import { API_METHOD, backAPI, bxAPI, EBACK_ENDPOINT } from '@workspace/api';
 import { AuthData, B24Frame, initializeB24Frame, Result } from '@bitrix24/b24jssdk';
 import { AxiosError } from 'axios';
+import { IBXUser } from '../../domain/interfaces/bitrix.interface';
 
 
 export class BitrixBaseApi {
@@ -16,6 +17,8 @@ export class BitrixBaseApi {
     private inFrame: boolean = false;
     private initialized: boolean = false;
     public domain!: string;
+    public user!: IBXUser;
+
     private cmdBatch: Record<string, any> = {};
 
     private readonly logger = {
@@ -26,39 +29,45 @@ export class BitrixBaseApi {
     constructor(
         private readonly telegramBot: {
             sendMessageAdminError: (message: string) => Promise<void>
-      
+
         },
+    ) { }
 
-    ) {
-
-
-
-
-    }
-
-
-    async init(domain: string) {
+    async init(domain: string, user: IBXUser) {
 
         try {
-            
+
             this.bx = await initializeB24Frame();
             this.inFrame = true;
-            
+
             await this.getInitialized();
-            
+
         } catch (error) {
-            
+
             this.inFrame = false;
             this.domain = domain;
+            this.user = user;
             this.logger.error(`Error initializing B24 frame: ${error}`);
         }
 
     }
-    private async getDomain() {
 
+    public getDomain() {
         return this.domain;
-
     }
+    public getUser() {
+        return this.user as IBXUser;
+    }
+    public getInitializedData() {
+        return {
+            inFrame: this.inFrame,
+            initialized: this.initialized,
+            domain: this.domain,
+            user: this.user
+        };
+    }
+
+
 
     private async getInitialized() {
         if (this.inFrame) {
@@ -67,19 +76,26 @@ export class BitrixBaseApi {
             const domain = authData.domain;
             const hostname = new URL(domain).hostname;
             this.domain = hostname;
+            this.user = await this.getCurrentUser() as IBXUser
             this.initialized = true;
         }
         return this.initialized;
     }
-
-
-    public getInitializedData() {
-        return {
-            inFrame: this.inFrame,
-            initialized: this.initialized,
-            domain: this.domain
+    private async getCurrentUser() {
+        let currentUser = null as null | IBXUser
+        const currentUserData = await this.bx.callMethod('user.current') as Result
+        if (currentUserData) {
+            if (currentUserData.isSuccess) {
+                currentUser = currentUserData.getData().result as unknown as IBXUser;
+            }
         }
+        return currentUser;
     }
+
+    
+
+
+
 
     private dictToQueryString(method: string, data: Record<string, any>): string {
         // this.logger.log(`Converting data to query string for method: ${method}`);
@@ -175,7 +191,7 @@ export class BitrixBaseApi {
 
             // return response.data as IBitrixResponse<TBXResponse<NAMESPACE, ENTITY, METHOD>>;
             return await this.callMethod(resultMethod, data) as IBitrixResponse<TBXResponse<NAMESPACE, ENTITY, METHOD>>
-        } catch (err ) {
+        } catch (err) {
             const error = err as AxiosError;
             await this.telegramBot.sendMessageAdminError(`Bitrix call error: ${JSON.stringify(error?.response?.data || error)}`);
             throw error;
@@ -192,33 +208,33 @@ export class BitrixBaseApi {
     ): Promise<IBitrixResponse<TBXResponse<NAMESPACE, ENTITY, METHOD>>> {
         let result = null as null | any;
         let response = null;
-    
-            if (this.inFrame) {
 
-                const bxRresponse = await this.bx.callMethod(method, data as object, -1) as Result;
-                response = bxRresponse.getData() as IBitrixResponse<TBXResponse<NAMESPACE, ENTITY, METHOD>>
-                console.log("BITRIX RESPONSE CALL METHOD");
-                console.log(response);
-                return response;
+        if (this.inFrame) {
 
-            } else {
-                const bxReqHookData = {
-                    domain: this.domain,
-                    method,
-                    bxData: data,
-                };
-                const backReponse = await backAPI.service<IBitrixResponse<TBXResponse<NAMESPACE, ENTITY, METHOD>>>(
-                    EBACK_ENDPOINT.BITRIX_METHOD,
-                    API_METHOD.POST, bxReqHookData
-                );
-                result = backReponse?.data || null
-                console.log("BACK RESPONSE CALL METHOD");
-                console.log(result);
-                return result;
-            }
-           
+            const bxRresponse = await this.bx.callMethod(method, data as object, -1) as Result;
+            response = bxRresponse.getData() as IBitrixResponse<TBXResponse<NAMESPACE, ENTITY, METHOD>>
+            console.log("BITRIX RESPONSE CALL METHOD");
+            console.log(response);
+            return response;
 
-     
+        } else {
+            const bxReqHookData = {
+                domain: this.domain,
+                method,
+                bxData: data,
+            };
+            const backReponse = await backAPI.service<IBitrixResponse<TBXResponse<NAMESPACE, ENTITY, METHOD>>>(
+                EBACK_ENDPOINT.BITRIX_METHOD,
+                API_METHOD.POST, bxReqHookData
+            );
+            result = backReponse?.data || null
+            console.log("BACK RESPONSE CALL METHOD");
+            console.log(result);
+            return result;
+        }
+
+
+
     }
 
 
@@ -263,7 +279,7 @@ export class BitrixBaseApi {
         }
 
         const payload = { halt: 0, cmd };
-       
+
 
         try {
             this.logger.log(`Making batch request to: ${this.domain}`);

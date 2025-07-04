@@ -24,6 +24,7 @@ import { BxSmartTypeService } from './domain/crm/smart-type/services/bx-smart-ty
 import { BxRpaItemService } from './domain/rpa/item/services/bx-rpa-item.service';
 import { BxRpaItemBatchService } from './domain/rpa/item/services/bx-rpa-item.batch.service';
 import { BxFileService } from './domain/file/bx-file.service';
+import { IBXUser } from './domain/interfaces/bitrix.interface';
 
 // @Injectable()
 export class BitrixService {
@@ -59,7 +60,7 @@ export class BitrixService {
         rpaItem: null as unknown as BxRpaItemBatchService
     }
     
-    public async init(domain: string) {
+    public async init(domain: string, user: IBXUser) {
         // this.cloner = new ServiceClonerFactory();
         this.api = new BitrixBaseApi(
             {
@@ -67,7 +68,7 @@ export class BitrixService {
             }
         );
 
-        await this.api.init(domain);
+        await this.api.init(domain, user);
         this.initDeal()
         this.initCompany()
         this.initProductRow()

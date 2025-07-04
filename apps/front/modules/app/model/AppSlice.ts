@@ -1,9 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-
-
-import type {
-  BXUser,
-} from "@workspace/bx";
+import { IBXUser } from "@workspace/bitrix/src/domain/interfaces/bitrix.interface";
 
 export type AppState = typeof initialState;
 export enum APP_DEP {
@@ -13,7 +9,7 @@ export enum APP_DEP {
 const initialState = {
   domain: "",
   bitrix: {
-    user: null as BXUser | null,
+    user: null as IBXUser | null,
 
   },
 
@@ -28,7 +24,7 @@ const initialState = {
 };
 export interface InitReport {
   domain: string;
-  user: BXUser;
+  user: IBXUser;
  
 
 }

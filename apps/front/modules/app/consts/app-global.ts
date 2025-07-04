@@ -2,7 +2,8 @@
 // export const TESTING_DOMAIN = 'gsirk.bitrix24.ru'
 // export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru'
 
-import { BXUser, Placement } from "@workspace/bx"
+import { Placement } from "@workspace/bx"
+import { IBXUser } from "@workspace/bitrix/src/domain/interfaces/bitrix.interface"
 // export const TESTING_DOMAIN = 'gsr.bitrix24.ru'
 export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru' as string
 export const TESTING_USER = {
@@ -12,7 +13,7 @@ export const TESTING_USER = {
     EMAIL: 'string',
 
     IS_ONLINE: 'string',
-    LAST_ACTIVITY_DATE: ['string'],
+    LAST_ACTIVITY_DATE: 'string',
     LAST_LOGIN: 'string',
     LAST_NAME: '',
     NAME: 'MARINA',
@@ -32,7 +33,7 @@ export const TESTING_USER = {
     USER_TYPE: 'string',
     WORK_PHONE: 'string',
     WORK_POSITION: 'Оператор ТМЦ',
-} as BXUser
+} as IBXUser
 
 export const IS_REMEMBER_DEV = true
 export const TESTING_DEAL_ID = 34028  //11311

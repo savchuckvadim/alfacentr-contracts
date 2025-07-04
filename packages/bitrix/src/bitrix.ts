@@ -1,12 +1,13 @@
 import { BitrixService } from './bitrix.service';
+import { IBXUser } from './domain/interfaces/bitrix.interface';
 
 export class Bitrix{
   private static instance: BitrixService | undefined;
 
-  static async start(domain: string): Promise<BitrixService> {
+  static async start(domain: string, user: IBXUser): Promise<BitrixService> {
     if (!Bitrix.instance) {
       const service = new BitrixService();
-      await service.init(domain);
+      await service.init(domain, user);
       Bitrix.instance = service;
     }
     return Bitrix.instance;
