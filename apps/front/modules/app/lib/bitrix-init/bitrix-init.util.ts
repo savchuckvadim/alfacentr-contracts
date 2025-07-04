@@ -2,7 +2,7 @@ import { BXCompany, BXDeal, Placement } from "@workspace/bx"
 import { TESTING_DOMAIN, TESTING_PLACEMENT } from "../../consts/app-global"
 import { IN_BITRIX } from "../../model/AppThunk"
 import { bxAPI } from "@workspace/api";
-import { Bitrix } from "@workspace/bitrix";
+import { Bitrix, IBXDeal } from "@workspace/bitrix";
 
 
 export const bitrixInit = async (): Promise<{
@@ -33,13 +33,13 @@ export const bitrixInit = async (): Promise<{
         throw new Error('Сделка не найдена')
     }
 
-    // @ts-ignore
+   
     if (!deal.COMPANY_ID || !Number(deal.COMPANY_ID)) {
         throw new Error('В сделке нет компании !!!!')
     }
 
 
-    // @ts-ignore
+ 
     const companyId = deal.COMPANY_ID
     const company = await bxAPI.getProtectedMethod(
         'crm.company.get',

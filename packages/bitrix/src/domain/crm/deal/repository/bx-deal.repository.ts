@@ -1,8 +1,9 @@
 // import { BitrixBaseApi } from "@bitrix/core";
-import { BitrixBaseApi } from "@bitrix/core";
+import { BitrixBaseApi, TBXResponse } from "@bitrix/core";
 import { EBxMethod, EBxNamespace } from "../../../../core/domain/consts/bitrix-api.enum";
 import { EBXEntity } from "../../../../core/domain/consts/bitrix-entities.enum";
 import { IBXDeal } from "../interface/bx-deal.interface";
+import { IBitrixResponse } from "@bitrix/core/interface/bitrix-api.intterface";
 
 export class BxDealRepository {
     // private bxApi: BitrixBaseApi;
@@ -12,7 +13,7 @@ export class BxDealRepository {
         // this.bxApi = this.bxApiFactoryService.getBitrixApi();
     }
 
-    async get(dealId: number, select?: string[]) {
+    async get(dealId: number, select?: string[]): Promise<IBitrixResponse<TBXResponse<EBxNamespace.CRM, EBXEntity.DEAL, EBxMethod.GET>>> {
         return await this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.DEAL,

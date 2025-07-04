@@ -207,11 +207,11 @@ export class BitrixBaseApi {
                     method,
                     bxData: data,
                 };
-                const backReponse = await backAPI.service<{ result: any }>(
+                const backReponse = await backAPI.service<IBitrixResponse<TBXResponse<NAMESPACE, ENTITY, METHOD>>>(
                     EBACK_ENDPOINT.BITRIX_METHOD,
                     API_METHOD.POST, bxReqHookData
                 );
-                result = backReponse?.data?.result || null
+                result = backReponse?.data || null
                 console.log("BACK RESPONSE CALL METHOD");
                 console.log(result);
                 return result;
