@@ -2,7 +2,7 @@
 import { BxProductRowRepository } from "../repository/bx-product-row.repository";
 import { BitrixBaseApi } from "@bitrix/core";
 import { IBXProductRow, IBXProductRowRow } from "../interface/bx-product-row.interface";
-import { ListProductRowDto } from "../dto/list-product-row.dto";
+import { ListProductRowDto, ListProductRowResponseDto } from "../dto/list-product-row.dto";
 
 
 export class BxProductRowService {
@@ -25,8 +25,8 @@ export class BxProductRowService {
     async add(data: IBXProductRowRow) {
         return await this.repo.add(data);
     }
-    async list(data: ListProductRowDto) {
-        return await this.repo.list(data);
+    async list(data: ListProductRowDto): Promise<ListProductRowResponseDto> {
+        return (await this.repo.list(data)).result;
     }
 
 } 

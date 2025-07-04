@@ -18,30 +18,30 @@ export class BxCompanyService {
         this.repo = new BxCompanyRepository(api);
     }
 
-    get(companyId: number) {
-        return this.repo.get(companyId);
+    async get(companyId: number): Promise<IBXCompany | null> {
+        return (await this.repo.get(companyId)).result;
     }
 
-    getList(filter: Partial<IBXCompany>, select?: string[]) {
-        return this.repo.getList(filter, select);
+    async getList(filter: Partial<IBXCompany>, select?: string[]): Promise<IBXCompany[] | null> {
+        return (await this.repo.getList(filter, select)).result;
     }
 
-    set(data: Partial<IBXCompany>) {
-        return this.repo.set(data);
+    async set(data: Partial<IBXCompany>): Promise<number | null> {
+        return (await this.repo.set(data)).result;
     }
 
-    update(companyId: number | string, data: Partial<IBXCompany>) {
-        return this.repo.update(companyId, data);
+    async update(companyId: number | string, data: Partial<IBXCompany>): Promise<number | null> {
+        return (await this.repo.update(companyId, data)).result;
     }
 
-    getFieldsList(filter: { [key: string]: any }, select?: string[]) {
-        return this.repo.getFieldList(filter, select);
+    async getFieldsList(filter: { [key: string]: any }, select?: string[]): Promise<IBXField[] | null> {
+        return (await this.repo.getFieldList(filter, select)).result;
     }
 
-    getField(id: number | string) {
-        return this.repo.getField(id);
+    async getField(id: number | string): Promise<IBXField | null> {
+        return (await this.repo.getField(id)).result;
     }
-    addField(fields: Partial<IBXField>) {
-        return this.repo.setField(fields);
+    async addField(fields: Partial<IBXField>): Promise<IBXField | null> {
+        return (await this.repo.setField(fields)).result;
     }
 }

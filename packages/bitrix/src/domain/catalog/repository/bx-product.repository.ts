@@ -15,7 +15,7 @@ export class BxProductRepository {
             { id, select }
         );
     }
-    async getBatch(cmdCode: string, id: number | string, select?: Partial<IBXProduct>) {
+    getBatch(cmdCode: string, id: number | string, select?: Partial<IBXProduct>) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CATALOG,
@@ -34,7 +34,7 @@ export class BxProductRepository {
         );
     }
 
-    async getListBatch(cmdCode: string, filter: Partial<IBXProduct>, select: (keyof IBXProduct)[]) {
+    getListBatch(cmdCode: string, filter: Partial<IBXProduct>, select: (keyof IBXProduct)[]) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CATALOG,
