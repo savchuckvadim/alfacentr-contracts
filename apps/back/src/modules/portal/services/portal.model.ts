@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IPortal, IPBXList, IField, IFieldItem, IRPA, ICategory, EDepartamentGroup, IPDepartment, IPPortalMeasure, PMeasureCode, IFieldCode, IDeal } from '../interfaces/portal.interface';
 import { TelegramService } from '../../telegram/telegram.service';
-import { waitForDebugger } from 'inspector';
+
 
 // @Injectable()
 export class PortalModel {

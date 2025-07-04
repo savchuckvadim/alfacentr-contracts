@@ -18,6 +18,7 @@ interface State {
 
 export class ErrorBoundary extends React.Component<Props, State> {
   private unsubscribe?: () => void;
+  private unsubscribeCritical?: () => void;
 
   constructor(props: Props) {
     super(props);
@@ -29,8 +30,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
     window.addEventListener('error', this.handleGlobalError);
     window.addEventListener('unhandledrejection', this.handleUnhandledRejection);
     
-    // Подписываемся на ошибки из ErrorHandler
-    this.unsubscribe = errorHandler.subscribe(this.handleErrorFromHandler);
+    // Подписываемся на критические ошибки из ErrorHandler
+    this.unsubscribeCritical = errorHandler.subscribeToCriticalErrors(this.handleCriticalError);
   }
 
   componentWillUnmount() {
@@ -38,8 +39,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
     window.removeEventListener('unhandledrejection', this.handleUnhandledRejection);
     
     // Отписываемся от ErrorHandler
-    if (this.unsubscribe) {
-      this.unsubscribe();
+    if (this.unsubscribeCritical) {
+      this.unsubscribeCritical();
     }
   }
 
@@ -61,7 +62,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
     });
   };
 
-  handleErrorFromHandler = (error: Error) => {
+  handleCriticalError = (error: Error) => {
+    console.error('Critical error from ErrorHandler:', error);
     this.setState({ 
       hasError: true, 
       error,
@@ -77,7 +79,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     this.setState({ error, errorInfo });
     logClient('React ErrorBoundary', {
       error: error.toString(),
-      // stack: errorInfo.componentStack,
+      stack: errorInfo.componentStack,
     });
   }
 

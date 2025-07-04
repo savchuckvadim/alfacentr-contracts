@@ -1,0 +1,52 @@
+@import "../../../../../styles/typography";
+
+.bxrq_address_item{
+    // height: 50px;
+    border-radius: 6px;
+    border: 1px solid rgb(218, 218, 218);
+}
+
+.address__header{
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+}
+.address__type{
+    display: inline-block;
+    @extend .text__small;
+    font-weight: 600 !important;
+
+}
+.address__edit{
+    display: inline-block;
+    @extend .text__small;
+    font-weight: 600 !important;
+
+}
+.address{
+    display: inline-block;
+
+    @extend .text__small;
+}
+
+.bxrq_rq_content{
+    display: flex;
+    flex-direction: column;
+}
+
+.bxrq_address_icons_block{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.bxrq_address_icon_tooltip{
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.bxrq_tooltip{
+    background-color: rgba(255, 255, 255, 0.849) !important;
+    color: rgb(16, 84, 201) !important;
+}

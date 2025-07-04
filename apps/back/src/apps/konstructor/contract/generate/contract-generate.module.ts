@@ -7,7 +7,6 @@ import { FileLinkModule } from "src/core/file-link/file-link.module";
 import { LibreOfficeModule } from "src/modules/libre-office/libre-office.module";
 import { ProviderModule } from "../../../../modules/portal-konstructor/provider";
 import { DocumentGenerateModule } from "../../document-generate/document-generate.module";
-import { DocumentProductRowService } from "../../document-generate/product-rows/product-row.service";
 import { ContractRqService } from "./services/contract-rq.service";
 import { ContractRqHeaderService } from "./services/contract-rq-header.service";
 import { ContractSpecificationService } from "./services/contract-specification.service";
@@ -27,7 +26,6 @@ import { ContractBitrixPushService } from "./services/contract-bitrix-push.servi
         ContractGenerateUseCase,
         ContractGenerateService,
         ContractBitrixPushService,
-        DocumentProductRowService,
         ContractRqService,
         ContractRqHeaderService,
         ContractSpecificationService

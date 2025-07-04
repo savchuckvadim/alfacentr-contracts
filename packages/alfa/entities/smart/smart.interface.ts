@@ -1,3 +1,4 @@
+import { AlfaParticipantSmartItemUserFieldsEnum } from "./participant.interface"
 
 export enum EntityTypeIdEnum {
     PARTICIPANT = 1036,
@@ -50,18 +51,18 @@ export interface IAlfaParticipantSmartItem {
     sourceId?: string
     sourceDescription?: string
     webformId?: number
-    ufCrm12AccountantGos?: string[]
-    ufCrm12AccountantMedical?: string[]
-    ufCrm12Zakupki?: string[]
-    ufCrm12Kadry?: string[]
-    ufCrm12Days?: string[]
-    ufCrm12Format?: string[]
-    ufCrm12AddressForUdost?: string
-    ufCrm12Phone?: string
-    ufCrm12Email?: string
-    ufCrm12Comment?: string
-    ufCrm12IsPpk?: string
-    ufCrm12Name?: string
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12AccountantGos]?: string[]
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12AccountantMedical]?: string[]
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Zakupki]?: string[]
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Kadry]?: string[]
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Days]?: string[]
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Format]?: string[]
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12AddressForUdost]?: string
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Phone]?: string
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Email]?: string
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Comment]?: string
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12IsPpk]?: string
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Name]?: string
     assignedById: number
     lastActivityBy: number
     lastActivityTime: string
@@ -80,6 +81,7 @@ export interface IAlfaParticipantSmartItem {
     utmTerm: string
     observers: number[]
     contactIds: number[]
-    
-  
-  }
+
+
+}
+

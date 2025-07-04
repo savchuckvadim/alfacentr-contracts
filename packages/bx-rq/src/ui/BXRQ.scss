@@ -1,0 +1,54 @@
+@import '../../../styles/variables';
+@import '../../../styles/typography';
+
+
+.rq__card_content {
+    width: 100%;
+    min-height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+.rq__card_content__preloader {
+    width: 100%;
+    height: 400px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+.rq__column, .sup_column {
+    width: 30px !important;
+    border-radius: 10px !important;
+    background-color: white !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.sup__inputs{
+    margin: 0 !important;
+    padding: 0 !important;
+    // min-width: 100%;
+    // max-width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+.rq__input_group{
+    display: flex;
+    flex-direction: row !important;
+}
+label {
+    color: $base-text;
+}
+
+// .contract-rq-title-wrapper {
+//     display: flex;
+//     justify-content: start;
+//     align-items: start;
+// }

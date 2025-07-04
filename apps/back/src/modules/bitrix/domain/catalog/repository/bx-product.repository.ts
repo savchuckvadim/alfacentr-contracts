@@ -30,7 +30,7 @@ export class BxProductRepository {
             EBxNamespace.CATALOG,
             EBXEntity.PRODUCT,
             EBxMethod.LIST,
-            { filter, select }
+            { filter, select, start: -1 }
         );
     }
 
@@ -40,7 +40,7 @@ export class BxProductRepository {
             EBxNamespace.CATALOG,
             EBXEntity.PRODUCT,
             EBxMethod.LIST,
-            { filter, select }
+            { filter, select, start: -1 }
         );
     }
 }

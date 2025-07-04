@@ -10,8 +10,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import {
-    ProductRowDto,
-    ProductRowSetDto,
+   
     ContractDto,
     SupplyDto,
     PriceDto,
@@ -93,19 +92,7 @@ export class ContractGenerateDto {
     region: RegionDto;
 
 
-    @ApiProperty({ description: 'Rows of the contract', type: [ProductRowDto] })
-    @IsArray() @ValidateNested({ each: true }) @Type(() => ProductRowDto)
-    rows: ProductRowDto[];
 
-
-    @ApiProperty({ description: 'Total of the contract', type: ProductRowDto })
-    @ValidateNested() @Type(() => ProductRowDto)
-    total: ProductRowDto;
-
-
-    @ApiProperty({ description: 'Product set of the contract', type: ProductRowSetDto })
-    @ValidateNested() @Type(() => ProductRowSetDto)
-    productSet: ProductRowSetDto;
 
 
     @ApiProperty({ description: 'Contract start of the contract', })

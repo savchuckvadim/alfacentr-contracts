@@ -10,8 +10,14 @@ export enum EVS_ENDPOINT {
     INIT_SUPPLY = "rpa/init_supply",
     GET_RQS = "rq/get_rq",
     SET_RQ = "rq/update_rq",
+   
+    STORE_RQ = "rq/store_rq",
     SEND_EVENT ='calling'
 }
+
+export type RQStore = {
+    data: { bx_id: number };
+};
 
 interface EVSResponse {
     data: {

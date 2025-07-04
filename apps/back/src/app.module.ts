@@ -23,21 +23,17 @@ import { AlfaActivityModule } from './modules/hooks/alfa/alfa-activity.module';
 import { MetricsModule } from './core/metrics/metrics.module';
 import { AlfaModule } from './apps/alfa/alfa.module';
 
-import { GarantPricesModule } from './commands/garant-prices/garant-prices.module';
-import { FieldsModule } from './commands/fields/fields.module';
-import { CategoryModule } from './commands/category/category.module';
-import { ChangeDealCategoryModule } from './commands/change-deal-category/change-deal-category.module';
+
 import { StorageModule } from './core/storage/storage.module';
 import { FileLinkModule } from './core/file-link/file-link.module';
 import { PrismaModule } from './core/prisma/prisma.module';
-import { GarantModule } from './modules/garant/garant.module';
-import { PortalKonstructorModule } from './modules/portal-konstructor/portal-konstructor.module';
 import { BxDepartmentModule } from '@/modules/bx-department/bx-department.module';
 import { PBXInstallModule } from './modules/install/install-module';
 import { PbxDomainModule } from './modules/pbx-domain/pbx-domain.module';
 import { HelperModule } from './modules/helper/helper.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventServiceAppModule } from './apps/event-service/event-service-app.module';
+import { OnDealInitModule } from './modules/on-deal-init/on-deal-init.module';
 
 
 @Module({
@@ -69,12 +65,12 @@ import { EventServiceAppModule } from './apps/event-service/event-service-app.mo
     BitrixModule,
     PortalModule,
     PBXModule,
-    PBXInstallModule,
-    PbxDomainModule,
+    // PBXInstallModule,
+    // PbxDomainModule,
     TelegramModule,
     RedisModule,
     SilentJobHandlersModule,
-    KpiReportModule,
+    // KpiReportModule,
     // EventSalesModule,
 
 
@@ -82,7 +78,7 @@ import { EventServiceAppModule } from './apps/event-service/event-service-app.mo
     // KonstructorModule,
     AlfaModule,
     // EventServiceModule
-
+    OnDealInitModule,
     
 
 
@@ -95,8 +91,8 @@ import { EventServiceAppModule } from './apps/event-service/event-service-app.mo
 
     StorageModule,
     FileLinkModule,
-    GarantModule,
-    PortalKonstructorModule,
+    // GarantModule,
+    // PortalKonstructorModule,
 
 
     BxDepartmentModule,

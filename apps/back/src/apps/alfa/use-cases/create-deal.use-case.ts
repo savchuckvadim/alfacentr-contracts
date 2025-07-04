@@ -5,8 +5,6 @@ import { BxFieldsService } from "../services/bx-field.service";
 import { DealFieldHelperService } from "../services/deal-helper/deal-field-helper.service";
 import { DealFieldValuesHelperService } from "../services/deal-helper/deal-values-helper.service";
 import { PBXService } from "@/modules/pbx";
-import { bxProductData } from "../bx-data/bx-product-data";
-import { DealFieldsTemplate } from "../type/deal-field.type";
 import { BxSmartService } from "../services/bx-smart.service";
 import { BxCompanyService } from "../services/bx-company.service";
 import { BxDealDataKeys } from "../bx-data/bx-data";

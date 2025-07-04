@@ -14,6 +14,7 @@ export type BxCatalogSchema = {
         request:  {
             filter: Partial<IBXProduct>;
             select: (keyof IBXProduct)[];
+            start: -1;
         };
         response: {products: IBXProduct[]};
     };

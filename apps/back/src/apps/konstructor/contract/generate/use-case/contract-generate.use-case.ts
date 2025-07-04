@@ -12,9 +12,9 @@ export class ContractGenerateUseCase {
     ) { }
 
     async getContract(dto: ContractGenerateDto) {
-        const { link, documentName, data, provider } = await this.contractGenerateService.generateContract(dto);
-        await this.contractBitrixPushService.setInBitrix(dto, link, documentName);
-        return { link, documentName, data, provider };
+        const { link, data, provider } = await this.contractGenerateService.generateContract(dto);
+        await this.contractBitrixPushService.setInBitrix(dto, link, 'documentName');
+        return { link, data, provider };
 
     }
 }

@@ -1,0 +1,16 @@
+.bxrq_edit_content,
+.bxrq_edit_content__preloader {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.bxrq_require_errors {
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: start;
+    flex-wrap: wrap;
+}
