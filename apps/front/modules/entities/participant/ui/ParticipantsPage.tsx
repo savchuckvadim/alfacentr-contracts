@@ -7,6 +7,9 @@ import { fetchParticipants, deleteParticipant } from '../model/ParticipantThunk'
 import { RootState, AppDispatch } from '@/modules/app/model/store';
 import { removeParticipant } from '../model/PerticipantSlice';
 import { SmartStageEnum } from '@alfa/entities';
+import { Header } from '@/components';
+import Link from 'next/link';
+import { ArrowLeftIcon } from 'lucide-react';
 
 export function ParticipantsPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -42,7 +45,13 @@ export function ParticipantsPage() {
   };
 
   return (
+
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <Link href="/bitrix" className="text-sm text-gray-500 hover:text-gray-700">
+          <ArrowLeftIcon className="w-4 h-4" />
+        </Link>
+      </div>
       {/* Заголовок */}
       <div className="flex items-center justify-between">
         <div>
@@ -134,9 +143,9 @@ export function ParticipantsPage() {
             <span className="text-red-800 font-medium">Ошибка загрузки</span>
           </div>
           <p className="text-red-700 mt-1">{error}</p>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => deal?.ID && dispatch(fetchParticipants(deal.ID.toString()))}
             className="mt-2"
           >
