@@ -7,6 +7,7 @@ import { logClient } from "../lib/helper/logClient";
 import { LoadingScreen } from "@/modules/shared";
 import StartPage from "@/modules/pages/StartPage";
 import { useAppDispatch, useAppSelector } from "../lib/hooks/redux";
+import MainPage from "@/modules/pages/MainPage";
 
 
 const App = ({ inBitrix, envBitrix }: { inBitrix: boolean, envBitrix: boolean | string | undefined }) => {
@@ -51,7 +52,7 @@ const AppRoot = ({ inBitrix }: { inBitrix: boolean }) => {
             {app.initialized ? (
                 <AppContent />
             ) : (
-                <LoadingScreen />
+                <StartPage />
             )}
         </div>
 
@@ -59,7 +60,7 @@ const AppRoot = ({ inBitrix }: { inBitrix: boolean }) => {
 };
 
 const AppContent = () => {
-    return <StartPage />
+    return <MainPage />
 };
 
 export default App

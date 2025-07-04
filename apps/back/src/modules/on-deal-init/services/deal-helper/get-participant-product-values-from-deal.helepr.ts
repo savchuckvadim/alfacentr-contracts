@@ -1,5 +1,5 @@
 import { BxParticipantsDataKeys, CategoryIdEnum, EntityTypeIdEnum, IAlfaParticipantSmartItem, SmartStageEnum } from "@alfa/entities"
-import { BxDealDataKeys, TDealData } from "../../bx-data/bx-data"
+import { BxDealDataKeys, TDealData } from "@alfa/entities"
 import { DealValue } from "./deal-values-helper.service"
 import { TSmartFieldCode } from "../smart-helper/smart-field-code.helper"
 

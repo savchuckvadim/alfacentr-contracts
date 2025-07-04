@@ -1,13 +1,13 @@
 import { BitrixService, IBXProduct, IBXProductRow, IBXProductRowRow } from "@/modules/bitrix";
-import { DealValue } from "./deal-helper/deal-values-helper.service";
-import { BxDealDataKeys } from "../bx-data/bx-data";
-import { bxProductData } from "../bx-data/bx-product-data";
+import { DealValue } from "../../on-deal-init/services/deal-helper/deal-values-helper.service";
+import { BxDealDataKeys } from "@alfa/entities";
+import { bxProductData } from "@alfa/entities";
 import { BitrixOwnerType } from "@/modules/bitrix/domain/enums/bitrix-constants.enum";
 import { ListProductRowDto } from "@/modules/bitrix/domain/crm/product-row/dto/list-product-row.sto";
 import { BxParticipantsDataKeys } from "@alfa/entities";
 
 
-export class BxProductService {
+export class AlfaProductService {
     constructor(
         private readonly bitrix: BitrixService
     ) { }
@@ -76,20 +76,20 @@ export class BxProductService {
                 }
             }
         }
-        if (products.length > 0) {
-            console.log('products')
-            for (const product of products) {
-                console.log('name', product.name)
-                console.log('property172', product.property172)
-                console.log('property174', product.property174)
-                console.log('property158', product.property158)
-                console.log('property168', product.property168)
-                console.log('property154', product.property154)
-                console.log('property155', product.property155)
-                console.log('property156', product.property156)
-                console.log('property164', product.property164)
-            }
-        }
+        // if (products.length > 0) {
+        //     console.log('products')
+        //     for (const product of products) {
+        //         console.log('name', product.name)
+        //         console.log('property172', product.property172)
+        //         console.log('property174', product.property174)
+        //         console.log('property158', product.property158)
+        //         console.log('property168', product.property168)
+        //         console.log('property154', product.property154)
+        //         console.log('property155', product.property155)
+        //         console.log('property156', product.property156)
+        //         console.log('property164', product.property164)
+        //     }
+        // }
         if (productsWithoutPrefix.length > 0) {
             // console.log('productsWithoutPrefix')
             // for (const product of productsWithoutPrefix) {

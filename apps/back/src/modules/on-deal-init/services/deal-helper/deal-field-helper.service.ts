@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AlfaBxField } from '../../type/bx-deal-field.type';
-import { BxDealData, BxDealDataKeys, TDealData, TField, TFieldSelect } from '../../bx-data/bx-data';
+import { BxDealData, BxDealDataKeys, TDealData, TField, TFieldSelect } from '@alfa/entities';
 import { DealField } from '../../type/deal-field.type';
 
 @Injectable()

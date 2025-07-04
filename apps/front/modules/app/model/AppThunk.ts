@@ -8,6 +8,7 @@ import { socketThunk } from "./queue-ws-ping-test/QueueWsPingListener";
 import { bitrixInit } from "../lib/bitrix-init/bitrix-init.util";
 import { fetchParticipants } from "@/modules/entities/participant/model/ParticipantThunk";
 import { Bitrix } from "@workspace/bitrix";
+import { fetchProducts } from "@/modules/entities/product/model/ProductThunk";
 
 
 export let socket: undefined | WSClient;
@@ -19,30 +20,33 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
     const state = getState();
     const app = state.app;
     const isLoading = app.isLoading
-    const __IN_BITRIX__ = inBitrix
-    IN_BITRIX = __IN_BITRIX__
+
+
     const bitrix = await Bitrix.start(TESTING_DOMAIN, TESTING_USER)
     console.log('bitrix', bitrix.api)
     console.log('bitrix initialized', bitrix.api.getInitializedData())
-    
+
     if (!isLoading) {
       dispatch(
         appActions.loading({ status: true })
       )
 
-      const domain: string = bitrix.api.getInitializedData().domain;
+      const { domain, user } = bitrix.api.getInitializedData();
 
-      const user = bitrix.api.getUser();
+
       console.log("user");
 
       console.log(user);
 
       const { deal, company } = await bitrixInit() || {}
       if (deal && company) {
-        dispatch(fetchParticipants(deal.ID.toString()))
+        Promise.all([
+          dispatch(fetchParticipants(deal.ID.toString())),
+          dispatch(fetchProducts(deal.ID.toString()))
+        ])
       }
 
-      // initWSClient(user.ID, domain); // <- здесь создаёшь сокет
+      initWSClient(Number(user.ID), domain); // <- здесь создаёшь сокет
       // const socket = getWSClient()
       dispatch(
         socketThunk(
@@ -54,17 +58,19 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
 
 
 
+      if (deal && company) {
+        dispatch(
+          appActions.
+            setAppData(
+              {
+                domain,
+                user,
+                deal,
+                company
 
-      dispatch(
-        appActions.
-          setAppData(
-            {
-              domain,
-              user,
-
-
-            }
-          ))
+              }
+            ))
+      }
 
       dispatch(
         appActions.loading({ status: false })

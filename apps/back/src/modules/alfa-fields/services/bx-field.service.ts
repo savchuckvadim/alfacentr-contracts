@@ -1,7 +1,7 @@
 
 import { BitrixService } from 'src/modules/bitrix/';
 import { BitrixEnumerationOption, IBXField } from 'src/modules/bitrix/';
-import { AlfaBxField } from '../type/bx-deal-field.type';
+import { AlfaBxField } from '../../on-deal-init/type/bx-deal-field.type';
 
 
 export class BxFieldsService {

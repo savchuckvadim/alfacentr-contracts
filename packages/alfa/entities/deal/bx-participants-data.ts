@@ -1,4 +1,4 @@
-import { BxParticipantsDataKeys } from "@alfa/entities";
+import { BxParticipantsDataKeys } from "../smart/participant.interface";
 
 
 const participant_1 = {

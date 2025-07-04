@@ -1,5 +1,6 @@
+    import { BxParticipantsDataKeys } from "../smart/participant.interface";
 import { BxParticipantsData } from "./bx-participants-data";
-import { BxParticipantsDataKeys } from "@alfa/entities";
+
 
 export enum BxDealDataKeys {
     prefix = 'prefix',

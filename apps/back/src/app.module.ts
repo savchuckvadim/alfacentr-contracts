@@ -34,6 +34,8 @@ import { HelperModule } from './modules/helper/helper.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventServiceAppModule } from './apps/event-service/event-service-app.module';
 import { OnDealInitModule } from './modules/on-deal-init/on-deal-init.module';
+import { AlfaProductsModule } from './modules/alfa-products';
+import { AlfaFieldsModule } from './modules/alfa-fields';
 
 
 @Module({
@@ -79,7 +81,8 @@ import { OnDealInitModule } from './modules/on-deal-init/on-deal-init.module';
     AlfaModule,
     // EventServiceModule
     OnDealInitModule,
-    
+    AlfaProductsModule,
+    AlfaFieldsModule,
 
 
     //commands

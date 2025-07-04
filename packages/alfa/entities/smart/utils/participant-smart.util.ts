@@ -10,10 +10,12 @@ export const getParticipant = (smart: IAlfaParticipantSmartItem): IParticipant =
         if (fieldInEnum) {
             const targetKey = key as AlfaParticipantSmartItemUserFieldsEnum
             const fieldValue = smart[targetKey]
+            // const test = getNameBySmartFieldBxId(targetKey)
             const field = {
-                bitrixId: key,
-                code: fieldTypes[key]?.code,
-                name: fieldTypes[key]?.name,
+                bitrixId: targetKey,
+                code: fieldTypes[targetKey]?.code,
+                name: fieldTypes[targetKey]?.name,
+                type: fieldTypes[targetKey]?.type,
                 value: fieldValue
             } as IParticipantField<typeof targetKey>
             participantFields.push(field)
@@ -25,6 +27,16 @@ export const getParticipant = (smart: IAlfaParticipantSmartItem): IParticipant =
         entityTypeId: EntityTypeIdEnum.PARTICIPANT,
         fields: participantFields
     }
+}
+
+const getNameBySmartFieldBxId = (fieldId: AlfaParticipantSmartItemUserFieldsEnum) => {
+    console.log("fieldTypes[fieldId]", fieldTypes[fieldId])
+    console.log("fieldTypes[fieldId]?.name", fieldTypes[fieldId]?.name)
+    console.log("fieldTypes[fieldId]?.code", fieldTypes[fieldId]?.code)
+    console.log("fieldTypes[fieldId]?.bitrixId", fieldTypes[fieldId]?.bitrixId)
+
+    const item = fieldTypes[fieldId]
+    return item?.name
 }
 
 

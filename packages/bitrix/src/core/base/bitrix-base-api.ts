@@ -6,10 +6,12 @@
 import { IBitrixBatchResponseResult, IBitrixResponse } from '../interface/bitrix-api.intterface';
 // IBitrixBatchResponse, 
 import { BXApiSchema, EBxNamespace, TBXRequest, TBXResponse } from '../domain';
-import { API_METHOD, backAPI, bxAPI, EBACK_ENDPOINT } from '@workspace/api';
+import { API_METHOD, backAPI, bxAPI, EBACK_ENDPOINT, getBxService } from '@workspace/api';
 import { AuthData, B24Frame, initializeB24Frame, Result } from '@bitrix24/b24jssdk';
 import { AxiosError } from 'axios';
 import { IBXUser } from '../../domain/interfaces/bitrix.interface';
+import { Placement, PlacementPlace } from '../../../../bx/src/type/placement-type';
+import { CustomPlacement } from '@bitrix/domain/interfaces/bitrix-placement.intreface';
 
 
 export class BitrixBaseApi {
@@ -66,6 +68,16 @@ export class BitrixBaseApi {
             user: this.user
         };
     }
+    getPlacement(): Placement | CustomPlacement | null {
+
+        if (this.inFrame) {
+            return {
+                options: this.bx.placement.options,
+                placement: this.bx.placement.title as PlacementPlace
+            };
+        }
+        return null;
+    }
 
 
 
@@ -92,7 +104,7 @@ export class BitrixBaseApi {
         return currentUser;
     }
 
-    
+
 
 
 
@@ -231,6 +243,41 @@ export class BitrixBaseApi {
             console.log("BACK RESPONSE CALL METHOD");
             console.log(result);
             return result;
+        }
+
+
+
+    }
+
+    public async call<T>(
+        method: string,
+        data: any
+    ): Promise<any> {
+        let result = null as null | any;
+        let response = null;
+
+        if (this.inFrame) {
+
+            const bxRresponse = await this.bx.callMethod(method, data as object, -1) as Result;
+            response = bxRresponse.getData() as T
+            console.log("BITRIX RESPONSE CALL METHOD");
+            console.log(response);
+            return response;
+
+        } else {
+            const bxReqHookData = {
+                domain: this.domain,
+                method,
+                bxData: data,
+            };
+            const backReponse = await backAPI.service<T>(
+                EBACK_ENDPOINT.BITRIX_METHOD,
+                API_METHOD.POST, bxReqHookData
+            );
+            result = backReponse?.data || null
+            console.log("BACK RESPONSE CALL METHOD");
+            console.log(result);
+            return result as T;
         }
 
 

@@ -1,14 +1,14 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { OnDealInitRequestDto } from "../dto/on-deal-init-request.dto";
 import { BxDealService } from "../services/bx-deal.service";
-import { BxFieldsService } from "../services/bx-field.service";
-import { DealFieldHelperService } from "../services/deal-helper/deal-field-helper.service";
+
 import { DealFieldValuesHelperService } from "../services/deal-helper/deal-values-helper.service";
 import { PBXService } from "@/modules/pbx";
 import { BxSmartService } from "../services/bx-smart.service";
 import { BxCompanyService } from "../services/bx-company.service";
-import { BxDealDataKeys } from "../bx-data/bx-data";
-import { BxProductService } from "../services/bx-product.service";
+import { BxDealDataKeys } from "@alfa/entities";
+import { AlfaProductService } from "@/modules/alfa-products";
+import { AlfaFieldsService } from "@/modules/alfa-fields";
 
 export enum BitrixEntityType {
     DEAL = 'deal',
@@ -27,18 +27,19 @@ export class OnDealInitUseCase {
     async init(domain: string) {
         const { bitrix } = await this.pbx.init(domain);
         const bxDealService = new BxDealService();
-        const bxFieldsService = new BxFieldsService();
+        // const bxFieldsService = new BxFieldsService();
+        const alfaFieldService = new AlfaFieldsService();
         const bxSmartService = new BxSmartService();
         const bxCompanyService = new BxCompanyService(bitrix);
-        const bxProductService = new BxProductService(bitrix);
+        const bxProductService = new AlfaProductService(bitrix);
         await bxDealService.init(bitrix);
-        await bxFieldsService.init(bitrix);
+        await alfaFieldService.init(bitrix);
         await bxSmartService.init(bitrix);
 
         return {
             bitrix,
             bxDealService,
-            bxFieldsService,
+            alfaFieldService,
             bxSmartService,
             bxCompanyService,
             bxProductService
@@ -48,19 +49,14 @@ export class OnDealInitUseCase {
         const {
             bitrix,
             bxDealService,
-            bxFieldsService,
+            alfaFieldService,
             bxSmartService,
             bxCompanyService,
             bxProductService
         } = await this.init(data.auth.domain);
 
 
-
-        const fields = await bxFieldsService.getDealFields();
-        const fieldData = DealFieldHelperService.updateDealDataFromBitrixResponse(fields);
-        const bxFieldsIds = DealFieldHelperService.getBxFieldsIdsForSelect(fieldData);
-
-
+        const { fieldData, bxFieldsIds } = await alfaFieldService.getDealFieldsDataWithIds();
         const testInn = fieldData[BxDealDataKeys.inn]
         console.log('testInn', testInn)
 

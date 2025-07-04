@@ -16,10 +16,10 @@ export class BxProductBatchService {
         this.repo = new BxProductRepository(api);
     }
  
-    async get(cmdCode: string, id: number | string, select?: Partial<IBXProduct>) {
+    async get(cmdCode: string, id: number | string, select?: string[]) {
         return await this.repo.getBatch(cmdCode, id, select);
     }
-    async getList(cmdCode: string, filter: Partial<IBXProduct>, select: (keyof IBXProduct)[]) {
+    async getList(cmdCode: string, filter: Partial<IBXProduct>, select?: string[]) {
         return await this.repo.getListBatch(cmdCode, filter, select);
     }
 }

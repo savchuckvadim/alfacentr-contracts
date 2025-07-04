@@ -1,3 +1,4 @@
+import { IBXCompany, IBXDeal } from "@bitrix/domain";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { IBXUser } from "@workspace/bitrix/src/domain/interfaces/bitrix.interface";
 
@@ -10,6 +11,8 @@ const initialState = {
   domain: "",
   bitrix: {
     user: null as IBXUser | null,
+    deal: null as IBXDeal | null,
+    company: null as IBXCompany | null,
 
   },
 
@@ -22,9 +25,11 @@ const initialState = {
     message: "" as string,
   },
 };
-export interface InitReport {
+export interface InitApp {
   domain: string;
   user: IBXUser;
+  deal: IBXDeal;
+  company: IBXCompany;
  
 
 }
@@ -34,7 +39,7 @@ const appSlice = createSlice({
   reducers: {
     setAppData: (
       state: AppState,
-      action: PayloadAction<InitReport>
+      action: PayloadAction<InitApp>
       //   {
       //     domain: string;
       //     user: BXUser | null;
@@ -44,6 +49,8 @@ const appSlice = createSlice({
       const payload = action.payload;
       state.domain = payload.domain;
       state.bitrix.user = payload.user;
+      state.bitrix.deal = payload.deal;
+      state.bitrix.company = payload.company;
       state.initialized = true;
 
 

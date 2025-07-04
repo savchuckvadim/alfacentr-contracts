@@ -23,6 +23,18 @@ const participantSlice = createSlice({
         setParticipants: (state, action: PayloadAction<IParticipant[]>) => {
             state.items = action.payload
         },
+        setEditable: (state, action: PayloadAction<IParticipant | null>) => {
+            state.editable = action.payload
+        },
+        updateParticipant: (state, action: PayloadAction<IParticipant>) => {
+            const index = state.items.findIndex(item => item.id === action.payload.id)
+            if (index !== -1) {
+                state.items[index] = action.payload
+            }
+        },
+        removeParticipant: (state, action: PayloadAction<number>) => {
+            state.items = state.items.filter(item => item.id !== action.payload)
+        },
         clearError: (state) => {
             state.error = null
         }
@@ -46,6 +58,9 @@ const participantSlice = createSlice({
 
 export const {
     setParticipants,
+    setEditable,
+    updateParticipant,
+    removeParticipant,
     clearError
 } = participantSlice.actions
 export const participantReducer = participantSlice.reducer

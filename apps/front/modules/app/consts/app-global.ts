@@ -2,8 +2,8 @@
 // export const TESTING_DOMAIN = 'gsirk.bitrix24.ru'
 // export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru'
 
-import { Placement } from "@workspace/bx"
 import { IBXUser } from "@workspace/bitrix/src/domain/interfaces/bitrix.interface"
+import { Placement } from "@workspace/bx"
 // export const TESTING_DOMAIN = 'gsr.bitrix24.ru'
 export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru' as string
 export const TESTING_USER = {

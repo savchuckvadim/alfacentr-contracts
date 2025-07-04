@@ -45,13 +45,13 @@ export const ProductList: React.FC<ProductListProps> = ({ dealId }) => {
               background: '#fff'
             }}
           >
-            <h4>{product.title}</h4>
+            {/* <h4>{product.title}</h4>
             {product.price && (
               <p>Цена: {product.price} ₽</p>
             )}
             {product.quantity && (
               <p>Количество: {product.quantity}</p>
-            )}
+            )} */}
           </div>
         ))}
       </div>

@@ -7,7 +7,7 @@ export class BxProductRepository {
     constructor(
         private readonly bxApi: BitrixBaseApi
     ) { }
-    async get(id: number | string, select?: Partial<IBXProduct>) {
+    async get(id: number | string,select?: string[]) {
         return await this.bxApi.callType(
             EBxNamespace.CATALOG,
             EBXEntity.PRODUCT,
@@ -15,7 +15,7 @@ export class BxProductRepository {
             { id, select }
         );
     }
-    async getBatch(cmdCode: string, id: number | string, select?: Partial<IBXProduct>) {
+    async getBatch(cmdCode: string, id: number | string, select?: string[]) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CATALOG,
@@ -25,7 +25,7 @@ export class BxProductRepository {
         );
     }
 
-    async getList(filter: Partial<IBXProduct>, select: (keyof IBXProduct)[]) {
+    async getList(filter: Partial<IBXProduct>, select?: string[]) {
         return await this.bxApi.callType(
             EBxNamespace.CATALOG,
             EBXEntity.PRODUCT,
@@ -34,7 +34,7 @@ export class BxProductRepository {
         );
     }
 
-    async getListBatch(cmdCode: string, filter: Partial<IBXProduct>, select: (keyof IBXProduct)[]) {
+    async getListBatch(cmdCode: string, filter: Partial<IBXProduct>, select?: string[]) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CATALOG,

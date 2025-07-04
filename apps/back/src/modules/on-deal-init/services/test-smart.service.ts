@@ -1,6 +1,6 @@
 import { PBXService } from "@/modules/pbx";
 import { Injectable } from "@nestjs/common";
-import { bxSmartEntityTypeId } from "../bx-data/bx-smart-data";
+
 import { BitrixService, EBXEntity, EBxMethod, EBxNamespace, IBXItem, IBXStatus } from "@/modules/bitrix";
 
 

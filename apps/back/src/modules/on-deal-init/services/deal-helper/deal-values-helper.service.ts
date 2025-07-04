@@ -1,6 +1,6 @@
 import { IBXDeal } from "@/modules/bitrix";
 import { DealField, DealFieldsTemplate, DealValueListItem, EnumerationField } from "../../type/deal-field.type";
-import { BxDealDataKeys, TDealData } from "../../bx-data/bx-data";
+import { BxDealDataKeys, TDealData } from "@alfa/entities";
 
 // Интерфейс для значения поля сделки
 export interface DealValue {
