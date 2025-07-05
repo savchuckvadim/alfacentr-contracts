@@ -294,7 +294,8 @@ export class BitrixBaseApi {
 
     async callBatch(): Promise<IBitrixBatchResponseResult[]> {
         if (this.inFrame) {
-            const bxResponse = await this.bx.callBatchByChunk([this.cmdBatch], false) as Result
+            const commands = Object.entries(this.cmdBatch);
+            const bxResponse = await this.bx.callBatchByChunk(commands, false) as Result
             const result = bxResponse.getData()
             console.log("BITRIX RESPONSE CALL BATCH")
             console.log(result)
