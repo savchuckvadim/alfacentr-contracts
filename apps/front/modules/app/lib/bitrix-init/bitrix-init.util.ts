@@ -50,3 +50,28 @@ export const bitrixInit = async (): Promise<{
         company
     }
 }
+
+export const bitrixBatchInit = async (): Promise<void> => {
+
+    const bitrix = Bitrix.getService()
+    const placement = bitrix.api.getPlacement() || TESTING_PLACEMENT as Placement
+    const dealId = 'ID' in placement.options ? placement.options.ID : ('dealId' in placement.options ? placement.options.dealId : null)
+
+    if (!dealId) {
+        throw new Error('Deal ID not found in placement options')
+    }
+    for (let i = 0; i < 100; i++) {
+        bitrix.batch.deal.get(
+            'dealGet' + i,
+            dealId
+        )
+    }
+    const cmdBatch = bitrix.api.getCmdBatch()
+    console.log(cmdBatch)
+    debugger
+    const totalBxResponse = await bitrix.api.callBatchWithConcurrency()
+    console.log("TOTAL BX RESPONSE")
+    console.log(totalBxResponse)
+
+
+}

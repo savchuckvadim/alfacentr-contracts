@@ -40,6 +40,11 @@ export class BitrixBaseApi {
         try {
 
             this.bx = await initializeB24Frame();
+            this.bx.getHttpClient().setRestrictionManagerParams({
+                sleep: 600,
+                speed: 0.01,
+                amount: 30 * 5
+            })
             this.inFrame = true;
 
             await this.getInitialized();
@@ -162,7 +167,10 @@ export class BitrixBaseApi {
         }
 
         if (!this.cmdBatch[cmd]) {
-            this.cmdBatch[cmd] = data;
+            this.cmdBatch[cmd] = {
+                method: resultMethod,
+                params: data
+            };
         }
     }
 
@@ -284,14 +292,26 @@ export class BitrixBaseApi {
 
     }
 
-
+    async callBatch(): Promise<IBitrixBatchResponseResult[]> {
+        if (this.inFrame) {
+            const bxResponse = await this.bx.callBatchByChunk([this.cmdBatch], false) as Result
+            const result = bxResponse.getData()
+            console.log("BITRIX RESPONSE CALL BATCH")
+            console.log(result)
+            return result
+        }
+        const result = await this.callBatchWithConcurrency()
+        console.log("RESULT BACK CALL BATCH")
+        console.log(result)
+        return result
+    }
 
     async callBatchWithConcurrency(limit = 3): Promise<IBitrixBatchResponseResult[]> {
         this.logger.log(`Calling batch async with concurrency limit: ${limit}`);
 
         const commands = Object.entries(this.cmdBatch);
         const results: IBitrixBatchResponseResult[] = [];
-
+debugger
         let index = 0;
 
         const runBatch = async (): Promise<void> => {
@@ -299,6 +319,7 @@ export class BitrixBaseApi {
                 const start = index;
                 index += 50;
                 const batch = commands.slice(start, index);
+                debugger
                 const result = await this.executeBatch(batch);
 
                 if (result && typeof result === 'object' && 'result' in result) {
@@ -307,6 +328,7 @@ export class BitrixBaseApi {
                     this.logger.warn(`Skipping failed batch at index ${start}`);
                 }
                 // 💤 Задержка между вызовами
+                debugger
                 await this.sleep(100);
             }
         };
@@ -318,11 +340,13 @@ export class BitrixBaseApi {
         return results;
     }
 
-    private async executeBatch(batch: [string, string][]) {
+    private async executeBatch(batch: [string, { method: string, params: any }][]) {
         // this.logger.log(`Executing batch of ${batch.length} commands`);
         const cmd: Record<string, string> = {};
         for (const [key, val] of batch) {
-            cmd[key] = val;
+            
+            const url = this.dictToQueryString(val.method, val.params);
+            cmd[key] = url;
         }
 
         const payload = { halt: 0, cmd };
@@ -333,19 +357,34 @@ export class BitrixBaseApi {
             // const response = await firstValueFrom(
             //     this.httpService.post(url, payload, this.axiosOptions),
             // ) as AxiosResponse<IBitrixBatchResponse>;
-            const response = await this.bx.callBatch(payload) as Result;
-            const responseResult = response.getData();
-            const result = responseResult.data.result as IBitrixBatchResponseResult;
+            // if (!this.inFrame) {
+                const bxReqHookData = {
+                    domain: this.domain,
+                    method: 'batch',
+                    bxData: payload
+                };
+                const response = await backAPI.service<IBitrixBatchResponseResult>(
+                    EBACK_ENDPOINT.BITRIX_METHOD,
+                    API_METHOD.POST, 
+                    bxReqHookData
+                )
+                const result = response.data as IBitrixBatchResponseResult
+                debugger
+                // return result.data
+            // }
+            // const response = await this.bx.callBatch(payload) as Result;
+            // const responseResult = response.getData();
+            // const result = responseResult.data.result as IBitrixBatchResponseResult;
             // this.logger.log(`Batch request successful: ${JSON.stringify(result)}`);
             // this.logger.log(`Domain: ${this.domain}`);
-            const batchResultsCount = Object.keys(result.result).length;
+            const batchResultsCount = Object.keys(result?.result).length;
             this.logger.log(`Batch results count: ${batchResultsCount}`);
             await this.handleBatchErrors(result, 'executeBatch');
             return result;
         } catch (err) {
             const error = err as AxiosError;
             const msg = error?.response?.data || error;
-            // this.logger.error(`Execute batch failed: ${JSON.stringify(msg)}`);
+            this.logger.error(`Execute batch failed: ${JSON.stringify(msg)}`);
             await this.telegramBot.sendMessageAdminError(
                 `Execute batch failed: ${JSON.stringify(error)}`
             );

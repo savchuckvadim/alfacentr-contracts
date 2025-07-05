@@ -5,7 +5,7 @@ import { appActions } from "./AppSlice";
 import { AppDispatch, AppGetState, AppThunk, initWSClient } from "./store";
 import { WSClient } from "@workspace/ws";
 import { socketThunk } from "./queue-ws-ping-test/QueueWsPingListener";
-import { bitrixInit } from "../lib/bitrix-init/bitrix-init.util";
+import { bitrixBatchInit, bitrixInit } from "../lib/bitrix-init/bitrix-init.util";
 import { fetchParticipants } from "@/modules/entities/participant/model/ParticipantThunk";
 import { Bitrix } from "@workspace/bitrix";
 import { fetchProducts } from "@/modules/entities/product/model/ProductThunk";
@@ -39,6 +39,7 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
       console.log(user);
 
       const { deal, company } = await bitrixInit() || {}
+      await bitrixBatchInit()
       if (deal && company) {
         Promise.all([
           dispatch(fetchParticipants(deal.ID.toString())),
