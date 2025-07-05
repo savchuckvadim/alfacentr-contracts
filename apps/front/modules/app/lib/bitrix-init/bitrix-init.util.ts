@@ -64,7 +64,7 @@ export const bitrixBatchInit = async (): Promise<void> => {
         'dealGet',
         dealId
     )
-    const companyId = `$result[dealGet.COMPANY_ID]`
+    const companyId = `$result[dealGet][COMPANY_ID]`
     bitrix.batch.company.get(
         'companyGet',
         companyId

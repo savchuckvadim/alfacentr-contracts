@@ -23,7 +23,7 @@ export class BitrixBatchBackApiHelper {
     public async callBatchWithConcurrency(limit = 3): Promise<any> {
         this.logger.log(`Calling batch async with concurrency limit: ${limit}`);
         const results: any = {};
-
+        debugger
 
         // Запускаем до `limit` параллельных воркеров
         await Promise.all(Array(limit).fill(0).map(() => this.runBatch(results)));
@@ -78,7 +78,7 @@ export class BitrixBatchBackApiHelper {
             const start = index;
             index += 50;
             const batch = commands.slice(start, index);
-
+            debugger
             const result = await this.executeBatch(batch);
 
             if (result && typeof result === 'object' && 'result' in result) {

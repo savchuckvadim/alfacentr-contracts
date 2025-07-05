@@ -335,6 +335,7 @@ export class BitrixBaseApi {
             this.cmdBatch = {};
             return result
         }
+        debugger
         const devBatchService = new BitrixBatchBackApiHelper(this.telegramBot, this.domain, this.user, this.cmdBatch)
         const result = await devBatchService.callBatchWithConcurrency()
         console.log("RESULT BACK CALL BATCH")
