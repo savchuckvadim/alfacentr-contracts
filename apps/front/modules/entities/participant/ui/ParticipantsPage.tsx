@@ -16,11 +16,11 @@ export function ParticipantsPage() {
   const { items: participants, loading, error } = useSelector((state: RootState) => state.participant);
   const { deal } = useSelector((state: RootState) => state.app.bitrix);
 
-  useEffect(() => {
-    if (deal?.ID) {
-      dispatch(fetchParticipants(deal.ID.toString()));
-    }
-  }, [dispatch, deal?.ID]);
+  // useEffect(() => {
+  //   // if (deal?.ID) {
+  //   //   dispatch(fetchParticipants(deal.ID.toString()));
+  //   // }
+  // }, [dispatch, deal?.ID]);
 
   const handleEdit = (participant: any) => {
     console.log('Редактирование участника:', participant);

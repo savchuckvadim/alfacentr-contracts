@@ -21,7 +21,7 @@ export const documentGenerate = createAsyncThunk<
         const dealId = state.app.bitrix.deal?.ID
 
         const bitrix = Bitrix.getService()
-        debugger
+        
         const generateDocumentData = {
             templateId: 118,
             entityId: dealId,
@@ -36,9 +36,9 @@ export const documentGenerate = createAsyncThunk<
               
             }
         }
-        debugger
+        
         const response = await bitrix.api.call<number>('crm.documentgenerator.document.add', generateDocumentData)
-        debugger
+        
         return response.result
     })
 

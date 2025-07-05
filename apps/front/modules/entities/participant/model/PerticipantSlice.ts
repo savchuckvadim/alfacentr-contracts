@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IParticipant } from "@alfa/entities";
-import { fetchParticipants } from "./ParticipantThunk";
+// import { fetchParticipants } from "./ParticipantThunk";
 import { handleSliceError } from "@/modules/app/lib/thunk-error-handler";
+import { fetchParticipants } from "./ParticipantThunk";
 
 export type IParticipantState = {
     items: IParticipant[]

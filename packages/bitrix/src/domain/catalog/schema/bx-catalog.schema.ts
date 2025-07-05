@@ -6,14 +6,14 @@ export type BxCatalogSchema = {
     [EBxMethod.GET]: {
         request: {
             id: number | string;
-            select?: Partial<IBXProduct>;
+            select?: string[];
         };
         response: {product: IBXProduct};
     };
     [EBxMethod.LIST]: {
         request:  {
             filter: Partial<IBXProduct>;
-            select: (keyof IBXProduct)[];
+            select?: string[];
             start: -1;
         };
         response: {products: IBXProduct[]};

@@ -244,10 +244,12 @@ export class BitrixBaseApi {
                 method,
                 bxData: data,
             };
+            debugger
             const backReponse = await backAPI.service<IBitrixResponse<TBXResponse<NAMESPACE, ENTITY, METHOD>>>(
                 EBACK_ENDPOINT.BITRIX_METHOD,
                 API_METHOD.POST, bxReqHookData
             );
+            debugger
             result = backReponse?.data || null
             console.log("BACK RESPONSE CALL METHOD");
             console.log(result);
@@ -324,7 +326,7 @@ export class BitrixBaseApi {
     * @returns
     * Возвращает объект с ключами cmd и результатом в dev - всех пачек во фрейме не больше 50
     */
-    public async callBatch(): Promise<IBitrixBatchResponseResult[]> {
+    public async callBatch(): Promise<any> {
         if (this.inFrame) {
 
             const bxResponse = await this.bx.callBatch(this.cmdBatch, false) as Result
@@ -335,7 +337,7 @@ export class BitrixBaseApi {
             this.cmdBatch = {};
             return result
         }
-        debugger
+        
         const devBatchService = new BitrixBatchBackApiHelper(this.telegramBot, this.domain, this.user, this.cmdBatch)
         const result = await devBatchService.callBatchWithConcurrency()
         console.log("RESULT BACK CALL BATCH")
@@ -361,7 +363,7 @@ export class BitrixBaseApi {
     //             const result = await this.executeBatch(batch);
 
     //             if (result && typeof result === 'object' && 'result' in result) {
-    //                 debugger
+    //                 
     //                 for (const key in result.result) {
     //                     results[key] = result.result[key]
     //                 }
@@ -410,7 +412,7 @@ export class BitrixBaseApi {
     //             bxReqHookData
     //         )
     //         const result = response.data.result as IBitrixBatchResponseResult
-    //         debugger
+    //         
     //         // return result.data
     //         // }
     //         // const response = await this.bx.callBatch(payload) as Result;

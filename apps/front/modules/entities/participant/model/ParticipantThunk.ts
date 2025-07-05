@@ -6,6 +6,7 @@ import { validateApiResponse } from "@/modules/app/lib/thunk-error-handler";
 import { Bitrix } from "@bitrix/bitrix";
 import { IBXItem } from "@workspace/bitrix";
 import { AppDispatch, RootState, ThunkExtraArgument } from "@/modules/app/model/store";
+import { BxParticipantService } from "../lib/hook/service/bx-participant.service";
 
 export const fetchParticipants = createAsyncThunk<
     IParticipant[],
@@ -18,29 +19,37 @@ export const fetchParticipants = createAsyncThunk<
 >('participant/fetchParticipants',
     async (dealId: string, { rejectWithValue }) => {
         try {
-            
             const bitrix = Bitrix.getService()
-            const response = await bitrix.item.list(
-                EntityTypeIdEnum.PARTICIPANT as unknown as string,
-                {
-                    parentId2: dealId
-                }
-            )
-
-            // Проверяем различные случаи ошибок с помощью утилиты
-            const validResponse = validateApiResponse(response, 'Ошибка получения участников: пустой ответ от сервера')
+            const partisipantService = new BxParticipantService()
+            await partisipantService.getParticipantsComand(dealId)
+            const totalBxResponse = await bitrix.api.callBatch()
+            const validResponse = validateApiResponse(totalBxResponse.participants, 'Ошибка получения участников: пустой ответ от сервера')
             const validItems = validateApiResponse(validResponse.items, 'Ошибка получения участников: отсутствуют данные в ответе')
-
-            const typedParticipant = validItems.map((participant: IBXItem) => {
-                return {
-                    ...participant,
-                    entityTypeId: EntityTypeIdEnum.PARTICIPANT as unknown as string
-                } as unknown as IAlfaParticipantSmartItem
-            }) as IAlfaParticipantSmartItem[]
-
-            const participants = typedParticipant.map((participant: IAlfaParticipantSmartItem) => getParticipant(participant))
-            console.log("PARTICIPANTS ALFA", participants)
+            const items = validItems.items
+            const participants = partisipantService.getParticipantsFrommItems(items)
             
+            // const bitrix = Bitrix.getService()
+            // const response = await bitrix.item.list(
+            //     EntityTypeIdEnum.PARTICIPANT as unknown as string,
+            //     {
+            //         parentId2: dealId
+            //     }
+            // )
+
+            // // Проверяем различные случаи ошибок с помощью утилиты
+            // const validResponse = validateApiResponse(response, 'Ошибка получения участников: пустой ответ от сервера')
+            // const validItems = validateApiResponse(validResponse.items, 'Ошибка получения участников: отсутствуют данные в ответе')
+
+            // const typedParticipant = validItems.map((participant: IBXItem) => {
+            //     return {
+            //         ...participant,
+            //         entityTypeId: EntityTypeIdEnum.PARTICIPANT as unknown as string
+            //     } as unknown as IAlfaParticipantSmartItem
+            // }) as IAlfaParticipantSmartItem[]
+
+            // const participants = typedParticipant.map((participant: IAlfaParticipantSmartItem) => getParticipant(participant))
+            // console.log("PARTICIPANTS ALFA", participants)
+
             return participants;
         } catch (error) {
             // Обрабатываем сетевые ошибки и другие исключения
@@ -64,16 +73,16 @@ export const fetchParticipants = createAsyncThunk<
 //         try {
 //             const { participantId, data } = payload;
 //             const bitrix = Bitrix.getService();
-            
+
 //             // Здесь будет логика обновления участника через Bitrix API
 //             console.log('Обновление участника:', participantId, data);
-            
+
 //             // Имитация успешного обновления
 //             const updatedParticipant = {
 //                 id: participantId,
 //                 ...data
 //             } as IParticipant;
-            
+
 //             return updatedParticipant;
 //         } catch (error) {
 //             throw new Error(error instanceof Error ? error.message : 'Неизвестная ошибка при обновлении участника');
@@ -94,10 +103,10 @@ export const deleteParticipant = createAsyncThunk<
     async (participantId, { dispatch, getState, extra }) => {
         try {
             const bitrix = Bitrix.getService();
-            
+
             // Здесь будет логика удаления участника через Bitrix API
             console.log('Удаление участника:', participantId);
-            
+
             // Имитация успешного удаления
             return participantId;
         } catch (error) {

@@ -15,11 +15,11 @@ export class BxProductService {
     init(api: BitrixBaseApi) {
         this.repo = new BxProductRepository(api);
     }
-    async get(id: number | string, select?: Partial<IBXProduct>): Promise<IBXProduct | null> {
-        return (await this.repo.get(id, select)).result.product;
+    async get(id: number | string, select?: string[]): Promise<IBXProduct | null> {
+        return (await this.repo.get(id, select as string[])).result.product;
     }
 
-    async getList(filter: Partial<IBXProduct>, select: (keyof IBXProduct)[]): Promise<IBXProduct[] | null> {
-        return (await this.repo.getList(filter, select)).result.products;
+    async getList(filter: Partial<IBXProduct>, select: string[]): Promise<IBXProduct[] | null> {
+        return (await this.repo.getList(filter, select as string[])).result.products;
     }
 }

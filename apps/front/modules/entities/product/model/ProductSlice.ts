@@ -1,7 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-import { fetchProducts } from "./ProductThunk";
-import { handleSliceError } from "@/modules/app/lib/thunk-error-handler";
+// import { fetchProducts } from "./ProductThunk";
 import { IBXProduct } from "@bitrix/domain/catalog/interface/bx-product.interface";
 import { IBXProductRowRow } from "@bitrix/domain/crm/product-row/interface/bx-product-row.interface";
 import { BitrixOwnerType } from "@bitrix/domain/enums/bitrix-constants.enum";
@@ -45,17 +43,20 @@ const productSlice = createSlice({
         setEditableProduct: (state, action: PayloadAction<BxProductRowWithProduct | null>) => {
             state.editable = action.payload
         },
+        setFetchedProducts: (state, action: PayloadAction<BxProductRowWithProduct[]>) => {
+            state.items = action.payload
+        }
        
     },
-    extraReducers: (builder) => {
-        // fetchProducts
-        builder.addCase(fetchProducts.pending, (state: IProductState) => {
-            state.loading = true
-            state.error = null
-        })
+    // extraReducers: (builder) => {
+    //     // fetchProducts
+    //     builder.addCase(fetchProducts.pending, (state: IProductState) => {
+    //         state.loading = true
+    //         state.error = null
+    //     })
         // builder.addCase(fetchProducts.fulfilled, (state: IProductState, action: PayloadAction<BxProductRowWithProduct[]>) => {
         //     state.items = action.payload
-        //     debugger
+        //     
         //     state.loading = false
         //     state.error = null
         // })
@@ -111,13 +112,13 @@ const productSlice = createSlice({
         //     state.loading = false
         //     state.error = handleSliceError(action, 'Ошибка удаления продукта')
         // })
-    }
+    // }
 })
 
 export const {
     setProducts,
     setEditableProduct,
-  
+    setFetchedProducts,
 } = productSlice.actions
 
 export const productReducer = productSlice.reducer 

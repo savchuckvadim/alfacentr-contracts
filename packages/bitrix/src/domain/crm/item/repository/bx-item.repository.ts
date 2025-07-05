@@ -40,9 +40,26 @@ export class BxItemRepository {
             { entityTypeId, filter, select }
         );
     }
-
+    listBtch(cmdCode: string, entityTypeId: string, filter?: Partial<IBXItem>, select?: string[]) {
+        return this.bxApi.addCmdBatchType(
+            cmdCode,
+            EBxNamespace.CRM,
+            EBXEntity.ITEM,
+            EBxMethod.LIST,
+            { entityTypeId, filter, select }
+        );
+    }
     async get(id: number | string, entityTypeId: string, select?: string[]) {
         return this.bxApi.callType(
+            EBxNamespace.CRM,
+            EBXEntity.ITEM,
+            EBxMethod.GET,
+            { id, entityTypeId, select }
+        );
+    }
+    getBtch(cmdCode: string, id: number | string, entityTypeId: string, select?: string[]) {
+        return this.bxApi.addCmdBatchType(
+            cmdCode,
             EBxNamespace.CRM,
             EBXEntity.ITEM,
             EBxMethod.GET,
@@ -52,6 +69,15 @@ export class BxItemRepository {
 
     async add(entityTypeId: string, data: Partial<IBXItem>) {
         return this.bxApi.callType(
+            EBxNamespace.CRM,
+            EBXEntity.ITEM,
+            EBxMethod.ADD,
+            { entityTypeId, fields: data }
+        );
+    }
+    addBtch(cmdCode: string, entityTypeId: string, data: Partial<IBXItem>) {
+        return this.bxApi.addCmdBatchType(
+            cmdCode,
             EBxNamespace.CRM,
             EBXEntity.ITEM,
             EBxMethod.ADD,

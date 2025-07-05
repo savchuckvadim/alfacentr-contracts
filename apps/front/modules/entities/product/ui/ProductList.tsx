@@ -1,23 +1,24 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts } from '../model/ProductThunk';
+import React from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { fetchProducts } from '../model/ProductThunk';
 import { IProductState } from '../model/ProductSlice';
+import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
 
 interface ProductListProps {
   dealId: string;
 }
 
 export const ProductList: React.FC<ProductListProps> = ({ dealId }) => {
-  const dispatch = useDispatch();
-  const { items: products, loading, error } = useSelector((state: any) => state.product as IProductState);
+  const dispatch = useAppDispatch();
+  const { items: products, loading, error } = useAppSelector((state) => state.product as IProductState);
 
-  useEffect(() => {
-    if (dealId) {
-      dispatch(fetchProducts(dealId) as any);
-    }
-  }, [dealId, dispatch]);
+  // useEffect(() => {
+  //   if (dealId) {
+  //     dispatch(fetchProducts(dealId) as any);
+  //   }
+  // }, [dealId, dispatch]);
 
   if (loading) {
     return <div>Загрузка продуктов...</div>;
