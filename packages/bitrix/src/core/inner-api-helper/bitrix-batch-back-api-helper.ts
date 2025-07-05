@@ -120,7 +120,7 @@ export class BitrixBatchBackApiHelper {
                 API_METHOD.POST,
                 bxReqHookData
             )
-            const result = response.data.result as IBitrixBatchResponseResult
+            const result = response.data?.result as IBitrixBatchResponseResult
             debugger
 
             const batchResultsCount = Object.keys(result?.result).length;
