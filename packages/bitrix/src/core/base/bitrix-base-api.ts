@@ -292,6 +292,11 @@ export class BitrixBaseApi {
 
 
     }
+    /**
+     * 
+     * @returns
+     * Возвращает массив ответов от битрикса без cmd key всех пачек > 50
+     */
     public async callBatchByChunk(): Promise<IBitrixBatchResponseResult[]> {
         if (this.inFrame) {
 
@@ -313,7 +318,12 @@ export class BitrixBaseApi {
         this.cmdBatch = {};
         return result
     }
-    
+
+    /**
+    * 
+    * @returns
+    * Возвращает объект с ключами cmd и результатом в dev - всех пачек во фрейме не больше 50
+    */
     public async callBatch(): Promise<IBitrixBatchResponseResult[]> {
         if (this.inFrame) {
 
@@ -446,7 +456,7 @@ export class BitrixBaseApi {
     //     const errorEntries = Object.entries(result.result_error);
     //     for (const [key, error] of errorEntries) {
     //         const message = `[${context}] Ошибка в ${key}: ${JSON.stringify(error)}
-      
+
     //   Domain: ${this.domain}
     //   `;
     //         this.logger.log(`result_error: ${message}`);

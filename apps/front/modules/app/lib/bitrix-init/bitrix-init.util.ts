@@ -60,12 +60,15 @@ export const bitrixBatchInit = async (): Promise<void> => {
     if (!dealId) {
         throw new Error('Deal ID not found in placement options')
     }
-    for (let i = 0; i < 100; i++) {
-        bitrix.batch.deal.get(
-            'dealGet' + i,
-            dealId
-        )
-    }
+    bitrix.batch.deal.get(
+        'dealGet',
+        dealId
+    )
+    const companyId = `$result[dealGet.COMPANY_ID]`
+    bitrix.batch.company.get(
+        'companyGet',
+        companyId
+    )
     const cmdBatch = bitrix.api.getCmdBatch()
     console.log(cmdBatch)
     debugger
@@ -81,7 +84,7 @@ export const bitrixBatchInit = async (): Promise<void> => {
     }
 
     const totalChankBxResponse = await bitrix.api.callBatchByChunk()
-    console.log("TOTAL BX RESPONSE")
+    console.log("TOTAL CHANK BX RESPONSE")
     console.log(totalChankBxResponse)
 
 
