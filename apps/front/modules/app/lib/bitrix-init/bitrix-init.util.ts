@@ -69,7 +69,7 @@ export const bitrixBatchInit = async (): Promise<void> => {
     const cmdBatch = bitrix.api.getCmdBatch()
     console.log(cmdBatch)
     debugger
-    const totalBxResponse = await bitrix.api.callBatchWithConcurrency()
+    const totalBxResponse = await bitrix.api.callBatch()
     console.log("TOTAL BX RESPONSE")
     console.log(totalBxResponse)
 
