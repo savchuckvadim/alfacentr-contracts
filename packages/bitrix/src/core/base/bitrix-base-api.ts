@@ -12,6 +12,7 @@ import { AxiosError } from 'axios';
 import { IBXUser } from '../../domain/interfaces/bitrix.interface';
 import { Placement, PlacementPlace } from '../../../../bx/src/type/placement-type';
 import { CustomPlacement } from '@bitrix/domain/interfaces/bitrix-placement.intreface';
+import { BitrixBatchBackApiHelper } from '../inner-api-helper/bitrix-batch-back-api-helper';
 
 
 export class BitrixBaseApi {
@@ -291,108 +292,136 @@ export class BitrixBaseApi {
 
 
     }
-
-    async callBatch(): Promise<IBitrixBatchResponseResult[]> {
+    public async callBatchByChunk(): Promise<IBitrixBatchResponseResult[]> {
         if (this.inFrame) {
-            
+
+            const commands = [];
+            for (const key in this.cmdBatch) {
+                commands.push(this.cmdBatch[key])
+            }
+            const bxResponse = await this.bx.callBatchByChunk(commands, false) as Result
+            const result = bxResponse.getData()
+            console.log("BITRIX RESPONSE CALL BATCH")
+            console.log(result)
+            this.cmdBatch = {};
+            return result
+        }
+        const devBatchService = new BitrixBatchBackApiHelper(this.telegramBot, this.domain, this.user, this.cmdBatch)
+        const result = await devBatchService.callBatchWithConcurrency()
+        console.log("RESULT BACK CALL BATCH")
+        console.log(result)
+        this.cmdBatch = {};
+        return result
+    }
+    
+    public async callBatch(): Promise<IBitrixBatchResponseResult[]> {
+        if (this.inFrame) {
+
             const bxResponse = await this.bx.callBatch(this.cmdBatch, false) as Result
             const result = bxResponse.getData()
             console.log("BITRIX RESPONSE CALL BATCH")
             console.log(result)
+
+            this.cmdBatch = {};
             return result
         }
-        const result = await this.callBatchWithConcurrency()
+        const devBatchService = new BitrixBatchBackApiHelper(this.telegramBot, this.domain, this.user, this.cmdBatch)
+        const result = await devBatchService.callBatchWithConcurrency()
         console.log("RESULT BACK CALL BATCH")
         console.log(result)
+        this.cmdBatch = {};
         return result
     }
 
-    async callBatchWithConcurrency(limit = 3): Promise<IBitrixBatchResponseResult[]> {
-        this.logger.log(`Calling batch async with concurrency limit: ${limit}`);
+    // private async callBatchWithConcurrency(limit = 3): Promise<any> {
+    //     this.logger.log(`Calling batch async with concurrency limit: ${limit}`);
 
-        const commands = Object.entries(this.cmdBatch);
-        const results: IBitrixBatchResponseResult[] = [];
-debugger
-        let index = 0;
+    //     const commands = Object.entries(this.cmdBatch);
+    //     const results: any = {};
 
-        const runBatch = async (): Promise<void> => {
-            while (index < commands.length) {
-                const start = index;
-                index += 50;
-                const batch = commands.slice(start, index);
-                debugger
-                const result = await this.executeBatch(batch);
+    //     let index = 0;
 
-                if (result && typeof result === 'object' && 'result' in result) {
-                    results.push(result);
-                } else {
-                    this.logger.warn(`Skipping failed batch at index ${start}`);
-                }
-                // 💤 Задержка между вызовами
-                debugger
-                await this.sleep(100);
-            }
-        };
+    //     const runBatch = async (): Promise<void> => {
+    //         while (index < commands.length) {
+    //             const start = index;
+    //             index += 50;
+    //             const batch = commands.slice(start, index);
 
-        // Запускаем до `limit` параллельных воркеров
-        await Promise.all(Array(limit).fill(0).map(() => runBatch()));
+    //             const result = await this.executeBatch(batch);
 
-        this.cmdBatch = {};
-        return results;
-    }
+    //             if (result && typeof result === 'object' && 'result' in result) {
+    //                 debugger
+    //                 for (const key in result.result) {
+    //                     results[key] = result.result[key]
+    //                 }
+    //             } else {
+    //                 this.logger.warn(`Skipping failed batch at index ${start}`);
+    //             }
+    //             // 💤 Задержка между вызовами
 
-    private async executeBatch(batch: [string, { method: string, params: any }][]) {
-        // this.logger.log(`Executing batch of ${batch.length} commands`);
-        const cmd: Record<string, string> = {};
-        for (const [key, val] of batch) {
-            
-            const url = this.dictToQueryString(val.method, val.params);
-            cmd[key] = url;
-        }
+    //             await this.sleep(100);
+    //         }
+    //     };
 
-        const payload = { halt: 0, cmd };
+    //     // Запускаем до `limit` параллельных воркеров
+    //     await Promise.all(Array(limit).fill(0).map(() => runBatch()));
+
+    //     this.cmdBatch = {};
+    //     return results;
+    // }
+
+    // private async executeBatch(batch: [string, { method: string, params: any }][]) {
+    //     // this.logger.log(`Executing batch of ${batch.length} commands`);
+    //     const cmd: Record<string, string> = {};
+    //     for (const [key, val] of batch) {
+
+    //         const url = this.dictToQueryString(val.method, val.params);
+    //         cmd[key] = url;
+    //     }
+
+    //     const payload = { halt: 0, cmd };
 
 
-        try {
-            this.logger.log(`Making batch request to: ${this.domain}`);
-            // const response = await firstValueFrom(
-            //     this.httpService.post(url, payload, this.axiosOptions),
-            // ) as AxiosResponse<IBitrixBatchResponse>;
-            // if (!this.inFrame) {
-                const bxReqHookData = {
-                    domain: this.domain,
-                    method: 'batch',
-                    bxData: payload
-                };
-                const response = await backAPI.service<IBitrixBatchResponseResult>(
-                    EBACK_ENDPOINT.BITRIX_METHOD,
-                    API_METHOD.POST, 
-                    bxReqHookData
-                )
-                const result = response.data as IBitrixBatchResponseResult
-                debugger
-                // return result.data
-            // }
-            // const response = await this.bx.callBatch(payload) as Result;
-            // const responseResult = response.getData();
-            // const result = responseResult.data.result as IBitrixBatchResponseResult;
-            // this.logger.log(`Batch request successful: ${JSON.stringify(result)}`);
-            // this.logger.log(`Domain: ${this.domain}`);
-            const batchResultsCount = Object.keys(result?.result).length;
-            this.logger.log(`Batch results count: ${batchResultsCount}`);
-            await this.handleBatchErrors(result, 'executeBatch');
-            return result;
-        } catch (err) {
-            const error = err as AxiosError;
-            const msg = error?.response?.data || error;
-            this.logger.error(`Execute batch failed: ${JSON.stringify(msg)}`);
-            await this.telegramBot.sendMessageAdminError(
-                `Execute batch failed: ${JSON.stringify(error)}`
-            );
-            return error;
-        }
-    }
-    clearResult(result: IBitrixBatchResponseResult[]) {
+    //     try {
+    //         this.logger.log(`Making batch request to: ${this.domain}`);
+    //         // const response = await firstValueFrom(
+    //         //     this.httpService.post(url, payload, this.axiosOptions),
+    //         // ) as AxiosResponse<IBitrixBatchResponse>;
+    //         // if (!this.inFrame) {
+    //         const bxReqHookData = {
+    //             domain: this.domain,
+    //             method: 'batch',
+    //             bxData: payload
+    //         };
+    //         const response = await backAPI.service<{ result: IBitrixBatchResponseResult }>(
+    //             EBACK_ENDPOINT.BITRIX_METHOD,
+    //             API_METHOD.POST,
+    //             bxReqHookData
+    //         )
+    //         const result = response.data.result as IBitrixBatchResponseResult
+    //         debugger
+    //         // return result.data
+    //         // }
+    //         // const response = await this.bx.callBatch(payload) as Result;
+    //         // const responseResult = response.getData();
+    //         // const result = responseResult.data.result as IBitrixBatchResponseResult;
+    //         // this.logger.log(`Batch request successful: ${JSON.stringify(result)}`);
+    //         // this.logger.log(`Domain: ${this.domain}`);
+    //         const batchResultsCount = Object.keys(result?.result).length;
+    //         this.logger.log(`Batch results count: ${batchResultsCount}`);
+    //         await this.handleBatchErrors(result, 'executeBatch');
+    //         return result;
+    //     } catch (err) {
+    //         const error = err as AxiosError;
+    //         const msg = error?.response?.data || error;
+    //         this.logger.error(`Execute batch failed: ${JSON.stringify(msg)}`);
+    //         await this.telegramBot.sendMessageAdminError(
+    //             `Execute batch failed: ${JSON.stringify(error)}`
+    //         );
+    //         return error;
+    //     }
+    // }
+    private clearResult(result: IBitrixBatchResponseResult[]) {
         const results = [] as any[]
         result.map(res => {
             if (Object.keys(res.result).length > 0) {
@@ -404,31 +433,31 @@ debugger
         })
         return results
     }
-    private async handleBatchErrors(result: IBitrixBatchResponseResult, context = 'Batch error'): Promise<void> {
-        if (!result?.result_error) return;
-        this.logger.log(`
-      success
-      Domain: 
-      ${this.domain}
-      `);
+    // private async handleBatchErrors(result: IBitrixBatchResponseResult, context = 'Batch error'): Promise<void> {
+    //     if (!result?.result_error) return;
+    //     this.logger.log(`
+    //   success
+    //   Domain: 
+    //   ${this.domain}
+    //   `);
 
 
 
-        const errorEntries = Object.entries(result.result_error);
-        for (const [key, error] of errorEntries) {
-            const message = `[${context}] Ошибка в ${key}: ${JSON.stringify(error)}
+    //     const errorEntries = Object.entries(result.result_error);
+    //     for (const [key, error] of errorEntries) {
+    //         const message = `[${context}] Ошибка в ${key}: ${JSON.stringify(error)}
       
-      Domain: ${this.domain}
-      `;
-            this.logger.log(`result_error: ${message}`);
-            await this.telegramBot.sendMessageAdminError(message);
+    //   Domain: ${this.domain}
+    //   `;
+    //         this.logger.log(`result_error: ${message}`);
+    //         await this.telegramBot.sendMessageAdminError(message);
 
-        }
-    }
+    //     }
+    // }
 
-    private async sleep(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    // private async sleep(ms: number): Promise<void> {
+    //     return new Promise(resolve => setTimeout(resolve, ms));
+    // }
 
 }
 

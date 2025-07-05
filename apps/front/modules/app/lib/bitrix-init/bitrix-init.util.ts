@@ -73,5 +73,16 @@ export const bitrixBatchInit = async (): Promise<void> => {
     console.log("TOTAL BX RESPONSE")
     console.log(totalBxResponse)
 
+    for (let i = 0; i < 100; i++) {
+        bitrix.batch.deal.get(
+            'dealGet' + i,
+            dealId
+        )
+    }
+
+    const totalChankBxResponse = await bitrix.api.callBatchByChunk()
+    console.log("TOTAL BX RESPONSE")
+    console.log(totalChankBxResponse)
+
 
 }
