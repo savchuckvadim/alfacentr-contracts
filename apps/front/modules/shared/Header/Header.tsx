@@ -32,12 +32,12 @@ export function Header({ className }: HeaderProps) {
             <Link href="/participants" className="text-gray-600 hover:text-gray-900 transition-colors">
               Участники
             </Link>
-            <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Проекты
-            </a>
-            <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Контакты
-            </a>
+            <Link href="/products" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Семинары
+            </Link>
+            <Link href="/products" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Резвизиты
+            </Link>
           </nav>
 
           {/* Мобильное меню */}

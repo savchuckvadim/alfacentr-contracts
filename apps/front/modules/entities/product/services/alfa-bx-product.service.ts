@@ -3,8 +3,9 @@ import { bxProductData } from "@alfa/entities";
 import { BitrixService } from "@workspace/bitrix";
 import { BitrixOwnerType } from "@workspace/bitrix/";
 import { ListProductRowDto } from "@bitrix/domain/crm/product-row/dto/list-product-row.dto";
-import { BxProductRowWithProduct } from "../model/ProductSlice";
+import { BxProductRowWithProduct, IAlfaProduct } from "../model/ProductSlice";
 import { IBitrixBatchResponseResult } from "@bitrix/core/interface/bitrix-api.intterface";
+import { getProductsWithFields } from "../lib/get-products-with-fields";
 
 
 
@@ -47,7 +48,9 @@ export class AlfaBxProductService {
             "=ownerId": dealId
 
         }
+        debugger
         const response = await this.bitrix.productRow.list(getProductRowsData)
+        debugger
         return response.productRows
     }
 
@@ -82,8 +85,8 @@ export class AlfaBxProductService {
 
      this.bitrix.batch.product.get(batchKey, productId, select)
     }
-    private prepareRowToRowWithProduct(rows: IBXProductRowRow[], responses: IBitrixBatchResponseResult[]): BxProductRowWithProduct[] {
-        const result: BxProductRowWithProduct[] = []
+    private prepareRowToRowWithProduct(rows: IBXProductRowRow[], responses: IBitrixBatchResponseResult[]): IAlfaProduct[] {
+        const products: BxProductRowWithProduct[] = []
         rows.map((row, index) => {
             let product: IBXProduct | null = null
             responses.map(response => {
@@ -96,9 +99,10 @@ export class AlfaBxProductService {
                     ...row,
                     product: product as IBXProduct
                 } as BxProductRowWithProduct
-                result.push(resultRow)
+                products.push(resultRow)
             }
         })
-        return result
+        const alfaProducts = getProductsWithFields(products)
+        return alfaProducts
     }
 }

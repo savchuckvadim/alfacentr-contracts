@@ -23,7 +23,7 @@ import { IParticipant } from "@alfa/entities"
 export interface IBitrixinitResult {
     deal: IBXDeal
     company: IBXCompany
-    rows: BxProductRowWithProduct[]
+    // rows: BxProductRowWithProduct[]
     participants: IParticipant[]
 }
 interface IBitrixinitResponse {
@@ -35,14 +35,14 @@ interface IBitrixinitResponse {
 }
 export class BxInitService {
     private bitrix: BitrixService
-    private productService: AlfaBxProductService
+    // private productService: AlfaBxProductService
     private dealCompanyService: BxDealCompanyService
     private participantService: BxParticipantService
     constructor(
 
     ) {
         this.bitrix = Bitrix.getService()
-        this.productService = new AlfaBxProductService()
+        // this.productService = new AlfaBxProductService()
         this.dealCompanyService = new BxDealCompanyService()
         this.participantService = new BxParticipantService()
     }
@@ -55,14 +55,14 @@ export class BxInitService {
         this.dealCompanyService.getDealAndCompanyComand(Number(dealId))
         this.participantService.getParticipantsComand(dealId.toString())
         const totalBxResponse = await this.bitrix.api.callBatch() as IBitrixinitResponse
-        const { rows } = await this.productService.getDealProductRowsWithProducts(dealId.toString())
+        // const { rows } = await this.productService.getDealProductRowsWithProducts(dealId.toString())
 
 
-        console.log("ROWS WITH PRODUCTS")
-        console.log(rows)
+        // console.log("ROWS WITH PRODUCTS")
+        // console.log(rows)
         const { company, deal, items } = this.prepare(totalBxResponse)
         const participants = this.participantService.getParticipantsFrommItems(items)
-        return { deal, company, rows, participants } as IBitrixinitResult
+        return { deal, company,  participants } as IBitrixinitResult
     }
 
     private getPlacement() {

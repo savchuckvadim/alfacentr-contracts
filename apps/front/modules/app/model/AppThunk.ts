@@ -7,7 +7,7 @@ import { WSClient } from "@workspace/ws";
 import { socketThunk } from "./queue-ws-ping-test/QueueWsPingListener";
 import { bitrixInit } from "../lib/bitrix-init/bitrix-init.util";
 import { Bitrix } from "@workspace/bitrix";
-import { setFetchedProducts } from "@/modules/entities/product/";
+import { fetchProducts, setFetchedProducts } from "@/modules/entities/product/";
 import { setParticipants } from "@/modules/entities";
 
 
@@ -38,12 +38,13 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
 
       console.log(user);
 
-      const { deal, company, rows, participants } = await bitrixInit() || {}
+      const { deal, company, participants } = await bitrixInit() || {}
       debugger
       if (deal && company) {
         Promise.all([
           dispatch(setParticipants(participants)),
-          dispatch(setFetchedProducts(rows))
+          dispatch(fetchProducts(deal.ID.toString()) as any),
+          // dispatch(setFetchedProducts(rows))
         ])
       }
 
