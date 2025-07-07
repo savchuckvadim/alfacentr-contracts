@@ -36,8 +36,13 @@ export const filterFieldItems = (
     })
     .sort((a: RqItem, b: RqItem) => (a.order - b.order))
     .map((rqItem: RqItem) => {
-      rqItem.group = CONTRACT_RQ_GROUP.RQ
-      return rqItem;
+      debugger
+      const group = CONTRACT_RQ_GROUP.RQ
+      debugger
+      return {
+        ...rqItem,
+        group: group
+      };
 
     });
 

@@ -33,8 +33,8 @@ import {
   BXRQState
 } from "./bx-rq-slice";
 import { AppThunkDispatch, AppThunkGetState } from "./bx-rq-thunk-types";
-import { CONTRACT_LTYPE, RQ_TYPE, SupplyTypesType } from "@/type/input-type";
-import { BX_ADDRESS_TYPE } from "@/type/evs-address-type";
+import { CONTRACT_LTYPE, RQ_TYPE, SupplyTypesType } from "../type/input-type";
+import { BX_ADDRESS_TYPE } from "../type/evs-address-type";
 
 export const fetchBXRQ = (
   domain: string,
@@ -58,9 +58,10 @@ export const fetchBXRQ = (
       API_METHOD.POST,
       rqRequestData
     )) as EvsResponse | null;
-
+debugger
     if (rqData) {
       if (rqData.rqs) {
+        debugger
         dispatch(setFetched({ bxrq: rqData.rqs }));
         return;
       }
@@ -192,9 +193,9 @@ export const saveAddress = (
     ) as RQStore | null;
 
     let address_id = addressCreating.id;
-    if (result && result.data.id) {
-      address_id = result.data.id;
-    }
+    // if (result && result.data.id) {
+    //   address_id = result.data.id;
+    // }
 
     const updatedAddress = {
       ...addressCreating,
@@ -285,9 +286,9 @@ export const saveBank = (
     ) as RQStore | null;
 
     let newBankId = bankCreating.id;
-    if (result && result.data.id) {
-      newBankId = result.data.id;
-    }
+    // if (result && result.data.id) {
+    //   newBankId = result.data.id;
+    // }
 
     const updatedBank = {
       ...bankCreating,

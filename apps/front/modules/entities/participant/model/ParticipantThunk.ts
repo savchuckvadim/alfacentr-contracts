@@ -6,7 +6,7 @@ import { validateApiResponse } from "@/modules/app/lib/thunk-error-handler";
 import { Bitrix } from "@bitrix/bitrix";
 import { IBXItem } from "@workspace/bitrix";
 import { AppDispatch, RootState, ThunkExtraArgument } from "@/modules/app/model/store";
-import { BxParticipantService } from "../lib/hook/service/bx-participant.service";
+import { BxParticipantService } from "../lib/service/bx-participant.service";
 
 export const fetchParticipants = createAsyncThunk<
     IParticipant[],

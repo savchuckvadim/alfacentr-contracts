@@ -24,7 +24,7 @@ export interface ARQInput<T = string> {
     includes: Array<RQ_TYPE>;
     supplies?: Array<SupplyTypesType>;
     contractType?: Array<CONTRACT_LTYPE>;
-    group: CONTRACT_RQ_GROUP;
+    group: CONTRACT_RQ_GROUP | null;
     isActive: boolean;
     isDisable: boolean;
     order: number;

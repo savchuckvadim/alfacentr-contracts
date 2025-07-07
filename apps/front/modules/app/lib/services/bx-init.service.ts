@@ -5,7 +5,7 @@ import { Placement } from "@workspace/bx"
 import { BitrixOwnerType, IBXCompany, IBXDeal, IBXItem, IBXProduct, IBXProductRowRow } from "@bitrix/index"
 import { AlfaBxProductService, BxProductRowWithProduct } from "@/modules/entities/product"
 import { BxDealCompanyService } from "./bx-deal-compny.service"
-import { BxParticipantService } from "@/modules/entities/participant/lib/hook/service/bx-participant.service"
+import { BxParticipantService } from "@/modules/entities/participant/lib/service/bx-participant.service"
 import { IParticipant } from "@alfa/entities"
 
 // export interface IDealProductRowWithProduct extends IBXProductRowRow {

@@ -1,8 +1,10 @@
 # Dependencies
+# ✅ Основные каталоги зависимостей
 node_modules
+**/node_modules
 .pnpm-store
-./apps/konstructor/node_modules
-./apps/alfa/node_modules
+./apps/back/node_modules
+./apps/front/node_modules
 ./apps/bitrix/node_modules
 ./apps/kpi-sales/node_modules
 ./apps/web/node_modules
@@ -15,13 +17,20 @@ node_modules
 ./packages/ws/node_modules
 ./packages//typescript-config/node_modules
 
+./packages/alfa/node_modules
+./packages/bitrix/node_modules
 
+
+./apps/back/db_data
+./apps/back/db_dev
+./apps/back/generated
 
 # Build outputs
 dist
 .next
 build
 *.tsbuildinfo
+*.log
 
 # Environment
 .env

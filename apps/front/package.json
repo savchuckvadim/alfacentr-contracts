@@ -20,6 +20,7 @@
     "@workspace/ui": "workspace:*",
     "@workspace/ws": "workspace:*",
     "@alfa/entities": "workspace:*",
+    "@workspace/bx-rq": "workspace:*",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.6.4",
     "install": "^0.13.0",

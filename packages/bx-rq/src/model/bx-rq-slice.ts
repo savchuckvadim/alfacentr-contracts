@@ -48,6 +48,7 @@ export const bxrqSlice = createSlice({
             bxrq: EVSBXRQ
         }>) => {
             const pay = action.payload
+            debugger
             state.rqs = {
                 ...state.rqs,
                 [RQ_TYPE.ORGANIZATION]: pay.bxrq?.[RQ_TYPE.ORGANIZATION] || null,
@@ -56,9 +57,12 @@ export const bxrqSlice = createSlice({
                 current: pay.bxrq.current,
 
             };
+            state.isFetched = true;
+            state.isLoading = false;
             state.errors = null;
         },
         setFetchedStatus: (state: BXRQState, action: PayloadAction<boolean>) => {
+            debugger
             state.isFetched = action.payload;
             state.isLoading = false;
         },
@@ -308,7 +312,7 @@ export const {
 } = bxrqSlice.actions;
 
 // Экспортируем редюсер
-export default bxrqSlice.reducer;
+export const bxrqReducer = bxrqSlice.reducer;
 
 // Селекторы
 export const selectBXRQState = (state: { bxrq: BXRQState }) => state.bxrq;

@@ -9,6 +9,8 @@ import { bitrixInit } from "../lib/bitrix-init/bitrix-init.util";
 import { Bitrix } from "@workspace/bitrix";
 import { fetchProducts, setFetchedProducts } from "@/modules/entities/product/";
 import { setParticipants } from "@/modules/entities";
+import { getDealFieldsData } from "@/modules/entities/deal/lib/utils/get-deal-fields-data.util";
+import { setDealData } from "@/modules/entities/deal/model/DealSlice";
 
 
 export let socket: undefined | WSClient;
@@ -44,6 +46,11 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
         Promise.all([
           dispatch(setParticipants(participants)),
           dispatch(fetchProducts(deal.ID.toString()) as any),
+          dispatch(
+            setDealData(
+              getDealFieldsData(deal)
+            )
+          )
           // dispatch(setFetchedProducts(rows))
         ])
       }

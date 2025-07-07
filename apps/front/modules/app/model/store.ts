@@ -2,7 +2,8 @@ import { Action, AnyAction, combineReducers, configureStore, createListenerMiddl
 import { appReducer } from "./AppSlice";
 import { WSClient } from "@workspace/ws";
 import { errorHandler } from "../lib/error-handler";
-import { participantReducer, productReducer } from "@/modules/entities";
+import { dealReducer, participantReducer, productReducer } from "@/modules/entities";
+import { bxrqReducer } from "@workspace/bx-rq";
 
 
 
@@ -29,6 +30,8 @@ const rootReducer = combineReducers({
   app: appReducer,
   participant: participantReducer,
   product: productReducer,
+  deal: dealReducer,
+  bxrq: bxrqReducer
   //april
 
 

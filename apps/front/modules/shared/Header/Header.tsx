@@ -12,7 +12,7 @@ export function Header({ className }: HeaderProps) {
       "w-full bg-white border-b border-gray-200 shadow-sm",
       className
     )}>
-      <div className="container mx-auto px-4 py-3">
+      <div className="w-full  mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Логотип */}
           <div className="flex items-center space-x-3">
@@ -35,7 +35,7 @@ export function Header({ className }: HeaderProps) {
             <Link href="/products" className="text-gray-600 hover:text-gray-900 transition-colors">
               Семинары
             </Link>
-            <Link href="/products" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/bx-rq" className="text-gray-600 hover:text-gray-900 transition-colors">
               Резвизиты
             </Link>
           </nav>
