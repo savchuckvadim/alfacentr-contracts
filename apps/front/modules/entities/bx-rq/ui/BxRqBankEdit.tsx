@@ -141,7 +141,6 @@ export const BxRqBankEdit = ({
             </CardContent>
           </Card>
         )}
-
         {editingBankId && (
           <BxRqEditModal
             title="Редактирование банковских реквизитов"
