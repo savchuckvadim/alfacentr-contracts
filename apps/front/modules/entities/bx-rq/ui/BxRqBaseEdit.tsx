@@ -12,9 +12,9 @@ interface BxRqBaseEditProps {
   rq: EvsRqItem
   fields: RqItem[]
   isEmpty: boolean
-  currentClientType: RQ_TYPE
-  contractType: CONTRACT_LTYPE
-  supplyType: SupplyTypesType
+  // currentClientType: RQ_TYPE
+  // contractType: CONTRACT_LTYPE
+  // supplyType: SupplyTypesType
   onSave: (fields: RqItem[]) => void
   onCancel: () => void
   isLoading?: boolean
@@ -24,9 +24,9 @@ export const BxRqBaseEdit = ({
   rq,
   fields,
   isEmpty,
-  currentClientType,
-  contractType,
-  supplyType,
+  // currentClientType,
+  // contractType,
+  // supplyType,
   onSave,
   onCancel,
   isLoading = false

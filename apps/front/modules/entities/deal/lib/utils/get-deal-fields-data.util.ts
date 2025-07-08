@@ -21,7 +21,7 @@ export const getDealFieldsData = (deal: IBXDeal): IDealFieldsData[] => {
         }as IDealFieldsData
         fields.push(field)
     }
-    debugger
+    
     return fields;
 
 }

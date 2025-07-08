@@ -48,9 +48,9 @@ export class AlfaBxProductService {
             "=ownerId": dealId
 
         }
-        debugger
+        
         const response = await this.bitrix.productRow.list(getProductRowsData)
-        debugger
+        
         return response.productRows
     }
 

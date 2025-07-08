@@ -4,6 +4,7 @@ import { WSClient } from "@workspace/ws";
 import { errorHandler } from "../lib/error-handler";
 import { dealReducer, participantReducer, productReducer } from "@/modules/entities";
 import { bxrqReducer } from "@workspace/bx-rq";
+import { contractTypeReducer, contractTypeListener, clientTypeListener } from "@/modules/features";
 
 
 
@@ -31,7 +32,10 @@ const rootReducer = combineReducers({
   participant: participantReducer,
   product: productReducer,
   deal: dealReducer,
-  bxrq: bxrqReducer
+  bxrq: bxrqReducer,
+
+  // features
+  contractType: contractTypeReducer,
   //april
 
 
@@ -61,6 +65,9 @@ export const setupStore = () => {
         },
       })
         .concat(errorMiddleware)
+        .concat(listenerMiddleware.middleware)
+        .concat(contractTypeListener.middleware)
+        .concat(clientTypeListener.middleware)
         // .concat(portalAPI.middleware)
         // .concat(infoblockAPI.middleware)
  

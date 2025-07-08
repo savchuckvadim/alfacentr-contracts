@@ -1,7 +1,8 @@
-import App from '@/modules/app/ui/App';
 
-export default function KonstructorPage() {
-    const inBitrix = process.env.IN_BITRIX as string | boolean | undefined
+import MainPage from '@/modules/pages/MainPage';
 
-    return <App inBitrix={true} envBitrix={inBitrix} />;
+export default function AlfaMainPage() {
+
+
+    return <MainPage />;
 } 

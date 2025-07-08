@@ -4,7 +4,7 @@ import { useAppSelector } from "@/modules/app/lib/hooks/redux"
 export const DealInfo = () => {
     const { dealData } = useAppSelector(state => state.deal)
     console.log(dealData)
-    debugger
+    
     return <div>
         {
             dealData?.map((field) => {

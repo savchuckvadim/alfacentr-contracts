@@ -54,7 +54,7 @@ export const fetchProducts = createAsyncThunk(
                     {},
                     `${domain}/${dealId}`
                 )
-                debugger
+                
                 // Проверяем различные случаи ошибок с помощью утилиты
                 const validResponse = validateApiResponse(response, 'Ошибка получения продуктов: пустой ответ от сервера')
                 const validResponseData = validateApiResponse(validResponse.data, 'Ошибка получения продуктов: пустой ответ от сервера')

@@ -6,7 +6,7 @@ export const bitrixInit = async (): Promise<IBitrixinitResult> => {
 
     const bxInitService = new BxInitService()
     const { deal, company, participants } = await bxInitService.init()
-    debugger
+    
     return { deal, company, participants }
 
 }

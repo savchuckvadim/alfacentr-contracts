@@ -10,7 +10,7 @@ import { Edit2, Copy, CheckCircle } from 'lucide-react'
 
 interface BxRqAddressEditProps {
   addresses: AddressRqItem[]
-  currentClientType: RQ_TYPE
+  // currentClientType: RQ_TYPE
   onSave: (typeId: BX_ADDRESS_TYPE, fields: RqItem[]) => void
   onCopy: (fromTypeId: BX_ADDRESS_TYPE, toTypeId: BX_ADDRESS_TYPE) => void
   onCancel: () => void
@@ -19,7 +19,7 @@ interface BxRqAddressEditProps {
 
 export const BxRqAddressEdit = ({
   addresses,
-  currentClientType,
+  // currentClientType,
   onSave,
   onCopy,
   onCancel,

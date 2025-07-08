@@ -1,4 +1,4 @@
-import { eventServiceAPI, EVS_ENDPOINT, RQStore } from "@workspace/api/src/services/april-service-event-api";
+import { eventServiceAPI, EVS_ENDPOINT, RQStore } from "@workspace/api/";
 import { API_METHOD } from "@workspace/api";
 import { AddressRqItem, EvsResponse, EvsRqItem, getEntityTypeId, ResolvedRQType } from "../type/evs-rq-type";
 import { filterFieldItems, getFullName } from "../lib/field-items-util";
@@ -58,10 +58,10 @@ export const fetchBXRQ = (
       API_METHOD.POST,
       rqRequestData
     )) as EvsResponse | null;
-debugger
+
     if (rqData) {
       if (rqData.rqs) {
-        debugger
+        
         dispatch(setFetched({ bxrq: rqData.rqs }));
         return;
       }
@@ -91,8 +91,8 @@ export const saveBXRQ = (
     const fields = filterFieldItems(
       rqCreatingBase.fields,
       currentClientType,
-      contractType,
-      supplyType,
+      // contractType,
+      // supplyType,
     );
     
     const entityTypeId = getEntityTypeId(currentClientType);

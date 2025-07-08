@@ -48,7 +48,7 @@ export const bxrqSlice = createSlice({
             bxrq: EVSBXRQ
         }>) => {
             const pay = action.payload
-            debugger
+            
             state.rqs = {
                 ...state.rqs,
                 [RQ_TYPE.ORGANIZATION]: pay.bxrq?.[RQ_TYPE.ORGANIZATION] || null,
@@ -62,7 +62,7 @@ export const bxrqSlice = createSlice({
             state.errors = null;
         },
         setFetchedStatus: (state: BXRQState, action: PayloadAction<boolean>) => {
-            debugger
+            
             state.isFetched = action.payload;
             state.isLoading = false;
         },
@@ -107,8 +107,8 @@ export const bxrqSlice = createSlice({
                 base.fields = base.fields ? filterFieldItems(
                     base.fields,
                     action.payload.currentClientType,
-                    action.payload.contractType,
-                    action.payload.supplyType,
+                    // action.payload.contractType,
+                    // action.payload.supplyType,
                 ) : base.fields;
                 state.creating.base = base;
             }

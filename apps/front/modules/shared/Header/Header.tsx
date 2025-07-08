@@ -3,10 +3,11 @@ import Link from 'next/link';
 import { cn } from '@workspace/ui/lib/utils';
 
 interface HeaderProps {
+  brandComponent?: React.ReactNode;
   className?: string;
 }
 
-export function Header({ className }: HeaderProps) {
+export function Header({ className, brandComponent }: HeaderProps) {
   return (
     <header className={cn(
       "w-full bg-white border-b border-gray-200 shadow-sm",
@@ -16,17 +17,17 @@ export function Header({ className }: HeaderProps) {
         <div className="flex items-center justify-between">
           {/* Логотип */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            {/* <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
-            </div>
-            <Link href="/" className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+            </div> */}
+            {brandComponent || <Link href="/bitrix" className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">
               Alfacentr
-            </Link>
+            </Link>}
           </div>
 
           {/* Навигация */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/bitrix" className="text-gray-600 hover:text-gray-900 transition-colors">
               Главная
             </Link>
             <Link href="/participants" className="text-gray-600 hover:text-gray-900 transition-colors">
@@ -36,7 +37,7 @@ export function Header({ className }: HeaderProps) {
               Семинары
             </Link>
             <Link href="/bx-rq" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Резвизиты
+              Реквизиты
             </Link>
           </nav>
 

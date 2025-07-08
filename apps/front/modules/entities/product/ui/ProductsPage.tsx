@@ -24,7 +24,7 @@ export function ProductsPage() {
   }, [dispatch, deal?.ID]);
 
   const handleEdit = (product: BxProductRowWithProduct) => {
-    debugger
+    
     console.log('Редактирование товара:', product);
     setIsOpen(true);
 

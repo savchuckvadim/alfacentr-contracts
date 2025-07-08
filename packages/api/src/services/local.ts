@@ -1,7 +1,7 @@
 
 
 export const localAPI = {
-    getData: async (name) => {
+    getData: async (name: string) => {
         let myStorage;
         let data = null
 
@@ -21,7 +21,7 @@ export const localAPI = {
         }
 
     },
-    getParsedData: async (name) => {
+    getParsedData: async (name: string) => {
         let myStorage;
         let data = null
 
@@ -29,7 +29,10 @@ export const localAPI = {
 
             myStorage = window.localStorage;
             data = myStorage.getItem(name); // Попробуйте записать что-то в localStorage
-            const parsedData = JSON.parse(data)
+            if (!data) {
+                return null
+            }
+            const parsedData = JSON.parse(data as string)
             return parsedData
 
         } catch (e) {
@@ -42,14 +45,17 @@ export const localAPI = {
 
     },
 
-    setData: async (data, name) => {
+    setData: async (data: any, name: string) => {
         try {
             let myStorage;
             let jsnData = JSON.stringify({ ...data })
             myStorage = window.localStorage;
             myStorage.setItem(name, jsnData);
             let jsnupdtdData = myStorage.getItem(name);
-            let updtdData = JSON.parse(jsnupdtdData)
+            if (!jsnupdtdData) {
+                return null
+            }
+            let updtdData = JSON.parse(jsnupdtdData as string)
 
             return updtdData
 
@@ -62,14 +68,17 @@ export const localAPI = {
 
     },
 
-    setReportData: async (data, name) => {
+    setReportData: async (data: any, name: string) => {
         try {
             let myStorage;
             let jsnData = JSON.stringify(data)
             myStorage = window.localStorage;
             myStorage.setItem(name, jsnData);
             let jsnupdtdData = myStorage.getItem(name);
-            let updtdData = JSON.parse(jsnupdtdData)
+            if (!jsnupdtdData) {
+                return null
+            }
+            let updtdData = JSON.parse(jsnupdtdData as string)
 
             return updtdData
 

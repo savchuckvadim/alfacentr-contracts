@@ -41,7 +41,7 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
       console.log(user);
 
       const { deal, company, participants } = await bitrixInit() || {}
-      debugger
+      
       if (deal && company) {
         Promise.all([
           dispatch(setParticipants(participants)),

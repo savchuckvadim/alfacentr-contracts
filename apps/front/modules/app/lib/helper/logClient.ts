@@ -1,3 +1,4 @@
+'use client'
 export async function logClient(title: string, payload: any) {
   try {
     await fetch('/api/admin/logs', {

@@ -32,16 +32,16 @@ export const updateDealField = createAsyncThunk(
 );
 
 // Thunk для загрузки данных сделки (если понадобится в будущем)
-export const fetchDealData = createAsyncThunk(
-    'deal/fetchDealData',
-    async (dealId: number, { rejectWithValue }) => {
-        try {
-            // Здесь можно добавить логику загрузки данных сделки
-            // Пока возвращаем пустой объект
-            return { dealId };
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка при загрузке данных сделки';
-            return rejectWithValue(errorMessage);
-        }
-    }
-); 
+// export const fetchDealData = createAsyncThunk(
+//     'deal/fetchDealData',
+//     async (dealId: number, { rejectWithValue }) => {
+//         try {
+//             // Здесь можно добавить логику загрузки данных сделки
+//             // Пока возвращаем пустой объект
+//             return { dealId };
+//         } catch (error) {
+//             const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка при загрузке данных сделки';
+//             return rejectWithValue(errorMessage);
+//         }
+//     }
+// ); 

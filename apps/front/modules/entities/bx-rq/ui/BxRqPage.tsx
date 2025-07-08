@@ -2,9 +2,9 @@
 
 import { useAppSelector } from "@/modules/app/lib/hooks/redux"
 import { useEffect, useState } from "react"
-import { useBxRq } from "@workspace/bx-rq"
+import { filterFieldItems, useBxRq } from "@workspace/bx-rq"
 
-import { RQ_TYPE, CONTRACT_LTYPE, SupplyTypesType, EvsRqItem, filterFieldItems, getClinetTypeNameByCode, isFieldsEmpty, SupplyTypeEnum, ResolvedRQType, RqItem, BX_ADDRESS_TYPE } from "@workspace/bx-rq"
+import { RQ_TYPE, CONTRACT_LTYPE, SupplyTypesType, EvsRqItem, getClinetTypeNameByCode, isFieldsEmpty, SupplyTypeEnum, ResolvedRQType, RqItem, BX_ADDRESS_TYPE } from "@workspace/bx-rq"
 import { BxRqBaseEdit } from './BxRqBaseEdit'
 import { BxRqAddressEdit } from './BxRqAddressEdit'
 import { BxRqBankEdit } from './BxRqBankEdit'
@@ -14,6 +14,8 @@ import { Button } from "@workspace/ui/components/button"
 import { Badge } from "@workspace/ui/components/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@workspace/ui/components/tabs"
+import { useDeal } from "../../deal"
+import { useClientType } from "@/modules/features/client-type/hook/useClientType"
 
 interface BxRqPageProps {
   currentClientType?: RQ_TYPE;
@@ -24,29 +26,30 @@ interface BxRqPageProps {
 }
 
 export const BxRqPage = ({ 
-  currentClientType = RQ_TYPE.FIZ,
-  contractType = CONTRACT_LTYPE.SERVICE,
-  supplyType = SupplyTypeEnum.INTERNET,
+//   currentClientType = RQ_TYPE.FIZ,
+//   contractType = CONTRACT_LTYPE.SERVICE,
+//   supplyType = SupplyTypeEnum.INTERNET,
   onSave,
   onCancel
 }: BxRqPageProps) => {
     const { rqs, isLoading, isFetched, fetchBXRQ, current, saveBase, saveAddress, saveBank, copyAddress } = useBxRq()
     const domain = useAppSelector(state => state.app.domain);
     const companyId = useAppSelector(state => state.app.bitrix.company?.ID);
-    const [selectedRq, setSelectedRq] = useState<EvsRqItem | null>(null);
+    // const [selectedRq, setSelectedRq] = useState<EvsRqItem | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-
+    const {clientType} = useClientType()
+  
     useEffect(() => {
         if (!isFetched && !isLoading && companyId) {
             fetchBXRQ(domain, companyId);
         }
     }, [isFetched, isLoading, companyId, fetchBXRQ, domain]);
 
-    useEffect(() => {
-        if (rqs && currentClientType && rqs[currentClientType as ResolvedRQType]) {
-            setSelectedRq(rqs[currentClientType as ResolvedRQType].default);
-        }
-    }, [rqs, currentClientType]);
+    // useEffect(() => {
+    //     if (rqs && currentClientType && rqs[currentClientType as ResolvedRQType]) {
+    //         setSelectedRq(rqs[currentClientType as ResolvedRQType].default);
+    //     }
+    // }, [rqs, currentClientType]);
 
     const handleSaveBase = async (fields: RqItem[]) => {
         setIsSaving(true);
@@ -109,7 +112,7 @@ export const BxRqPage = ({
         );
     }
 
-    if (!isFetched || !rqs || !currentClientType) {
+    if (!isFetched || !rqs ) {
         return (
             <Card>
                 <CardContent className="p-6">
@@ -118,9 +121,10 @@ export const BxRqPage = ({
             </Card>
         );
     }
-
-    const currentRqs = rqs[currentClientType as ResolvedRQType]?.items || [];
-    const currentRq = selectedRq || rqs[currentClientType as ResolvedRQType]?.default;
+ 
+    const defRq = rqs[clientType as ResolvedRQType]?.default;
+    const currentRqs = current.items;
+    const currentRq = current.item ;
 
     if (!currentRq) {
         return (
@@ -134,9 +138,9 @@ export const BxRqPage = ({
 
     const fields = filterFieldItems(
         currentRq.fields,
-        currentClientType,
-        contractType,
-        supplyType,
+        clientType || RQ_TYPE.ORGANIZATION as RQ_TYPE,
+                // contractType,
+                // supplyType,
     );
 
     const isEmpty = fields ? isFieldsEmpty(fields) : false;
@@ -144,10 +148,11 @@ export const BxRqPage = ({
     const handleRqSelect = (rqId: string) => {
         const selected = currentRqs.find((rq: EvsRqItem) => rq.bx_id.toString() === rqId);
         if (selected) {
-            setSelectedRq(selected);
+            debugger
+            // setSelectedRq(selected);
         }
     };
-
+debugger
     return (
         <div className="container mx-auto p-6">
             <div className="flex items-center justify-between mb-6">
@@ -174,7 +179,7 @@ export const BxRqPage = ({
                         <span>Реквизиты</span>
                         {currentRq.bx_id !== -1 && (
                             <Badge variant="secondary">
-                                {getClinetTypeNameByCode(currentClientType)}
+                                {getClinetTypeNameByCode(clientType)}
                             </Badge>
                         )}
                     </CardTitle>
@@ -183,7 +188,7 @@ export const BxRqPage = ({
                     {/* Селект реквизитов */}
                     <div className="space-y-2">
                         <label className="text-sm font-medium">
-                            {getClinetTypeNameByCode(currentClientType)}
+                            {getClinetTypeNameByCode(clientType)}
                         </label>
                         <Select value={currentRq.bx_id.toString()} onValueChange={handleRqSelect}>
                             <SelectTrigger>
@@ -215,9 +220,9 @@ export const BxRqPage = ({
                                     rq={currentRq}
                                     fields={fields}
                                     isEmpty={isEmpty}
-                                    currentClientType={currentClientType}
-                                    contractType={contractType}
-                                    supplyType={supplyType}
+                                    // currentClientType={clientType as RQ_TYPE}
+                                    // contractType={contractType}
+                                    // supplyType={supplyType}
                                     onSave={handleSaveBase}
                                     onCancel={handleCancel}
                                     isLoading={isSaving}
@@ -229,7 +234,7 @@ export const BxRqPage = ({
                             {!isEmpty && currentRq.address?.items && currentRq.address.items.length > 0 ? (
                                 <BxRqAddressEdit
                                     addresses={currentRq.address.items}
-                                    currentClientType={currentClientType}
+                                    // currentClientType={currentClientType}
                                     onSave={handleSaveAddress}
                                     onCopy={handleCopyAddress}
                                     onCancel={handleCancel}

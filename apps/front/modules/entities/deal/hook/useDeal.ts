@@ -19,6 +19,9 @@ export const useDeal = () => {
     const dealId = useAppSelector(state => state.app.bitrix.deal?.ID)
 
 
+    const getFieldByCode = (code: BxDealDataKeys) => {
+        return dealState.dealData?.find(field => field.code === code);
+    };
 
     const setDeal = (dealData: IDealFieldsData[]) => {
         dispatch(setDealData(dealData));
@@ -59,6 +62,9 @@ export const useDeal = () => {
         error: dealState.error,
         isUpdating: dealState.isUpdating,
 
+
+        //utils
+        getFieldByCode,
         // Actions
         setDeal,
         setDealId: setDealIdAction,

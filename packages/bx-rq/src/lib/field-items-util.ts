@@ -5,9 +5,9 @@ import { getResolvedType } from "./rq-util";
 
 export const filterFieldItems = (
   items: RqItem[],
-  currentClientType: RQ_TYPE | undefined,
-  contractType: CONTRACT_LTYPE,
-  supplyType: SupplyTypesType
+  currentClientType: RQ_TYPE | undefined | null,
+  // contractType?: CONTRACT_LTYPE,
+  // supplyType?: SupplyTypesType
 ): RqItem[] => {
 
   let clientType = currentClientType || RQ_TYPE.ORGANIZATION as RQ_TYPE
@@ -26,9 +26,10 @@ export const filterFieldItems = (
       if (rqItem.type !== "select") {
         if (rqItem.contractType && rqItem.supplies) {
           return (
-            rqItem.isActive &&
-            rqItem.contractType.includes(contractType) &&
-            rqItem.supplies.includes(supplyType)
+            rqItem.isActive
+            //  &&
+            // rqItem.contractType.includes(contractType) &&
+            // rqItem.supplies.includes(supplyType)
           );
         }
       }
@@ -36,9 +37,9 @@ export const filterFieldItems = (
     })
     .sort((a: RqItem, b: RqItem) => (a.order - b.order))
     .map((rqItem: RqItem) => {
-      debugger
+      
       const group = CONTRACT_RQ_GROUP.RQ
-      debugger
+      
       return {
         ...rqItem,
         group: group
@@ -52,7 +53,7 @@ export const filterFieldItems = (
 
 }
 
-export const getClinetTypeNameByCode = (type: RQ_TYPE): RQ_TYPE_NAME => {
+export const getClinetTypeNameByCode = (type: RQ_TYPE | null): RQ_TYPE_NAME => {
   switch (type) {
     case RQ_TYPE.ORGANIZATION:
       return RQ_TYPE_NAME.ORGANIZATION;
