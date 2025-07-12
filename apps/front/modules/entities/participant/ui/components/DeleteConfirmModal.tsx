@@ -2,26 +2,26 @@ import React from 'react';
 import { Button } from '@workspace/ui/components/button';
 import { getParticipantName } from '../utils/participant.utils';
 import { IParticipant } from '@alfa/entities';
+import { useParticipant } from '../../lib/hook/useParticipant';
 
 interface DeleteConfirmModalProps {
   participant: IParticipant | null;
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
-  isLoading?: boolean;
+  // onConfirm: () => void;
+  // isLoading?: boolean;
 }
 
 export function DeleteConfirmModal({ 
   participant, 
   isOpen, 
   onClose, 
-  onConfirm, 
-  isLoading = false 
+
 }: DeleteConfirmModalProps) {
   if (!isOpen || !participant) return null;
 
   const participantName = getParticipantName(participant);
-
+  const { deleteParticipant, editLoading: isLoading } = useParticipant(participant.id);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
@@ -62,7 +62,7 @@ export function DeleteConfirmModal({
           </Button>
           <Button
             variant="destructive"
-            onClick={onConfirm}
+            onClick={() => deleteParticipant(participant.id)}
             disabled={isLoading}
             className="flex-1"
           >

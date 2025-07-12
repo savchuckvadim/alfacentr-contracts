@@ -5,6 +5,7 @@ import { errorHandler } from "../lib/error-handler";
 import { dealReducer, participantReducer, productReducer } from "@/modules/entities";
 import { bxrqReducer } from "@workspace/bx-rq";
 import { contractTypeReducer, contractTypeListener, clientTypeListener } from "@/modules/features";
+import { participantProductListener, participantProductReducer } from "@/modules/features/";
 
 
 
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
 
   // features
   contractType: contractTypeReducer,
+  participantProduct: participantProductReducer,
   //april
 
 
@@ -68,6 +70,7 @@ export const setupStore = () => {
         .concat(listenerMiddleware.middleware)
         .concat(contractTypeListener.middleware)
         .concat(clientTypeListener.middleware)
+        .concat(participantProductListener.middleware)
         // .concat(portalAPI.middleware)
         // .concat(infoblockAPI.middleware)
  

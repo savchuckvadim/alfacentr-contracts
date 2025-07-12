@@ -6,6 +6,7 @@ export interface IContractTypeState {
 
     items: EContractTypeField[],
     current: null | EContractTypeField,
+    prefix: string,
     loading: boolean,
     error: string | null
 }
@@ -54,6 +55,7 @@ const initialState: IContractTypeState = {
         }
     ],
     current: null as null | EContractTypeField,
+    prefix: '' as string,
     loading: false,
     error: null
 }

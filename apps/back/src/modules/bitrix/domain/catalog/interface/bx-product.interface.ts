@@ -30,14 +30,19 @@ export interface IBXProduct {
     // },
     previewText: string | null,
     previewTextType: string,
-    [key: string]: string | number | null | boolean | { //пользовательские поля
+    parentId?: {
+        value: string,
+        valueId: string
+    },
+    
+    [key: string]: string | number | null | boolean | undefined | { //пользовательские поля
         value: string,
         valueId: string
     } | {
         value: string,
         valueId: string
     }[],
-
+    
     purchasingCurrency: "RUB",
     purchasingPrice: string,
     quantity: number,

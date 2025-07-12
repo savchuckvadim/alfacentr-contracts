@@ -114,8 +114,10 @@ export function ParticipantsTable({
                   </TableCell>
                   <TableCell>
                     <div>
-                      <div className="font-medium text-gray-900">{name || 'Не указано'}</div>
-                      <div className="text-sm text-gray-500">ID: {participant.id}</div>
+                      <Link href={`/participants/${participant.id}`}>
+                        <div className="cursor-pointer font-medium text-gray-900">{name || 'Не указано'}</div>
+                        <div className="text-sm text-gray-500">ID: {participant.id}</div>
+                      </Link>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -151,10 +153,10 @@ export function ParticipantsTable({
                       <span className="text-gray-400">Не указан</span>
                     )}
                   </TableCell>
-                  <TableCell>
-                    <div className="max-w-xs">
+                  <TableCell className="h-full">
+                    <div className="max-w-md h-full">
                       {programs !== 'Не выбрано' ? (
-                        <div className="text-sm text-gray-700 line-clamp-2">
+                        <div className="text-sm text-gray-700 line-clamp-2 min-h-full">
                           {programs}
                         </div>
                       ) : (

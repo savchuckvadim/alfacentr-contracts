@@ -10,7 +10,7 @@ export type BxItemSchema = {
 
     [EBxMethod.UPDATE]: {
         request: CrmUpdateItemRequestType<IBXItem>;
-        response: boolean;
+        response: BxItemResponseDto;
     };
 
     [EBxMethod.LIST]: {
@@ -26,5 +26,10 @@ export type BxItemSchema = {
     [EBxMethod.ADD]: {
         request: CrmItemAddRequestType<IBXItem, string>;
         response: BxItemResponseDto;
+    };
+
+    [EBxMethod.DELETE]: {
+        request: CrmItemGetRequestType<string | number>;
+        response: boolean;
     };
 };

@@ -21,8 +21,8 @@ export class BxItemService {
     }
 
 
-    update(id: number | string, entityTypeId: BitrixOwnerTypeId.DEAL, data: Partial<IBXItem>) {
-        return this.repo.update(id, entityTypeId, data);
+    async update(id: number | string, entityTypeId: BitrixOwnerTypeId | string, data: Partial<IBXItem>) {
+        return await this.repo.update(id, entityTypeId, data);
     }
 
     async list(entityTypeId: string, filter?: Partial<IBXItem>, select?: string[]): Promise<BxItemListResponseDto    | null> {
@@ -35,6 +35,10 @@ export class BxItemService {
 
     async add(entityTypeId: string, data: Partial<IBXItem>): Promise<BxItemResponseDto | null> {
         return (await this.repo.add(entityTypeId, data))?.result as BxItemResponseDto | null;
+    }
+
+    async delete(id: number | string, entityTypeId: string): Promise<boolean> {
+        return (await this.repo.delete(id, entityTypeId))?.result as boolean;
     }
 
 }

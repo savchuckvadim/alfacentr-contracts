@@ -86,7 +86,7 @@ export class BxInitService {
     } {
         const deal = totalBxResponse.dealGet
         const company = totalBxResponse.companyGet
-        const items = totalBxResponse.participants.items
+        const items = totalBxResponse.participants?.items || []
         return { deal, company, items }
     }
 

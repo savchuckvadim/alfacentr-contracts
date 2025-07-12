@@ -5,40 +5,43 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } 
 
 
 export const ModalMenu: FC<{
+    title?: string,
+    description?: string,
     children: React.ReactNode,
     footer?: React.ReactNode,
     isOpen?: boolean,
-    onOpenChange?: (open: boolean) => void
-}> = ({ children, footer, isOpen, onOpenChange }) => {
-    
-    
-    return (
-        <Dialog modal={true} open={isOpen} onOpenChange={onOpenChange}>
-            <ContextMenu>
-                <ContextMenuTrigger>Right click</ContextMenuTrigger>
-                <ContextMenuContent>
-                    <ContextMenuItem>Open</ContextMenuItem>
-                    <ContextMenuItem>Download</ContextMenuItem>
-                    <DialogTrigger asChild>
-                        <ContextMenuItem>
-                            <span>Delete</span>
-                        </ContextMenuItem>
-                    </DialogTrigger>
+    onOpenChange: (open: boolean) => void,
+    onSubmit?: () => void
+}> = ({
+    title,
+    description,
+    children,
+    footer,
+    isOpen,
+    onOpenChange,
+    onSubmit
+
+}) => {
+
+        
+        return (
+            <Dialog modal={true} open={isOpen} onOpenChange={onOpenChange}>
+                <DialogContent className="w-[95vw] max-w-[1000px] max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        {title && <DialogTitle>{title}</DialogTitle>}
+                        {description && <DialogDescription>{description}</DialogDescription>}
+                    </DialogHeader>
                     {children}
-                </ContextMenuContent>
-            </ContextMenu>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                        This action cannot be undone. Are you sure you want to permanently
-                        delete this file from our servers?
-                    </DialogDescription>
-                </DialogHeader>
-                {footer && <DialogFooter>
-                    <Button type="submit">Confirm</Button>
-                </DialogFooter>}
-            </DialogContent>
-        </Dialog>
-    )
-}
+
+                    {footer && <DialogFooter>
+                        {footer}
+                    </DialogFooter>}
+
+                    <DialogFooter>
+                        <Button onClick={() => onOpenChange(false)}>Отмена</Button>
+                        {onSubmit && <Button onClick={onSubmit}>Отправить</Button>}
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        )
+    }

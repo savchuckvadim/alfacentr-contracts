@@ -24,21 +24,21 @@ export const ProductTable = () => {
                         )}
                     </TableRow>
                 </TableHeader>
+                <TableBody>
+                    {items.map(row => {
 
-                {items.map(row => {
-
-                    return <TableRow key={row.id} className="hover:bg-gray-100">
-                        <TableCell>{row.productName}</TableCell>
-                        <TableCell>{row.price}</TableCell>
-                        <TableCell>{row.quantity}</TableCell>
-                        {row.fields.map(filed =>
-                            <TableCell key={filed.bitrixId}>{filed.name}</TableCell>
-                        )}
-                    </TableRow>
+                        return <TableRow key={row.id} className="hover:bg-gray-100">
+                            <TableCell>{row.productName}</TableCell>
+                            <TableCell>{row.price}</TableCell>
+                            <TableCell>{row.quantity}</TableCell>
+                            {row.fields.map(filed =>
+                                <TableCell key={filed.bitrixId}>{filed.name}</TableCell>
+                            )}
+                        </TableRow>
 
 
-                })}
-
+                    })}
+                </TableBody>
 
             </Table>
 

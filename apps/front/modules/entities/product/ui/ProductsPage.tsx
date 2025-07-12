@@ -10,7 +10,7 @@ import { Header } from '@/components';
 import Link from 'next/link';
 import { ArrowLeftIcon } from 'lucide-react';
 import { ProductTable } from './ProductTable';
-import { ModalMenu } from '@/modules/shared/modal/ModalMenu';
+import { ModalMenu } from '@/modules/shared/Modal/ModalMenu';
 
 export function ProductsPage() {
   const dispatch = useDispatch<AppDispatch>();

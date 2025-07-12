@@ -28,12 +28,12 @@ export function SummaryPanel({
 
   return (
     <div className={cn(
-      "w-full h-full bg-gray-50 p-4",
+      "w-full h-full bg-sidebar  p-4 min-h-screen",
       className
     )}>
-      <Card className="h-full">
+      <Card className="h-[calc(100vh-40vh)] bg-card">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-semibold text-gray-900">
+          <CardTitle className="text-lg font-semibold ">
             Итоговая информация
           </CardTitle>
         </CardHeader>
@@ -42,8 +42,8 @@ export function SummaryPanel({
           {/* Статистика */}
           <div className="space-y-4">
             <div className="flex justify-between items-center py-2 border-b border-gray-100">
-              <span className="text-gray-600">Всего элементов:</span>
-              <span className="font-semibold text-gray-900">{totalItems}</span>
+              <span className="">Всего элементов:</span>
+              <span className="font-semibold ">{totalItems}</span>
             </div>
 
             <div className="flex justify-between items-center py-2 border-b border-gray-100">

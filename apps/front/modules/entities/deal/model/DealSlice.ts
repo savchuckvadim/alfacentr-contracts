@@ -26,7 +26,7 @@ const dealSlice = createSlice({
     initialState,
     reducers: {
         setDealData: (state, action: PayloadAction<IDealFieldsData[]>) => {
-            debugger
+            
             state.dealData = action.payload;
             state.error = null;
         },
@@ -35,8 +35,10 @@ const dealSlice = createSlice({
         },
         updateFieldValue: (state, action: PayloadAction<{ fieldKey: BxDealDataKeys; value: string }>) => {
             const { fieldKey, value } = action.payload;
+            
             if (state.dealData) {
-                const field = state.dealData.find(field => field.bitrixId === fieldKey);
+                const field = state.dealData.find(field => field.code === fieldKey);
+                
                 if (field) {
                     (field as IDealFieldsData).value = value;
                 }

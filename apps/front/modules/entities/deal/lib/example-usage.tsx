@@ -30,12 +30,7 @@ export const DealFieldInput: React.FC<{
     const handleBlur = async () => {
         // При потере фокуса отправляем обновление на сервер
         try {
-            await updateFieldWithAPI({
-                dealId,
-                fieldKey,
-                value: localValue,
-                field
-            });
+            await updateFieldWithAPI(fieldKey, localValue);
         } catch (error) {
             console.error('Ошибка обновления поля:', error);
         }

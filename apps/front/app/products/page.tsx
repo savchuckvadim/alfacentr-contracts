@@ -1,9 +1,9 @@
-import { ProductsPage } from '@/modules/entities/product/ui/ProductsPage';
+import { ProductPage } from '@/modules/pages/ProductPage';
 
 export default function Products() {
   return (
     <div className="container mx-auto px-4 py-6">
-      <ProductsPage />
+      <ProductPage />
     </div>
   );
 } 

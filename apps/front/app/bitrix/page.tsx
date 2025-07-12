@@ -1,5 +1,5 @@
 
-import MainPage from '@/modules/pages/MainPage';
+import {MainPage} from '@/modules/pages';
 
 export default function AlfaMainPage() {
 

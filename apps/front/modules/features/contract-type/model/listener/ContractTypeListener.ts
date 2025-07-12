@@ -23,7 +23,7 @@ contractTypeListener.startListening({
       productsCount: products.length,
       products: products
     });
-    debugger;
+    ;
     listenerApi.dispatch(setCurrentContractType({products}));
     // Здесь можно добавить вашу логику для обработки обновлений
     // Например:

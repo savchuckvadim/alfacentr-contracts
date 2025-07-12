@@ -1,6 +1,8 @@
+
 import React from 'react';
 import Link from 'next/link';
 import { cn } from '@workspace/ui/lib/utils';
+
 
 interface HeaderProps {
   brandComponent?: React.ReactNode;
@@ -10,7 +12,7 @@ interface HeaderProps {
 export function Header({ className, brandComponent }: HeaderProps) {
   return (
     <header className={cn(
-      "w-full bg-white border-b border-gray-200 shadow-sm",
+      "w-full bg-sidebar border-b border-primary-foreground shadow-sm",
       className
     )}>
       <div className="w-full  mx-auto px-4 py-3">
@@ -20,23 +22,26 @@ export function Header({ className, brandComponent }: HeaderProps) {
             {/* <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
             </div> */}
-            {brandComponent || <Link href="/bitrix" className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+            {brandComponent || <Link href="/bitrix" className="text-xl font-semibold text-primary-foreground hover:text-blue-600 transition-colors">
               Alfacentr
             </Link>}
           </div>
 
           {/* Навигация */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link href="/bitrix" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/bitrix" className="text-gray-600 hover:text-primary transition-colors">
               Главная
             </Link>
-            <Link href="/participants" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/bitrix" className="text-gray-600 hover:text-primary transition-colors">
+              Заявка
+            </Link>
+            <Link href="/participants" className="text-gray-600 hover:text-primary transition-colors">
               Участники
             </Link>
-            <Link href="/products" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Семинары
+            <Link href="/products" className="text-gray-600 hover:text-primary transition-colors">
+              Товары
             </Link>
-            <Link href="/bx-rq" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/bx-rq" className="text-gray-600 hover:text-primary transition-colors">
               Реквизиты
             </Link>
           </nav>
@@ -49,6 +54,7 @@ export function Header({ className, brandComponent }: HeaderProps) {
           </button>
         </div>
       </div>
+    
     </header>
   );
 } 

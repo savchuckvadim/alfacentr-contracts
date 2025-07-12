@@ -7,7 +7,7 @@ export class BxProductRepository {
     constructor(
         private readonly bxApi: BitrixBaseApi
     ) { }
-    async get(id: number | string,select?: string[]) {
+    async get(id: number | string, select?: string[]) {
         return await this.bxApi.callType(
             EBxNamespace.CATALOG,
             EBXEntity.PRODUCT,

@@ -1,5 +1,4 @@
-import type { BXUser } from "@workspace/bx";
-import { bxAPI as bx } from "@workspace/api";
+;
 import { TESTING_DOMAIN, TESTING_USER } from "../consts/app-global";
 import { appActions } from "./AppSlice";
 import { AppDispatch, AppGetState, AppThunk, initWSClient } from "./store";
@@ -7,7 +6,7 @@ import { WSClient } from "@workspace/ws";
 import { socketThunk } from "./queue-ws-ping-test/QueueWsPingListener";
 import { bitrixInit } from "../lib/bitrix-init/bitrix-init.util";
 import { Bitrix } from "@workspace/bitrix";
-import { fetchProducts, setFetchedProducts } from "@/modules/entities/product/";
+import { fetchProducts, } from "@/modules/entities/product/";
 import { setParticipants } from "@/modules/entities";
 import { getDealFieldsData } from "@/modules/entities/deal/lib/utils/get-deal-fields-data.util";
 import { setDealData } from "@/modules/entities/deal/model/DealSlice";

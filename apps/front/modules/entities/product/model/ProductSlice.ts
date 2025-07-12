@@ -21,7 +21,7 @@ export interface BxProductRowWithProduct extends IBXProductRowRow {
 }
 
 export interface IProductField {
-    bitrixId: string
+    bitrixId: string 
     name: string
     userType: string
     isMultiple: boolean

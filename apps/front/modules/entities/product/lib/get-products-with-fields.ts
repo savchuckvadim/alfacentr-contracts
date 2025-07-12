@@ -29,6 +29,7 @@ const getFields = (product: IBXProduct, productTypeObject: Record<string, { bitr
             fields.push(field)
         }
     }
+    
     return fields
 }
 const getFieldd = (product: IBXProduct, productTypeObject: {

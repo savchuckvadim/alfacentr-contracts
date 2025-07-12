@@ -96,7 +96,7 @@ export class IParticipantFormatField extends IParticipantBaseField {
     bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Format
     code: BxParticipantsDataKeys.format
     name: BxParticipantsFieldNameEnum.format
-    type: 'multiple'
+    type: 'enumeration'
 }
 
 
@@ -254,4 +254,15 @@ export interface IParticipant {
     fields: IParticipantField<AlfaParticipantSmartItemUserFieldsEnum>[]
 
 }
+
+
+
+export interface IParticipantSelectItem {
+    bitrixId: string | number
+    value: string | number
+    label: string
+    code: string
+}
+
+
 

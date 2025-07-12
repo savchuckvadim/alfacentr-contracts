@@ -6,6 +6,7 @@ import { Badge } from '@workspace/ui/components/badge';
 import { BxProductRowWithProduct } from '../../model/ProductSlice';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import Link from 'next/link';
+import { useAlfaProducts } from '../../hook/useAlfaProducts';
 
 interface ProductsTableProps {
   products: BxProductRowWithProduct[];
@@ -14,12 +15,10 @@ interface ProductsTableProps {
   isLoading?: boolean;
 }
 
-export function ProductsTable({
-  products,
-  onEdit,
-  onDelete,
-  isLoading = false
-}: ProductsTableProps) {
+export function ProductsTable() {
+  const { items, loading, error } = useAlfaProducts()
+  const [onDelete, setOnDelete] = useState<number | null>(null)
+  const [onEdit, setOnEdit] = useState<BxProductRowWithProduct | null>(null)
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;
     product: BxProductRowWithProduct | null;
@@ -37,7 +36,7 @@ export function ProductsTable({
 
   const handleDeleteConfirm = () => {
     if (deleteModal.product && deleteModal.product.id) {
-      onDelete(deleteModal.product.id);
+      setOnDelete(deleteModal.product.id);
       setDeleteModal({ isOpen: false, product: null });
     }
   };
@@ -66,7 +65,7 @@ export function ProductsTable({
     return { label: 'Неактивен', variant: 'secondary' as const };
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
         <div className="flex items-center space-x-2">
@@ -80,7 +79,7 @@ export function ProductsTable({
     );
   }
 
-  if (products.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="text-center py-8">
         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -96,8 +95,8 @@ export function ProductsTable({
 
   return (
     <>
-    
-      <div className="bg-background text-foreground rounded-lg border overflow-hidden">
+
+      <div className="bg-background text-foreground rounded-lg border overflow-hidden p-4">
         <Table>
           <TableHeader>
             <TableRow>
@@ -111,7 +110,7 @@ export function ProductsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((product, index) => {
+            {items.map((product, index) => {
               const status = getProductStatus(product);
               const productName = product.productName || product.product?.name || 'Не указано';
               const productCode = product.product?.code || 'Не указан';
@@ -152,7 +151,7 @@ export function ProductsTable({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onEdit(product)}
+                        onClick={() => setOnEdit(product)}
                         className="h-8 w-8 p-0"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

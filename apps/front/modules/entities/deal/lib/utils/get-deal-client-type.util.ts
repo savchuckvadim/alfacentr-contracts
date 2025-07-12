@@ -4,13 +4,15 @@ import { RQ_TYPE } from "@workspace/bx-rq";
 
 export const getDealClientType = (dealData: IDealFieldsData[]): RQ_TYPE => {
     const clientTypeField = dealData.find(field => field.code === BxDealDataKeys.organization_type) as TFieldSelect;
-    const clientType = clientTypeField?.value as string;
+    const clientTypeValueBitrixId = clientTypeField?.value as string;
+    const clientTypeValue = getCurrentListItemValueByBitrixId(clientTypeField?.list, clientTypeValueBitrixId);
     let result = RQ_TYPE.ORGANIZATION;
-    if (clientType.includes('Юре')) {
+    if (clientTypeValue?.includes('Юре')) {
         result = RQ_TYPE.ORGANIZATION;
-    } else if (clientType.includes('Физ')) {
+    } else if (clientTypeValue?.includes('Физ')) {
         result = RQ_TYPE.FIZ;
     }
+    
     return result;
 };
 
@@ -21,6 +23,8 @@ export const getCurrentListItemByValue = (list: TFieldItem[], value: string) => 
 };
 
 
-
+export const getCurrentListItemValueByBitrixId = (list: TFieldItem[], value: string | number) => {
+    return list.find(item => Number(item.bitrixId) === Number(value))?.name;
+};
 
 

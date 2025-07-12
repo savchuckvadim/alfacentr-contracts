@@ -1,21 +1,29 @@
 'use client'
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@workspace/ui/components/button';
 import { ParticipantsTable } from './components/ParticipantsTable';
 import { fetchParticipants, deleteParticipant } from '../model/ParticipantThunk';
 import { RootState, AppDispatch } from '@/modules/app/model/store';
-import { removeParticipant } from '../model/PerticipantSlice';
+
 import { SmartStageEnum } from '@alfa/entities';
 import { Header } from '@/components';
 import Link from 'next/link';
 import { ArrowLeftIcon } from 'lucide-react';
+import { ParticipantPpkListInfo } from '@/modules/widgetes/Participant';
+import { ParticipantStatistics } from './components/ParticipantStatistics';
+import { useParticipant } from '../lib/hook/useParticipant';
 
 export function ParticipantsPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { items: participants, loading, error } = useSelector((state: RootState) => state.participant);
   const { deal } = useSelector((state: RootState) => state.app.bitrix);
+  const [deletingModalActive, setDeletingModalActive] = useState(false);
 
+  const { 
+    activateEditable, 
+    cancelEditable, 
+    changeEditable } = useParticipant();
   // useEffect(() => {
   //   // if (deal?.ID) {
   //   //   dispatch(fetchParticipants(deal.ID.toString()));
@@ -31,7 +39,7 @@ export function ParticipantsPage() {
   const handleDelete = async (participantId: number) => {
     try {
       await dispatch(deleteParticipant(participantId)).unwrap();
-      dispatch(removeParticipant(participantId));
+      // dispatch(removeParticipant(participantId));
     } catch (error) {
       console.error('Ошибка при удалении участника:', error);
       alert('Ошибка при удалении участника');
@@ -67,71 +75,10 @@ export function ParticipantsPage() {
           <span>Добавить участника</span>
         </Button>
       </div>
-
       {/* Статистика */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Всего участников</p>
-              <p className="text-2xl font-bold text-gray-900">{participants.length}</p>
-            </div>
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
+      <ParticipantStatistics />
 
-        <div className="bg-white rounded-lg border p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Активные</p>
-              <p className="text-2xl font-bold text-green-600">
-                {participants.filter(p => p.stage === SmartStageEnum.CLIENT).length}
-              </p>
-            </div>
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
 
-        <div className="bg-white rounded-lg border p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">В процессе</p>
-              <p className="text-2xl font-bold text-yellow-600">
-                {participants.filter(p => p.stage === SmartStageEnum.PREPARATION).length}
-              </p>
-            </div>
-            <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg border p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Завершенные</p>
-              <p className="text-2xl font-bold text-purple-600">
-                {participants.filter(p => p.stage === SmartStageEnum.SUCCESS).length}
-              </p>
-            </div>
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Ошибка */}
       {error && (
@@ -155,12 +102,13 @@ export function ParticipantsPage() {
       )}
 
       {/* Таблица участников */}
-      <ParticipantsTable
+      {/* <ParticipantsTable
         participants={participants}
         onEdit={handleEdit}
         onDelete={handleDelete}
         isLoading={loading}
-      />
+      /> */}
+      <ParticipantPpkListInfo />
     </div>
   );
 } 

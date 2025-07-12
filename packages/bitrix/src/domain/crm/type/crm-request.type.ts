@@ -28,7 +28,7 @@ export type CrmUpdateRequestType<T> = {
 
 export type CrmUpdateItemRequestType<T> = {
     id: number | string;
-    entityTypeId: BitrixOwnerTypeId;
+    entityTypeId: BitrixOwnerTypeId | string;
     fields: Partial<T>;
 }
 

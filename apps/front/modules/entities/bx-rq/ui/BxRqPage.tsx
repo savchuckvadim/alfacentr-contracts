@@ -148,11 +148,11 @@ export const BxRqPage = ({
     const handleRqSelect = (rqId: string) => {
         const selected = currentRqs.find((rq: EvsRqItem) => rq.bx_id.toString() === rqId);
         if (selected) {
-            debugger
+            
             // setSelectedRq(selected);
         }
     };
-debugger
+
     return (
         <div className="container mx-auto p-6">
             <div className="flex items-center justify-between mb-6">
