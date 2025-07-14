@@ -40,7 +40,7 @@ export const useParticipantPpk = () => {
         return getParticipantPpkProblems(participantsPpkTopicsStats, participantId)
     }
     const getParticipantsProblems = (participants: IParticipant[]) => {
-        
+        let problemsCount = 0
         const participantsProblems = participants.map(participant => {
             const { problems } = getParticipantProblems(participant.id)
             return {
@@ -56,12 +56,15 @@ export const useParticipantPpk = () => {
                 const typeKey = Number(key) as number
                 if (problem[typeKey]?.problems && problem[typeKey]?.problems.length > 0) {
                     hasProblems = true
+                    problemsCount += problem[typeKey]?.problems.length
                 }
             }
         })
+        
         return {
             participantsProblems,
-            hasProblems
+            hasProblems,
+            problemsCount
         }
     }
     return {

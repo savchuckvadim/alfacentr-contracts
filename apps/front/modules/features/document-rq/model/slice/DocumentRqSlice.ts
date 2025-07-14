@@ -6,7 +6,7 @@ import { PayloadAction } from "@reduxjs/toolkit"
 export interface DocumentRqGeneral {
     id: number
     header: string
-    value: string
+
 }
 
 export interface DocumentRqAgent {
@@ -51,7 +51,7 @@ const initialState: DocumentRqState = {
     general: {
         id: 0,
         header: '',
-        value: ''
+      
     },
     client: null,
     provider: Provider,
@@ -62,8 +62,13 @@ export const documentRqSlice = createSlice({
     name: 'documentRq',
     initialState,
     reducers: {
-        setClient: (state: DocumentRqState, action: PayloadAction<DocumentRqAgent>) => {
-            state.client = action.payload
+        setClient: (state: DocumentRqState, action: PayloadAction<{
+            client: DocumentRqAgent
+            header: string
+        }>) => {
+            
+            state.client = action.payload.client
+            state.general.header = action.payload.header
         },
         setProvider: (state: DocumentRqState, action: PayloadAction<DocumentRqAgent>) => {
             state.provider = action.payload

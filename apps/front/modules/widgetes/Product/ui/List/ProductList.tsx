@@ -10,13 +10,16 @@ import { ProductsFullStatistics } from "../Statistics/ProductsFullStatistics";
 import { ProductListTitle } from "./components/ProductListTitle";
 import { ProductsProblems } from "../Report/ProductsProblems";
 import { PagePreloader } from "@/modules/shared";
+import { useApp } from "@/modules/app/";
 
 export const ProductList = () => {
     const { loading, error, } = useAlfaProducts()
+    const { isClient } = useApp()
+    if (!isClient) {
+        return null
+    }
 
-
-
-    if (loading) {
+    if (loading || !isClient) {
         return (<PagePreloader text="Загрузка продуктов..." />
             // <div className="flex items-center justify-center h-64">
             //     <div className="text-center">
@@ -42,8 +45,8 @@ export const ProductList = () => {
 
     return (
         <>
-           
-            {loading && <PagePreloader text="Загрузка продуктов..." />}
+
+            {loading && !isClient && <PagePreloader text="Загрузка продуктов..." />}
             <div className="space-y-6">
                 {/* Заголовок и общая статистика */}
                 <div className="space-y-4">

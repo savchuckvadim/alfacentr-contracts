@@ -14,7 +14,7 @@ appListener.startListening({
         const state = getState() as RootState;
         const domain = state.app.domain;
         const companyId = state.app.bitrix.company?.ID;
-debugger
+
         if (domain && companyId) {
             dispatch(fetchBXRQ(domain, companyId) as any)
         }

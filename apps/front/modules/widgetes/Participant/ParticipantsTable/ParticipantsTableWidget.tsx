@@ -8,7 +8,8 @@ import { ParticipantsProblems } from "../ParticipantReport/ParticipantsProblems"
 
 export const ParticipantsTableWidget = () => {
 
-    const { hasProblems, participantsProblems } = useParticipantsInfo()
+    const { hasProblems, participantsProblems, problemsCount } = useParticipantsInfo()
+    
     return <div>
         <div className="flex flex-row justify-between items-center gap-2 py-2">
             <div className="flex flex-row gap-2 px-2">
@@ -25,7 +26,7 @@ export const ParticipantsTableWidget = () => {
                     >
 
 
-                        {hasProblems ? "Проблемы " + participantsProblems.length : "+"}
+                        {hasProblems ? "Проблемы " + problemsCount : "+"}
 
 
                     </Badge>

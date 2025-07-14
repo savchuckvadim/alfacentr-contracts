@@ -10,13 +10,7 @@ import { useState } from "react";
 
 export const App = ({ children }: { children: React.ReactNode }) => {
     const { initialized, isLoading, isClient } = useApp();
-    if (isClient) {
-        logClient('Afa start', {
-            level: 'info',
-            context: 'Alfa LOG TEST',
-            message: 'Alfa is mounted',
-        });
-    }
+
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -24,8 +18,21 @@ export const App = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     useEffect(() => {
-        if (isMounted) {
-            (window as any).store = store;
+        if (isClient) {
+
+
+            if (isMounted) {
+                if (typeof window !== 'undefined') {
+                    logClient('Afa start', {
+                        level: 'info',
+                        context: 'Alfa LOG TEST',
+                        message: 'Alfa is mounted',
+                    });
+
+
+                    (window as any).store = store;
+                }
+            }
         }
     }, [isMounted])
     return (
@@ -33,7 +40,7 @@ export const App = ({ children }: { children: React.ReactNode }) => {
         <div className="min-h-screen">
 
 
-            {initialized && !isLoading ? (
+            {isClient && initialized && !isLoading ? (
                 children
             ) : (
                 <LoadingScreen />

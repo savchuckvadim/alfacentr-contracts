@@ -1,21 +1,21 @@
 'use client'
 
-import { useAppSelector } from "@/modules/app/lib/hooks/redux"
-import { useEffect, useState } from "react"
+import {  useState } from "react"
 import { filterFieldItems, useBxRq } from "@workspace/bx-rq"
 
 import { RQ_TYPE, CONTRACT_LTYPE, SupplyTypesType, EvsRqItem, getClinetTypeNameByCode, isFieldsEmpty, SupplyTypeEnum, ResolvedRQType, RqItem, BX_ADDRESS_TYPE } from "@workspace/bx-rq"
 import { BxRqBaseEdit } from './BxRqBaseEdit'
 import { BxRqAddressEdit } from './BxRqAddressEdit'
 import { BxRqBankEdit } from './BxRqBankEdit'
-import { Edit2, Save, X } from 'lucide-react'
+import {  Save, X } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Button } from "@workspace/ui/components/button"
 import { Badge } from "@workspace/ui/components/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@workspace/ui/components/tabs"
-import { useDeal } from "../../deal"
+
 import { useClientType } from "@/modules/features/client-type/hook/useClientType"
+import { useApp } from "@/modules/app"
 
 interface BxRqPageProps {
   currentClientType?: RQ_TYPE;
@@ -44,8 +44,10 @@ export const BxRqPage = ({
         saveBank,
         copyAddress 
     } = useBxRq()
-    const domain = useAppSelector(state => state.app.domain);
-    const companyId = useAppSelector(state => state.app.bitrix.company?.ID);
+   
+   
+    // const domain = useAppSelector(state => state.app.domain);
+    // const companyId = useAppSelector(state => state.app.bitrix.company?.ID);
     // const [selectedRq, setSelectedRq] = useState<EvsRqItem | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const {clientType} = useClientType()
@@ -110,6 +112,7 @@ export const BxRqPage = ({
         onCancel?.();
     };
 
+   
     if (isLoading) {
         return (
             <Card>
@@ -133,7 +136,7 @@ export const BxRqPage = ({
         );
     }
  
-    const defRq = rqs[clientType as ResolvedRQType]?.default;
+    // const defRq = rqs[clientType as ResolvedRQType]?.default;
     const currentRqs = current.items;
     const currentRq = current.item ;
 
@@ -159,8 +162,10 @@ export const BxRqPage = ({
     const handleRqSelect = (rqId: string) => {
         const selected = currentRqs.find((rq: EvsRqItem) => rq.bx_id.toString() === rqId);
         if (selected) {
-            debugger
-            setCurrent(rqId);
+            
+            setCurrent({
+                ...selected
+            });
         }
     };
 

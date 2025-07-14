@@ -1,20 +1,12 @@
 'use client'
 
-import React, { useState } from 'react';
-
 import { SummaryPanel } from '../../../widgetes';
-
 import { MainPageContent } from './components/MainPageContent';
-import { useParticipantsInfo } from '@/modules/widgetes/Participant/ParticipantInfoCard/hook/useParticipantsInfo';
-import { useParticipant } from '@/modules/entities';
-import { PagePreloader } from '@/modules/shared/';
 import { useParticipantPpk } from '@/modules/features/participant-product/hook/useParticipantPpk';
 
 export const MainPage = () => {
 
-    const { isLoading} = useParticipantPpk()
 
-    // if (isLoading) return <PagePreloader />
 
     return (
         <div className='flex flex-col min-h-full rounded-full'>

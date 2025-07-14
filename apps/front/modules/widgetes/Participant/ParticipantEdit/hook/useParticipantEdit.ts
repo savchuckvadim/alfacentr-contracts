@@ -8,6 +8,7 @@ export const useEditParticipant = (participantId: number) => {
 
 
     const editable = useAppSelector(state => state.participant.editable)
+    const isEditLoading = useAppSelector(state => state.participant.editLoading)
     const {
 
         name,
@@ -36,6 +37,7 @@ export const useEditParticipant = (participantId: number) => {
 
     }
     return {
+        isEditLoading,
         editable,
         problems,
         name,

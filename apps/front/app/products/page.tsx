@@ -1,3 +1,4 @@
+'use client'
 import { ProductPage } from '@/modules/pages/ProductPage';
 
 export default function Products() {

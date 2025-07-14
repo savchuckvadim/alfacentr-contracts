@@ -12,10 +12,10 @@ clientTypeListener.startListening({
         const state = getState() as RootState;
         const dealData = state.deal.dealData;
         const bxRqState = state.bxrq;
-        debugger
+        
         if (dealData && bxRqState.rqs && bxRqState.isFetched && !bxRqState.isLoading) {
             const currentClientType = getDealClientType(dealData);
-            debugger  
+              
             dispatch(setCurrentRqItems({ clientType: currentClientType }));
 
         }

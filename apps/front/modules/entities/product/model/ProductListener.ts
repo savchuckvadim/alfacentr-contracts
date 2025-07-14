@@ -1,157 +1,157 @@
-import { createListenerMiddleware, isAnyOf, createAction } from '@reduxjs/toolkit';
-import { setProducts, setFetchedProducts } from '@/modules/entities/product/model/ProductSlice';
-import type { RootState } from '@/modules/app/model/store';
+// import { createListenerMiddleware, isAnyOf, createAction } from '@reduxjs/toolkit';
+// import { setProducts, setFetchedProducts } from '@/modules/entities/product/model/ProductSlice';
+// import type { RootState } from '@/modules/app/model/store';
 
-// Пример 1: Слушать конкретные действия
-export const productActionListener = createListenerMiddleware();
+// // Пример 1: Слушать конкретные действия
+// export const productActionListener = createListenerMiddleware();
 
-productActionListener.startListening({
-  // Слушаем только успешную загрузку продуктов
-  actionCreator: setFetchedProducts,
-  effect: async (action, listenerApi) => {
-    const products = action.payload;
-    console.log('Products fetched successfully:', products);
+// productActionListener.startListening({
+//   // Слушаем только успешную загрузку продуктов
+//   actionCreator: setFetchedProducts,
+//   effect: async (action, listenerApi) => {
+//     const products = action.payload;
+//     console.log('Products fetched successfully:', products);
     
-    // Логика после успешной загрузки
-  },
-});
+//     // Логика после успешной загрузки
+//   },
+// });
 
-// Пример 2: Слушать изменения состояния с помощью predicate
-export const productStateListener = createListenerMiddleware();
+// // Пример 2: Слушать изменения состояния с помощью predicate
+// export const productStateListener = createListenerMiddleware();
 
-productStateListener.startListening({
-  // Слушаем любые изменения в состоянии products
-  predicate: (action, currentState, previousState) => {
-    const currentProducts = (currentState as RootState).product.items;
-    const previousProducts = (previousState as RootState).product.items;
+// productStateListener.startListening({
+//   // Слушаем любые изменения в состоянии products
+//   predicate: (action, currentState, previousState) => {
+//     const currentProducts = (currentState as RootState).product.items;
+//     const previousProducts = (previousState as RootState).product.items;
     
-    // Проверяем, изменились ли продукты
-    return currentProducts !== previousProducts;
-  },
-  effect: async (action, listenerApi) => {
-    const state = listenerApi.getState() as RootState;
-    const products = state.product.items;
+//     // Проверяем, изменились ли продукты
+//     return currentProducts !== previousProducts;
+//   },
+//   effect: async (action, listenerApi) => {
+//     const state = listenerApi.getState() as RootState;
+//     const products = state.product.items;
     
-    console.log('Products state changed:', {
-      action: action.type,
-      productsCount: products.length
-    });
-  },
-});
+//     console.log('Products state changed:', {
+//       action: action.type,
+//       productsCount: products.length
+//     });
+//   },
+// });
 
-// Пример 3: Слушать несколько действий одновременно
-export const productMultiActionListener = createListenerMiddleware();
+// // Пример 3: Слушать несколько действий одновременно
+// export const productMultiActionListener = createListenerMiddleware();
 
-productMultiActionListener.startListening({
-  // Слушаем несколько действий
-  matcher: isAnyOf(setProducts, setFetchedProducts),
-  effect: async (action, listenerApi) => {
-    const state = listenerApi.getState() as RootState;
-    const products = state.product.items;
+// productMultiActionListener.startListening({
+//   // Слушаем несколько действий
+//   matcher: isAnyOf(setProducts, setFetchedProducts),
+//   effect: async (action, listenerApi) => {
+//     const state = listenerApi.getState() as RootState;
+//     const products = state.product.items;
     
-    console.log(`Products updated via ${action.type}:`, products);
-  },
-});
+//     console.log(`Products updated via ${action.type}:`, products);
+//   },
+// });
 
-// Пример 4: Слушать с условием
-export const productConditionalListener = createListenerMiddleware();
+// // Пример 4: Слушать с условием
+// export const productConditionalListener = createListenerMiddleware();
 
-productConditionalListener.startListening({
-  matcher: isAnyOf(setProducts, setFetchedProducts),
-  effect: async (action, listenerApi) => {
-    const state = listenerApi.getState() as RootState;
-    const products = state.product.items;
+// productConditionalListener.startListening({
+//   matcher: isAnyOf(setProducts, setFetchedProducts),
+//   effect: async (action, listenerApi) => {
+//     const state = listenerApi.getState() as RootState;
+//     const products = state.product.items;
     
-    // Выполняем логику только если есть продукты
-    if (products.length > 0) {
-      console.log('Products available:', products.length);
+//     // Выполняем логику только если есть продукты
+//     if (products.length > 0) {
+//       console.log('Products available:', products.length);
       
-      // Можно диспатчить дополнительные действия
-      // listenerApi.dispatch(someOtherAction());
-    }
-  },
-});
+//       // Можно диспатчить дополнительные действия
+//       // listenerApi.dispatch(someOtherAction());
+//     }
+//   },
+// });
 
-// Пример 5: Слушать с задержкой (debounce)
-export const productDebounceListener = createListenerMiddleware();
+// // Пример 5: Слушать с задержкой (debounce)
+// export const productDebounceListener = createListenerMiddleware();
 
-productDebounceListener.startListening({
-  matcher: isAnyOf(setProducts, setFetchedProducts),
-  effect: async (action, listenerApi) => {
-    // Ждем 500мс перед выполнением логики
-    await listenerApi.delay(500);
+// productDebounceListener.startListening({
+//   matcher: isAnyOf(setProducts, setFetchedProducts),
+//   effect: async (action, listenerApi) => {
+//     // Ждем 500мс перед выполнением логики
+//     await listenerApi.delay(500);
     
-    const state = listenerApi.getState() as RootState;
-    const products = state.product.items;
+//     const state = listenerApi.getState() as RootState;
+//     const products = state.product.items;
     
-    console.log('Products updated (debounced):', products);
-  },
-});
+//     console.log('Products updated (debounced):', products);
+//   },
+// });
 
-// Пример 6: Слушать с отменой предыдущих вызовов
-export const productCancelableListener = createListenerMiddleware();
+// // Пример 6: Слушать с отменой предыдущих вызовов
+// export const productCancelableListener = createListenerMiddleware();
 
-productCancelableListener.startListening({
-  matcher: isAnyOf(setProducts, setFetchedProducts),
-  effect: async (action, listenerApi) => {
-    // Отменяем предыдущие вызовы этого listener
-    listenerApi.cancelActiveListeners();
+// productCancelableListener.startListening({
+//   matcher: isAnyOf(setProducts, setFetchedProducts),
+//   effect: async (action, listenerApi) => {
+//     // Отменяем предыдущие вызовы этого listener
+//     listenerApi.cancelActiveListeners();
     
-    const state = listenerApi.getState() as RootState;
-    const products = state.product.items;
+//     const state = listenerApi.getState() as RootState;
+//     const products = state.product.items;
     
-    console.log('Products updated (canceled previous):', products);
-  },
-});
+//     console.log('Products updated (canceled previous):', products);
+//   },
+// });
 
-// Пример 7: Слушать с получением предыдущего состояния
-export const productPreviousStateListener = createListenerMiddleware();
+// // Пример 7: Слушать с получением предыдущего состояния
+// export const productPreviousStateListener = createListenerMiddleware();
 
-productPreviousStateListener.startListening({
-  matcher: isAnyOf(setProducts, setFetchedProducts),
-  effect: async (action, listenerApi) => {
-    const state = listenerApi.getState() as RootState;
-    const currentProducts = state.product.items;
+// productPreviousStateListener.startListening({
+//   matcher: isAnyOf(setProducts, setFetchedProducts),
+//   effect: async (action, listenerApi) => {
+//     const state = listenerApi.getState() as RootState;
+//     const currentProducts = state.product.items;
     
-    // Получаем предыдущее состояние
-    const previousState = listenerApi.getOriginalState() as RootState;
-    const previousProducts = previousState.product.items;
+//     // Получаем предыдущее состояние
+//     const previousState = listenerApi.getOriginalState() as RootState;
+//     const previousProducts = previousState.product.items;
     
-    console.log('Products changed:', {
-      previous: previousProducts.length,
-      current: currentProducts.length,
-      difference: currentProducts.length - previousProducts.length
-    });
-  },
-});
+//     console.log('Products changed:', {
+//       previous: previousProducts.length,
+//       current: currentProducts.length,
+//       difference: currentProducts.length - previousProducts.length
+//     });
+//   },
+// });
 
-// Пример 8: Слушать с отправкой дополнительных действий
-export const productActionDispatcherListener = createListenerMiddleware();
+// // Пример 8: Слушать с отправкой дополнительных действий
+// export const productActionDispatcherListener = createListenerMiddleware();
 
-// Создаем дополнительное действие
-const productsUpdated = createAction('products/updated');
+// // Создаем дополнительное действие
+// const productsUpdated = createAction('products/updated');
 
-productActionDispatcherListener.startListening({
-  matcher: isAnyOf(setProducts, setFetchedProducts),
-  effect: async (action, listenerApi) => {
-    const state = listenerApi.getState() as RootState;
-    const products = state.product.items;
+// productActionDispatcherListener.startListening({
+//   matcher: isAnyOf(setProducts, setFetchedProducts),
+//   effect: async (action, listenerApi) => {
+//     const state = listenerApi.getState() as RootState;
+//     const products = state.product.items;
     
-    console.log('Products updated, dispatching additional action');
+//     console.log('Products updated, dispatching additional action');
     
-    // Отправляем дополнительное действие
-    listenerApi.dispatch(productsUpdated());
-  },
-});
+//     // Отправляем дополнительное действие
+//     listenerApi.dispatch(productsUpdated());
+//   },
+// });
 
-// Экспортируем все listeners
-export const allProductListeners = [
-  productActionListener,
-  productStateListener,
-  productMultiActionListener,
-  productConditionalListener,
-  productDebounceListener,
-  productCancelableListener,
-  productPreviousStateListener,
-  productActionDispatcherListener,
-]; 
+// // Экспортируем все listeners
+// export const allProductListeners = [
+//   productActionListener,
+//   productStateListener,
+//   productMultiActionListener,
+//   productConditionalListener,
+//   productDebounceListener,
+//   productCancelableListener,
+//   productPreviousStateListener,
+//   productActionDispatcherListener,
+// ]; 

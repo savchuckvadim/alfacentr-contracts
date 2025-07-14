@@ -1,3 +1,4 @@
+'use client'
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { setProducts, setFetchedProducts } from '@/modules/entities/product/model/ProductSlice';
 import { fetchProducts } from '@/modules/entities/product/model/ProductThunk';

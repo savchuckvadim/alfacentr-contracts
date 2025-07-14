@@ -48,7 +48,7 @@ export const bxrqSlice = createSlice({
             bxrq: EVSBXRQ
         }>) => {
             const pay = action.payload
-            
+
             state.rqs = {
                 ...state.rqs,
                 [RQ_TYPE.ORGANIZATION]: pay.bxrq?.[RQ_TYPE.ORGANIZATION] || null,
@@ -62,7 +62,7 @@ export const bxrqSlice = createSlice({
             state.errors = null;
         },
         setFetchedStatus: (state: BXRQState, action: PayloadAction<boolean>) => {
-            
+
             state.isFetched = action.payload;
             state.isLoading = false;
         },
@@ -71,10 +71,10 @@ export const bxrqSlice = createSlice({
         },
         setCurrentRqItems: (state: BXRQState, action: PayloadAction<{ clientType: RQ_TYPE }>) => {
             if (!state.rqs) return;
-            
+
             const resolvedType = getResolvedType(action.payload.clientType);
             const rqData = state.rqs[resolvedType];
-            
+
             if (!rqData) return;
 
             const isDefault = !rqData.items || !rqData.items.length || rqData.items[0]?.bx_id === -1;
@@ -83,7 +83,7 @@ export const bxrqSlice = createSlice({
                 : [rqData.default];
 
             const item: EvsRqItem = items.length > 0 ? items[0]! : rqData.default!;
-debugger
+
             state.current.items = items;
             state.current.item = item;
         },
@@ -93,14 +93,15 @@ debugger
                 state.rqs[resolvedType].items = state.current.items;
             }
         },
-        setCurrentItem: (state: BXRQState, action: PayloadAction<{ rq_id: number }>) => {
-            const searchingCurrent = state.current.items.find(item => item.bx_id === action.payload.rq_id) || state.current.item;
-            state.current.item = searchingCurrent;
+        setCurrentItem: (state: BXRQState, action: PayloadAction<{ item: EvsRqItem }>) => {
+            const searchingCurrent = state.current.items.find(item => item.bx_id === action.payload.item.bx_id) || state.current.item;
+            debugger
+            state.current.item = !searchingCurrent ? null : { ...action.payload.item };
         },
-        initBaseCreating: (state: BXRQState, action: PayloadAction<{ 
-            currentClientType: RQ_TYPE; 
-            contractType: CONTRACT_LTYPE; 
-            supplyType: SupplyTypesType; 
+        initBaseCreating: (state: BXRQState, action: PayloadAction<{
+            currentClientType: RQ_TYPE;
+            contractType: CONTRACT_LTYPE;
+            supplyType: SupplyTypesType;
         }>) => {
             if (state.current.item) {
                 const base = { ...state.current.item };
@@ -121,7 +122,7 @@ debugger
         },
         initAddressCreating: (state: BXRQState, action: PayloadAction<{ typeId: AddressTypeId }>) => {
             if (!state.current.item) return;
-            
+
             const searchingCreating = state.current.item.address.items.find(address =>
                 address.type_id === action.payload.typeId
             );
@@ -132,7 +133,7 @@ debugger
         },
         initCopyAddressCreating: (state: BXRQState, action: PayloadAction<{ typeId: AddressTypeId }>) => {
             if (!state.current.item) return;
-            
+
             const copySearchingCreating = state.current.item.address.items.find(address =>
                 address.type_id !== action.payload.typeId
             );

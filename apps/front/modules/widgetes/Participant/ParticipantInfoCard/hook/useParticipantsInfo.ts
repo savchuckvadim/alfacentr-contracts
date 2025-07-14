@@ -20,7 +20,8 @@ export const useParticipantsInfo = () => {
     const withPpkCount = participantsIds.filter(id => isParticipantPpk(id)).length
     const withoutPpkCount = participantsCount - withPpkCount
    
-    const { participantsProblems, hasProblems } = getParticipantsProblems(participants)
+    const { participantsProblems, hasProblems, problemsCount } = getParticipantsProblems(participants)
+    
     return {
         participants,
 
@@ -33,7 +34,8 @@ export const useParticipantsInfo = () => {
         paricipantWithProblemCount,
         participantToProducts,
         participantsProblems,
-        hasProblems
+        hasProblems,
+        problemsCount
     }
 }
 

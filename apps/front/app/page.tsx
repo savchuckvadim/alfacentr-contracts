@@ -1,5 +1,5 @@
-import { Button } from "@workspace/ui/components/button"
-import Link from "next/link"
+// import { Button } from "@workspace/ui/components/button"
+// import Link from "next/link"
 
 export default function Page() {
   return (
@@ -7,10 +7,10 @@ export default function Page() {
       <div className="flex flex-col items-center justify-center gap-6 bg-background p-8 rounded-lg border">
         <h1 className="text-3xl font-bold text-foreground">Alfacentr</h1>
         <p className="text-muted-foreground text-center max-w-md">
-          Демонстрационная страница для управления товарами и участниками
+        страница для управления товарами и участниками
         </p>
         
-        <div className="flex flex-col sm:flex-row gap-4">
+        {/* <div className="flex flex-col sm:flex-row gap-4">
           <Link href="/products">
             <Button className="flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,7 +28,7 @@ export default function Page() {
               Участники
             </Button>
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   )

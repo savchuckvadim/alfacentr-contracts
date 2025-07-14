@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
  } from '../model/bx-rq-slice';
 import { fetchBXRQ } from '../model/bx-rq-thunk';
 import { AppThunkDispatch } from '../model/bx-rq-thunk-types';
+import { EvsRqItem } from '@/type/evs-rq-type';
 
 // // Хук для получения всего состояния
 export const useBXRQState = () => {
@@ -68,8 +69,8 @@ export const useBxRq = () => {
         ...state,
         ...actions,
         fetchBXRQ: (domain: string, companyId: number) => dispatch(fetchBXRQ(domain, companyId)),
-        // Заглушки для методов сохранения - их нужно будет реализовать
-        setCurrent: (rqId: string) => dispatch(setCurrentItem({rq_id: Number(rqId)})),
+      
+        setCurrent: (item: EvsRqItem) => dispatch(setCurrentItem({item})),
         saveBase: async (fields: any[]) => {
             console.log('saveBase called with:', fields);
             // TODO: Реализовать сохранение основных полей

@@ -1,6 +1,12 @@
+'use client'
+import { useApp } from "@/modules/app"
 import { BxRqPage } from "@/modules/entities/bx-rq/ui/BxRqPage"
 
-async function Page() {   
+function Page() {
+    const { isClient } = useApp()
+    if (!isClient) {
+        return null
+    }
     return <div><BxRqPage /></div>
 }
 

@@ -1,9 +1,15 @@
-import { DocumentGlobalConfig, ProductList } from "@/modules/widgetes"
+'use client'
+import { ProductList } from "@/modules/widgetes"
+
 
 export const ProductPage = () => {
+    // const { isClient } = useApp()
+    // if (!isClient) {
+    //     return null
+    // }
     return (
         <div>
-          
+
             <ProductList />
         </div>
     )

@@ -1,3 +1,4 @@
+'use client'
 import { RootState } from "@/modules/app/model/store";
 import { addParticipant, deleteParticipant, fetchParticipants, fetchProducts, setFetchedProducts, setParticipants, setProducts, updateParticipant } from "@/modules/entities";
 import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";

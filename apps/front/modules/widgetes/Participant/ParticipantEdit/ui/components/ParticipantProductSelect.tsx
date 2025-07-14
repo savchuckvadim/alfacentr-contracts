@@ -27,7 +27,7 @@ export const ParticipantProductPpkSelect = ({ field, changeEditable }: { field: 
     const handleDelete = () => {
         changeEditable(field.code, '')
     }
-
+    const isFieldEmpty = !field.value || field.value.length === 0
     return (
         <div className="w-full">
             {isEdit ? (
@@ -67,14 +67,14 @@ export const ParticipantProductPpkSelect = ({ field, changeEditable }: { field: 
                                 <div className="flex items-center gap-2 mb-2">
                                     <PackageIcon className="w-4 h-4 text-primary" />
                                     <span className="text-sm font-medium text-foreground">Продукт ППК</span>
-                                    {field.value && (
+                                    {/* {field.value && (
                                         <Badge variant="secondary" className="text-xs">
                                             Назначен
                                         </Badge>
-                                    )}
+                                    )} */}
                                 </div>
                                 
-                                {field.value ? (
+                                {field.value && field.value.length > 0 ? (
                                     <div className="space-y-2">
                                         <Textarea
                                             className="min-h-[40px] resize-none bg-muted/30 border-0 text-sm leading-relaxed"
