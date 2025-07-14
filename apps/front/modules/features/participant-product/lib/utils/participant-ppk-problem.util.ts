@@ -8,7 +8,7 @@ export const getParticipantPpkProblems = (
     const participantPpkTopicsStats = participantsPpkTopicsStats[participantId] ?? []
     const hasProblems = participantPpkTopicsStats.some(stat => stat.status === 'missing_ppk' || stat.status === 'missing_ppk_quantity') ?? false
     const problems = participantPpkTopicsStats.filter(stat => stat.status === 'missing_ppk' || stat.status === 'missing_ppk_quantity')
-
+    debugger
     return {
         hasProblems,
         participantPpkTopicsStats: participantPpkTopicsStats ?? [],

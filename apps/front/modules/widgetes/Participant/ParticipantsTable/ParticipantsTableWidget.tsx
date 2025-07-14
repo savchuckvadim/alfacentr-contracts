@@ -5,10 +5,11 @@ import Link from "next/link"
 import { useParticipantsInfo } from "../ParticipantInfoCard/hook/useParticipantsInfo"
 import { Tooltip } from "@/modules/shared"
 import { ParticipantsProblems } from "../ParticipantReport/ParticipantsProblems"
+import { useParticipantsList } from "../../shared/hooks"
 
 export const ParticipantsTableWidget = () => {
 
-    const { hasProblems, participantsProblems, participantsProblemsCount } = useParticipantsInfo()
+    const { hasProblems, participantsProblemsCount, participantsProblems } = useParticipantsList()
     debugger
     return <div>
         <div className="flex flex-row justify-between items-center gap-2 py-2">

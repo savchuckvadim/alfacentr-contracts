@@ -9,8 +9,9 @@ export interface ProductFullStatisticItemProps {
         value: number,
         isDestructive?: boolean
     }[]
+    isBigBadge?: boolean
 }
-export const ProductFullStatisticItem = ({ title, items }: ProductFullStatisticItemProps) => {
+export const ProductFullStatisticItem = ({ title, items, isBigBadge }: ProductFullStatisticItemProps) => {
     return <SimpleCard
         title={title}
 
@@ -19,7 +20,7 @@ export const ProductFullStatisticItem = ({ title, items }: ProductFullStatisticI
             {items.map((item) => (
                 <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">{item.title}</span>
-                    <Badge variant={item.isDestructive ? "destructive" : "default"} className="text-xs">{item.value}</Badge>
+                    <Badge variant={item.isDestructive ? "destructive" : "default"} className={`text-xs h-5 ${isBigBadge ? "w-15" : "w-5 "}`}>{item.value}</Badge>
                 </div>
             ))}
         </div>

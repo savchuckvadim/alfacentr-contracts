@@ -26,14 +26,16 @@ export const useParticipantProductProblems = () => {
                 for (const key in problem) {
                     const typeKey = Number(key) as number;
                     if (problem[typeKey]?.problems && problem[typeKey]?.problems.length > 0) {
+                        debugger
                         hasProblems = true;
                     }
                 }
             });
-
+debugger
             return {
                 participantsProblems,
-                hasProblems
+                hasProblems,
+                problemsCount: participantsProblems.length
             };
         },
 
@@ -54,6 +56,7 @@ export const useParticipantProductProblems = () => {
             return {
                 problems,
                 hasProblems: problems.length > 0,
+             
                 unassignedCount,
                 topicsWithDeficit
             };

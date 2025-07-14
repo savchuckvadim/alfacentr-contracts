@@ -1,4 +1,4 @@
-import { DocumentGlobalConfig, ProductList } from "@/modules/widgetes"
+import {  ProductList } from "@/modules/widgetes"
 
 export const ProductPage = () => {
     return (

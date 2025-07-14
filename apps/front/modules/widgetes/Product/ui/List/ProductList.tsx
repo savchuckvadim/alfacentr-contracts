@@ -5,7 +5,7 @@ import {
     XCircle,
 } from "lucide-react";
 import { ProductListContent } from "./components/ProductListContent";
-import { DocumentGlobalConfig, ParticipantsProblems } from "@/modules/widgetes/";
+import { ParticipantsProblems } from "@/modules/widgetes/";
 import { ProductsFullStatistics } from "../Statistics/ProductsFullStatistics";
 import { ProductListTitle } from "./components/ProductListTitle";
 import { ProductsProblems } from "../Report/ProductsProblems";
@@ -20,14 +20,7 @@ export const ProductList = () => {
 
 
     if (loading) {
-        return (<PagePreloader text="Загрузка продуктов..." />
-            // <div className="flex items-center justify-center h-64">
-            //     <div className="text-center">
-            //         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            //         <p className="text-muted-foreground">Загрузка продуктов...</p>
-            //     </div>
-            // </div>
-        )
+        return (<PagePreloader text="Загрузка продуктов..." />)
     }
 
     if (error) {

@@ -63,7 +63,8 @@ export const ProductsFullStatistics = () => {
                 key={stat.title}
                 title={stat.title}
                 items={stat.items}
-             
+                isBigBadge={stat.title === 'Финансы'}
+
             />
         ))}
     </div >

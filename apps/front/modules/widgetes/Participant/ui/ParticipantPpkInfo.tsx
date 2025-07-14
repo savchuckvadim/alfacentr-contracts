@@ -1,6 +1,6 @@
 'use client'
 
-import { getParticipantAddress, getParticipantDays, getParticipantEmail, getParticipantFormat, getParticipantIsPpk, getParticipantName, getParticipantPhone, getParticipantPrograms, getProductFieldByCodeValue, getProductFieldValue, useParticipant } from "@/modules/entities"
+import { getParticipantAddress, getParticipantDays, getParticipantEmail, getParticipantFormat, getParticipantIsPpk, getParticipantName, getParticipantPhone, getParticipantPrograms, useParticipant } from "@/modules/entities"
 import { useParticipantPpk } from "@/modules/features/participant-product"
 import { getMissingProductsByParticipantPpkThemes } from "@/modules/features/participant-product/lib/utils/participant-products"
 
@@ -33,6 +33,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { cutString } from "@/modules/lib"
 import { Tooltip } from "@/modules/shared"
 import { useApp } from "@/modules/app/lib/hooks/app"
+import { getProductFieldByCodeValue, IAlfaProduct } from "@/modules/entities/product"
 
 export const ParticipantPpkInfo = ({ participantId }: { participantId: number }) => {
     const { isClient } = useApp();
@@ -325,7 +326,7 @@ export const ParticipantPpkInfo = ({ participantId }: { participantId: number })
                         <CardContent className="space-y-3">
                             {products && products.length > 0 ? (
                                 <div className="grid gap-3">
-                                    {products.map((product, index) => {
+                                    {products.map((product: IAlfaProduct, index: number) => {
                                         const productTopicName = getProductFieldByCodeValue(product, 'SEMINAR_TOPIC')?.value
                                         if (!productTopicName) return null
 

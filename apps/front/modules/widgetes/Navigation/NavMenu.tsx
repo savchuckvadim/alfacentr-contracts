@@ -1,14 +1,13 @@
-'use client'
 import Link from "next/link"
 
-export const NavMenu = () => {
+export const NavMenu = ({withBurger}: {withBurger: boolean}) => {
     return (
         <div className="flex items-center justify-between"      >
             <nav className="hidden md:flex items-center space-x-6">
                 <Link href="/bitrix" className="text-gray-600 hover:text-primary transition-colors">
                     Главная
                 </Link>
-                <Link href="/bitrix" className="text-gray-600 hover:text-primary transition-colors">
+                <Link href="/client-bid" className="text-gray-600 hover:text-primary transition-colors">
                     Заявка
                 </Link>
                 <Link href="/participants" className="text-gray-600 hover:text-primary transition-colors">

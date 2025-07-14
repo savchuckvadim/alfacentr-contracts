@@ -3,20 +3,18 @@ import React, { useState } from 'react';
 import { Button } from '@workspace/ui/components/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@workspace/ui/components/table';
 import { Badge } from '@workspace/ui/components/badge';
-import { BxProductRowWithProduct } from '../../model/ProductSlice';
-import { DeleteConfirmModal } from './DeleteConfirmModal';
-import Link from 'next/link';
-import { useAlfaProducts } from '../../hook/useAlfaProducts';
+import { BxProductRowWithProduct } from '../../../../entities/product/model/ProductSlice';
+import { DeleteConfirmModal } from '../DeleteConfirm/DeleteConfirmModal';
 
-// interface ProductsTableProps {
-//   products: BxProductRowWithProduct[];
-//   onEdit: (product: BxProductRowWithProduct) => void;
-//   onDelete: (productId: number) => void;
-//   isLoading?: boolean;
-// }
+import { useAlfaProducts } from '../../../../entities/product/hook/useAlfaProducts';
+import { useProductsByParticipants } from '@/modules/features/participant-product/hook/useProductsByParticipants';
+import { ProductsTable } from './components/Table/ProductsTable';
 
-export function ProductsTable() {
+
+export function ProductsTableWidget() {
   const { items, loading, error } = useAlfaProducts()
+  const {} = useProductsByParticipants()
+
   const [onDelete, setOnDelete] = useState<number | null>(null)
   const [onEdit, setOnEdit] = useState<BxProductRowWithProduct | null>(null)
   const [deleteModal, setDeleteModal] = useState<{
@@ -109,7 +107,9 @@ export function ProductsTable() {
               <TableHead className="w-32">Действия</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          
+          <ProductsTable products={items}/>
+          {/* <TableBody>
             {items.map((product, index) => {
               const status = getProductStatus(product);
               const productName = product.productName || product.product?.name || 'Не указано';
@@ -173,7 +173,7 @@ export function ProductsTable() {
                 </TableRow>
               );
             })}
-          </TableBody>
+          </TableBody> */}
         </Table>
       </div>
 
