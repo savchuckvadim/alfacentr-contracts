@@ -16,6 +16,7 @@ export const useEditParticipant = (participantId: number) => {
         format,
         isPpk,
         programs,
+        
         activateEditable,
         cancelEditable,
         changeEditable,
@@ -25,10 +26,12 @@ export const useEditParticipant = (participantId: number) => {
       
     } = useParticipant(participantId)
 
-    const { problems } = useParticipantInfo(participantId)
+    const { problems,
+       
+     } = useParticipantInfo(participantId)
 
     const editParticipantTopic = (fieldCode: BxParticipantsDataKeys, value: string) => {
-        debugger
+        
         changeEditable(fieldCode, value)
 
     }

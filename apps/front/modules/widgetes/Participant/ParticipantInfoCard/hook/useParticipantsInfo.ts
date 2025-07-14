@@ -6,7 +6,7 @@ export const useParticipantsInfo = () => {
 
     const participantsIds = participants.map(participant => participant.id)
     const {
-
+        topicStats,
         participantToProducts,
         isLoading: isParticipantPpkLoading,
         isParticipantPpk,
@@ -19,24 +19,7 @@ export const useParticipantsInfo = () => {
     const paricipantWithProblemCount = participantsIds.filter(id => getParticipantProblems(id).hasProblems).length
     const withPpkCount = participantsIds.filter(id => isParticipantPpk(id)).length
     const withoutPpkCount = participantsCount - withPpkCount
-    // const participantsProblems = participants.map(participant => {
-    //     const { problems } = getParticipantProblems(participant.id)
-    //     return {
-    //         [participant.id]: {
-    //             name: getParticipantName(participant),
-    //             problems
-    //         }
-    //     }
-    // })
-    // let hasProblems = false
-    // participantsProblems.forEach(problem => {
-    //     for (const key in problem) {
-    //         const typeKey = Number(key) as number
-    //         if (problem[typeKey]?.problems && problem[typeKey]?.problems.length > 0) {
-    //             hasProblems = true
-    //         }
-    //     }
-    // })
+   
     const { participantsProblems, hasProblems } = getParticipantsProblems(participants)
     return {
         participants,

@@ -36,7 +36,7 @@ export const useDeal = () => {
         dispatch(updateFieldValue({ fieldKey, value }));
     };
 
-    const updateFieldWithAPI = async (fieldKey: BxDealDataKeys, value: string) => {
+    const updateFieldWithAPI = async (fieldKey: BxDealDataKeys, value: string | number) => {
         const field = getFieldByCode(fieldKey);
         if (!field) {
             throw new Error(`Field ${fieldKey} not found`);
@@ -47,6 +47,7 @@ export const useDeal = () => {
             value,
             field
         }
+        
         dispatch(updateFieldValue({ fieldKey, value }));
         return dispatch(updateDealField(payload));
     };

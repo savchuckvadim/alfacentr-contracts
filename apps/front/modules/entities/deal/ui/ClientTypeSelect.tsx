@@ -12,13 +12,14 @@ export const ClientTypeSelect = () => {
     const clientTypeOptions = clientTypeList?.map((item) => (
         <option key={item.bitrixId} value={item.bitrixId}>{item.name}</option>
     ));
-    return <div>
-        <Select value={clientType} onValueChange={(value) => {
-            updateFieldWithAPI(BxDealDataKeys.organization_type, value);
+    
+    return <div >
+        <Select   value={clientType} onValueChange={(value) => {
+            updateFieldWithAPI(BxDealDataKeys.organization_type, Number(value));
         }}
             defaultValue={clientType}
         >
-            <SelectTrigger>
+            <SelectTrigger size="sm" className="h-5">
                 <SelectValue placeholder="Выберите тип клиента" />
             </SelectTrigger>
             <SelectContent>

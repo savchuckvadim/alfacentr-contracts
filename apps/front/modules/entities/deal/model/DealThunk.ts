@@ -2,12 +2,12 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { updateDeal } from "../lib/service/deal-update.service";
 import { IDealFieldsData } from "../type/deal-field.type";
 import { BxDealDataKeys } from "@alfa/entities";
-import {  RootState } from "@/modules/app/model/store";
+import { RootState } from "@/modules/app/model/store";
 
 export interface UpdateDealFieldPayload {
     dealId?: number;
     fieldKey: BxDealDataKeys;
-    value: string;
+    value: string | number;
     field: IDealFieldsData;
 }
 
@@ -23,8 +23,8 @@ export const updateDealField = createAsyncThunk(
                 return rejectWithValue('Deal ID is required');
             }
             // Вызываем сервис обновления сделки
-            await updateDeal(dealId, value, field);
-
+            const res = await updateDeal(dealId, value, field);
+            
             // Возвращаем данные для обновления состояния
             return {
                 fieldKey: payload.fieldKey,

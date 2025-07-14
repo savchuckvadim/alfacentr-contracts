@@ -245,7 +245,7 @@ export type TField = {
     multiple: boolean
     mandatory: boolean
     group: string
-    value: string
+    value: string | number | string[] | number[]
     type: 'enumeration' | 'string' | 'boolean' | 'date' | 'number' | 'datetime'
 }
 export type TFieldSelect = TField & {

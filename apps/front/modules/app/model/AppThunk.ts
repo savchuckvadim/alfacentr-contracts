@@ -1,20 +1,14 @@
-;
-import { TESTING_DOMAIN, TESTING_USER } from "../consts/app-global";
+
 import { appActions } from "./AppSlice";
-import { AppDispatch, AppGetState, AppThunk, initWSClient } from "./store";
+import { AppDispatch, AppGetState, AppThunk, getWSClient, } from "./store";
 import { WSClient } from "@workspace/ws";
-import { socketThunk } from "./queue-ws-ping-test/QueueWsPingListener";
-import { bitrixInit } from "../lib/bitrix-init/bitrix-init.util";
-import { Bitrix } from "@workspace/bitrix";
-import { fetchProducts, } from "@/modules/entities/product/";
-import { setParticipants } from "@/modules/entities";
-import { getDealFieldsData } from "@/modules/entities/deal/lib/utils/get-deal-fields-data.util";
-import { setDealData } from "@/modules/entities/deal/model/DealSlice";
+
+import { appInit } from "../lib/app-init/app-init.util";
 
 
 export let socket: undefined | WSClient;
-export let IN_BITRIX: boolean = false
-export const initial = (inBitrix: boolean = false): AppThunk =>
+
+export const initial = (): AppThunk =>
   async (dispatch: AppDispatch, getState: AppGetState, { getWSClient }) => {
 
 
@@ -23,66 +17,71 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
     const isLoading = app.isLoading
 
 
-    const bitrix = await Bitrix.start(TESTING_DOMAIN, TESTING_USER)
-    console.log('bitrix', bitrix.api)
-    console.log('bitrix initialized', bitrix.api.getInitializedData())
+
 
     if (!isLoading) {
       dispatch(
         appActions.loading({ status: true })
       )
-
-      const { domain, user } = bitrix.api.getInitializedData();
-
-
-      console.log("user");
-
-      console.log(user);
-
-      const { deal, company, participants } = await bitrixInit() || {}
-      
-      if (deal && company) {
-        Promise.all([
-          dispatch(setParticipants(participants)),
-          dispatch(fetchProducts(deal.ID.toString()) as any),
-          dispatch(
-            setDealData(
-              getDealFieldsData(deal)
-            )
-          )
-          // dispatch(setFetchedProducts(rows))
-        ])
-      }
-
-      initWSClient(Number(user.ID), domain); // <- здесь создаёшь сокет
-      // const socket = getWSClient()
-      dispatch(
-        socketThunk(
-          Number(user.ID),
-          domain
-        )
-      )
-
-
-
-
-      if (deal && company) {
+      appInit(dispatch, getState, getWSClient, () => {
         dispatch(
-          appActions.
-            setAppData(
-              {
-                domain,
-                user,
-                deal,
-                company
+          appActions.loading({ status: false })
+        )
+      })
+      // const bitrix = await Bitrix.start(TESTING_DOMAIN, TESTING_USER)
+      // console.log('bitrix', bitrix.api)
+      // console.log('bitrix initialized', bitrix.api.getInitializedData())
+      // const { domain, user } = bitrix.api.getInitializedData();
 
-              }
-            ))
-      }
 
-      dispatch(
-        appActions.loading({ status: false })
-      )
+      // console.log("user");
+
+      // console.log(user);
+
+      // const { deal, company, participants } = await bitrixInit() || {}
+
+      // if (deal && company) {
+      //   Promise.all([
+      //     dispatch(setParticipants(participants)),
+      //     dispatch(fetchProducts(deal.ID.toString()) as any),
+      //     dispatch(
+      //       setDealData(
+      //         getDealFieldsData(deal)
+      //       )
+      //     )
+      //     // dispatch(setFetchedProducts(rows))
+      //   ])
+      // }
+
+      // initWSClient(Number(user.ID), domain); // <- здесь создаёшь сокет
+      // // const socket = getWSClient()
+      // dispatch(
+      //   socketThunk(
+      //     Number(user.ID),
+      //     domain
+      //   )
+      // )
+
+
+
+
+      // if (deal && company) {
+      //   dispatch(
+      //     appActions.
+      //       setAppData(
+      //         {
+      //           domain,
+      //           user,
+      //           deal,
+      //           company
+
+      //         }
+      //       ))
+      // }
+
+      // dispatch(
+      //   appActions.loading({ status: false })
+      // )
       // dispatch(departmentAPI.endpoints.getDepartment.initiate({ domain }));
 
 
@@ -92,18 +91,25 @@ export const initial = (inBitrix: boolean = false): AppThunk =>
 
   };
 
-export const reloadApp = () => async (dispatch: AppDispatch, getState: AppGetState) => {
+export const reloadApp = (): AppThunk => async (dispatch: AppDispatch, getState: AppGetState, { getWSClient }) => {
 
 
-  setTimeout(() => {
+  const state = getState();
+  const app = state.app;
+  const isReloading = app.isReloading
 
 
+
+
+  if (!isReloading) {
     dispatch(
-      // initialEventApp()
-      appActions.reload()
+      appActions.reloading({ status: true })
     )
+    appInit(dispatch, getState, getWSClient, () => {
+      dispatch(
+        appActions.reloading({ status: false })
+      )
+    })
 
-
-  }, 1000)
-
+  }
 }

@@ -32,18 +32,29 @@ export const BxRqPage = ({
   onSave,
   onCancel
 }: BxRqPageProps) => {
-    const { rqs, isLoading, isFetched, fetchBXRQ, current, saveBase, saveAddress, saveBank, copyAddress } = useBxRq()
+    const { 
+        rqs, 
+        isLoading, 
+        isFetched, 
+        fetchBXRQ, 
+        current, 
+        setCurrent,
+        saveBase, 
+        saveAddress, 
+        saveBank,
+        copyAddress 
+    } = useBxRq()
     const domain = useAppSelector(state => state.app.domain);
     const companyId = useAppSelector(state => state.app.bitrix.company?.ID);
     // const [selectedRq, setSelectedRq] = useState<EvsRqItem | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const {clientType} = useClientType()
   
-    useEffect(() => {
-        if (!isFetched && !isLoading && companyId) {
-            fetchBXRQ(domain, companyId);
-        }
-    }, [isFetched, isLoading, companyId, fetchBXRQ, domain]);
+    // useEffect(() => {
+    //     if (!isFetched && !isLoading && companyId) {
+    //         fetchBXRQ(domain, companyId);
+    //     }
+    // }, [isFetched, isLoading, companyId, fetchBXRQ, domain]);
 
     // useEffect(() => {
     //     if (rqs && currentClientType && rqs[currentClientType as ResolvedRQType]) {
@@ -148,8 +159,8 @@ export const BxRqPage = ({
     const handleRqSelect = (rqId: string) => {
         const selected = currentRqs.find((rq: EvsRqItem) => rq.bx_id.toString() === rqId);
         if (selected) {
-            
-            // setSelectedRq(selected);
+            debugger
+            setCurrent(rqId);
         }
     };
 
@@ -196,7 +207,7 @@ export const BxRqPage = ({
                             </SelectTrigger>
                             <SelectContent>
                                 {currentRqs.map((rq: EvsRqItem) => {
-                                    const displayName = (rq.fields[0]?.value as string)?.slice(0, 25) + "...";
+                                    const displayName = (rq.fields[0]?.value as string)?.slice(0, 45) + "...";
                                     return (
                                         <SelectItem key={rq.bx_id} value={rq.bx_id.toString()}>
                                             {displayName}

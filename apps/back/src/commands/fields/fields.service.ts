@@ -13,14 +13,14 @@ export class FieldsService {
 
         const list = await this.bitrix.deal.getFieldsList({
             'SORT': 1,
-           
+
 
         });
 
         const batchResult = await this.getDetailFields(list.result)
         const rowResults = this.bitrix.api.clearResult(batchResult) as IBXField[]
         const fields = this.prepareFields(rowResults)
-        const filtredFields = fields.filter(field => field.name.includes('Участник 10'))
+        const filtredFields = fields.filter(field => field.bitrixId.includes('UF_CRM_1744358047'))
         return { count: filtredFields.length, filtredFields }
     }
     async getUserFieldsEnumeration() {
@@ -28,7 +28,7 @@ export class FieldsService {
         const list = await this.bitrix.deal.getFieldsList({
             'USER_TYPE_ID': 'enumeration'
         });
-        
+
         return await this.getDetailFields(list.result)
 
     }
@@ -44,6 +44,7 @@ export class FieldsService {
         return result
     }
 
+ 
     private prepareFields(fields: IBXField[]) {
         const result = [] as any[]
         fields.map(field => {
@@ -74,5 +75,7 @@ export class FieldsService {
             sort: listItem.SORT,
         }
     }
+
+
 
 }

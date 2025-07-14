@@ -75,7 +75,7 @@ export function ParticipantsTable() {
 
     return (
         <>
-            <div className="bg-background text-foreground rounded-lg border overflow-hidden">
+            <div className="text-foreground rounded-lg border overflow-hidden">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -85,6 +85,7 @@ export function ParticipantsTable() {
                             <TableHead>Телефон</TableHead>
                             <TableHead>Формат</TableHead>
                             <TableHead>Программы</TableHead>
+                            <TableHead>Товары</TableHead>
                             <TableHead className="w-20">ППК</TableHead>
                             <TableHead className="w-32">Действия</TableHead>
                         </TableRow>

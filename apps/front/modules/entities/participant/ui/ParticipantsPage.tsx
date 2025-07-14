@@ -2,14 +2,9 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@workspace/ui/components/button';
-import { ParticipantsTable } from './components/ParticipantsTable';
 import { fetchParticipants, deleteParticipant } from '../model/ParticipantThunk';
 import { RootState, AppDispatch } from '@/modules/app/model/store';
 
-import { SmartStageEnum } from '@alfa/entities';
-import { Header } from '@/components';
-import Link from 'next/link';
-import { ArrowLeftIcon } from 'lucide-react';
 import { ParticipantPpkListInfo } from '@/modules/widgetes/Participant';
 import { ParticipantStatistics } from './components/ParticipantStatistics';
 import { useParticipant } from '../lib/hook/useParticipant';
@@ -20,31 +15,7 @@ export function ParticipantsPage() {
   const { deal } = useSelector((state: RootState) => state.app.bitrix);
   const [deletingModalActive, setDeletingModalActive] = useState(false);
 
-  const { 
-    activateEditable, 
-    cancelEditable, 
-    changeEditable } = useParticipant();
-  // useEffect(() => {
-  //   // if (deal?.ID) {
-  //   //   dispatch(fetchParticipants(deal.ID.toString()));
-  //   // }
-  // }, [dispatch, deal?.ID]);
 
-  const handleEdit = (participant: any) => {
-    console.log('Редактирование участника:', participant);
-    // Здесь будет логика открытия модального окна редактирования
-    alert(`Редактирование участника: ${participant.id}`);
-  };
-
-  const handleDelete = async (participantId: number) => {
-    try {
-      await dispatch(deleteParticipant(participantId)).unwrap();
-      // dispatch(removeParticipant(participantId));
-    } catch (error) {
-      console.error('Ошибка при удалении участника:', error);
-      alert('Ошибка при удалении участника');
-    }
-  };
 
   const handleAddNew = () => {
     console.log('Добавление нового участника');
@@ -55,11 +26,7 @@ export function ParticipantsPage() {
   return (
 
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Link href="/bitrix" className="text-sm text-gray-500 hover:text-gray-700">
-          <ArrowLeftIcon className="w-4 h-4" />
-        </Link>
-      </div>
+     
       {/* Заголовок */}
       <div className="flex items-center justify-between">
         <div>
@@ -101,13 +68,7 @@ export function ParticipantsPage() {
         </div>
       )}
 
-      {/* Таблица участников */}
-      {/* <ParticipantsTable
-        participants={participants}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        isLoading={loading}
-      /> */}
+   
       <ParticipantPpkListInfo />
     </div>
   );

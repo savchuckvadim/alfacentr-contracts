@@ -6,6 +6,8 @@ import { dealReducer, participantReducer, productReducer } from "@/modules/entit
 import { bxrqReducer } from "@workspace/bx-rq";
 import { contractTypeReducer, contractTypeListener, clientTypeListener } from "@/modules/features";
 import { participantProductListener, participantProductReducer } from "@/modules/features/";
+import { documentRqReducer, rqListener } from "@/modules/features/document-rq";
+import { appListener } from "@/modules/entities/bx-rq/model/listener/AppListener";
 
 
 
@@ -38,6 +40,7 @@ const rootReducer = combineReducers({
   // features
   contractType: contractTypeReducer,
   participantProduct: participantProductReducer,
+  documentRq: documentRqReducer,
   //april
 
 
@@ -71,6 +74,8 @@ export const setupStore = () => {
         .concat(contractTypeListener.middleware)
         .concat(clientTypeListener.middleware)
         .concat(participantProductListener.middleware)
+        .concat(rqListener.middleware)
+        .concat(appListener.middleware)
         // .concat(portalAPI.middleware)
         // .concat(infoblockAPI.middleware)
  

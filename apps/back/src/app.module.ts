@@ -36,6 +36,7 @@ import { EventServiceAppModule } from './apps/event-service/event-service-app.mo
 import { OnDealInitModule } from './modules/on-deal-init/on-deal-init.module';
 import { AlfaProductsModule } from './modules/alfa-products';
 import { AlfaFieldsModule } from './modules/alfa-fields';
+import { FieldsModule } from './commands/fields/fields.module';
 
 
 @Module({
@@ -88,7 +89,7 @@ import { AlfaFieldsModule } from './modules/alfa-fields';
     //commands
     // GarantPricesModule,
     // GsrModule,
-    // FieldsModule,
+    FieldsModule,
     // CategoryModule,
     // ChangeDealCategoryModule,
 
@@ -101,7 +102,7 @@ import { AlfaFieldsModule } from './modules/alfa-fields';
     BxDepartmentModule,
 
 
-
+ 
     HelperModule
   ],
   controllers: [

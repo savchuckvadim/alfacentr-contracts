@@ -23,6 +23,7 @@ export const useParticipant = (id?: number) => {
     const addParticipant = (fields: Partial<IParticipantField<AlfaParticipantSmartItemUserFieldsEnum>>) => {
         dispatch(addBxParticipant(fields))
     }
+    
 
     const name = participant ? getParticipantName(participant) : '';
     const email = participant ? getParticipantEmail(participant) : '';

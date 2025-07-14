@@ -45,24 +45,24 @@ participantProductListener.startListening({
             const ppkDistributor = new PpkDistributorService(participants, products)
             const result = ppkDistributor.distribute()
             
-            console.log(result)
+            // console.log(result)
 
-            for (const stat of result.topicStats) {
-                console.log(`\n📘 Тема: ${stat.topic}`);
-                console.log(`  Участников: ${stat.needed}`);
-                console.log(`  Продуктов (quantity): ${stat.available}`);
-                console.log(`  Разница: ${stat.diff}`);
-                if (stat.diff < 0) console.warn(`  ⚠️ Не хватает мест!`);
-                if (stat.diff > 0) console.warn(`  ⚠️ Лишние места!`);
-            }
+            // for (const stat of result.topicStats) {
+            //     console.log(`\n📘 Тема: ${stat.topic}`);
+            //     console.log(`  Участников: ${stat.needed}`);
+            //     console.log(`  Продуктов (quantity): ${stat.available}`);
+            //     console.log(`  Разница: ${stat.diff}`);
+            //     if (stat.diff < 0) console.warn(`  ⚠️ Не хватает мест!`);
+            //     if (stat.diff > 0) console.warn(`  ⚠️ Лишние места!`);
+            // }
 
-            for (const [participantId, products] of result.participantToProducts.entries()) {
-                console.log(`\n👤 Участник ${participantId} назначен на:`);
+            // for (const [participantId, products] of result.participantToProducts.entries()) {
+            //     console.log(`\n👤 Участник ${participantId} назначен на:`);
                 
-                for (const product of products) {
-                    console.log(`  - ${product.productName}`);
-                }
-            }
+            //     for (const product of products) {
+            //         console.log(`  - ${product.productName}`);
+            //     }
+            // }
             if (result.unassignedParticipants.length > 0) {
                 console.warn('🙅 Участники без мест:');
                 result.unassignedParticipants.forEach(u =>

@@ -20,6 +20,7 @@ const initialState = {
   department: APP_DEP.SERVICE,
   initialized: false,
   isLoading: false,
+  isReloading: false,
   error: {
     status: false as boolean,
     message: "" as string,
@@ -30,7 +31,7 @@ export interface InitApp {
   user: IBXUser;
   deal: IBXDeal;
   company: IBXCompany;
- 
+
 
 }
 const appSlice = createSlice({
@@ -86,16 +87,16 @@ const appSlice = createSlice({
     // ) => {
     //   state.portal = action.payload.portal;
     // },
-    reload: (
+    reloading: (
       state: AppState,
-      action: PayloadAction
+      action: PayloadAction<{ status: boolean }>
 
     ) => {
-      state.initialized = false
+      state.isReloading = action.payload.status
     },
     loading: (
       state: AppState,
-      action: PayloadAction<{status:boolean}>
+      action: PayloadAction<{ status: boolean }>
 
     ) => {
       state.isLoading = action.payload.status

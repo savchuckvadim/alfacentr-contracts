@@ -83,7 +83,7 @@ export const bxrqSlice = createSlice({
                 : [rqData.default];
 
             const item: EvsRqItem = items.length > 0 ? items[0]! : rqData.default!;
-
+debugger
             state.current.items = items;
             state.current.item = item;
         },

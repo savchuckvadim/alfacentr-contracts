@@ -8,6 +8,18 @@ export const useAlfaProducts = () => {
     const seminarProducts = items.filter(product => getIsSeminarProduct(product)) as IAlfaProduct[]
     const seminarPpkProducts = items.filter(product => getIsSeminarPpkProduct(product)) as IAlfaProduct[]
     const upProducts = items.filter(product => getIsUpProduct(product)) as IAlfaProduct[]
-    return { items, loading, error, ppkProducts, seminarProducts, seminarPpkProducts, upProducts }
+    const totalSum = items.reduce((acc, product) => acc + (product.price || 0), 0)
+    const totalProductsCount = items.reduce((acc, product) => acc + (product.quantity || 0), 0)
+
+
+
+    return {
+         items, loading, error, 
+         ppkProducts, seminarProducts,
+          seminarPpkProducts, 
+          upProducts,
+          totalSum,
+          totalProductsCount
+        }
 }
 

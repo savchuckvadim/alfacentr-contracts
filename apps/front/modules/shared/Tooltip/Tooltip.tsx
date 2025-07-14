@@ -34,7 +34,7 @@ export const Tooltip = ({
                 <TooltipContent 
                     side={side} 
                     align={align}
-                    className={className}
+                    className={`${className} `}
                 >
                     {content}
                 </TooltipContent>

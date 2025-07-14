@@ -26,7 +26,7 @@ export const ParticipantStatistics = () => {
         },
         {
             title: 'Завершенные',
-            value: participants.filter(p => p.stage === SmartStageEnum.CLIENT).length,
+            value: participants.filter(p => p.stage === SmartStageEnum.SUCCESS).length,
             icon: 'star',
             color: 'purple'
         },

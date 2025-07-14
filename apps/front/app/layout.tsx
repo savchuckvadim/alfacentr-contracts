@@ -29,7 +29,7 @@ export default function RootLayout({
         className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
       >
         <Providers>
-          <div className="min-h-screen bg-gray-500">
+          <div className="bg-sidebar">
             {/* Хедер */}
             <Header brandComponent={<CompanyBrand />} />
             <App>

@@ -9,7 +9,6 @@ export const useParticipantInfo = (participantId: number) => {
         participantToProducts,
         isLoading: isParticipantPpkLoading,
         isParticipantPpk,
-        getParticipantPpkTopicsStats,
         getParticipantProblems
     } = useParticipantPpk()
     const { hasProblems, participantPpkTopicsStats, problems } = getParticipantProblems(participantId)

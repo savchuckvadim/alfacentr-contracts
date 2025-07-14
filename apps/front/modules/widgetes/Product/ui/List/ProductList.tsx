@@ -5,7 +5,7 @@ import {
     XCircle,
 } from "lucide-react";
 import { ProductListContent } from "./components/ProductListContent";
-import { ParticipantsProblems } from "@/modules/widgetes/";
+import { DocumentGlobalConfig, ParticipantsProblems } from "@/modules/widgetes/";
 import { ProductsFullStatistics } from "../Statistics/ProductsFullStatistics";
 import { ProductListTitle } from "./components/ProductListTitle";
 import { ProductsProblems } from "../Report/ProductsProblems";
@@ -42,7 +42,8 @@ export const ProductList = () => {
 
     return (
         <>
-        {loading && <PagePreloader text="Загрузка продуктов..." />}
+           
+            {loading && <PagePreloader text="Загрузка продуктов..." />}
             <div className="space-y-6">
                 {/* Заголовок и общая статистика */}
                 <div className="space-y-4">

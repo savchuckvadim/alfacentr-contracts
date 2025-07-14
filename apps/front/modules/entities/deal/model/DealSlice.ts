@@ -26,23 +26,26 @@ const dealSlice = createSlice({
     initialState,
     reducers: {
         setDealData: (state, action: PayloadAction<IDealFieldsData[]>) => {
-            
+
             state.dealData = action.payload;
             state.error = null;
         },
         setDealId: (state, action: PayloadAction<number>) => {
             state.dealId = action.payload;
         },
-        updateFieldValue: (state, action: PayloadAction<{ fieldKey: BxDealDataKeys; value: string }>) => {
+        updateFieldValue: (state, action: PayloadAction<{ fieldKey: BxDealDataKeys; value: string | number }>) => {
             const { fieldKey, value } = action.payload;
             
             if (state.dealData) {
                 const field = state.dealData.find(field => field.code === fieldKey);
                 
                 if (field) {
-                    (field as IDealFieldsData).value = value;
+                    
+                    (field as IDealFieldsData).value = value.toString() as string | string[] | number;
+                    state.dealData = state.dealData.map(fld => fld.code === fieldKey ? field : fld);
                 }
             }
+
         },
         clearDeal: (state) => {
             state.dealData = null;
@@ -65,6 +68,9 @@ const dealSlice = createSlice({
         builder.addCase(updateDealField.fulfilled, (state) => {
             state.isUpdating = false;
             state.error = null;
+
+
+            
         });
         builder.addCase(updateDealField.rejected, (state, action) => {
             state.isUpdating = false;

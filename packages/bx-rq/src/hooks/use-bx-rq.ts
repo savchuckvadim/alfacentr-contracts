@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
      setLoading,
 
      setError,
+     setCurrentItem,
     //  clearError
  } from '../model/bx-rq-slice';
 import { fetchBXRQ } from '../model/bx-rq-thunk';
@@ -68,6 +69,7 @@ export const useBxRq = () => {
         ...actions,
         fetchBXRQ: (domain: string, companyId: number) => dispatch(fetchBXRQ(domain, companyId)),
         // Заглушки для методов сохранения - их нужно будет реализовать
+        setCurrent: (rqId: string) => dispatch(setCurrentItem({rq_id: Number(rqId)})),
         saveBase: async (fields: any[]) => {
             console.log('saveBase called with:', fields);
             // TODO: Реализовать сохранение основных полей
