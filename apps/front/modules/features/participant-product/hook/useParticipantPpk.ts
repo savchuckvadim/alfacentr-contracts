@@ -1,83 +1,49 @@
 'use client'
-import { useAppSelector } from "@/modules/app";
-import { getParticipantName, useParticipant } from "@/modules/entities";
+import { useParticipant } from "@/modules/entities";
 import { useAlfaProducts } from "@/modules/entities/product/hook/useAlfaProducts";
 import { useEffect, useState } from "react";
-import { getParticipantPpkProblems } from "../lib/utils/participant-ppk-problem.util";
-import { IParticipant } from "@alfa/entities";
+import { useParticipantProductDistribution } from "../hooks/useParticipantProductDistribution";
+import { useParticipantProductCalculations } from "../hooks/useParticipantProductCalculations";
+import { useParticipantProductProblems } from "../hooks/useParticipantProductProblems";
 
 export const useParticipantPpk = () => {
-    const { loading: isParticipantLoading } = useParticipant()
-    const { loading: isProductsLoading } = useAlfaProducts()
-    const [isLoading, setIsLoading] = useState(false)
+    const { loading: isParticipantLoading } = useParticipant();
+    const { loading: isProductsLoading } = useAlfaProducts();
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        setIsLoading(isParticipantLoading || isProductsLoading)
-    }, [isParticipantLoading, isProductsLoading])
-    const ppkDistribution = useAppSelector(state => state.participantProduct.ppkDistribution)
-    const topicStats = ppkDistribution.topicStats
-    const participantToProducts = ppkDistribution.participantToProducts
-    const productToParticipants = ppkDistribution.productToParticipants
-    const unassignedParticipants = ppkDistribution.unassignedParticipants
-    const participantsPpkTopicsStats = ppkDistribution.participantsPpkTopicsStats
-    const isProductPpk = (productId: number) => {
-        return productToParticipants[productId]
-    }
+        setIsLoading(isParticipantLoading || isProductsLoading);
+    }, [isParticipantLoading, isProductsLoading]);
 
+    const distribution = useParticipantProductDistribution();
+    const calculations = useParticipantProductCalculations();
+    const problems = useParticipantProductProblems();
 
-    const isParticipantPpk = (participantId: number) => {
-
-        let isPpk = false
-        if (participantsPpkTopicsStats[participantId] && participantsPpkTopicsStats[participantId].length > 0) {
-            isPpk = true
-        }
-        return isPpk
-    }
-    const getParticipantPpkTopicsStats = (participantId: number) => {
-        return participantsPpkTopicsStats[participantId]
-    }
-    const getParticipantProblems = (participantId: number) => {
-        return getParticipantPpkProblems(participantsPpkTopicsStats, participantId)
-    }
-    const getParticipantsProblems = (participants: IParticipant[]) => {
-        
-        const participantsProblems = participants.map(participant => {
-            const { problems } = getParticipantProblems(participant.id)
-            return {
-                [participant.id]: {
-                    name: getParticipantName(participant),
-                    problems
-                }
-            }
-        })
-        let hasProblems = false
-        participantsProblems.forEach(problem => {
-            for (const key in problem) {
-                const typeKey = Number(key) as number
-                if (problem[typeKey]?.problems && problem[typeKey]?.problems.length > 0) {
-                    hasProblems = true
-                }
-            }
-        })
-        return {
-            participantsProblems,
-            hasProblems
-        }
-    }
     return {
-        topicStats,
-        participantToProducts,
-        productToParticipants,
-        unassignedParticipants,
-        participantsPpkTopicsStats,
+        // Состояние загрузки
         isLoading,
-        isProductPpk,
-        isParticipantPpk,
-        getParticipantPpkTopicsStats,
-        getParticipantProblems,
-        getParticipantsProblems
-    }
-}
+        
+        // Данные распределения
+        ...distribution,
+        
+        // Вычисления
+        isProductPpk: calculations.isProductPpk,
+        isParticipantPpk: calculations.isParticipantPpk,
+        getParticipantPpkTopicsStats: calculations.getParticipantPpkTopicsStats,
+        getAssignedProducts: calculations.getAssignedProducts,
+        getAssignedParticipants: calculations.getAssignedParticipants,
+        getUnassignedParticipantsCount: calculations.getUnassignedParticipantsCount,
+        getTopicsCount: calculations.getTopicsCount,
+        getTopicsWithDeficit: calculations.getTopicsWithDeficit,
+        getTopicsWithSurplus: calculations.getTopicsWithSurplus,
+        getBalancedTopics: calculations.getBalancedTopics,
+        
+        // Проблемы
+        getParticipantProblems: problems.getParticipantProblems,
+        getParticipantsProblems: problems.getParticipantsProblems,
+        getGlobalProblems: problems.getGlobalProblems,
+    };
+};
 
 
 

@@ -6,7 +6,6 @@ import { ProductsTable } from './components/ProductsTable';
 import { fetchProducts } from '../model/ProductThunk';
 import { RootState, AppDispatch } from '@/modules/app/model/store';
 import { BxProductRowWithProduct } from '../model/ProductSlice';
-import { Header } from '@/components';
 import Link from 'next/link';
 import { ArrowLeftIcon } from 'lucide-react';
 import { ProductTable } from './ProductTable';
@@ -185,12 +184,7 @@ export function ProductsPage() {
       )}
 
       {/* Таблица товаров */}
-      <ProductsTable
-        products={products}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        isLoading={loading}
-      />
+      <ProductsTable/>
       <ProductTable />
     </div>
   );

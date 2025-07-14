@@ -8,12 +8,12 @@ import { DeleteConfirmModal } from './DeleteConfirmModal';
 import Link from 'next/link';
 import { useAlfaProducts } from '../../hook/useAlfaProducts';
 
-interface ProductsTableProps {
-  products: BxProductRowWithProduct[];
-  onEdit: (product: BxProductRowWithProduct) => void;
-  onDelete: (productId: number) => void;
-  isLoading?: boolean;
-}
+// interface ProductsTableProps {
+//   products: BxProductRowWithProduct[];
+//   onEdit: (product: BxProductRowWithProduct) => void;
+//   onDelete: (productId: number) => void;
+//   isLoading?: boolean;
+// }
 
 export function ProductsTable() {
   const { items, loading, error } = useAlfaProducts()

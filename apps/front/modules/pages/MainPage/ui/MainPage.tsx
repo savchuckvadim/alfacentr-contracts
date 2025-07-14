@@ -9,10 +9,13 @@ import { useParticipantsInfo } from '@/modules/widgetes/Participant/ParticipantI
 import { useParticipant } from '@/modules/entities';
 import { PagePreloader } from '@/modules/shared/';
 import { useParticipantPpk } from '@/modules/features/participant-product/hook/useParticipantPpk';
+import { useApp } from '@/modules/app/lib/hooks/app';
 
 export const MainPage = () => {
+    const { isClient } = useApp();
+    if (!isClient) return null;
 
-    const { isLoading} = useParticipantPpk()
+  
 
     // if (isLoading) return <PagePreloader />
 

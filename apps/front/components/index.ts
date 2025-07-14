@@ -1,2 +1,1 @@
-export { Header } from '../modules/shared/Header/Header';
-export { SummaryPanel } from '../modules/app/widgetes/SummaryPanel'; 
+export { Providers } from './providers';

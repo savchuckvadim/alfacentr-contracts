@@ -8,7 +8,8 @@ import { ParticipantsProblems } from "../ParticipantReport/ParticipantsProblems"
 
 export const ParticipantsTableWidget = () => {
 
-    const { hasProblems, participantsProblems } = useParticipantsInfo()
+    const { hasProblems, participantsProblems, participantsProblemsCount } = useParticipantsInfo()
+    debugger
     return <div>
         <div className="flex flex-row justify-between items-center gap-2 py-2">
             <div className="flex flex-row gap-2 px-2">
@@ -16,16 +17,16 @@ export const ParticipantsTableWidget = () => {
             </div>
             <div className="flex flex-row gap-2">
                 {hasProblems ? <Tooltip content={
-                    <div className="p-0 m-0 flex flex-col gap-2 w-[1000px] h-[400px] bg-background overflow-y-auto">
+                    // <div className="p-0 m-0 flex flex-col gap-2 max-w-[1000px]  overflow-y-auto">
                         <ParticipantsProblems />
-                    </div>
+                    // </div>
                 }>
                     <Badge
                         variant={hasProblems ? "destructive" : "default"}
                     >
 
 
-                        {hasProblems ? "Проблемы " + participantsProblems.length : "+"}
+                        {hasProblems ? "Проблемы " + participantsProblemsCount : "+"}
 
 
                     </Badge>

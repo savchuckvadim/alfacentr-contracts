@@ -8,46 +8,43 @@ import { cn } from "@workspace/ui/lib/utils"
 
 export interface PartisipantCardStatusProps { participant: IParticipant }
 
-
 export const PartisipantCardStatus: FC<PartisipantCardStatusProps> = ({
     participant
 }) => {
     const { hasProblems, problems, isParticipantPpkLoading, participantToProducts } = useParticipantInfo(participant.id)
+    
     if (isParticipantPpkLoading) {
         return <MicroPreloader />
     }
 
     const withoutProduct = !participantToProducts[participant.id] || participantToProducts[participant.id]?.length === 0
 
-
+    // Проверяем проблемы конкретного участника
     if (hasProblems && problems.length > 0) {
-        let isProblen = false
+        let isProblem = false
         const messages = <div className="flex flex-col gap-2">
-
             {problems.map((problem, index) => {
                 const color = problem.status === 'missing_ppk' ? 'text-red-500' : 'text-yellow-500'
                 if (problem.status === 'missing_ppk') {
-                    isProblen = true
+                    isProblem = true
                 }
                 return <div key={problem.participantId + index} className="flex flex-col gap-5">
                     <p className="text-sm font-medium">{problem.topic} <span className={cn(color, 'text-sm')}>{problem.message}</span></p>
-
                 </div>
             })}
-
         </div>
+        
         return (
             <div className="flex items-center gap-1">
                 <Tooltip content={<p className="text-sm w-[700px]">{messages}</p>}>
-                    <Badge variant={isProblen ? "destructive" : "secondary"} className={cn(isProblen ? 'bg-red-500' : 'bg-yellow-300', 'text-xs')}>Проблема</Badge>
+                    <Badge variant={isProblem ? "destructive" : "secondary"} className={cn(isProblem ? 'bg-red-500' : 'bg-yellow-300', 'text-xs')}>Проблема</Badge>
                 </Tooltip>
             </div>
         )
     }
 
-
+    // Проверяем отсутствие продуктов
     if (withoutProduct) {
-
         const messages = <div className="flex flex-col gap-2">
             <p className="text-sm font-medium">Участник не имеет продуктов</p>
         </div>
@@ -59,6 +56,8 @@ export const PartisipantCardStatus: FC<PartisipantCardStatusProps> = ({
             </div>
         )
     }
+    
+    // Все в порядке
     return (
         <div className="flex items-center gap-1">
             <Badge variant="secondary" className="bg-teal-300 text-green-800 text-xs">ОK</Badge>

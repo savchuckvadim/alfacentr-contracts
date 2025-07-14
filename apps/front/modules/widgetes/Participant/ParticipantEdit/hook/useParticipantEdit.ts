@@ -1,56 +1,58 @@
-import { useAppDispatch, useAppSelector } from "@/modules/app/"
-
-import { useParticipantInfo } from "../../ParticipantInfoCard/hook/useParticipantInfo"
-import { useParticipant } from "@/modules/entities"
-import { BxParticipantsDataKeys } from "@alfa/entities"
+import { useAppSelector } from "@/modules/app/";
+import { useParticipantData, useParticipantActions, useParticipantFormatters } from "@/modules/entities/participant/hooks";
+import { useParticipantProductProblems } from "@/modules/features/participant-product/hooks";
+import { BxParticipantsDataKeys } from "@alfa/entities";
 
 export const useEditParticipant = (participantId: number) => {
+    const { participant, loading, editLoading } = useParticipantData(participantId);
+    const actions = useParticipantActions();
+    const formatters = useParticipantFormatters();
+    const problems = useParticipantProductProblems();
 
+    // Получаем проблемы для участника
+    const { problems: participantProblems } = problems.getParticipantProblems(participantId);
 
-    const editable = useAppSelector(state => state.participant.editable)
-    const {
+    // Форматированные данные
+    const name = participant ? formatters.getName(participant) : '';
+    const email = participant ? formatters.getEmail(participant) : '';
+    const phone = participant ? formatters.getPhone(participant) : '';
+    const format = participant ? formatters.getFormat(participant) : '';
+    const isPpk = participant ? formatters.getIsPpk(participant) : false;
+    const programs = participant ? formatters.formatPrograms(participant) : '';
 
-        name,
-        email,
-        phone,
-        format,
-        isPpk,
-        programs,
-        
-        activateEditable,
-        cancelEditable,
-        changeEditable,
-        deleteParticipant,
-        updateParticipant,
-        formatParticipantPrograms,
-      
-    } = useParticipant(participantId)
-
-    const { problems,
-       
-     } = useParticipantInfo(participantId)
+    // Состояние редактирования
+    const editable = useAppSelector(state => state.participant.editable);
 
     const editParticipantTopic = (fieldCode: BxParticipantsDataKeys, value: string) => {
-        
-        changeEditable(fieldCode, value)
+        actions.changeEditable(fieldCode, value);
+    };
 
-    }
     return {
+        // Состояние
         editable,
-        problems,
+        loading,
+        editLoading,
+        
+        // Проблемы
+        problems: participantProblems,
+        
+        // Форматированные данные
         name,
         email,
         phone,
         format,
         isPpk,
         programs,
-        activateEditable,
-        cancelEditable,
-        changeEditable,
-        deleteParticipant,
-        updateParticipant,
+        
+        // Действия
+        activateEditable: actions.activateEditable,
+        cancelEditable: actions.cancelEditable,
+        changeEditable: actions.changeEditable,
+        deleteParticipant: actions.deleteParticipant,
+        updateParticipant: actions.updateParticipant,
         editParticipantTopic,
-        formatParticipantPrograms,
-       
-    }
-}
+        
+        // Форматтеры для обратной совместимости
+        formatParticipantPrograms: formatters.formatPrograms,
+    };
+};

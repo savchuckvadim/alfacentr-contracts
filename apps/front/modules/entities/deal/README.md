@@ -17,8 +17,8 @@ deal/
 │   └── useDeal.ts        # Хук для удобной работы с slice
 ├── lib/
 │   ├── service/
-│   │   └── deal-update.service.ts # Сервис обновления сделки
-│   └── example-usage.tsx # Примеры использования
+│   └── deal-update.service.ts # Сервис обновления сделки
+│   
 └── index.ts              # Основной экспорт модуля
 ```
 

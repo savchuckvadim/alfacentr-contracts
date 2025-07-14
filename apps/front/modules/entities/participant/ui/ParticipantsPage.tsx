@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@workspace/ui/components/button';
 import { fetchParticipants, deleteParticipant } from '../model/ParticipantThunk';
@@ -8,12 +8,16 @@ import { RootState, AppDispatch } from '@/modules/app/model/store';
 import { ParticipantPpkListInfo } from '@/modules/widgetes/Participant';
 import { ParticipantStatistics } from './components/ParticipantStatistics';
 import { useParticipant } from '../lib/hook/useParticipant';
+import { useApp } from '@/modules/app/lib/hooks/app';
 
 export function ParticipantsPage() {
+ 
+
+
   const dispatch = useDispatch<AppDispatch>();
-  const { items: participants, loading, error } = useSelector((state: RootState) => state.participant);
+  const { error } = useSelector((state: RootState) => state.participant);
   const { deal } = useSelector((state: RootState) => state.app.bitrix);
-  const [deletingModalActive, setDeletingModalActive] = useState(false);
+
 
 
 
@@ -23,10 +27,12 @@ export function ParticipantsPage() {
     alert('Добавление нового участника');
   };
 
+
+
   return (
 
     <div className="space-y-6">
-     
+
       {/* Заголовок */}
       <div className="flex items-center justify-between">
         <div>
@@ -68,7 +74,7 @@ export function ParticipantsPage() {
         </div>
       )}
 
-   
+
       <ParticipantPpkListInfo />
     </div>
   );

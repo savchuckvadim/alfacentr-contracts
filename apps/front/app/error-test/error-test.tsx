@@ -1,14 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchParticipants } from '@/modules/entities/participant/model/ParticipantThunk';
 import { errorHandler } from '@/modules/app/lib/error-handler';
 import { useAppDispatch } from '@/modules/app/lib/hooks/redux';
 
 export default function DevPage() {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+
+
+
   const dispatch = useAppDispatch();
   const [testResults, setTestResults] = useState<string[]>([]);
 
+
+  if (!isMounted) return null;
+
+  
   const addResult = (result: string) => {
     setTestResults(prev => [...prev, `${new Date().toLocaleTimeString()}: ${result}`]);
   };
@@ -63,46 +75,46 @@ export default function DevPage() {
   return (
     <div style={{ padding: 32, maxWidth: 800, margin: '0 auto' }}>
       <h1>Страница тестирования ошибок</h1>
-      
+
       <div style={{ marginBottom: 32 }}>
         <h2>Тесты ErrorBoundary</h2>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
-          <button 
+          <button
             onClick={testThunkError}
             style={{ padding: '12px 24px', background: '#007bff', color: 'white', border: 'none', borderRadius: 4 }}
           >
             Тест Thunk Ошибки
           </button>
-          
-          <button 
+
+          <button
             onClick={testDirectError}
             style={{ padding: '12px 24px', background: '#28a745', color: 'white', border: 'none', borderRadius: 4 }}
           >
             Тест Прямой Ошибки
           </button>
-          
-          <button 
+
+          <button
             onClick={testCriticalError}
             style={{ padding: '12px 24px', background: '#dc3545', color: 'white', border: 'none', borderRadius: 4 }}
           >
             Тест Критической Ошибки
           </button>
-          
-          <button 
+
+          <button
             onClick={testAsyncError}
             style={{ padding: '12px 24px', background: '#ffc107', color: 'black', border: 'none', borderRadius: 4 }}
           >
             Тест Асинхронной Ошибки
           </button>
-          
-          <button 
+
+          <button
             onClick={testThrowError}
             style={{ padding: '12px 24px', background: '#fd7e14', color: 'white', border: 'none', borderRadius: 4 }}
           >
             Тест Throw Ошибки
           </button>
-          
-          <button 
+
+          <button
             onClick={clearResults}
             style={{ padding: '12px 24px', background: '#6c757d', color: 'white', border: 'none', borderRadius: 4 }}
           >
@@ -113,11 +125,11 @@ export default function DevPage() {
 
       <div>
         <h3>Результаты тестов:</h3>
-        <div style={{ 
-          background: '#f8f9fa', 
-          padding: 16, 
-          borderRadius: 4, 
-          maxHeight: 300, 
+        <div style={{
+          background: '#f8f9fa',
+          padding: 16,
+          borderRadius: 4,
+          maxHeight: 300,
           overflow: 'auto',
           border: '1px solid #dee2e6'
         }}>

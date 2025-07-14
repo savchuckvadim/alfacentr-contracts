@@ -32,8 +32,12 @@ import { IParticipant } from "@alfa/entities/dist/entities/smart/participant.int
 import { cn } from "@workspace/ui/lib/utils"
 import { cutString } from "@/modules/lib"
 import { Tooltip } from "@/modules/shared"
+import { useApp } from "@/modules/app/lib/hooks/app"
 
 export const ParticipantPpkInfo = ({ participantId }: { participantId: number }) => {
+    const { isClient } = useApp();
+
+
     const id = participantId
     const { participant, loading, error } = useParticipant(id)
     const { loading: loadingProducts } = useAlfaProducts()
@@ -118,7 +122,7 @@ export const ParticipantPpkInfo = ({ participantId }: { participantId: number })
         // TODO: Добавить логику удаления продукта
         console.log('Remove product at index:', index)
     }
-
+    if (!isClient) return null;
     return (
         <div className="space-y-6">
             {/* Заголовок участника */}

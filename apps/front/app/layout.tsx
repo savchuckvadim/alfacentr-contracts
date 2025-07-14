@@ -2,7 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 
 import "@workspace/ui/globals.css"
 import { Providers } from "@/components/providers"
-import { Header } from "@/modules/shared/Header/Header"
+import { Header } from "@/modules/widgetes/Header/Header"
 import { CompanyBrand } from "@/modules/entities/company"
 import { App } from "@/modules/app"
 

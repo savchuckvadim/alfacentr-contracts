@@ -1,18 +1,35 @@
-import { useEditParticipant } from "../../ParticipantEdit/hook/useParticipantEdit"
-import { useParticipantInfo } from "../../ParticipantInfoCard/hook/useParticipantInfo"
+import { useParticipantData, useParticipantFormatters } from "@/modules/entities/participant/hooks";
+import { useParticipantProductCalculations } from "@/modules/features/participant-product/hooks";
 
 export const useParticipantRowData = (participantId: number) => {
-    const {
-        name,
-        email,
-        phone,
-        format,
-        isPpk,
-        programs,
-    } = useEditParticipant(participantId)
+    const { participant } = useParticipantData(participantId);
+    const formatters = useParticipantFormatters();
+    const calculations = useParticipantProductCalculations();
 
-    const { participantPpkTopicsStats } = useParticipantInfo(participantId)
-    const { assignedProducts } = useParticipantInfo(participantId)
+    if (!participant) {
+        return {
+            name: '',
+            email: '',
+            phone: '',
+            format: '',
+            isPpk: false,
+            programs: '',
+            participantPpkTopicsStats: [],
+            assignedProducts: [],
+        };
+    }
+
+    // Форматированные данные
+    const name = formatters.getName(participant);
+    const email = formatters.getEmail(participant);
+    const phone = formatters.getPhone(participant);
+    const format = formatters.getFormat(participant);
+    const isPpk = formatters.getIsPpk(participant);
+    const programs = formatters.formatPrograms(participant);
+
+    // Данные ППК
+    const participantPpkTopicsStats = calculations.getParticipantPpkTopicsStats(participantId);
+    const assignedProducts = calculations.getAssignedProducts(participantId);
 
     return {
         name,
@@ -23,5 +40,5 @@ export const useParticipantRowData = (participantId: number) => {
         programs,
         participantPpkTopicsStats,
         assignedProducts,
-    }
-} 
+    };
+}; 

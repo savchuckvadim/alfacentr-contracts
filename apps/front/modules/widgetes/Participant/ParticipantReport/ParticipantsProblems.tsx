@@ -37,11 +37,11 @@ export const ParticipantsProblems = ({ participantId }: { participantId?: number
 
 
 
-    return topicsInfo.length > 0 ? <Info
-        title="Проблемы участников"
-        collapsible
-        // description={`${ totalUnassignedParticipants } участников не назначены на ППК программы`}
-        children={topicsInfo}
-        type="error"
-    /> : null
+    return topicsInfo.length > 0 ? <div
+
+        className="flex flex-col gap-2 m-0 p-2 rounded-md"
+    >
+        <h3 className="text-md font-bold text-red-500 mt-2">Проблемы участников</h3>
+        {topicsInfo}
+    </div> : null
 }

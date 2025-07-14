@@ -1,21 +1,16 @@
 'use client';
 
 import React from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { fetchProducts } from '../model/ProductThunk';
+
 import { IProductState, BxProductRowWithProduct } from '../model/ProductSlice';
 import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
 import { ProductsTable } from './components/ProductsTable';
 
 export const ProductList: React.FC = () => {
-  const dispatch = useAppDispatch();
+
   const { items: products, loading, error } = useAppSelector((state) => state.product as IProductState);
 
-  // useEffect(() => {
-  //   if (dealId) {
-  //     dispatch(fetchProducts(dealId) as any);
-  //   }
-  // }, [dealId, dispatch]);
+
 
   const handleEdit = (product: BxProductRowWithProduct) => {
     console.log('Редактирование товара:', product);
@@ -52,10 +47,10 @@ export const ProductList: React.FC = () => {
     <div>
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Товары</h3>
       <ProductsTable
-        products={products}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        isLoading={loading}
+        // products={products}
+        // onEdit={handleEdit}
+        // onDelete={handleDelete}
+        // isLoading={loading}
       />
     </div>
   );

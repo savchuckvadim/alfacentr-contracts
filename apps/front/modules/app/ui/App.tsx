@@ -10,13 +10,7 @@ import { useState } from "react";
 
 export const App = ({ children }: { children: React.ReactNode }) => {
     const { initialized, isLoading, isClient } = useApp();
-    if (isClient) {
-        logClient('Afa start', {
-            level: 'info',
-            context: 'Alfa LOG TEST',
-            message: 'Alfa is mounted',
-        });
-    }
+
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -24,8 +18,18 @@ export const App = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     useEffect(() => {
-        if (isMounted) {
-            (window as any).store = store;
+        if (isMounted && isClient) {
+            // if (typeof window !== 'undefined') {
+            //     (window as any).store = store;
+            // }
+
+            if (isClient) {
+                logClient('Afa start', {
+                    level: 'info',
+                    context: 'Alfa LOG TEST',
+                    message: 'Alfa is mounted',
+                });
+            }
         }
     }, [isMounted])
     return (

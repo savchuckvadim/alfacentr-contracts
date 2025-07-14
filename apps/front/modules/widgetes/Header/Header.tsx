@@ -3,6 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { cn } from '@workspace/ui/lib/utils';
 import { DocumentGlobalConfig } from '@/modules/widgetes';
+import { useApp } from '@/modules/app/lib/hooks/app';
 
 
 interface HeaderProps {
@@ -11,6 +12,9 @@ interface HeaderProps {
 }
 
 export function Header({ className, brandComponent }: HeaderProps) {
+  const { isClient } = useApp();
+  if (!isClient) return null;
+
   return (
     <>
       <header className={cn(

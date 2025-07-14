@@ -10,10 +10,13 @@ import { ProductsFullStatistics } from "../Statistics/ProductsFullStatistics";
 import { ProductListTitle } from "./components/ProductListTitle";
 import { ProductsProblems } from "../Report/ProductsProblems";
 import { PagePreloader } from "@/modules/shared";
+import { useApp } from "@/modules/app/lib/hooks/app";
 
 export const ProductList = () => {
     const { loading, error, } = useAlfaProducts()
+    const { isClient } = useApp();
 
+    if (!isClient) return null;
 
 
     if (loading) {
@@ -42,7 +45,7 @@ export const ProductList = () => {
 
     return (
         <>
-           
+
             {loading && <PagePreloader text="Загрузка продуктов..." />}
             <div className="space-y-6">
                 {/* Заголовок и общая статистика */}
