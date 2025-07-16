@@ -20,8 +20,8 @@ RUN pnpm config set fetch-retries 5 && \
    
 
 # Сборка NextJS API и проверка
-RUN pnpm --filter ${APP} run build 
-
+RUN pnpm --filter front run build 
+# RUN pnpm --filter ${APP} run build 
 
 # ==== PRODUCTION ====
 FROM node:20-slim AS prod
@@ -61,16 +61,16 @@ RUN npm install -g pnpm
 
 # Копируем только необходимые файлы
 
-# COPY --from=base /app/apps/${APP}/.next ./.next
-COPY --from=base /app/apps/${APP}/package.json ./package.json
+COPY --from=base /app/apps/front/.next ./.next
+COPY --from=base /app/apps/front/package.json ./package.json
 COPY --from=base /app/package.json ./root-package.json
 COPY --from=base /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=base /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=base /app/packages ./packages
-COPY --from=base /app/apps/${APP}/public ./public
+COPY --from=base /app/apps/front/public ./public
 # COPY --from=base /app/apps/kpi-sales/next.config.js ./next.config.js
-COPY --from=base /app/apps/${APP}/next.config.ts ./next.config.ts
-COPY --from=base /app/apps/${APP}/.env ./.env
+COPY --from=base /app/apps/front/next.config.ts ./next.config.ts
+COPY --from=base /app/apps/front/.env ./.env
 
 
 # Установка PNPM и зависимостей

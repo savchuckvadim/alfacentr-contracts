@@ -1,10 +1,17 @@
 'use client'
+
+const isServer = typeof window === 'undefined';
+const baseUrl = isServer
+  ? process.env.NEXT_PUBLIC_BASE_URL
+  : '';
+
+
 export async function logClient(title: string, payload: any) {
   if (typeof window === 'undefined') {
     return
   }
   try {
-    await fetch('/api/admin/logs', {
+    await fetch(`${baseUrl}/api/admin/logs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
