@@ -1,44 +1,48 @@
 import {
     EvsRqItem, RQ_TYPE, RQ_ITEM_CODE,
     BX_ADDRESS_TYPE,
-    ADDRESS_RQ_ITEM_CODE
+    ADDRESS_RQ_ITEM_CODE,
+    BankRq,
+    BANK_RQ_ITEM_CODE,
+    BankRqItem
 } from "@workspace/bx-rq";
 import { DocumentRqAgent } from "../../model/slice/DocumentRqSlice";
+import { EnumFizRqFields, EnumOrganizationRqFields } from "../../type/document-rq.type";
 
 export class BxClientRqService {
 
-    public getClientRq(clientRq: EvsRqItem, clientType: RQ_TYPE): DocumentRqAgent {
-   
-     
+    public getClientRq(clientRq: EvsRqItem, clientType: RQ_TYPE): DocumentRqAgent<RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION> {
+
+
 
         if (clientType === RQ_TYPE.FIZ) {
             return this.prepareClientFizRq(clientRq);
         } else {
             return this.prepareClientOrgRq(clientRq);
         }
-       
+
     }
 
-    private prepareClientFizRq(clientRq: EvsRqItem): DocumentRqAgent {
-        const result: DocumentRqAgent = {
-            id: 0,
-            name: '',
-            based: '',
-            documentType: '',
-            docSeries: '',
-            docNumber: '',
-            docDate: '',
-            depCode: '',
+    private prepareClientFizRq(clientRq: EvsRqItem): DocumentRqAgent<RQ_TYPE.FIZ> {
+        const result: DocumentRqAgent<RQ_TYPE.FIZ> = {
+            [EnumFizRqFields.NAME]: '',
+            [EnumFizRqFields.BASED]: '',
+            [EnumFizRqFields.DOCUMENT_TYPE]: '',
+            [EnumFizRqFields.DOC_SERIES]: '',
+            [EnumFizRqFields.DOC_NUMBER]: '',
+            [EnumFizRqFields.DOC_DATE]: '',
+            [EnumFizRqFields.DEP_CODE]: '',
 
-            inn: '',
-            kpp: '',
-            other: '',
-            address: '',
-            bank: '',
-            phone: '',
-            email: '',
-            type: RQ_TYPE.FIZ
-        };
+            [EnumFizRqFields.INN]: '',
+
+            [EnumFizRqFields.OTHER]: '',
+            [EnumFizRqFields.ADDRESS]: '',
+            [EnumFizRqFields.PRIMARY_ADDRESS]: '',
+            [EnumFizRqFields.BANK]: '',
+            [EnumFizRqFields.PHONE]: '',
+            [EnumFizRqFields.EMAIL]: '',
+            [EnumFizRqFields.TYPE]: RQ_TYPE.FIZ
+        } as DocumentRqAgent<RQ_TYPE.FIZ>;
         let fullname = '________________________________________';
         let inn = '________________________________________';
 
@@ -77,65 +81,85 @@ export class BxClientRqService {
         const phoneValue = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.PHONE)?.value;
         phone = `Телефон: ${phoneValue || phone}`;
         result.phone = phone;
-        let address = this.getAddressString(clientRq);
+        let address = this.getAddressString(clientRq, BX_ADDRESS_TYPE.REGISTERED, RQ_TYPE.FIZ);
+        const primaryAddress = this.getAddressString(clientRq, BX_ADDRESS_TYPE.PRIMARY, RQ_TYPE.FIZ);
+        result.primaryAddress = primaryAddress;
         result.address = address;
         return result;
     }
 
-    private prepareClientOrgRq(clientRq: EvsRqItem): DocumentRqAgent {
-        const result: DocumentRqAgent = {
-            id: 0,
-            name: '',
-            based: '',
-            fullname: '',
-            shortName: '',
-            director: '',
-            directorCase: '',
-            gb: '',
+    private prepareClientOrgRq(clientRq: EvsRqItem): DocumentRqAgent<RQ_TYPE.ORGANIZATION> {
+        const result: DocumentRqAgent<RQ_TYPE.ORGANIZATION> = {
+            [EnumOrganizationRqFields.NAME]: '',
+            [EnumOrganizationRqFields.BASED]: '',
+            [EnumOrganizationRqFields.FULLNAME]: '',
+            [EnumOrganizationRqFields.SHORTNAME]: '',
+            [EnumOrganizationRqFields.PRIMARY_ADDRESS]: '',
+            [EnumOrganizationRqFields.DIRECTOR_NAME]: '',
+            [EnumOrganizationRqFields.DIRECTOR_CASE]: '',
+            [EnumOrganizationRqFields.DIRECTOR_FIO]: '',
+            [EnumOrganizationRqFields.DIRECTOR_POSITION]: '',
+            [EnumOrganizationRqFields.DIRECTOR_POSITION_CASE]: '',
+            [EnumOrganizationRqFields.ACCOUNTANT]: '',
 
-            inn: '',
-            kpp: '',
-            other: '',
-            address: '',
-            bank: '',
-            phone: '',
-            email: '',
-            type: RQ_TYPE.ORGANIZATION
+            [EnumOrganizationRqFields.INN]: '',
+            [EnumOrganizationRqFields.KPP]: '',
+            [EnumOrganizationRqFields.OTHER]: '',
+            [EnumOrganizationRqFields.ADDRESS]: '',
+            [EnumOrganizationRqFields.BANK]: '',
+            [EnumOrganizationRqFields.PHONE]: '',
+            [EnumOrganizationRqFields.EMAIL]: '',
+            [EnumOrganizationRqFields.RS]: '',
+            [EnumOrganizationRqFields.KS]: '',
+            [EnumOrganizationRqFields.BIK]: '',
+            [EnumOrganizationRqFields.OGRN]: '',
+            [EnumOrganizationRqFields.EDO]: '',
+            [EnumOrganizationRqFields.SBIS_ID]: '',
+            [EnumOrganizationRqFields.BANK_ADDRESS]: '',
+
+            [EnumOrganizationRqFields.TYPE]: RQ_TYPE.ORGANIZATION
         };
         let fullname = '________________________________________';
         let inn = '________________________________________';
 
-        fullname = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.FULLNAME)?.value as string || fullname;
+        fullname = this.findFieldByCode(clientRq, RQ_ITEM_CODE.FULLNAME) || fullname;
+        result.fullname = fullname;
 
 
-
-        const innValue = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.INN)?.value;
+        const innValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.INN);
 
         inn = `ИНН: ${innValue || inn}`;
         result.inn = inn;
 
         let based = '_____________________________';
-        const basedValue = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.BASED)?.value as string;
+        const basedValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.BASED);
         based = basedValue ? basedValue : `${based}` || 'Устава';
         result.based = based;
         let shortName = '_____________________________';
-        const shortNameValue = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.SHORTNAME)?.value as string;
+        const shortNameValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.SHORTNAME);
         shortName = shortNameValue ? shortNameValue : `${shortName}`;
         result.shortName = shortName;
         let director = '_____________________________';
-        const directorValue = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.DIRECTOR_NAME)?.value as string;
+        const directorValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.DIRECTOR_NAME);
         director = directorValue ? directorValue : `${director}`;
         result.director = director;
         let directorCase = '_____________________________';
-        const directorCaseValue = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.DIRECTOR_CASE)?.value as string;
+        const directorCaseValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.DIRECTOR_CASE);
         directorCase = directorCaseValue ? directorCaseValue : `${directorCase}`;
         result.directorCase = directorCase;
-       
 
+        // let rs = 'р/с: _____________________________';
+        // const rsValue = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.RS)?.value as string;
+        // rs = rsValue ? rsValue : `${rs}`;
+        // result.rs = rs;
+
+        // let ks = 'к/с: _____________________________';
+        // const ksValue = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.KS)?.value as string;
+        // ks = ksValue ? ksValue : `${ks}`;
         let gb = '_____________________________';
         const gbValue = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.ACCOUNTANT)?.value as string;
         gb = gbValue ? gbValue : `${gb}`;
-        result.gb = gb;
+        result.accountant = gb;
 
 
 
@@ -146,27 +170,107 @@ export class BxClientRqService {
         const phoneValue = clientRq.fields.find(fld => fld.code === RQ_ITEM_CODE.PHONE)?.value;
         phone = `Телефон: ${phoneValue || phone}`;
         result.phone = phone;
-        let address = this.getAddressString(clientRq);
+        let address = this.getAddressString(clientRq, BX_ADDRESS_TYPE.REGISTERED, RQ_TYPE.ORGANIZATION);
+        const primaryAddress = this.getAddressString(clientRq, BX_ADDRESS_TYPE.PRIMARY, RQ_TYPE.ORGANIZATION);
         result.address = address;
-        return result;
+        result.primaryAddress = primaryAddress;
+
+        const bankRq = this.getBankRqStrings(clientRq.bank.current || null);
+ 
+        const withBankResult = {
+            ...result,
+            ...bankRq,
+        }
+        return withBankResult;
     }
 
+    private findFieldByCode(clientRq: EvsRqItem, code: RQ_ITEM_CODE) {
+        return clientRq.fields.find(fld => fld.code === code)?.value as string;
+    }
 
-
-    private getAddressString(clientRq: EvsRqItem): string {
+    private getAddressString(clientRq: EvsRqItem, type: BX_ADDRESS_TYPE.REGISTERED | BX_ADDRESS_TYPE.PRIMARY, clientType: RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION): string {
         let address = '';
         clientRq.address.items.forEach(addresType => {
-            if (addresType.anchor_id === BX_ADDRESS_TYPE.REGISTERED) {
-                addresType.fields.forEach(field => {
+            if (addresType.anchor_id === type) {
+                addresType.fields.forEach((field, index) => {
                     if (field.code === ADDRESS_RQ_ITEM_CODE.ADDRESS_POSTAL_CODE) {
-                        address += field.value + ', ';
+                        address += field.value;
                     } else {
-                        address += field.value + ', ';
+                        address += field.value;
+                    }
+                    if (index < addresType.fields.length - 1) {
+                        address += ', ';
                     }
                 })
             }
         })
-        return address || 'Адрес: ________________________________________';
+        let addressType = '';
+        if (clientType === RQ_TYPE.FIZ) {
+            if (type === BX_ADDRESS_TYPE.REGISTERED) {
+                addressType = 'Адрес регистрации';
+            } else {
+                addressType = 'Почтовый адрес';
+            }
+        } else {
+            if (type === BX_ADDRESS_TYPE.REGISTERED) {
+                addressType = 'Юридический адрес';
+            } else {
+                addressType = 'Почтовый адрес';
+            }
+        }
+        return address || `${addressType} ________________________________________`;
+    }
+    private getBankRqs(bankRq: BankRqItem | null) {
+        if (!bankRq) {
+            return {
+                bankName: '',
+                bankBik: '',
+                bankPc: '',
+                bankKc: '',
+                bankComments: '',
+                bankAddress: ''
+            }
+        }
+        const bank = bankRq;
+        const bankName = this.findBankFieldByCode(bank, BANK_RQ_ITEM_CODE.BANK_NAME);
+        const bankBik = this.findBankFieldByCode(bank, BANK_RQ_ITEM_CODE.BANK_BIK);
+        const bankPc = this.findBankFieldByCode(bank, BANK_RQ_ITEM_CODE.BANK_PC);
+        const bankKc = this.findBankFieldByCode(bank, BANK_RQ_ITEM_CODE.BANK_KC);
+        const bankComments = this.findBankFieldByCode(bank, BANK_RQ_ITEM_CODE.BANK_COMMENTS);
+        const bankAddress = this.findBankFieldByCode(bank, BANK_RQ_ITEM_CODE.BANK_ADDRESS);
+        return {
+            bankName: bankName,
+            bankBik: bankBik,
+            bankPc: bankPc,
+            bankKc: bankKc,
+            bankComments: bankComments,
+            bankAddress: bankAddress
+        }
+    }
+    private getBankRqStrings(bank: BankRqItem | null) {
+        const { bankName, bankBik, bankPc, bankKc, bankComments, bankAddress } = this.getBankRqs(bank);
+        let bankNameString = '_____________________________';
+        bankNameString = `в Банке: ${bankName ? bankName : `${bankNameString}`}`;
+        if (bankAddress) {
+            bankNameString += `, ${bankAddress}`;
+        }
+        let bankBikString = '_____________________________';
+        bankBikString = `БИК: ${bankBik ? bankBik : `${bankBikString}`}`;
+        let bankPcString = '_____________________________';
+        bankPcString = `р/с: ${bankPc ? bankPc : `${bankPcString}`}`;
+        let bankKcString = '_____________________________';
+        bankKcString = `к/с: ${bankKc ? bankKc : `${bankKcString}`}`;
+        return {
+            [EnumOrganizationRqFields.BANK]: bankNameString,
+            [EnumOrganizationRqFields.RS]: bankPcString,
+            [EnumOrganizationRqFields.KS]: bankKcString,
+            [EnumOrganizationRqFields.BIK]: bankBikString,
+            [EnumOrganizationRqFields.BANK_ADDRESS]: bankAddress
+        }
+
+    }
+
+    private findBankFieldByCode(bank: BankRqItem, code: BANK_RQ_ITEM_CODE) {
+        return bank.fields.find(fld => fld.code === code)?.value as string;
     }
 }
-

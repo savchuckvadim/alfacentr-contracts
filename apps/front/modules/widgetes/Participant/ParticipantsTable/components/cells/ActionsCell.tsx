@@ -16,7 +16,7 @@ export const ActionsCell = ({ participant, onEdit, onDelete }: ActionsCellProps)
         <TableCell>
             <div className="flex items-center gap-1">
                 {/* Просмотр */}
-                <Link href={`/participants/${participant.id}`}>
+                <Link href={`/bitrix/participants/${participant.id}`}>
                     <Tooltip content="Подробнее">
                         <Button
                             variant="ghost"

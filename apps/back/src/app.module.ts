@@ -8,9 +8,8 @@ import { TelegramModule } from './modules/telegram/telegram.module';
 import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 import { RedisModule } from './core/redis/redis.module';
 import { SilentJobHandlersModule } from './core/silence/silent-job-handlers.module';
-import { KpiReportModule } from './apps/kpi-report/kpi-report.module';
 
-import { GsrModule } from './commands/excel-migrate/gsr.module';
+
 import { HealthController } from './health.controller';
 import { PBXModule } from './modules/pbx/pbx.module';
 import { WsModule } from './core/ws/ws.module';
@@ -26,17 +25,16 @@ import { AlfaModule } from './apps/alfa/alfa.module';
 
 import { StorageModule } from './core/storage/storage.module';
 import { FileLinkModule } from './core/file-link/file-link.module';
-import { PrismaModule } from './core/prisma/prisma.module';
 import { BxDepartmentModule } from '@/modules/bx-department/bx-department.module';
-import { PBXInstallModule } from './modules/install/install-module';
-import { PbxDomainModule } from './modules/pbx-domain/pbx-domain.module';
+
 import { HelperModule } from './modules/helper/helper.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { EventServiceAppModule } from './apps/event-service/event-service-app.module';
+
 import { OnDealInitModule } from './modules/on-deal-init/on-deal-init.module';
 import { AlfaProductsModule } from './modules/alfa-products';
 import { AlfaFieldsModule } from './modules/alfa-fields';
 import { FieldsModule } from './commands/fields/fields.module';
+import { DocumentGenerateModule } from './modules/document-generate/document-generate.module';
 
 
 @Module({
@@ -56,13 +54,13 @@ import { FieldsModule } from './commands/fields/fields.module';
       })],
     }),
     ScheduleModule.forRoot(),
-    PrismaModule,
+
     MetricsModule,
     WsModule,
     QueueModule,
 
     //apps
-    EventServiceAppModule,
+ 
     // HooksModule,
     AlfaActivityModule,
     BitrixModule,
@@ -100,6 +98,7 @@ import { FieldsModule } from './commands/fields/fields.module';
 
 
     BxDepartmentModule,
+    DocumentGenerateModule,
 
 
  

@@ -1,6 +1,6 @@
 
 import { EvsRqItem, ResolvedRQType } from "../type/evs-rq-type";
-import { CONTRACT_LTYPE, CONTRACT_RQ_GROUP, RQ_TYPE, RQ_TYPE_NAME, RqItem, SupplyTypesType } from "../type/input-type";
+import { CONTRACT_LTYPE, CONTRACT_RQ_GROUP, RQ_ITEM_CODE, RQ_TYPE, RQ_TYPE_NAME, RqItem, SupplyTypesType } from "../type/input-type";
 import { getResolvedType } from "./rq-util";
 
 export const filterFieldItems = (
@@ -15,6 +15,7 @@ export const filterFieldItems = (
   if (clientType == RQ_TYPE.BUDGET) {
     clientType = RQ_TYPE.ORGANIZATION
   }
+
   const result = items
     .filter((rqItem: RqItem) => {
       if (clientType) {
@@ -37,9 +38,9 @@ export const filterFieldItems = (
     })
     .sort((a: RqItem, b: RqItem) => (a.order - b.order))
     .map((rqItem: RqItem) => {
-      
+
       const group = CONTRACT_RQ_GROUP.RQ
-      
+
       return {
         ...rqItem,
         group: group
@@ -191,3 +192,50 @@ export const validatePushRq = (
 
   return result
 }
+
+
+export const getFieldValuByCode = (fields: RqItem[], code: string): string | null => {
+  const field = fields.find(f => f.code === code)
+  return field?.value as string | null
+}
+
+
+export const getRqShowName = (fields: RqItem[], clientType: RQ_TYPE, limit?: number): string => {
+  let fieldValueByCode = 'Реквизиты'
+
+  if (clientType === RQ_TYPE.FIZ) {
+    const code = RQ_ITEM_CODE.PERSON_NAME
+    const shortName = getFieldValuByCode(fields, code)
+    if (shortName) {
+      fieldValueByCode = shortName
+    } else {
+      const code = RQ_ITEM_CODE.LAST_NAME
+      const fullName = getFieldValuByCode(fields, code)
+      if (fullName) {
+        fieldValueByCode = fullName
+      }
+    }
+  } else {
+    let code = RQ_ITEM_CODE.SHORTNAME
+    const shortName = getFieldValuByCode(fields, code)
+    if (shortName) {
+      fieldValueByCode = shortName
+    } else {
+      const code = RQ_ITEM_CODE.FULLNAME
+      const fullName = getFieldValuByCode(fields, code)
+      if (fullName) {
+        fieldValueByCode = fullName
+      }
+    }
+
+  }
+  if (limit) {
+    if (fieldValueByCode.length > limit) {
+      return fieldValueByCode.slice(0, limit) + '...'
+    }
+  }
+  return fieldValueByCode
+}
+
+
+

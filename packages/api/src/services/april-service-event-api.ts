@@ -10,7 +10,7 @@ export enum EVS_ENDPOINT {
     INIT_SUPPLY = "rpa/init_supply",
     GET_RQS = "rq/get_rq",
     SET_RQ = "rq/update_rq",
-   
+    CASE = "case",
     STORE_RQ = "rq/store_rq",
     SEND_EVENT ='calling'
 }

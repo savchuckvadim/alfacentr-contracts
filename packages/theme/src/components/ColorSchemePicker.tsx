@@ -28,7 +28,7 @@ export const ColorSchemePicker = () => {
   return (
     <div className="relative" ref={ref}>
       <button
-        className="cursor-pointer text-foreground p-2 rounded-md hover:bg-muted transition"
+        className="cursor-pointer hover:text-primary text-foreground p-2 rounded-md hover:bg-muted transition"
         onClick={() => setOpen(!open)}
         title="Выбрать цветовую схему"
       >

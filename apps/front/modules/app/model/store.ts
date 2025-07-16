@@ -1,34 +1,36 @@
 import { Action, AnyAction, combineReducers, configureStore, createListenerMiddleware, Dispatch, Middleware, MiddlewareAPI, ThunkAction } from "@reduxjs/toolkit";
 import { appReducer } from "./AppSlice";
-import { WSClient } from "@workspace/ws";
+
 import { errorHandler } from "../lib/error-handler";
 import { dealReducer, participantReducer, productReducer } from "@/modules/entities";
 import { bxrqReducer } from "@workspace/bx-rq";
-import { contractTypeReducer, contractTypeListener, clientTypeListener } from "@/modules/features";
+import { contractTypeReducer, contractTypeListener, clientTypeListener, documentParagraphReducer, documentParagraphProductParticipantListener } from "@/modules/features";
 import { participantProductListener, participantProductReducer } from "@/modules/features/";
 import { documentRqReducer, rqListener } from "@/modules/features/document-rq";
 import { appListener } from "@/modules/entities/bx-rq/model/listener/AppListener";
-
+import { WSClient } from "@/modules/shared/Websocket/ws-client";
+import { WSClient as WSClientWorkspace } from "@workspace/ws";
+import { wsDocumentListener } from "@/modules/process/document/model/listeners/WsListener";
 
 
 
 export const listenerMiddleware = createListenerMiddleware();
-let wsClient: WSClient;
+
 
 // const socketMiddleware: Middleware = (storeAPI: MiddlewareAPI) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
 //   // Место для обработки действий или взаимодействия с сокетом
 //   return next(action);
 // };
 
-export const initWSClient = (userId: number, domain: string) => {
-  wsClient = new WSClient(userId, domain);
-  return wsClient;
-};
+// export const initWSClient = (userId: number, domain: string) => {
+//   wsClient = new WSClient(userId, domain);
+//   return wsClient;
+// };
 
-export const getWSClient = () => {
-  if (!wsClient) throw new Error('WSClient not initialized');
-  return wsClient;
-};
+// export const getWSClient = () => {
+//   if (!wsClient) throw new Error('WSClient not initialized');
+//   return wsClient;
+// };
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -41,6 +43,7 @@ const rootReducer = combineReducers({
   contractType: contractTypeReducer,
   participantProduct: participantProductReducer,
   documentRq: documentRqReducer,
+  documentParagraph: documentParagraphReducer,
   //april
 
 
@@ -66,7 +69,7 @@ export const setupStore = () => {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         thunk: {
-          extraArgument: { getWSClient }, 
+          extraArgument: { getWSClient: WSClient.getClient },
         },
       })
         .concat(errorMiddleware)
@@ -74,11 +77,15 @@ export const setupStore = () => {
         .concat(contractTypeListener.middleware)
         .concat(clientTypeListener.middleware)
         .concat(participantProductListener.middleware)
+        .concat(documentParagraphProductParticipantListener.middleware)
+
         .concat(rqListener.middleware)
         .concat(appListener.middleware)
-        // .concat(portalAPI.middleware)
-        // .concat(infoblockAPI.middleware)
- 
+        .concat(wsDocumentListener.middleware)
+
+    // .concat(portalAPI.middleware)
+    // .concat(infoblockAPI.middleware)
+
     // .concat(reportMiddleware)
   });
 };
@@ -89,7 +96,7 @@ export const setupStore = () => {
 
 // Тип для extraArgument
 export type ThunkExtraArgument = {
-  getWSClient: typeof getWSClient;
+  getWSClient: () => WSClientWorkspace;
 };
 
 // Тип для thunk

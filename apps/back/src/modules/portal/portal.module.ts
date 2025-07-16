@@ -9,8 +9,6 @@ import { APIOnlineClient } from '../../clients/online/client/api-online.client';
 // import { ClientsModule } from 'src/clients/clients.module';
 import { TelegramModule } from 'src/modules/telegram/telegram.module';
 import { PortalModelFactory } from './factory/potal-model.factory';
-import { KpiReportController } from 'src/apps/kpi-report/kpi-report.controller';
-import { DepartmentController } from '../bitrix/endpoints/department/department.controller';
 import { OnlineClientModule } from '../../clients/online';
 
 // C:\Projects\April-KP\april-next\back\src\modules\portal\portal.module.ts
@@ -45,8 +43,7 @@ export class PortalModule {
             .exclude('/kpi-report/download')  // не кладём portal
             .exclude('api/queue/ping')  // не кладём portal
             .forRoutes(
-                KpiReportController,
-                DepartmentController,
+
                 // AlfaController,
                 // ListController
             )

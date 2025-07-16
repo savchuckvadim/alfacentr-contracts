@@ -43,7 +43,7 @@ rqListener.startListening({
             const clientRqs = service.getRqs(currentItem, currentClientType)
             const headerService = new ContractRqHeaderService(service)
             const header = headerService.getContractHeaderText(currentClientType, currentItem)
-            debugger
+            
             console.log('clientRqs', clientRqs)
             console.log('header', header)
             listenerApi.dispatch(setClient({

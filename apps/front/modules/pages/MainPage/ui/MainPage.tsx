@@ -2,7 +2,6 @@
 
 import { SummaryPanel } from '../../../widgetes';
 import { MainPageContent } from './components/MainPageContent';
-import { useParticipantPpk } from '@/modules/features/participant-product/hook/useParticipantPpk';
 
 export const MainPage = () => {
 
@@ -19,9 +18,7 @@ export const MainPage = () => {
                 {/* Левая часть - основная область */}
                 <div className="flex-1 p-2">
                     <div className="h-full">
-                        {/* <h1 className="text-2xl font-bold mb-2">Основные данные</h1> */}
-
-                        {/* Основной контент */}
+                  
                         <MainPageContent />
 
                     </div>

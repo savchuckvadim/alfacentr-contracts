@@ -8,7 +8,7 @@ export const ProductPage = () => {
     //     return null
     // }
     return (
-        <div>
+        <div className="container mx-auto">
 
             <ProductList />
         </div>

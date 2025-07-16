@@ -5,126 +5,125 @@ import { Card, CardContent, CardHeader, CardTitle } from '@workspace/ui/componen
 import { Button } from '@workspace/ui/components/button'
 import { Badge } from '@workspace/ui/components/badge'
 import { BxRqEditModal } from './BxRqEditModal'
-import { BankRq, RqItem, isFieldsEmpty } from '@workspace/bx-rq'
+import { BankRqItem, RqItem, isFieldsEmpty, useBxRqEditBank } from '@workspace/bx-rq'
 import { Edit2, Plus } from 'lucide-react'
+import { useApp } from '@/modules/app'
 
 interface BxRqBankEditProps {
-  bank: BankRq
-  onSave: (bankId: number, fields: RqItem[]) => void
-  onCancel: () => void
-  isLoading?: boolean
+  bank: BankRqItem
+  // onSave: (bankId: number, fields: RqItem[]) => void
+  // onCancel: () => void
+  // isLoading?: boolean
 }
 
 export const BxRqBankEdit = ({
   bank,
-  onSave,
-  onCancel,
-  isLoading = false
+  // onSave,
+  // onCancel,
+  // isLoading = false
 }: BxRqBankEditProps) => {
-  const [editingBankId, setEditingBankId] = useState<number | null>(null)
-  const [editedFields, setEditedFields] = useState<Record<number, RqItem[]>>({})
+  // const [editingBankId, setEditingBankId] = useState<number | null>(null)
+  // const [editedFields, setEditedFields] = useState<Record<number, RqItem[]>>({})
 
-  const bankItems = bank.items && bank.items.length ? bank.items : [bank.current]
+  // const bankItems = bank.items && bank.items.length ? bank.items : [bank.current]
 
+  const { domain, companyId } = useApp()
+  const {
+    creating,
+    percent,
+    isCreatingLoading,
+    initBankCreating,
+    cancelBankCreating,
+    saveBank,
+    setBankProp
+  } = useBxRqEditBank()
   const handleFieldChange = (bankId: number, code: string, value: string) => {
-    setEditedFields(prev => ({
-      ...prev,
-      [bankId]: (prev[bankId] || bankItems.find(item => item.id === bankId)?.fields || []).map(field =>
-        field.code === code ? { ...field, value: value as any } : field
-      )
-    }))
+    setBankProp(code, value)
   }
 
   const handleSave = (bankId: number) => {
-    const fields = editedFields[bankId] || bankItems.find(item => item.id === bankId)?.fields || []
-    onSave(bankId, fields)
-    setEditingBankId(null)
+    saveBank(domain, companyId)
   }
 
   const handleCancel = () => {
-    setEditingBankId(null)
-    setEditedFields({})
-    onCancel()
+    cancelBankCreating()
   }
 
   const handleEdit = (bankId: number) => {
-    setEditingBankId(bankId)
-    const bankItem = bankItems.find(item => item.id === bankId)
-    if (bankItem) {
-      setEditedFields(prev => ({
-        ...prev,
-        [bankId]: bankItem.fields
-      }))
-    }
+    initBankCreating()
   }
 
   const handleAddNew = () => {
-    // Здесь можно добавить логику для создания нового банковского реквизита
-    // Пока просто открываем редактирование текущего
-    if (bank.current) {
-      handleEdit(bank.current.id)
-    }
+    initBankCreating()
   }
-
+  const isEmpty = bank && bank.fields && bank.fields.length > 0 ? isFieldsEmpty(bank.fields) : true
+  
   return (
     <>
       <div className="space-y-4">
-        {bankItems.map((bankItem) => {
-          const isEmpty = isFieldsEmpty(bankItem.fields)
+        {bank && bank.fields && bank.fields.length > 0 && (
 
-          return (
-            <Card key={bankItem.id}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className={isEmpty ? 'text-red-500' : ''}>
-                      Банковские реквизиты
-                    </span>
-                    {!isEmpty && (
-                      <Badge variant="secondary">Заполнено</Badge>
-                    )}
-                    {isEmpty && (
-                      <Badge variant="destructive">Не заполнено</Badge>
-                    )}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(bankItem.id)}
-                    disabled={isLoading}
-                  >
-                    <Edit2 className="h-4 w-4 mr-2" />
-                    {isEmpty ? 'Добавить' : 'Редактировать'}
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {!isEmpty ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {bankItem.fields.map((field) => (
-                      <div key={field.code} className="space-y-1">
-                        <label className="text-sm text-muted-foreground">
-                          {field.name}
-                        </label>
-                        <div className="text-sm font-medium">
-                          {(field.value as string) || <span className="text-muted-foreground">Не заполнено</span>}
-                        </div>
+
+
+
+          <Card key={creating?.id || 'bank-creating-card'}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className={isEmpty ? 'text-red-500' : ''}>
+                    Банковские реквизиты
+                  </span>
+                  {!isEmpty && (
+                    <Badge variant="secondary"
+                      className={
+                        percent > 75 ? 'bg-green-500' :
+                          percent > 20 ? 'bg-yellow-500' :
+                            'bg-red-500'
+                      }
+                    >Заполнено {percent}%</Badge>
+                  )}
+                  {isEmpty && (
+                    <Badge variant="destructive">Не заполнено</Badge>
+                  )}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleEdit(creating?.id || -1)}
+                  disabled={isCreatingLoading}
+                >
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  {isEmpty ? 'Добавить' : 'Редактировать'}
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {bank.fields && bank.fields.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {bank.fields.map((field: RqItem) => (
+                    <div key={field.code} className="space-y-1">
+                      <label className="text-sm text-muted-foreground">
+                        {field.name}
+                      </label>
+                      <div className="text-sm font-medium">
+                        {(field.value as string) || <span className="text-muted-foreground">Не заполнено</span>}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center p-6">
-                    <p className="text-muted-foreground">
-                      Банковские реквизиты не заполнены
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )
-        })}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center p-6">
+                  <p className="text-muted-foreground">
+                    Банковские реквизиты не заполнены
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
-        {bankItems.length === 0 && (
+
+        {bank && bank.fields && bank.fields.length === 0 && (
           <Card>
             <CardContent className="text-center p-6">
               <p className="text-muted-foreground mb-4">
@@ -133,7 +132,7 @@ export const BxRqBankEdit = ({
               <Button
                 variant="outline"
                 onClick={handleAddNew}
-                disabled={isLoading}
+                disabled={isCreatingLoading}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Добавить банковские реквизиты
@@ -141,15 +140,15 @@ export const BxRqBankEdit = ({
             </CardContent>
           </Card>
         )}
-        {editingBankId && (
+        {creating && (
           <BxRqEditModal
             title="Редактирование банковских реквизитов"
-            fields={editedFields[editingBankId] || []}
-            isOpen={!!editingBankId}
-            isLoading={isLoading}
-            onSave={() => handleSave(editingBankId)}
+            fields={creating.fields || []}
+            isOpen={!!creating.id}
+            isLoading={isCreatingLoading}
+            onSave={() => handleSave(creating.id)}
             onCancel={handleCancel}
-            onFieldChange={(code, value) => handleFieldChange(editingBankId, code, value)}
+            onFieldChange={(code, value) => handleFieldChange(creating.id, code, value)}
           />
         )}
       </div>

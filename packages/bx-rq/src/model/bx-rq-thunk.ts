@@ -4,36 +4,24 @@ import { AddressRqItem, EvsResponse, EvsRqItem, getEntityTypeId, ResolvedRQType 
 import { filterFieldItems, getFullName } from "../lib/field-items-util";
 
 import { getResolvedType } from "../lib/rq-util";
-import { 
-  setLoading, 
-  setFetched, 
-  setFetchedStatus, 
+import {
+  setLoading,
+  setFetched,
+  setFetchedStatus,
   setCreatingLoadingStatus,
-  setCurrentRqItems,
-  saveCurrentRqItems,
-  setCurrentItem,
-  initBaseCreating,
   saveBaseCreating,
-  cancelBaseCreating,
-  initAddressCreating,
-  initCopyAddressCreating,
   saveAddressCreating,
-  cancelAddressCreating,
-  initBankCreating,
   saveBankCreating,
-  cancelBankCreating,
   setBaseProp as setBasePropAction,
   setAddressProp as setAddressPropAction,
   setBankProp as setBankPropAction,
-  setError,
-  cleanError,
-  cleanErrors,
-  setRequired,
+
   setRequiredUnderstand,
-  BXRQState
+  BXRQState,
+  setCaseLoading
 } from "./bx-rq-slice";
 import { AppThunkDispatch, AppThunkGetState } from "./bx-rq-thunk-types";
-import { CONTRACT_LTYPE, RQ_TYPE, SupplyTypesType } from "../type/input-type";
+import { CONTRACT_LTYPE, RQ_ITEM_CODE, RQ_TYPE, SupplyTypesType } from "../type/input-type";
 import { BX_ADDRESS_TYPE } from "../type/evs-address-type";
 
 export const fetchBXRQ = (
@@ -41,12 +29,12 @@ export const fetchBXRQ = (
   companyId: number,
 ) => async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
   const state = getState();
- 
+
   const isLoading = state.bxrq.isLoading;
   if (!isLoading) {
     dispatch(setLoading(true));
     dispatch(setRequiredUnderstand({ status: false }));
-    
+
     const rqRequestData = {
       domain,
       company_id: companyId,
@@ -61,7 +49,7 @@ export const fetchBXRQ = (
 
     if (rqData) {
       if (rqData.rqs) {
-        
+
         dispatch(setFetched({ bxrq: rqData.rqs }));
         return;
       }
@@ -74,8 +62,8 @@ export const saveBXRQ = (
   domain: string,
   companyId: number,
   currentClientType: RQ_TYPE,
-  contractType: CONTRACT_LTYPE,
-  supplyType: SupplyTypesType,
+  // contractType: CONTRACT_LTYPE,
+  // supplyType: SupplyTypesType,
 ) => async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
   const state = getState();
 
@@ -94,7 +82,7 @@ export const saveBXRQ = (
       // contractType,
       // supplyType,
     );
-    
+
     const entityTypeId = getEntityTypeId(currentClientType);
     const data = {
       domain,
@@ -108,8 +96,8 @@ export const saveBXRQ = (
     };
 
     const result = await eventServiceAPI.service(
-      EVS_ENDPOINT.STORE_RQ, 
-      API_METHOD.POST, 
+      EVS_ENDPOINT.STORE_RQ,
+      API_METHOD.POST,
       data
     ) as RQStore | null;
 
@@ -123,7 +111,7 @@ export const saveBXRQ = (
       bx_id: rq_id,
       fields: fields
     };
-    
+
     const currentItems = rqsState.current.items.map((item: EvsRqItem) => {
       if (item.bx_id == -1 || item.bx_id == rq_id) {
         return { ...item, bx_id: rq_id, fields: fields };
@@ -157,12 +145,14 @@ export const saveBXRQ = (
 };
 
 export const saveAddress = (
+  domain: string,
+  companyId: number,
   currentClientType: RQ_TYPE,
   typeId: BX_ADDRESS_TYPE,
 ) => async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
   const state = getState();
-  const domain = state.app.domain;
-  const companyId = state.app.company;
+  // const domain = state.app.domain;
+  // const companyId = state.app.company;
   // const clientTypestate = state.documentClientType as ClientTypeState;
   // const currentClientTypeItem = clientTypestate.current;
   const rqsState = state.bxrq as BXRQState;
@@ -183,12 +173,12 @@ export const saveAddress = (
       address: addressCreating,
       iswait: true
     };
-    
+
     dispatch(setCreatingLoadingStatus(true));
 
     const result = await eventServiceAPI.service(
-      EVS_ENDPOINT.STORE_RQ, 
-      API_METHOD.POST, 
+      EVS_ENDPOINT.STORE_RQ,
+      API_METHOD.POST,
       data
     ) as RQStore | null;
 
@@ -255,7 +245,7 @@ export const saveAddress = (
 export const saveBank = (
   domain: string,
   companyId: number,
-  bankId: number,
+  // bankId: number,
 ) => async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
   const state = getState();
   // const domain = state.app.domain;
@@ -280,8 +270,8 @@ export const saveBank = (
     dispatch(setCreatingLoadingStatus(true));
 
     const result = await eventServiceAPI.service(
-      EVS_ENDPOINT.STORE_RQ, 
-      API_METHOD.POST, 
+      EVS_ENDPOINT.STORE_RQ,
+      API_METHOD.POST,
       data
     ) as RQStore | null;
 
@@ -342,6 +332,7 @@ export const setBasePropThunk = (
   code: string,
   value: string
 ) => async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
+
   dispatch(setBasePropAction({ code, value }));
 };
 
@@ -349,7 +340,67 @@ export const blurCase = (
   code: string,
   value: string
 ) => async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
-  // Здесь можно добавить дополнительную логику для blur события
-  dispatch(setBasePropAction({ code, value }));
+  const state = getState();
+
+  if (state.bxrq.caseLoading.includes(code)) {
+    return
+  }
+
+
+  if (code == 'first_name' || code == 'last_name' || code == 'second_name') {
+
+    const creatingItem = (state.bxrq as BXRQState).creating.base
+    if (creatingItem?.fields) {
+      const currentFullname = getFullName(creatingItem?.fields).fullName
+      const currentIPFullname = `Индивидуальный Предприниматель ${currentFullname}`
+      const currentIPFullShortname = `ИП ${getFullName(creatingItem?.fields).initials}`
+
+
+      dispatch(
+        setBasePropAction({ code: RQ_ITEM_CODE.PERSON_NAME, value: currentFullname })
+      )
+      dispatch(
+        setBasePropAction({ code: RQ_ITEM_CODE.FULLNAME, value: currentIPFullname })
+      )
+      dispatch(
+        setBasePropAction({ code: RQ_ITEM_CODE.SHORTNAME, value: currentIPFullShortname })
+      )
+
+
+
+
+    }
+
+  }
+
+  if (code == 'director' || code == 'position' || code == 'based') {
+    const caseCode = `${code}_case`;
+    dispatch(setCaseLoading({ code: caseCode }));
+    if (code == 'based' && (value.toLocaleLowerCase() === 'устав' || value.toLocaleLowerCase() === 'устава')) {
+      let casedValue = 'Устава'
+      dispatch(
+        setBasePropAction({ code: caseCode, value: casedValue })
+      )
+    } else {
+
+      const caseValue = await eventServiceAPI.service(
+        EVS_ENDPOINT.CASE,
+        API_METHOD.POST, { value }
+      ) as { case: string } | null;
+
+      let casedValue = value
+      if (caseValue?.case) {
+        casedValue = caseValue?.case
+      }
+      dispatch(
+        setBasePropAction({ code: caseCode, value: casedValue })
+      )
+
+    }
+    
+    dispatch(setCaseLoading({ code: caseCode }));
+  }
+
+
 };
 

@@ -33,6 +33,7 @@ const initialState = {
     isFetched: false,
     isLoading: false,
     isCreatingLoading: false,
+    caseLoading: [] as string[],
 };
 
 // Создаем slice
@@ -95,13 +96,13 @@ export const bxrqSlice = createSlice({
         },
         setCurrentItem: (state: BXRQState, action: PayloadAction<{ item: EvsRqItem }>) => {
             const searchingCurrent = state.current.items.find(item => item.bx_id === action.payload.item.bx_id) || state.current.item;
-            debugger
+
             state.current.item = !searchingCurrent ? null : { ...action.payload.item };
         },
         initBaseCreating: (state: BXRQState, action: PayloadAction<{
             currentClientType: RQ_TYPE;
-            contractType: CONTRACT_LTYPE;
-            supplyType: SupplyTypesType;
+            // contractType: CONTRACT_LTYPE;
+            // supplyType: SupplyTypesType;
         }>) => {
             if (state.current.item) {
                 const base = { ...state.current.item };
@@ -111,6 +112,7 @@ export const bxrqSlice = createSlice({
                     // action.payload.contractType,
                     // action.payload.supplyType,
                 ) : base.fields;
+
                 state.creating.base = base;
             }
         },
@@ -237,6 +239,13 @@ export const bxrqSlice = createSlice({
                 });
             }
         },
+        setCaseLoading: (state: BXRQState, action: PayloadAction<{ code: string }>) => {
+            if (!state.caseLoading.includes(action.payload.code)) {
+                state.caseLoading.push(action.payload.code)
+            } else {
+                state.caseLoading = state.caseLoading.filter(code => code !== action.payload.code)
+            }
+        },
         setAddressProp: (state: BXRQState, action: PayloadAction<{ code: string; value: string }>) => {
             if (state.creating.address?.fields) {
                 state.creating.address.fields = state.creating.address.fields.map(f => {
@@ -303,6 +312,7 @@ export const {
     saveBankCreating,
     cancelBankCreating,
     setBaseProp,
+    setCaseLoading,
     setAddressProp,
     setBankProp,
     setError,

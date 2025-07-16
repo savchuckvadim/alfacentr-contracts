@@ -6,29 +6,25 @@ import { DocumentRqAgent } from "../../model/slice/DocumentRqSlice";
 
 export class ContractRqService {
     private clientRqService: BxClientRqService
-   
+
     constructor(
-       
+
 
     ) {
         this.clientRqService = new BxClientRqService();
     }
 
     public getRqs(
-        
+
         clientRq: EvsRqItem,
         clientType: RQ_TYPE,
 
 
     ): {
-        client: DocumentRqAgent
-        
-        roles: { provider: string; client: string; providerCase: string; clientCase: string }
-    }
+        client: DocumentRqAgent<RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION>
 
-    
-    
-    {
+        roles: { provider: string; client: string; providerCase: string; clientCase: string }
+    } {
 
 
         // const providerRq = this.getProviderData(provider);
@@ -36,7 +32,7 @@ export class ContractRqService {
         const roles = this.getRoles();
         return {
             client: clientRqData,
-         
+
             roles,
             // we_rq: [
             //     PROVIDER_RQ_CONST.companyName,

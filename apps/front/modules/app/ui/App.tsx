@@ -37,7 +37,7 @@ export const App = ({ children }: { children: React.ReactNode }) => {
     }, [isMounted])
     return (
 
-        <div className="min-h-screen">
+        <div className="h-calc(100vh - 200px)">
 
 
             {isClient && initialized && !isLoading ? (

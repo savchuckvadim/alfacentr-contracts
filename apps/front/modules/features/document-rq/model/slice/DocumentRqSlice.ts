@@ -2,6 +2,7 @@ import { RQ_TYPE } from "@workspace/bx-rq"
 import { Provider } from "../../consts/provider-rq.const"
 import { createSlice } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit"
+import { EnumFizRqFields, EnumOrganizationRqFields } from "../../type/document-rq.type"
 
 export interface DocumentRqGeneral {
     id: number
@@ -9,49 +10,29 @@ export interface DocumentRqGeneral {
 
 }
 
-export interface DocumentRqAgent {
-    id: number
-    name: string
-    fullname?: string
-    shortName?: string
-    fio?: string
-    director?: string
-    directorCase?: string
-    gb?: string
-    based: string
+export type DocumentRqAgent<T extends RQ_TYPE> = T extends RQ_TYPE.FIZ
+    ? DocumentFizRqAgent : DocumentOrganizationRqAgent
 
-    inn: string
-    kpp: string
-    other?: string
-    address: string
-    bank: string
-    bik?: string
-    rs?: string
-    ks?: string
-    providerCompanyDirectorPosition?: string
-    providerCompanyDirectorName?: string
-    phone: string
-    email: string
-    type: RQ_TYPE
-    documentType?: string
-    docSeries?: string
-    docNumber?: string
-    docDate?: string
-    depCode?: string
-
+export type DocumentOrganizationRqAgent = {
+    [key in EnumOrganizationRqFields]: string
 }
+export type DocumentFizRqAgent = {
+    [key in EnumFizRqFields]: string
+}
+
+
 
 export interface DocumentRqState {
     general: DocumentRqGeneral
-    client: DocumentRqAgent | null
-    provider: DocumentRqAgent | null
+    client: DocumentOrganizationRqAgent | DocumentFizRqAgent | null
+    provider: DocumentOrganizationRqAgent | DocumentFizRqAgent | null
 }
 
 const initialState: DocumentRqState = {
     general: {
         id: 0,
         header: '',
-      
+
     },
     client: null,
     provider: Provider,
@@ -62,15 +43,15 @@ export const documentRqSlice = createSlice({
     name: 'documentRq',
     initialState,
     reducers: {
-        setClient: (state: DocumentRqState, action: PayloadAction<{
-            client: DocumentRqAgent
+        setClient: <T extends RQ_TYPE>(state: DocumentRqState, action: PayloadAction<{
+            client: DocumentRqAgent<T>
             header: string
         }>) => {
-            
+
             state.client = action.payload.client
             state.general.header = action.payload.header
         },
-        setProvider: (state: DocumentRqState, action: PayloadAction<DocumentRqAgent>) => {
+        setProvider: (state: DocumentRqState, action: PayloadAction<DocumentRqAgent<RQ_TYPE.ORGANIZATION>>) => {
             state.provider = action.payload
         }
     }

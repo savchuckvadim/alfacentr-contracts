@@ -1,12 +1,12 @@
 
 import { appActions } from "./AppSlice";
-import { AppDispatch, AppGetState, AppThunk, getWSClient, } from "./store";
-import { WSClient } from "@workspace/ws";
+import { AppDispatch, AppGetState, AppThunk } from "./store";
+
 
 import { appInit } from "../lib/app-init/app-init.util";
 
 
-export let socket: undefined | WSClient;
+
 
 export const initial = (): AppThunk =>
   async (dispatch: AppDispatch, getState: AppGetState, { getWSClient }) => {

@@ -9,6 +9,7 @@ const url = prod;
 
 export enum EBACK_ENDPOINT {
   DEPARTMENT = "bitrix/department/sales",
+  DOCUMENT_GENERATE = "document-generate",
   // DOWNLOAD_REPORT = "kpi-report/download",
   // REPORT_GET = "kpi-report/get",
   // CALLING_STATISTIC_GET = "kpi-report/calling-statistic",

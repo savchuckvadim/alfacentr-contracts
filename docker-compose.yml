@@ -9,7 +9,7 @@ services:
       dockerfile: docker/Dockerfile.front
       args:
         APP: front 
-    container_name: front-alfacentr-dev
+    container_name: front-alfacentr-prod
     ports:
       - "${PORT_ALFA}:3000"         # API доступен снаружи
     environment:
@@ -38,14 +38,10 @@ services:
       - REDIS_HOST=redis-alfacentr
       - REDIS_PORT=6379
       - PORT=3000   
-      - DATABASE_URL=mysql://root:cfdx@db-alfacentr:3306/bitrix  
-      - LOG_FILE_PATH=/app/logs/server.log         
+      
                # для app.listen
     depends_on:
-      - db-alfacentr
       - redis-alfacentr
-
-
     restart: unless-stopped
 
     volumes:
@@ -59,7 +55,7 @@ services:
     image: redis:7
     container_name: redis-alfacentr
     ports:
-      - "6379:6379"
+      - "${ALFA_REDIS_PORT}:6379"
     restart: unless-stopped
     # healthcheck:
     #   test: ["CMD", "redis-cli", "ping"]
@@ -69,32 +65,31 @@ services:
     networks:
       - app-network-alfacentr
 
-  db-alfacentr:
-    image: mysql:8.0
-    container_name: db-alfacentr
-    restart: "unless-stopped"
-    environment:
-      MYSQL_ROOT_PASSWORD: cfdx # Задай свой пароль для root
-      MYSQL_DATABASE: bitrix # Название базы данных
-      # MYSQL_USER: root # Имя пользователя
-      MYSQL_PASSWORD: cfdx # Пароль пользователя
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-      - ./apps/back/db_dev:/docker-entrypoint-initdb.d
-    networks:
-      - app-network-alfacentr
+  # db-alfacentr:
+  #   image: mysql:8.0
+  #   container_name: db-alfacentr
+  #   restart: "unless-stopped"
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: cfdx # Задай свой пароль для root
+  #     MYSQL_DATABASE: bitrix # Название базы данных
+  #     # MYSQL_USER: root # Имя пользователя
+  #     MYSQL_PASSWORD: cfdx # Пароль пользователя
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - db_data:/var/lib/mysql
+  #     - ./apps/back/db_dev:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - app-network-alfacentr
 
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pcfdx"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pcfdx"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 5
 
 
-volumes:
-  db_data: 
+
 
 networks:
   app-network-alfacentr:

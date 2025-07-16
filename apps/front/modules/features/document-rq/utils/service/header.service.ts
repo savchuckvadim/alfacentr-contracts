@@ -24,10 +24,10 @@ export class ContractRqHeaderService {
 
         const providerType = Provider.type;
         const providerCompanyFullName = Provider.fullname;
-        const providerCompanyDirectorName = Provider.director;
-        const providerCompanyDirectorPosition = Provider.providerCompanyDirectorPosition || 'Директор';
+        // const providerCompanyDirectorName = Provider.director;
+        // const providerCompanyDirectorPosition = Provider.directorPosition || 'Директор';
         const providerCompanyDirectorNameCase = Provider.directorCase;
-        const providerCompanyDirectorPositionCase = 'Директора';
+        const providerCompanyDirectorPositionCase = Provider.directorPositionCase;
         const providerCompanyBased = Provider.based;
 
         let clientCompanyFullName = ' __________________________________________________________ ';
@@ -53,7 +53,7 @@ export class ContractRqHeaderService {
             }
         }
 
-        let headerText = `${providerCompanyFullName} , официальный партнер компании "Гарант", именуемый в дальнейшем "${providerRole}`;
+        let headerText = `${providerCompanyFullName}, именуемое в дальнейшем "${providerRole}`;
 
         if (providerType === 'org' || providerType === 'org_state') {
             headerText += `, в лице ${providerCompanyDirectorPositionCase} ${providerCompanyDirectorNameCase}, действующего(-ей) на основании ${providerCompanyBased}`;

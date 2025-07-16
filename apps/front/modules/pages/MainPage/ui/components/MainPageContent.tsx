@@ -5,7 +5,7 @@ import { PartisipantProductSimpleStatistics } from "@/modules/widgetes/Participa
 import { CheckCircle, CreditCard, Package, Users } from "lucide-react"
 import { useEffect, useState } from "react"
 import { ParticipantsTableWidget } from "@/modules/widgetes/Participant/ParticipantsTable/ParticipantsTableWidget"
-import { ProductsTableWidget } from "@/modules/widgetes"
+import { ContractPreview, ProductsTableWidget } from "@/modules/widgetes"
 
 export const MainPageContent = () => {
     const [filter, setFilter] = useState<string>("main")
@@ -17,8 +17,8 @@ export const MainPageContent = () => {
         content:
             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
                 <SimpleCard title="Товары" children={<ProductsTableWidget />} />
-                <ParticipantsTableWidget/>
-                <SimpleCard  children={<ParticipantsTableWidget/>  } />
+                <ParticipantsTableWidget />
+                <SimpleCard children={<ParticipantsTableWidget />} />
 
             </div>
 
@@ -35,7 +35,7 @@ export const MainPageContent = () => {
         value: "participants",
         label: "Участники",
         icon: <Users />,
-        content: <ParticipantsTableWidget/> 
+        content: <ParticipantsTableWidget />
 
     },
     {
@@ -49,7 +49,7 @@ export const MainPageContent = () => {
         value: "contract",
         label: "Что будет в договоре",
         icon: <CheckCircle />,
-        content: <ProductsTableWidget />
+        content: <SimpleCard children={<ContractPreview />} />
     },
     ]
     useEffect(() => {

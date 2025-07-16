@@ -6,9 +6,9 @@ import { useState, useEffect } from "react"
 
 
 
-export const MicroPreloader = () => {
-    return <div className="flex items-center justify-center h-4 w-30">
-        <ShimmerText width="w-30" />
+export const MicroPreloader = ({ fullWidth = false }: { fullWidth?: boolean }) => {
+    return <div className={cn("flex items-center justify-center h-4", fullWidth ? "w-full" : "w-30")}>
+        <ShimmerText width={fullWidth ? "w-full" : "w-30"} />
     </div>
 
 }

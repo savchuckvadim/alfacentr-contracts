@@ -1,19 +1,20 @@
 import { Bitrix } from "@bitrix/bitrix";
 import { TESTING_DOMAIN, TESTING_USER } from "../../consts/app-global";
-import { AppDispatch, AppGetState, initWSClient } from "../../model/store";
-import { WSClient } from "@workspace/ws";
+import { AppDispatch, AppGetState } from "../../model/store";
+import {WSClient as WSClientWorkspace } from "@workspace/ws";
 import { fetchProducts, setParticipants } from "@/modules/entities";
 import { setDealData } from "@/modules/entities/deal/model/DealSlice";
 import { getDealFieldsData } from "@/modules/entities/deal/lib/utils/get-deal-fields-data.util";
-import { socketThunk } from "../../model/queue-ws-ping-test/QueueWsPingListener";
+import { wsInit } from "../../model/queue-ws-ping-test/QueueWsPingListener";
 import { appActions } from "../../model/AppSlice";
 import { bitrixInit } from "../bitrix-init/bitrix-init.util";
-
+import { WSClient } from "@/modules/shared/Websocket/ws-client";
+import { initWSHandlers, registerWSHandler } from "@/modules/shared/Websocket/ws-handlers-registry";
 
 export const appInit = async (
     dispatch: AppDispatch,
     getState: AppGetState,
-    getWSClient: () => WSClient,
+    getWSClient: () => WSClientWorkspace,
     loadingCallBack: () => void
 ) => {
 
@@ -42,13 +43,17 @@ export const appInit = async (
             // dispatch(setFetchedProducts(rows))
         ])
     }
+    const wsService = new WSClient(Number(user.ID), domain); // создаём сокет   
+    wsService.init(); // <- здесь создаёшь сокет
 
-    initWSClient(Number(user.ID), domain); // <- здесь создаёшь сокет
-    // const socket = getWSClient()
+  
+    initWSHandlers(dispatch); // подписываем все события
     dispatch(
-        socketThunk(
-            Number(user.ID),
-            domain
+        wsInit(
+            {
+                userId: Number(user.ID),
+                domain
+            }
         )
     )
 

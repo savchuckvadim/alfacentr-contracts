@@ -19,7 +19,14 @@ export const useApp = () => {
     }, [isClient, app.initialized, app.isLoading, dispatch]);
 
 
-    return { isClient, app, initialized: app.initialized, isLoading: app.isLoading };
+    return {
+        isClient,
+        app,
+        initialized: app.initialized,
+        isLoading: app.isLoading,
+        domain: app.domain,
+        companyId: app.bitrix.company?.ID || 0
+    };
 }
 export const useReload = () => {
     const dispatch = useAppDispatch();
