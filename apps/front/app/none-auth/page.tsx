@@ -1,6 +1,6 @@
-import { Button } from "@workspace/ui/components/button"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card"
-import { ArrowLeft, Shield, AlertTriangle } from "lucide-react"
+import { Shield, AlertTriangle } from "lucide-react"
 import Image from "next/image"
 import { BackButton } from "./BackButton"
 

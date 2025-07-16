@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchParticipants } from '@/modules/entities/participant/model/ParticipantThunk';
 import { errorHandler } from '@/modules/app/lib/error-handler';
 import { useAppDispatch } from '@/modules/app/lib/hooks/redux';
@@ -8,6 +8,15 @@ import { useAppDispatch } from '@/modules/app/lib/hooks/redux';
 export default function DevPage() {
   const dispatch = useAppDispatch();
   const [testResults, setTestResults] = useState<string[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   const addResult = (result: string) => {
     setTestResults(prev => [...prev, `${new Date().toLocaleTimeString()}: ${result}`]);

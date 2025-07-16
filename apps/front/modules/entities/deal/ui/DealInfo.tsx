@@ -1,7 +1,12 @@
 'use client'
+import { useApp } from "@/modules/app"
 import { useAppSelector } from "@/modules/app/lib/hooks/redux"
 
 export const DealInfo = () => {
+    const {isClient} = useApp()
+    if (!isClient) {
+        return null
+    }
     const { dealData } = useAppSelector(state => state.deal)
     console.log(dealData)
     

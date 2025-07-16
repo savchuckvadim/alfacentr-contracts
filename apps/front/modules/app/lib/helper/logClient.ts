@@ -1,5 +1,8 @@
 'use client'
 export async function logClient(title: string, payload: any) {
+  if (typeof window === 'undefined') {
+    return
+  }
   try {
     await fetch('/api/admin/logs', {
       method: 'POST',

@@ -32,8 +32,13 @@ import { IParticipant } from "@alfa/entities/dist/entities/smart/participant.int
 import { cn } from "@workspace/ui/lib/utils"
 import { cutString } from "@/modules/lib"
 import { Tooltip } from "@/modules/shared"
+import { useApp } from "@/modules/app"
 
 export const ParticipantPpkInfo = ({ participantId }: { participantId: number }) => {
+    const { isClient } = useApp()
+    if (!isClient) {
+        return null
+    }
     const id = participantId
     const { participant, loading, error } = useParticipant(id)
     const { loading: loadingProducts } = useAlfaProducts()

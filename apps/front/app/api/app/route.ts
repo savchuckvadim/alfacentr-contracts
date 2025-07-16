@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
 
 
-    const response = NextResponse.redirect(new URL('/bitrix', req.url), 303);
+    const response = NextResponse.redirect(new URL('/bitrix/main', req.url), 303);
 
 
 

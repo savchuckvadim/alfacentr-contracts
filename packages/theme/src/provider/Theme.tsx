@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+"use client"
+import React, { createContext,  useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
 export type ColorScheme = 'default' | 'blue' | 'violet' | 'pink' | 'green' | 'yellow' | 'orange' | 'red'  ;
@@ -14,10 +15,12 @@ export const ColorContext = createContext<ColorContextValue | null>(null);
 export const AprilThemeProvider = ({ children }: { children: React.ReactNode }) => {
     const [scheme, setScheme] = useState<ColorScheme>('default');
     const { theme } = useTheme(); // light / dark / system
-
+    const [isMounted, setIsMounted] = useState(false);
+    if (!isMounted) return null;
     useEffect(() => {
         const stored = localStorage.getItem("color-scheme") as ColorScheme;
         if (stored) setScheme(stored);
+        setIsMounted(true);
     }, []);
 
     useEffect(() => {

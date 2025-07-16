@@ -37,7 +37,7 @@ WORKDIR /app
 # Копируем только необходимые файлы
 COPY --from=base /app/apps/back/dist ./dist
 COPY --from=base /app/apps/back/package.json ./package.json
-COPY --from=base /app/apps/back/generated ./generated
+# COPY --from=base /app/apps/back/generated ./generated
 COPY --from=base /app/package.json ./root-package.json
 COPY --from=base /app/pnpm-workspace.yaml ./
 COPY --from=base /app/packages ./packages

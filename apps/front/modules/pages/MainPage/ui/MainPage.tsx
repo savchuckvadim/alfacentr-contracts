@@ -1,10 +1,20 @@
 'use client'
 
+
 import { SummaryPanel } from '../../../widgetes';
 import { MainPageContent } from './components/MainPageContent';
+import { useEffect, useState } from 'react';
 
 export const MainPage = () => {
+   const [isClient, setIsClient] = useState(false)
 
+    useEffect(() => {
+        setIsClient(true)
+    }, [])
+
+    if (!isClient) {
+        return null
+    }
 
 
     return (
