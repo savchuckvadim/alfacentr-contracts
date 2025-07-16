@@ -19,8 +19,8 @@ COPY . .
 RUN pnpm config set fetch-retries 5 && \
     pnpm config set fetch-timeout 60000 && \
     pnpm install --no-frozen-lockfile && \
-    cd apps/back && \
-    pnpm run prisma:generate
+    cd apps/back
+    
 
 RUN cd packages/alfa && \
     pnpm run build
