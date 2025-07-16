@@ -1,15 +1,8 @@
 "use client"
-import { ModalMenu, Select } from "@/modules/shared"
-import { BxParticipantsData, BxParticipantsDataKeys, getParticipantSelect, getParticipantSelectItemByValue, IParticipant } from "@alfa/entities"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
 import { Button } from "@workspace/ui/components/button"
-import { Textarea } from "@workspace/ui/components/textarea"
-import { FC, ReactElement, useEffect, useState } from "react"
-import { Edit2Icon, Trash2Icon, XIcon } from "lucide-react"
-import { useAlfaProducts } from "@/modules/entities/product/hook/useAlfaProducts"
-import { getProductFieldByCodeValue } from "@/modules/entities"
-import { ISelectItem } from "@/modules/shared/Select/Select"
+import { FC } from "react"
+import { XIcon } from "lucide-react"
+
 
 
 export interface IModalScreenProps {

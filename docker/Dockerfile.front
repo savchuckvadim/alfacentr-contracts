@@ -13,14 +13,14 @@ RUN npm install -g npm@11.3.0 && npm install -g pnpm
 COPY . .
 
 RUN pnpm approve-builds
-# Установка зависимостей и генерация Prisma Client
+
 RUN pnpm config set fetch-retries 5 && \
     pnpm config set fetch-timeout 60000 && \
-    pnpm install --no-frozen-lockfile 
+    pnpm install 
    
 
 # Сборка NextJS API и проверка
-RUN pnpm --filter front run build 
+RUN pnpm run build 
 # RUN pnpm --filter ${APP} run build 
 
 # ==== PRODUCTION ====
