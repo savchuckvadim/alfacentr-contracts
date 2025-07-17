@@ -53,101 +53,101 @@ export enum BxParticipantsFieldNameEnum {
 
 export class IParticipantBaseField {
 
-    value: string
+    value!: string
 }
 
 export class IParticipantNameField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Name
-    code: BxParticipantsDataKeys.name
-    name: BxParticipantsFieldNameEnum.name
-    type: 'string'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Name
+    code!: BxParticipantsDataKeys.name
+    name!: BxParticipantsFieldNameEnum.name
+    type!: 'string'
 
 }
 
 export class IParticipantEmailField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Email
-    code: BxParticipantsDataKeys.email
-    name: BxParticipantsFieldNameEnum.email
-    type: 'string'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Email
+    code!: BxParticipantsDataKeys.email
+    name!: BxParticipantsFieldNameEnum.email
+    type!: 'string'
 }
 
 export class IParticipantAddressForUdostField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12AddressForUdost
-    code: BxParticipantsDataKeys.address_for_udost
-    name: BxParticipantsFieldNameEnum.address_for_udost
-    type: 'string'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12AddressForUdost
+    code!: BxParticipantsDataKeys.address_for_udost
+    name!: BxParticipantsFieldNameEnum.address_for_udost
+    type!: 'string'
 }
 
 export class IParticipantPhoneField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Phone
-    code: BxParticipantsDataKeys.phone
-    name: BxParticipantsFieldNameEnum.phone
-    type: 'string'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Phone
+    code!: BxParticipantsDataKeys.phone
+    name!: BxParticipantsFieldNameEnum.phone
+    type!: 'string'
 }
 
 export class IParticipantCommentField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Comment
-    code: BxParticipantsDataKeys.comment
-    name: BxParticipantsFieldNameEnum.comment
-    type: 'string'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Comment
+    code!: BxParticipantsDataKeys.comment
+    name!: BxParticipantsFieldNameEnum.comment
+    type!: 'string'
 }
 
 export class IParticipantFormatField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Format
-    code: BxParticipantsDataKeys.format
-    name: BxParticipantsFieldNameEnum.format
-    type: 'enumeration'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Format
+    code!: BxParticipantsDataKeys.format
+    name!: BxParticipantsFieldNameEnum.format
+    type!: 'enumeration'
 }
 
 
 
 export class IParticipantIsPpkField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12IsPpk
-    code: BxParticipantsDataKeys.is_ppk
-    name: BxParticipantsFieldNameEnum.is_ppk
-    type: 'boolean'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12IsPpk
+    code!: BxParticipantsDataKeys.is_ppk
+    name!: BxParticipantsFieldNameEnum.is_ppk
+    type!: 'boolean'
 }
 
 export class IParticipantAccountantGosField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12AccountantGos
-    code: BxParticipantsDataKeys.accountant_gos
-    name: BxParticipantsFieldNameEnum.accountant_gos
-    type: 'multiple'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12AccountantGos
+    code!: BxParticipantsDataKeys.accountant_gos
+    name!: BxParticipantsFieldNameEnum.accountant_gos
+    type!: 'multiple'
 }
 
 export class IParticipantAccountantMedicalField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12AccountantMedical
-    code: BxParticipantsDataKeys.accountant_medical
-    name: BxParticipantsFieldNameEnum.accountant_medical
-    type: 'multiple'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12AccountantMedical
+    code!: BxParticipantsDataKeys.accountant_medical
+    name!: BxParticipantsFieldNameEnum.accountant_medical
+    type!: 'multiple'
 }
 
 export class IParticipantZakupkiField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Zakupki
-    code: BxParticipantsDataKeys.zakupki
-    name: BxParticipantsFieldNameEnum.zakupki
-    type: 'multiple'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Zakupki
+    code!: BxParticipantsDataKeys.zakupki
+    name!: BxParticipantsFieldNameEnum.zakupki
+    type!: 'multiple'
 }
 
 export class IParticipantKadryField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Kadry
-    code: BxParticipantsDataKeys.kadry
-    name: BxParticipantsFieldNameEnum.kadry
-    type: 'multiple'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Kadry
+    code!: BxParticipantsDataKeys.kadry
+    name!: BxParticipantsFieldNameEnum.kadry
+    type!: 'multiple'
 }
 
 export class IParticipantCorruptionField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Corruption
-    code: BxParticipantsDataKeys.corruption
-    name: BxParticipantsFieldNameEnum.corruption
-    type: 'multiple'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Corruption
+    code!: BxParticipantsDataKeys.corruption
+    name!: BxParticipantsFieldNameEnum.corruption
+    type!: 'multiple'
 }
 
 export class IParticipantDaysField extends IParticipantBaseField {
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Days
-    code: BxParticipantsDataKeys.days
-    name: BxParticipantsFieldNameEnum.days
-    type: 'multiple'
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Days
+    code!: BxParticipantsDataKeys.days
+    name!: BxParticipantsFieldNameEnum.days
+    type!: 'multiple'
 }
 export const fieldTypes = {
     [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Days]: {

@@ -1,7 +1,7 @@
 import { CategoryIdEnum, EntityTypeIdEnum, IAlfaParticipantSmartItem, SmartStageEnum } from "./smart.interface";
 
 export class SmartEntity {
-    smart: IAlfaParticipantSmartItem
+    smart!: IAlfaParticipantSmartItem
 
     constructor(smart: IAlfaParticipantSmartItem) {
         this.smart = smart
