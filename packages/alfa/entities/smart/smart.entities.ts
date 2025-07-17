@@ -20,7 +20,7 @@ export class SmartEntity {
     }
     public getStageInfo() {
         const stageId = this.getStageId() as unknown as keyof  SmartStageEnum
-        const stage = SmartStageEnum[stageId]
+        const stage = SmartStageEnum[stageId as keyof typeof SmartStageEnum]
         let stageType = 'success' as 'new' | 'success' | 'fail' | 'in_progress' | 'preparation'
       
         return { stage, stageType }
