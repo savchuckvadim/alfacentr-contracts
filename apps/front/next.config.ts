@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
         // Включаем проверку типов при сборке
         ignoreBuildErrors: false,
     },
+  
     // Настройки для монорепозитория
     transpilePackages: [
         '@workspace/api', 
