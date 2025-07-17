@@ -1,5 +1,5 @@
 import { IAlfaProduct } from "@/modules/entities";
-import { ProductFieldCodeType, ProductType } from "@/modules/entities/product/type/product-field-code.enum";
+import { ProductType } from "@/modules/entities/product/type/product-field-code.enum";
 import { bxProductData } from "@alfa/entities";
 
 export const getProductsByType = (products: IAlfaProduct[], type: ProductType): IAlfaProduct[] | null => {

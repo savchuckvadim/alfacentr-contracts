@@ -1,4 +1,5 @@
-import { bxProductData } from "@alfa/entities/dist/entities/product/bx-product-data"
+import { bxProductData } from "@alfa/entities"
+
 
 export type ProductFieldCodeType = typeof bxProductData
 
