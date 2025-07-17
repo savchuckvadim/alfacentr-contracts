@@ -5,15 +5,12 @@ import React, { useState } from 'react';
 import { SummaryPanel } from '../../../widgetes';
 
 import { MainPageContent } from './components/MainPageContent';
-import { useParticipantsInfo } from '@/modules/widgetes/Participant/ParticipantInfoCard/hook/useParticipantsInfo';
-import { useParticipant } from '@/modules/entities';
-import { PagePreloader } from '@/modules/shared/';
-import { useParticipantPpk } from '@/modules/features/participant-product/hook/useParticipantPpk';
+
 import { useApp } from '@/modules/app/lib/hooks/app';
 
 export const MainPage = () => {
     const { isClient } = useApp();
-    if (!isClient) return null;
+    if (!isClient) return <div>Loading...</div>;
 
   
 

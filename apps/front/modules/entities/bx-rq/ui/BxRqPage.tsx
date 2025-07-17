@@ -65,7 +65,7 @@ export const BxRqPage = ({
     const handleSaveBase = async (fields: RqItem[]) => {
         setIsSaving(true);
         try {
-            await saveBase(fields);
+            // await saveBase(domain,  clientType, );
         } catch (error) {
             console.error('Ошибка сохранения основных полей:', error);
         } finally {
@@ -160,7 +160,7 @@ export const BxRqPage = ({
         const selected = currentRqs.find((rq: EvsRqItem) => rq.bx_id.toString() === rqId);
         if (selected) {
             debugger
-            setCurrent(rqId);
+            setCurrent(selected);
         }
     };
 
