@@ -11,7 +11,7 @@ export const NameCell = ({ participant, name }: NameCellProps) => {
     return (
         <TableCell>
             <div>
-                <Link href={`/participants/${participant.id}`}>
+                <Link href={`/bitrix/participants/${participant.id}`}>
                     <div className="cursor-pointer font-medium text-foreground hover:text-primary transition-colors">
                         {name || 'Не указано'}
                     </div>
