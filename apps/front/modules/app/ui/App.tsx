@@ -17,30 +17,31 @@ export const App = ({ children }: { children: React.ReactNode }) => {
         setIsMounted(true);
     }, []);
 
-    // useEffect(() => {
-    //     if (isClient) {
+    useEffect(() => {
+        if (isClient) {
 
 
-    //         if (isMounted) {
-    //             if (typeof window !== 'undefined') {
-    //                 logClient('Afa start', {
-    //                     level: 'info',
-    //                     context: 'Alfa LOG TEST',
-    //                     message: 'Alfa is mounted',
-    //                 });
+            if (isMounted) {
+                if (typeof window !== 'undefined') {
+                    // logClient('Afa start', {
+                    //     level: 'info',
+                    //     context: 'Alfa LOG TEST',
+                    //     message: 'Alfa is mounted',
+                    // });
 
 
-    //                 (window as any).store = store;
-    //             }
-    //         }
-    //     }
-    // }, [isMounted])
+                    (window as any).store = store;
+                }
+            }
+        }
+    }, [isMounted])
     return (
 
         <div className="h-calc(100vh - 200px)">
 
 
             {isClient && initialized && !isLoading ? (
+                
                 children
             ) : (
                 <LoadingScreen />

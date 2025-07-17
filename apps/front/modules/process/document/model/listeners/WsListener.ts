@@ -20,7 +20,12 @@ export function setupWsDocumentListener(listenerMiddleware: ListenerMiddlewareIn
 
 
 
-            const { socket, userId, domain, socketId } = action.payload as { socket: WSClientWorkspace, userId: number, domain: string, socketId: string }
+            const {  userId, domain, socketId } = action.payload as { userId: number, domain: string, socketId: string }
+            // const { getWSClient } = listenerApi.extra as { getWSClient: () => WSClientWorkspace }
+            // const wsClient = getWSClient()
+            // wsClient.on('document-generate:done', (data) => {
+            //     console.log(data)
+            // })
 
             const service = new DocumentGenerateOwnService()
             await service.registerDocumentWSHandlers()

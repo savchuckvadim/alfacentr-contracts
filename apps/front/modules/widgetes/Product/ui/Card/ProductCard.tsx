@@ -13,6 +13,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { filterProductFieldsForDetails, getProductFieldValue } from "@/modules/entities/product";
 import { cn } from "@workspace/ui/lib/utils";
+import { LinkBadge } from "@/modules/shared";
 
 interface IProductCardProps {
     product: IAlfaProduct
@@ -194,7 +195,7 @@ export const ProductCard = ({ product }: IProductCardProps) => {
                                     <div key={participant.id} className="flex items-center gap-2 p-1">
                                         <div className="w-2 h-2 bg-primary rounded-full"></div>
                                         <span className="text-sm">
-                                            {getParticipantName(participant) || `Участник ${participant.id}`}
+                                            <LinkBadge href={`/bitrix/participants/${participant.id}`} text="К участнику" name={getParticipantName(participant) || `Участник ${participant.id}`} />
                                         </span>
                                     </div>
                                 ))}

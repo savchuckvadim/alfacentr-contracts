@@ -13,7 +13,7 @@ export const ParticipantCardHeaderName = ({ participant, hasProblems }: { partic
                 <div className="p-2 bg-primary/10 rounded-lg">
                     <User className="h-4 w-4 text-primary" />
                 </div>
-                <Link className="hover:underline" href={`/participants/${participant.id}`}>
+                <Link className="hover:underline" href={`/bitrix/participants/${participant.id}`}>
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
                             <Tooltip content={<p className="text-sm w-[300px]">Узнать больше об участнике</p>}>

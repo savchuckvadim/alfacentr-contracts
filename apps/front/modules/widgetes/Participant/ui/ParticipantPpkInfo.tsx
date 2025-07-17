@@ -23,7 +23,9 @@ import {
     MapPin,
     ChevronUp,
     ChevronDown,
-    AlertCircle
+    AlertCircle,
+    Link2,
+    Edit
 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useAlfaProducts } from "@/modules/entities/product/hook/useAlfaProducts"
@@ -33,27 +35,32 @@ import { cn } from "@workspace/ui/lib/utils"
 import { cutString } from "@/modules/lib"
 import { Tooltip } from "@/modules/shared"
 import { useApp } from "@/modules/app"
+import { useParticipantInfo } from "../ParticipantInfoCard/hook/useParticipantInfo"
+import { useEditParticipant } from "../ParticipantEdit/hook/useParticipantEdit"
+import { ParticipalEditModal } from "../ParticipantEdit/ui/ParticipalEditModal"
 
 export const ParticipantPpkInfo = ({ participantId }: { participantId: number }) => {
     const { isClient } = useApp()
-    if (!isClient) {
-        return null
-    }
+
     const id = participantId
     const { participant, loading, error } = useParticipant(id)
     const { loading: loadingProducts } = useAlfaProducts()
     const { participantToProducts } = useParticipantPpk()
     let missingProducts: string[] = []
-    const [hasProblems, setHasProblems] = useState(false)
-
+    // const [hasProblems, setHasProblems] = useState(false)
+    const { hasProblems, problems, isParticipantPpkLoading } = useParticipantInfo(participantId)
+    const { activateEditable, editable } = useEditParticipant(participantId)
+    const onEdit = (participantId: number) => {
+        activateEditable(participantId)
+    }
     useEffect(() => {
         const products = participantToProducts[id]
         const programs = getParticipantPrograms(participant as IParticipant)
         const programsThemes = programs?.map((program) => program.value)
         missingProducts = products ? getMissingProductsByParticipantPpkThemes(programsThemes, products) : []
-        if (missingProducts && missingProducts.length > 0) {
-            setHasProblems(true)
-        }
+        // if (missingProducts && missingProducts.length > 0) {
+        //     setHasProblems(true)
+        // }
     }, [participant, participantToProducts])
 
     const [expandedSections, setExpandedSections] = useState<{
@@ -70,7 +77,7 @@ export const ParticipantPpkInfo = ({ participantId }: { participantId: number })
 
     const products = participantToProducts[id]
 
-    if (loading) {
+    if (loading || !isClient) {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
@@ -135,9 +142,12 @@ export const ParticipantPpkInfo = ({ participantId }: { participantId: number })
                                 <User className="h-6 w-6 text-primary" />
                             </div>
                             <div className="space-y-2">
+
                                 <Link target="_blank" href={`https://alfacentr.bitrix24.ru/crm/type/1036/details/${participant.id}/`}>
                                     <div className="cursor-pointer flex items-center gap-2 hover:underline hover:text-indigo-600">
-                                        <CardTitle className="text-xl">{getParticipantName(participant)}</CardTitle>
+                                        <Tooltip content={<p className="text-sm">Открыть в битриксе </p>}>
+                                            <CardTitle className="text-xl">{getParticipantName(participant)}</CardTitle>
+                                        </Tooltip>
                                         {hasProblems && (
                                             <div className="p-1 bg-destructive/10 rounded">
                                                 <AlertTriangle className="h-4 w-4 text-destructive" />
@@ -218,9 +228,19 @@ export const ParticipantPpkInfo = ({ participantId }: { participantId: number })
                                     Требует внимания
                                 </Badge>
                             )}
-                            <Badge variant="outline" className="text-sm shrink-0">
+                            {/* <Badge variant="outline" className="text-sm shrink-0">
                                 Участник
-                            </Badge>
+                            </Badge> */}
+                            <Tooltip content="Редактировать">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onEdit(participantId)}
+                                    className="h-8 w-8 p-0 hover:bg-primary/10"
+                                >
+                                    <Edit className="w-4 h-4" />
+                                </Button>
+                            </Tooltip>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -423,6 +443,12 @@ export const ParticipantPpkInfo = ({ participantId }: { participantId: number })
                     </div>
                 </CardContent>
             </Card>
+            {editable && <ParticipalEditModal
+                isActive={!!editable}
+                editable={editable}
+
+
+            />}
         </div>
     )
 }

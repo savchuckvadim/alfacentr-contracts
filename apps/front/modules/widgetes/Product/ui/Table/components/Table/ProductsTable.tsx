@@ -24,7 +24,7 @@ export function ProductsTable() {
    
         <TableHead>Участники</TableHead>
         <TableHead>Статус</TableHead>
-        <TableHead className="w-32">Действия</TableHead>
+        {/* <TableHead className="w-32">Действия</TableHead> */}
       </TableRow>
     </TableHeader>
     <ProductsTableBody items={items} />

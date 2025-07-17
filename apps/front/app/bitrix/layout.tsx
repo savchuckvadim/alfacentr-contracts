@@ -23,7 +23,7 @@ export default function RootLayout({
     //     <Providers>
           <div >
             {/* Хедер */}
-            {/* <Header brandComponent={<CompanyBrand />} /> */}
+            <Header brandComponent={<CompanyBrand />} />
             <App>
 
               {children}

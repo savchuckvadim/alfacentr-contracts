@@ -97,13 +97,13 @@ export const ProductsTableRow = ({ product, index }: { product: IAlfaProduct, in
                     </Badge>
                 </Tooltip>
             </TableCell>
-            < TableCell >
+            {/* < TableCell >
                 <div className="flex items-center space-x-1" >
                     <ProductEditAction product={product} />
                     <ProductDeleteAction product={product} />
 
                 </div>
-            </TableCell>
+            </TableCell> */}
         </TableRow>
     );
 

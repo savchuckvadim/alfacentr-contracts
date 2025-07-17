@@ -2,8 +2,13 @@ import { RQ_TYPE } from "@workspace/bx-rq"
 import { DocumentFizRqAgent, DocumentOrganizationRqAgent, DocumentRqAgent } from "../model/slice/DocumentRqSlice"
 import { EnumDocumentFizRqFields, EnumDocumentOrganizationRqFields, EnumFizRqFields, EnumOrganizationRqFields } from "../type/document-rq.type"
 
-export const getForDocumentItems = (client: DocumentRqAgent<RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION>, clientType: RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION, provider: DocumentRqAgent<RQ_TYPE.ORGANIZATION>) => {
-
+export const getForDocumentItems = (client: DocumentRqAgent<RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION> | null, clientType: RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION, provider: DocumentRqAgent<RQ_TYPE.ORGANIZATION> | null) => {
+    if (!client || !provider) {
+        return {
+            client: [],
+            provider: []
+        }
+    }
     // Получаем ключи и фильтруем TYPE
     const clientKeys = Object.keys(client).filter(key => key !== EnumFizRqFields.TYPE)
     const providerKeys = Object.keys(provider).filter(key => key !== EnumOrganizationRqFields.TYPE)

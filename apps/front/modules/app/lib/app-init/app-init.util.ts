@@ -43,19 +43,19 @@ export const appInit = async (
             // dispatch(setFetchedProducts(rows))
         ])
     }
-    // const wsService = new WSClient(Number(user.ID), domain); // создаём сокет   
-    // wsService.init(); // <- здесь создаёшь сокет
+    const wsService = new WSClient(Number(user.ID), domain); // создаём сокет   
+    wsService.init(); // <- здесь создаёшь сокет
 
   
-    // initWSHandlers(dispatch); // подписываем все события
-    // dispatch(
-    //     wsInit(
-    //         {
-    //             userId: Number(user.ID),
-    //             domain
-    //         }
-    //     )
-    // )
+    initWSHandlers(dispatch); // подписываем все события
+    dispatch(
+        wsInit(
+            {
+                userId: Number(user.ID),
+                domain
+            }
+        )
+    )
 
 
 

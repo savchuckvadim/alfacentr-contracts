@@ -6,7 +6,11 @@ export * from "./BackButton";
 
 
 export * from "./Preloader"
-export * from "./Modal"
+export * from "./Modal/ModalConfirm"
+export * from "./Modal/ModalMenu"
+export * from "./Modal/ModalScreen"
+
+export * from "./Links/LinkBadge"
 export * from "./Select"
 
 export * from "./Filter"

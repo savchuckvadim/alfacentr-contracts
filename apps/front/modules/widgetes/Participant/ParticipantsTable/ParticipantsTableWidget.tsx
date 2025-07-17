@@ -3,13 +3,13 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Eye } from "lucide-react"
 import Link from "next/link"
 import { useParticipantsInfo } from "../ParticipantInfoCard/hook/useParticipantsInfo"
-import { Tooltip } from "@/modules/shared"
+import { LinkBadge, Tooltip } from "@/modules/shared"
 import { ParticipantsProblems } from "../ParticipantReport/ParticipantsProblems"
 
 export const ParticipantsTableWidget = () => {
 
     const { hasProblems, participantsProblems, problemsCount } = useParticipantsInfo()
-    
+
     return <div>
         <div className="flex flex-row justify-between items-center gap-2 py-2">
             <div className="flex flex-row gap-2 px-2">
@@ -36,15 +36,8 @@ export const ParticipantsTableWidget = () => {
                     >
                         ОК
                     </Badge>}
-                <Link href="/participants">
-                    <Badge
-                        className="bg-red-600 text-white cursor-pointer"
-                        variant={"outline"}
-                    >
-                        <Eye className="w-4 h-4" color="black" />
-                        <p className="text-sm text-black">Подробнее</p>
-                    </Badge>
-                </Link>
+                <LinkBadge href="/bitrix/participants" text="К участникам" name="Подробнее" />
+
             </div>
         </div>
         <ParticipantsTable />

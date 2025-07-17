@@ -7,7 +7,7 @@ import { WSClient as WSClientWorkspace } from "@workspace/ws";
 
 export const wsInit = createAsyncThunk<
   {
-    socket: WSClientWorkspace,
+    // socket: WSClientWorkspace,
     userId: number,
     domain: string,
     socketId: string
@@ -49,14 +49,14 @@ export const wsInit = createAsyncThunk<
       if (!socketId) {
         return rejectWithValue('Socket ID is not available')
       }
-      const reqData = {
-        userId: payload.userId,
-        domain: payload.domain,
-        socketId
-      }
+      // const reqData = {
+      //   userId: payload.userId,
+      //   domain: payload.domain,
+      //   socketId
+      // }
 
       return {
-        socket,
+        // socket,
         userId: payload.userId,
         domain: payload.domain,
         socketId

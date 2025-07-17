@@ -13,7 +13,7 @@ interface HeaderProps {
 }
 
 export function Header({ className, brandComponent }: HeaderProps) {
-  // const { isClient } = useApp()
+  const { isClient } = useApp()
   // if (!isClient) {
   //   return null
   // }
@@ -43,7 +43,7 @@ export function Header({ className, brandComponent }: HeaderProps) {
         </div>
 
       </header>
-      {/* {isClient && <DocumentGlobalConfig />} */}
+      {isClient && <DocumentGlobalConfig />}
     </>
   );
 } 

@@ -16,9 +16,10 @@ export const MainPageContent = () => {
         icon: <Package />,
         content:
             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
-                <SimpleCard title="Товары" children={<ProductsTableWidget />} />
-                <ParticipantsTableWidget />
-                <SimpleCard children={<ParticipantsTableWidget />} />
+
+                <SimpleCard withCollapse={false}  title="Товары" children={<ProductsTableWidget />} />
+                <SimpleCard withCollapse={false}  children={<ParticipantsTableWidget />} />
+                <SimpleCard withCollapse={false}  title="Договор" children={<ContractPreview />} />
 
             </div>
 
@@ -38,18 +39,18 @@ export const MainPageContent = () => {
         content: <ParticipantsTableWidget />
 
     },
-    {
-        value: "requisites",
-        label: "Реквизиты",
-        icon: <CreditCard />,
-        content: <SimpleCard children={<ParticipantsTable />} />
+    // {
+    //     value: "requisites",
+    //     label: "Реквизиты",
+    //     icon: <CreditCard />,
+    //     content: <SimpleCard children={<ParticipantsTable />} />
 
-    },
+    // },
     {
         value: "contract",
         label: "Что будет в договоре",
         icon: <CheckCircle />,
-        content: <SimpleCard children={<ContractPreview />} />
+        content: <ContractPreview />
     },
     ]
     useEffect(() => {
@@ -57,8 +58,8 @@ export const MainPageContent = () => {
     }, [filter])
     return (
         <div className="bg-background p-5 rounded-2xl">
-            <h3 className="text-2xl mb-2 font-bold">{title}</h3>
-            {filter !== "main" ? (
+            <h3 className="text-2xl mb-4 font-bold">{title}</h3>
+            {/* {filter !== "main" ? (
                 <div className="space-y-6 my-3">
                     <PartisipantProductSimpleStatistics />
                 </div>
@@ -67,7 +68,7 @@ export const MainPageContent = () => {
                     <div className="space-y-6 my-3 h-17">
                         Main statistics
                     </div>
-                )}
+                )} */}
             <FilterTabs tabs={tabs}
                 defaultValue={filter}
                 onTabChange={setFilter}

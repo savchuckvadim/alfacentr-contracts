@@ -4,6 +4,7 @@ import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts
 import { DeleteConfirmModal } from '../DeleteConfirm/DeleteConfirmModal';
 import { ProductsTable } from './components/Table/ProductsTable';
 import { useDeleteEditMode } from '@/modules/entities/product/hook/useDeleteEditMode';
+import { LinkBadge } from '@/modules/shared';
 
 
 
@@ -13,7 +14,7 @@ export function ProductsTableWidget() {
 
 
   const { deletingProduct, isDeleting, handleDeleteConfirm, handleDeleteCancel } = useDeleteEditMode()
-  
+
 
   console.log('deletingProduct')
   console.log(deletingProduct)
@@ -47,8 +48,11 @@ export function ProductsTableWidget() {
 
   return (
     <>
-
+      <div className="flex justify-end mb-4">
+        <LinkBadge href="/bitrix/products" text="К товарам" name="Подробнее" />
+      </div>
       <div className="bg-background text-foreground rounded-lg border overflow-hidden p-4">
+
         <ProductsTable />
       </div>
 

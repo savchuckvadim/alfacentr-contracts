@@ -13,22 +13,26 @@ export const ContractPreview = () => {
 
     return <div className="flex flex-col gap-4">
         <SimpleCard
+            withCollapse={true}
             title="Шапка договора"
             children={<p>
                 {header}
             </p>} />
 
         {paragraph && <SimpleCard
+            withCollapse={true}
             title="Пункт 1.1.2"
             children={<p>
                 {paragraph}
             </p>} />}
         <SimpleCard
+            withCollapse={true}
             title="Общая стоимость услуг"
             children={<p>
                 {totalSum}
             </p>} />
         <SimpleCard
+            withCollapse={true}
             title="Реквизиты"
             children={<DocumentRqsPreview />} />
     </div>

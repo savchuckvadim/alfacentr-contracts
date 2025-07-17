@@ -58,9 +58,9 @@ export const ProductsFullStatistics = () => {
     ]
     return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Статистика продуктов */}
-        {statistics.map((stat) => (
+        {statistics.map((stat, index) => (
             <ProductFullStatisticItem
-                key={stat.title}
+                key={`product-full-statistic-item-${index}`}
                 title={stat.title}
                 items={stat.items}
              
