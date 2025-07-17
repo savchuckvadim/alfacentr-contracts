@@ -9,7 +9,7 @@ export const getParticipant = (smart: IAlfaParticipantSmartItem): IParticipant =
         const fieldInEnum = Object.values(AlfaParticipantSmartItemUserFieldsEnum).find(enumValue => enumValue === key)
         if (fieldInEnum) {
             const targetKey = key as AlfaParticipantSmartItemUserFieldsEnum
-            const fieldValue = smart[targetKey]
+            const fieldValue = smart[targetKey as keyof IAlfaParticipantSmartItem]
             // const test = getNameBySmartFieldBxId(targetKey)
             const field = {
                 bitrixId: targetKey,

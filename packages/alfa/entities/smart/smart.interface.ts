@@ -81,6 +81,7 @@ export interface IAlfaParticipantSmartItem {
     utmTerm: string
     observers: number[]
     contactIds: number[]
+    [key: string]: any;
 
 
 }
