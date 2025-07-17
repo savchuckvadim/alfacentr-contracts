@@ -5,7 +5,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { Provider } from "react-redux"
 import { store } from "@/modules/app/model/store"
 import { ErrorBoundary } from "@/modules/app/providers/ErrorBoundary"
-// import { AprilThemeProvider } from "@workspace/theme"
+import { AprilThemeProvider } from "@workspace/theme"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -18,12 +18,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
         disableTransitionOnChange
         enableColorScheme
       >
-        {/* <AprilThemeProvider> */}
+        <AprilThemeProvider>
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
 
-        {/* </AprilThemeProvider> */}
+        </AprilThemeProvider>
       </NextThemesProvider>
     </Provider>
   )

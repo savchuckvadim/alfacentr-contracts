@@ -35,7 +35,7 @@ export const DocumentGlobalConfig = () => {
 
             <div className="flex items-center space-x-2">
               
-                {/* <ThemeToggler /> */}
+                <ThemeToggler />
                 <ReloadApp />
             </div>
         </div>
