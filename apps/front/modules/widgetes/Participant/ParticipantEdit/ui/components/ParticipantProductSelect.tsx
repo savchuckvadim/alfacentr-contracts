@@ -2,7 +2,7 @@ import { useAlfaProducts } from "@/modules/entities/product/hook/useAlfaProducts
 import { getProductFieldByCodeValue } from "@/modules/entities"
 import { ISelectItem, Select } from "@/modules/shared/Select/Select"
 import { useState } from "react"
-import { AlfaParticipantSmartItemUserFieldsEnum, BxParticipantsDataKeys, IParticipantField } from "@alfa/entities/dist/entities/smart/participant.interface"
+import { AlfaParticipantSmartItemUserFieldsEnum, BxParticipantsDataKeys, IParticipantField } from "@alfa/entities"
 import { Button } from "@workspace/ui/components/button"
 import { Edit2Icon, Trash2Icon, PackageIcon } from "lucide-react"
 import { Textarea } from "@workspace/ui/components/textarea"

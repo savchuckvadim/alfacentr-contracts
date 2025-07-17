@@ -30,7 +30,7 @@ import {
 import { useEffect, useState } from "react"
 import { useAlfaProducts } from "@/modules/entities/product/hook/useAlfaProducts"
 import Link from "next/link"
-import { IParticipant } from "@alfa/entities/dist/entities/smart/participant.interface"
+import { IParticipant } from "@alfa/entities/"
 import { cn } from "@workspace/ui/lib/utils"
 import { cutString } from "@/modules/lib"
 import { Tooltip } from "@/modules/shared"
