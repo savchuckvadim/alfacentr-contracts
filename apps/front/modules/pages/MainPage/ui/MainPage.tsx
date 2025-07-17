@@ -6,8 +6,9 @@ import { MainPageContent } from './components/MainPageContent';
 import { useEffect, useState } from 'react';
 
 export const MainPage = () => {
-   const [isClient, setIsClient] = useState(false)
-
+    console.log('MainPage')
+    const [isClient, setIsClient] = useState(false)
+    debugger
     useEffect(() => {
         setIsClient(true)
     }, [])
@@ -16,7 +17,7 @@ export const MainPage = () => {
         return <div>Loading...</div>
     }
 
-
+    debugger
     return (
         <div className='flex flex-col min-h-full rounded-full'>
 
@@ -28,7 +29,7 @@ export const MainPage = () => {
                 {/* Левая часть - основная область */}
                 <div className="flex-1 p-2">
                     <div className="h-full">
-                  
+
                         <MainPageContent />
 
                     </div>
@@ -38,7 +39,7 @@ export const MainPage = () => {
                 <div className="relative min-h-full w-1/4 min-w-[320px] ">
                     <SummaryPanel
 
-                  
+
                     />
                 </div>
             </div>

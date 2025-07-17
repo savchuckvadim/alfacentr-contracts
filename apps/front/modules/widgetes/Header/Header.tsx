@@ -13,10 +13,10 @@ interface HeaderProps {
 }
 
 export function Header({ className, brandComponent }: HeaderProps) {
-  const { isClient } = useApp()
-  if (!isClient) {
-    return null
-  }
+  // const { isClient } = useApp()
+  // if (!isClient) {
+  //   return null
+  // }
   return (
     <>
       <header className={cn(
@@ -43,7 +43,7 @@ export function Header({ className, brandComponent }: HeaderProps) {
         </div>
 
       </header>
-      {isClient && <DocumentGlobalConfig />}
+      {/* {isClient && <DocumentGlobalConfig />} */}
     </>
   );
 } 

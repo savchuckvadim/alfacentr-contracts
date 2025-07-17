@@ -20,8 +20,8 @@ RUN pnpm config set fetch-retries 5 && \
    
 
 # Сборка NextJS API и проверка
-RUN pnpm run build 
-# RUN pnpm --filter ${APP} run build 
+# RUN pnpm run build 
+RUN pnpm --filter alfacentr-front run build 
 
 # ==== PRODUCTION ====
 FROM node:20-slim AS prod
@@ -75,7 +75,7 @@ COPY --from=base /app/apps/front/.env ./.env
 
 # Установка PNPM и зависимостей
 RUN pnpm install --prod --no-frozen-lockfile && \
-    pnpm --filter ${APP} install --prod --no-frozen-lockfile
+    pnpm --filter alfacentr-front install --prod --no-frozen-lockfile
 
 
     

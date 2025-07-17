@@ -9,20 +9,22 @@ import { AprilThemeProvider } from "@workspace/theme"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ErrorBoundary>
-      <Provider store={store}>
-        <NextThemesProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-          enableColorScheme
-        >
-          <AprilThemeProvider>
+
+    <Provider store={store}>
+      <NextThemesProvider
+        attribute="class"
+        defaultTheme="red-light"
+        enableSystem
+        disableTransitionOnChange
+        enableColorScheme
+      >
+        <AprilThemeProvider>
+          <ErrorBoundary>
             {children}
-          </AprilThemeProvider>
-        </NextThemesProvider>
-      </Provider>
-    </ErrorBoundary>
+          </ErrorBoundary>
+
+        </AprilThemeProvider>
+      </NextThemesProvider>
+    </Provider>
   )
 }

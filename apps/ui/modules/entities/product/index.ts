@@ -1,8 +1,0 @@
-export * from './model/ProductSlice'
-export * from './model/ProductThunk'
-export * from './services/alfa-bx-product.service'
-export * from './lib/get-product-type.util'
-export * from './lib/get-product-format.util'
-export * from './lib/product-field.util'
-export * from './lib/product-sum.util'
-// export * from './ui/ProductList' 

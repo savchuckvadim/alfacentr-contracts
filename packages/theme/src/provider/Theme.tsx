@@ -16,11 +16,17 @@ export const AprilThemeProvider = ({ children }: { children: React.ReactNode }) 
     const [scheme, setScheme] = useState<ColorScheme>('default');
     const { theme } = useTheme(); // light / dark / system
     const [isMounted, setIsMounted] = useState(false);
-    if (!isMounted) return null;
+    if (!isMounted) return children;
+    
+    useEffect(() => {
+      
+        setIsMounted(true);
+    }, []);
+
     useEffect(() => {
         const stored = localStorage.getItem("color-scheme") as ColorScheme;
         if (stored) setScheme(stored);
-        setIsMounted(true);
+      
     }, []);
 
     useEffect(() => {
