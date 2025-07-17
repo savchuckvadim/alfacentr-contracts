@@ -1,3 +1,4 @@
+"use client"
 import { useParticipantPpk } from "@/modules/features/participant-product/hook/useParticipantPpk"
 import { Info } from "@/modules/shared"
 
