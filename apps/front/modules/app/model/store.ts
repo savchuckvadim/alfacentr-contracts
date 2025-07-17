@@ -4,18 +4,19 @@ import { appReducer } from "./AppSlice";
 import { errorHandler } from "../lib/error-handler";
 import { dealReducer, participantReducer, productReducer } from "@/modules/entities";
 import { bxrqReducer } from "@workspace/bx-rq";
-import { contractTypeReducer, contractTypeListener, clientTypeListener, documentParagraphReducer, documentParagraphProductParticipantListener } from "@/modules/features";
+import { contractTypeReducer,  documentParagraphReducer } from "@/modules/features";
 import {  participantProductReducer } from "@/modules/features/";
-import { documentRqReducer, rqListener } from "@/modules/features/document-rq";
-import { appListener } from "@/modules/entities/bx-rq/model/listener/AppListener";
+import { documentRqReducer } from "@/modules/features/document-rq";
+// import { appListener } from "@/modules/entities/bx-rq/model/listener/AppListener";
 import { WSClient } from "@/modules/shared/Websocket/ws-client";
 import { WSClient as WSClientWorkspace } from "@workspace/ws";
-import { setupParticipantProductListener } from "@/modules/features/participant-product/model/listener/ParticipantProductListener";
-import { setupWsDocumentListener } from "@/modules/process/document/model/listeners/WsListener";
+// import { setupParticipantProductListener } from "@/modules/features/participant-product/model/listener/ParticipantProductListener";
+// import { setupWsDocumentListener } from "@/modules/process/document/model/listeners/WsListener";
+import { startStoreListeners } from "./listeners/start-store-listeners";
 
 
 
-export const listenerMiddleware = createListenerMiddleware();
+const listenerMiddleware = createListenerMiddleware();
 
 
 // const socketMiddleware: Middleware = (storeAPI: MiddlewareAPI) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
@@ -75,13 +76,13 @@ export const setupStore = () => {
       })
         .concat(errorMiddleware)
         .concat(listenerMiddleware.middleware)
-        .concat(contractTypeListener.middleware)
-        .concat(clientTypeListener.middleware)
-        // .concat(participantProductListener.middleware)
-        .concat(documentParagraphProductParticipantListener.middleware)
+        // .concat(contractTypeListener.middleware)
+        // .concat(clientTypeListener.middleware)
+        // // .concat(participantProductListener.middleware)
+        // .concat(documentParagraphProductParticipantListener.middleware)
 
-        .concat(rqListener.middleware)
-        .concat(appListener.middleware)
+        // .concat(rqListener.middleware)
+        // .concat(appListener.middleware)
         // .concat(wsDocumentListener.middleware)
 
     // .concat(portalAPI.middleware)
@@ -93,8 +94,10 @@ export const setupStore = () => {
 
 //listeners
 // portalListener();
-setupParticipantProductListener(listenerMiddleware);
-setupWsDocumentListener(listenerMiddleware);
+startStoreListeners(listenerMiddleware);
+
+// setupParticipantProductListener(listenerMiddleware);
+// setupWsDocumentListener(listenerMiddleware);
 // Тип для extraArgument
 export type ThunkExtraArgument = {
   getWSClient: () => WSClientWorkspace;

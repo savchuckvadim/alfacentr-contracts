@@ -1,27 +1,28 @@
 // import { rubles } from 'rubles';
-import { convert } from 'number-to-words-ru'
+// import { convert } from 'number-to-words-ru'
 //todo https://www.npmjs.com/package/number-to-words-ru
 export const formatRuble = (value: number): string => {
-    return convert(value, {
-        currency: 'rub',
-        declension: 'nominative',
-        roundNumber: -1,
-        convertMinusSignToWord: true,
-        showNumberParts: {
-            integer: true,
-            fractional: true,
-        },
-        convertNumberToWords: {
-            integer: true,
-            fractional: false,
-        },
-        showCurrency: {
-            integer: true,
-            fractional: true,
-        },
-    })
+    return value.toString()
+    // return convert(value, {
+    //     currency: 'rub',
+    //     declension: 'nominative',
+    //     roundNumber: -1,
+    //     convertMinusSignToWord: true,
+    //     showNumberParts: {
+    //         integer: true,
+    //         fractional: true,
+    //     },
+    //     convertNumberToWords: {
+    //         integer: true,
+    //         fractional: false,
+    //     },
+    //     showCurrency: {
+    //         integer: true,
+    //         fractional: true,
+    //     },
+    // })
 
-    return convert(value)
+    // return convert(value)
 }
 
 // Использование без опций

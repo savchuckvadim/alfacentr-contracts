@@ -5,7 +5,7 @@ const requiredEnvVars = [
     'ONLINE_API_KEY',
     'IN_BITRIX',
     'LOG_FILE_PATH',
-   
+
 ];
 for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
@@ -15,6 +15,18 @@ for (const envVar of requiredEnvVars) {
 }
 
 const nextConfig: NextConfig = {
+    compress: false, // <--- отключает gzip-сжатие и минификацию на сервере
+
+    // если хочешь также отключить минификацию сборки (клиентского JS), допиши:
+    webpack(config, { dev, isServer }) {
+        if (!dev) {
+            config.optimization.minimize = false;
+        }
+        return config;
+    },
+    reactStrictMode: true,
+   
+    productionBrowserSourceMaps: true, // ✅ включаем sourcemaps для браузера
     env: {
         ONLINE_API_KEY: process.env.ONLINE_API_KEY,
         LOG_FILE_PATH: process.env.LOG_FILE_PATH,
@@ -22,13 +34,14 @@ const nextConfig: NextConfig = {
     },
     // Добавляем поддержку TypeScript для конфигурации
     typescript: {
+
         // Включаем проверку типов при сборке
         ignoreBuildErrors: false,
     },
-  
+
     // Настройки для монорепозитория
     transpilePackages: [
-        '@workspace/api', 
+        '@workspace/api',
         '@workspace/ui',
         '@workspace/alfa',
         '@workspace/bitrix',
@@ -36,7 +49,14 @@ const nextConfig: NextConfig = {
         '@workspace/theme',
         '@workspace/pbx',
         '@workspace/ws',
-  
+        // 'lvovich',
+        // 'russian-nouns-js',
+        // 'number-to-words-ru',
+        // 'i',
+        // 'lucide-react',
+        // 'framer-motion',
+        // 'date-fns',
+
     ],
 }
 

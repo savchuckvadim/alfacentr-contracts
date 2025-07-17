@@ -52,9 +52,9 @@ const productSlice = createSlice({
     name: 'product',
     initialState,
     reducers: {
-        setProducts: (state, action: PayloadAction<IAlfaProduct[]>) => {
-            state.items = action.payload
-        },
+        // setProducts: (state, action: PayloadAction<IAlfaProduct[]>) => {
+        //     state.items = action.payload
+        // },
         setEditableProduct: (state, action: PayloadAction<IAlfaProduct | null>) => {
             state.editable = action.payload
         },
@@ -131,7 +131,7 @@ const productSlice = createSlice({
 })
 
 export const {
-    setProducts,
+    // setProducts,
     setEditableProduct,
     setFetchedProducts,
 } = productSlice.actions
