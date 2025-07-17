@@ -15,18 +15,18 @@ for (const envVar of requiredEnvVars) {
 }
 
 const nextConfig: NextConfig = {
-    compress: false, // <--- отключает gzip-сжатие и минификацию на сервере
+    // compress: false, // <--- отключает gzip-сжатие и минификацию на сервере
 
-    // если хочешь также отключить минификацию сборки (клиентского JS), допиши:
-    webpack(config, { dev, isServer }) {
-        if (!dev) {
-            config.optimization.minimize = false;
-        }
-        return config;
-    },
-    reactStrictMode: true,
+    // // если хочешь также отключить минификацию сборки (клиентского JS), допиши:
+    // webpack(config, { dev, isServer }) {
+    //     if (!dev) {
+    //         config.optimization.minimize = false;
+    //     }
+    //     return config;
+    // },
+    // reactStrictMode: true,
    
-    productionBrowserSourceMaps: true, // ✅ включаем sourcemaps для браузера
+    // productionBrowserSourceMaps: true, // ✅ включаем sourcemaps для браузера
     env: {
         ONLINE_API_KEY: process.env.ONLINE_API_KEY,
         LOG_FILE_PATH: process.env.LOG_FILE_PATH,
