@@ -13,7 +13,7 @@ export const MainPage = () => {
     }, [])
 
     if (!isClient) {
-        return null
+        return <div>Loading...</div>
     }
 
 

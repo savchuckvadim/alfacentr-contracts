@@ -26,7 +26,17 @@ const nextConfig: NextConfig = {
         ignoreBuildErrors: false,
     },
     // Настройки для монорепозитория
-    transpilePackages: ['@workspace/api', '@workspace/ui'],
+    transpilePackages: [
+        '@workspace/api', 
+        '@workspace/ui',
+        '@workspace/alfa',
+        '@workspace/bitrix',
+        '@workspace/bx-rq',
+        '@workspace/theme',
+        '@workspace/pbx',
+        '@workspace/ws',
+  
+    ],
 }
 
 export default nextConfig 
