@@ -5,7 +5,7 @@ import {
     fetchProducts, getProductFieldByCodeValue, getProductSum, setFetchedProducts, setParticipants,
     updateParticipant
 } from "@/modules/entities";
-import { createListenerMiddleware, isAnyOf, ListenerMiddlewareInstance } from "@reduxjs/toolkit";
+import {isAnyOf, ListenerMiddlewareInstance } from "@reduxjs/toolkit";
 
 import { getProductsByType } from "@/modules/features/participant-product/lib/utils/product.util";
 import { IAlfaProduct } from "@/modules/entities/product/model/ProductSlice";

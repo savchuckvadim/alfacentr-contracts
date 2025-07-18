@@ -16,7 +16,7 @@ import { startStoreListeners } from "./listeners/start-store-listeners";
 
 
 
-const listenerMiddleware = createListenerMiddleware();
+export const listenerMiddleware = createListenerMiddleware();
 
 
 // const socketMiddleware: Middleware = (storeAPI: MiddlewareAPI) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
@@ -94,7 +94,7 @@ export const setupStore = () => {
 
 //listeners
 // portalListener();
-startStoreListeners(listenerMiddleware);
+// startStoreListeners(listenerMiddleware);
 
 // setupParticipantProductListener(listenerMiddleware);
 // setupWsDocumentListener(listenerMiddleware);

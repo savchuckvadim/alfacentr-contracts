@@ -1,7 +1,7 @@
 'use client'
 import { RootState } from "@/modules/app/model/store";
 import { addParticipant, deleteParticipant, fetchParticipants, fetchProducts, setFetchedProducts, setParticipants,  updateParticipant } from "@/modules/entities";
-import { createListenerMiddleware, isAnyOf, ListenerMiddlewareInstance } from "@reduxjs/toolkit";
+import { isAnyOf, ListenerMiddlewareInstance } from "@reduxjs/toolkit";
 import { PpkDistributorService } from "../../lib/service/ppk-distributor.service";
 import { getParticipantFieldValue } from "@/modules/entities/participant/lib/utils/get-participant-field-value.util";
 import { BxParticipantsDataKeys } from "@alfa/entities";

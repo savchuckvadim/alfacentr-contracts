@@ -5,9 +5,11 @@ import { setupDocumentParagraphProductParticipantListener } from "@/modules/feat
 import { setupRqListener } from "@/modules/features/document-rq/model/listener/rqListener";
 import { setupParticipantProductListener } from "@/modules/features/participant-product/model/listener/ParticipantProductListener";
 import { setupWsDocumentListener } from "@/modules/process/document/model/listeners/WsListener";
+import { setupRqAppListener } from "@/modules/entities/bx-rq/model/listener/AppListener";
 
 
 export function startStoreListeners(listenerMiddleware: ListenerMiddlewareInstance) {
+    setupRqAppListener(listenerMiddleware);
     setupContractTypeListener(listenerMiddleware);
     setupClientTypeListener(listenerMiddleware);
     setupDocumentParagraphProductParticipantListener(listenerMiddleware);

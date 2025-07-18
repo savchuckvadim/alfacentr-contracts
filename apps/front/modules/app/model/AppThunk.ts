@@ -1,16 +1,16 @@
 
 import { appActions } from "./AppSlice";
-import { AppDispatch, AppGetState, AppThunk } from "./store";
+import { AppDispatch, AppGetState, AppThunk, listenerMiddleware } from "./store";
 
 
 import { appInit } from "../lib/app-init/app-init.util";
+import { startStoreListeners } from "./listeners/start-store-listeners";
 
 
 
 
 export const initial = (): AppThunk =>
   async (dispatch: AppDispatch, getState: AppGetState, { getWSClient }) => {
-
 
     const state = getState();
     const app = state.app;
@@ -19,7 +19,9 @@ export const initial = (): AppThunk =>
 
 
 
-    if (!isLoading) {
+    if (!isLoading) { 
+      startStoreListeners(listenerMiddleware);
+
       dispatch(
         appActions.loading({ status: true })
       )
