@@ -12,8 +12,10 @@ export class QueueDispatcherService {
   private readonly logger = new Logger(QueueDispatcherService.name);
 
   constructor(
-    @InjectQueue(QueueNames.EVENT) private readonly eventQueue: Queue,
     @InjectQueue(QueueNames.DOCUMENT) private readonly documentQueue: Queue,
+    @InjectQueue(QueueNames.DOCUMENT_NUMBER) private readonly documentNumberQueue: Queue,
+   
+    @InjectQueue(QueueNames.EVENT) private readonly eventQueue: Queue,
     @InjectQueue(QueueNames.SILENT) private readonly silentQueue: Queue,
     @InjectQueue(QueueNames.SALES_KPI_REPORT) private readonly salesKpiReportQueue: Queue,
     @InjectQueue(QueueNames.TRANSCRIBE_AUDIO) private readonly transcribeAudioQueue: Queue,
@@ -38,6 +40,9 @@ export class QueueDispatcherService {
         return this.eventQueue;
       case QueueNames.DOCUMENT:
         return this.documentQueue;
+      case QueueNames.DOCUMENT_NUMBER:
+        return this.documentNumberQueue;
+        
       case QueueNames.SILENT:
         return this.silentQueue;
       case QueueNames.SALES_KPI_REPORT:

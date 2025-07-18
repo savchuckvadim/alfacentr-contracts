@@ -11,4 +11,5 @@ export enum JobNames {
     SERVICE_DEAL_INIT = 'service-deal-init',
 
     DOCUMENT_GENERATE = 'document-generate',
+    DOCUMENT_NUMBER = 'document-number',
   }

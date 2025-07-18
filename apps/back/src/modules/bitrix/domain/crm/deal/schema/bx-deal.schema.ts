@@ -27,7 +27,7 @@ export type DealSchema = {
         response: number;
     };
     [EBxMethod.USER_FIELD_LIST]: {
-        request: { filter: { [key: string]: any }, select?: string[] };
+        request: { filter: { [key: string]: any }, select?: string[], start?: number, sort?: { [key: string]: any } };
         response: IBXField[];
     };
     [EBxMethod.USER_FIELD_GET]: {

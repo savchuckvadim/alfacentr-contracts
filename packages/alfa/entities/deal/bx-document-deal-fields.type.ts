@@ -1,0 +1,29 @@
+export enum EnumDealCurrentDocumentFieldCode {
+    CURRENT_APPLICATION_URL = 'current_application_url',
+    CURRENT_APPLICATION_DOC = 'current_application_doc',
+    CURRENT_APPLICATION_PDF = 'current_application_pdf',
+    CURRENT_ACT_WITH_PT = 'current_act_with_pt',
+    CURRENT_ACT_WITHOUT_PT = 'current_act_without_pt',
+    CURRENT_CONTRACT_WITH_PT = 'current_contract_with_pt',
+    CURRENT_INVOICES_WITH_PT = 'current_invoices_with_pt',
+    CURRENT_INVOICES_WITHOUT_PT = 'current_invoices_without_pt',
+}
+export enum EnumDealDocumentFieldCode {
+    BID_CALL_STATUS = 'bid_call_status',
+    ASSIGNED_DOCUMENT_NAME = 'assigned_document_name',
+    UP_DATE = 'up_date',
+    BANK = 'bank',
+    ASSIGNED_DOCUMENT_EMAIL = 'assigned_document_email',
+    PACKET_EMAIL = 'packet_email',
+    NAME_PRODUCT_NOT_PREFIX = 'name_product_not_prefix',
+    NUMBER_DOC = 'number_doc',
+    NUMBER_CURRENT_DOC = 'number_current_doc',
+    COMMENT_FOR_OD = 'comment_for_od',
+    PREFIX_DINMYC = 'prefix_dinmyc',
+    CONSULTING_POINT_CONTRACT = 'consulting_point_contract',
+    PAYMENT_POIT_DOC = 'payment_poit_doc',
+    SUBJECT_FOR_SEND_MESSAGE = 'subject_for_send_message',
+    CONTRACT_TYPE = 'contract_type',
+
+
+}

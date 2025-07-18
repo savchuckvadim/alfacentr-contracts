@@ -114,7 +114,7 @@ export class BxDealRepository {
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.USER_FIELD_LIST,
-            { select, filter }
+            { select, filter, start: -1 }
         );
     }
 

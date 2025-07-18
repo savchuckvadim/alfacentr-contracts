@@ -2,6 +2,7 @@ export enum QueueNames {
   ACTIVITY = 'activity',
   EVENT = 'event',
   DOCUMENT = 'document',
+  DOCUMENT_NUMBER = 'document-number',
   TELEGRAM = 'telegram',
   SILENT = 'silent', // новая универсальная
   SALES_KPI_REPORT = 'sales-kpi-report',

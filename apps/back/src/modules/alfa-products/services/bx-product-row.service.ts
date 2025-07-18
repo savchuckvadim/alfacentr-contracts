@@ -44,9 +44,9 @@ export class BxProductRowService {
 
       
 
-        const response = await this.bitrix.api.callBatchWithConcurrency(1)
+        // const response = await this.bitrix.api.callBatchWithConcurrency(1)
         // const rowsWithProducts = this.prepareRowToRowWithProduct(productRows, response)
-        return { rowsWithProducts, response }
+        return { rowsWithProducts }
 
     }
     private async getDealProductRows(dealId: string): Promise<IBXProductRowRow[]> {
@@ -91,7 +91,7 @@ export class BxProductRowService {
         if (product.result.product) {
             const currentProduct = product.result.product
             if (currentProduct.parentId) {
-                console.log('✅ currentProduct.parentId ', currentProduct.parentId)
+                // console.log('✅ currentProduct.parentId ', currentProduct.parentId)
                 // if (typeof currentProduct.parentId === 'object' && Array.isArray(currentProduct.parentId)) {
                     if (currentProduct.parentId.value) {
                         const parentProduct = await this.bitrix.product.get(Number(currentProduct.parentId.value), select)

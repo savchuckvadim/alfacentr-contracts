@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Logger, Param, ValidationPipe, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OnDealInitUseCase } from '../use-cases/on-deal-init.use-case';
-import { OnDealInitRequestBodyDto } from '../dto/on-deal-init-request.dto';
+import { OnDealInitRequestDto } from '../dto/on-deal-init-request.dto';
 
 
 @ApiTags('Alfa')
@@ -15,7 +15,7 @@ export class OnDealInitController {
   @ApiOperation({ summary: 'On deal init' })
   @Post('create-deal/:dealId')
   async createDeal(
-    @Body(ValidationPipe) body: OnDealInitRequestBodyDto,
+    @Body(ValidationPipe) body: OnDealInitRequestDto,
     @Param('dealId') dealId: string
   ) {
     const fullDto = { ...body, dealId: Number(dealId) };

@@ -12,6 +12,21 @@ export class FieldsService {
     async getDealFields() {
 
         const list = await this.bitrix.deal.getFieldsList({
+            'SORT': 10,
+
+
+        });
+
+        const batchResult = await this.getDetailFields(list.result)
+        const rowResults = this.bitrix.api.clearResult(batchResult) as IBXField[]
+        const fields = this.prepareFields(rowResults)
+        const filtredFields = fields.filter(field => field.name.includes('Приложение'))
+        return { count: filtredFields.length, filtredFields, fields }
+    }
+
+    async getBxDealDataFields() {
+
+        const list = await this.bitrix.deal.getFieldsList({
             'SORT': 1,
 
 
@@ -20,8 +35,8 @@ export class FieldsService {
         const batchResult = await this.getDetailFields(list.result)
         const rowResults = this.bitrix.api.clearResult(batchResult) as IBXField[]
         const fields = this.prepareFields(rowResults)
-        const filtredFields = fields.filter(field => field.bitrixId.includes('UF_CRM_1744358047'))
-        return { count: filtredFields.length, filtredFields }
+        const filtredFields = fields.filter(field => field.name.includes('Участниик'))
+        return { count: filtredFields.length, filtredFields, fields }
     }
     async getUserFieldsEnumeration() {
 

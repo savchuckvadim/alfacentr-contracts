@@ -25,6 +25,19 @@ export class FieldsController {
     return await service.getDealFields();
   }
 
+  @ApiOperation({ summary: 'Получить пользовательские поля Bitrix для Альфазаявки' })
+  @ApiResponse({
+    status: 200,
+    description: 'Возвращает список пользовательских полей',
+
+  })
+  @Get('deal-data')
+  async getDealDataFields() {
+    const domain = 'alfacentr.bitrix24.ru'
+    const service = await this.factory.getService(domain);
+    return await service.getBxDealDataFields();
+  }
+
   @ApiOperation({ summary: 'Получить перечисления пользовательских полей Bitrix' })
   @ApiResponse({
     status: 200,
@@ -37,7 +50,7 @@ export class FieldsController {
     const service = await this.factory.getService(domain);
     return service.getUserFieldsEnumeration();
   }
-
+  @ApiOperation({ summary: 'Получить значение поля в сделке' })
   @Get('deal/:dealId')
   async getFieldByBitrixId(@Param('dealId') dealId: string) {
     const domain = 'alfacentr.bitrix24.ru'
@@ -47,7 +60,7 @@ export class FieldsController {
     return { deal, result }
   }
 
-  @ApiOperation({ summary: 'Обновить поле заявки Bitrix' })
+  @ApiOperation({ summary: 'Обновить поле сделки Bitrix' })
   @Put('deal/:dealId')
   async updateFieldByBitrixId(@Param('dealId') dealId: string, @Body() body: UpdateDealDto) {
     const domain = 'alfacentr.bitrix24.ru'
