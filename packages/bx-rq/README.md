@@ -19,9 +19,9 @@
 import { bxrqSlice } from '@workspace/bx-rq';
 
 const rootReducer = combineReducers({
-  app: appReducer,
-  bxrq: bxrqSlice.reducer, // Добавьте эту строку
-  // ... другие reducers
+    app: appReducer,
+    bxrq: bxrqSlice.reducer, // Добавьте эту строку
+    // ... другие reducers
 });
 ```
 
@@ -41,14 +41,14 @@ export type AppThunkGetState = () => RootState;
 
 ```typescript
 import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
-import { 
-  fetchBXRQ, 
-  saveBXRQ, 
-  setBasePropThunk 
+import {
+  fetchBXRQ,
+  saveBXRQ,
+  setBasePropThunk
 } from '@workspace/bx-rq';
-import { 
-  selectBXRQState, 
-  selectBXRQLoading 
+import {
+  selectBXRQState,
+  selectBXRQLoading
 } from '@workspace/bx-rq';
 
 const MyComponent = () => {
@@ -114,4 +114,4 @@ const MyComponent = () => {
 1. Замените `dispatch(actionCreator())` на `dispatch(action())`
 2. Обновите типы в компонентах
 3. Используйте selectors вместо прямого доступа к state
-4. Обновите middleware если необходимо 
+4. Обновите middleware если необходимо

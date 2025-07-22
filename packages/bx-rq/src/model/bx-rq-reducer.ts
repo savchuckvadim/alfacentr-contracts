@@ -15,7 +15,6 @@
 //     items: [] as EvsRqItem[],
 //     item: null as EvsRqItem | null,
 
-
 //   },
 //   creating: {
 //     base: null as EvsRqItem | null,
@@ -31,7 +30,6 @@
 //   isLoading: false,
 //   isCreatingLoading: false,
 // };
-
 
 // const bxrq = (state: BXRQState = initialState, action: BXRQActions) => {
 //   switch (action.type) {
@@ -67,7 +65,6 @@
 //         isCreatingLoading: action.status,
 //       };
 
-
 //     case "bxrq/SET_CURRENT_RQ_ITEMS":
 //       if (state.rqs) {
 //         const resolvedType = getResolvedType(action.clientType);
@@ -76,7 +73,6 @@
 //         const items: EvsRqItem[] = !isDefault
 //           ? state.rqs[resolvedType].items
 //           : [state.rqs[resolvedType].default]
-
 
 //         let item: EvsRqItem = state.rqs[resolvedType].default
 
@@ -128,12 +124,9 @@
 
 //       };
 
-
-
 //     case "bxrq/SET_CURRENT_ITEM":
 
 //       const searchingCurrent = state.current.items.find(item => item.bx_id === action.rq_id) || state.current.item
-
 
 //       return {
 //         ...state,
@@ -145,8 +138,6 @@
 //         }
 
 //       };
-
-
 
 //     case "bxrq/INIT_BASE_CREATING":
 //       const base = { ...state.current.item }
@@ -167,7 +158,6 @@
 //         }
 //       }
 //     case "bxrq/SAVE_BASE_CREATING":
-   
 
 //       return {
 //         ...state,
@@ -351,7 +341,6 @@
 //                   ...state.rqs[resolvedType],
 //                   items: currentItems,
 
-
 //                 }
 
 //               },
@@ -384,7 +373,6 @@
 //     case "bxrq/SET_BASE_PROP":
 //       const creating = { ...state.creating }
 //       const currentItem = { ...creating.base }
-
 
 //       currentItem.fields = state.creating.base?.fields.map(f => {
 //         if (f.type !== "select") {
@@ -463,9 +451,6 @@
 //           }
 //         };
 //       }
-
-
-
 
 //       return state;
 

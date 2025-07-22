@@ -1,4 +1,3 @@
-
 export * from './schema/userfieldconfig.schema';
 export * from './interface/userfieldconfig.interface';
 export type { EUserFieldType } from './interface/userfieldconfig.interface';

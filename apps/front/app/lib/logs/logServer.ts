@@ -3,7 +3,7 @@
 // import fs from 'fs';
 
 // export const LOG_FILE_PATH = '/app/logs/server.log';
-// // process.env.LOG_FILE_PATH || 
+// // process.env.LOG_FILE_PATH ||
 
 // export type LogLevel = 'info' | 'warn' | 'error';
 

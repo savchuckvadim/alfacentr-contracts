@@ -1,22 +1,24 @@
-
-import { BitrixBaseApi } from "@bitrix/core/base/bitrix-base-api";
-import { AddRpaItemDto, GetRpaItemDto, ListRpaItemDto, UpdateRpaItemDto } from "../dto/rpa-item.dto";
-import { EBXEntity } from "../../../../core/domain/consts/bitrix-entities.enum";
-import { EBxMethod, EBxNamespace } from "../../../../core/domain/consts/bitrix-api.enum";
-
-
+import { BitrixBaseApi } from '@bitrix/core/base/bitrix-base-api';
+import {
+    AddRpaItemDto,
+    GetRpaItemDto,
+    ListRpaItemDto,
+    UpdateRpaItemDto,
+} from '../dto/rpa-item.dto';
+import { EBXEntity } from '../../../../core/domain/consts/bitrix-entities.enum';
+import {
+    EBxMethod,
+    EBxNamespace,
+} from '../../../../core/domain/consts/bitrix-api.enum';
 
 export class BxRpaItemRepository {
-    constructor(
-        private readonly bxApi: BitrixBaseApi
-    ) {
-    }
+    constructor(private readonly bxApi: BitrixBaseApi) {}
     async getRpaItem(dto: GetRpaItemDto) {
         return this.bxApi.callType(
             EBxNamespace.RPA,
             EBXEntity.ITEM,
             EBxMethod.GET,
-            dto
+            dto,
         );
     }
     getRpaItemBtch(cmdCode: string, dto: GetRpaItemDto) {
@@ -25,7 +27,7 @@ export class BxRpaItemRepository {
             EBxNamespace.RPA,
             EBXEntity.ITEM,
             EBxMethod.GET,
-            dto
+            dto,
         );
     }
 
@@ -34,7 +36,7 @@ export class BxRpaItemRepository {
             EBxNamespace.RPA,
             EBXEntity.ITEM,
             EBxMethod.ADD,
-            dto
+            dto,
         );
     }
 
@@ -44,7 +46,7 @@ export class BxRpaItemRepository {
             EBxNamespace.RPA,
             EBXEntity.ITEM,
             EBxMethod.ADD,
-            dto
+            dto,
         );
     }
 
@@ -53,7 +55,7 @@ export class BxRpaItemRepository {
             EBxNamespace.RPA,
             EBXEntity.ITEM,
             EBxMethod.UPDATE,
-            dto
+            dto,
         );
     }
 
@@ -63,7 +65,7 @@ export class BxRpaItemRepository {
             EBxNamespace.RPA,
             EBXEntity.ITEM,
             EBxMethod.UPDATE,
-            dto
+            dto,
         );
     }
     async listRpaItem(dto: ListRpaItemDto) {
@@ -71,7 +73,7 @@ export class BxRpaItemRepository {
             EBxNamespace.RPA,
             EBXEntity.ITEM,
             EBxMethod.LIST,
-            dto
+            dto,
         );
     }
     listRpaItemBtch(cmdCode: string, dto: ListRpaItemDto) {
@@ -80,7 +82,7 @@ export class BxRpaItemRepository {
             EBxNamespace.RPA,
             EBXEntity.ITEM,
             EBxMethod.LIST,
-            dto
+            dto,
         );
     }
 }

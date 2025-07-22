@@ -6,7 +6,7 @@ import {
     updateFieldValue,
     clearDeal,
     setError,
-    clearError
+    clearError,
 } from '../model/DealSlice';
 import { updateDealField, UpdateDealFieldPayload } from '../model/DealThunk';
 import { TDealData, BxDealDataKeys } from '@alfa/entities';
@@ -16,8 +16,7 @@ import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
 export const useDeal = () => {
     const dispatch = useAppDispatch();
     const dealState = useSelector((state: RootState) => state.deal);
-    const dealId = useAppSelector(state => state.app.bitrix.deal?.ID)
-
+    const dealId = useAppSelector(state => state.app.bitrix.deal?.ID);
 
     const getFieldByCode = (code: BxDealDataKeys) => {
         return dealState.dealData?.find(field => field.code === code);
@@ -32,22 +31,23 @@ export const useDeal = () => {
     };
 
     const updateField = (fieldKey: BxDealDataKeys, value: string) => {
-        
         dispatch(updateFieldValue({ fieldKey, value }));
     };
 
-    const updateFieldWithAPI = async (fieldKey: BxDealDataKeys, value: string | number) => {
+    const updateFieldWithAPI = async (
+        fieldKey: BxDealDataKeys,
+        value: string | number,
+    ) => {
         const field = getFieldByCode(fieldKey);
         if (!field) {
             throw new Error(`Field ${fieldKey} not found`);
         }
         const payload: UpdateDealFieldPayload = {
-          
             fieldKey,
             value,
-            field
-        }
-        
+            field,
+        };
+
         dispatch(updateFieldValue({ fieldKey, value }));
         return dispatch(updateDealField(payload));
     };
@@ -70,11 +70,10 @@ export const useDeal = () => {
 
         // State
         dealData: dealState.dealData,
-        
+
         loading: dealState.loading,
         error: dealState.error,
         isUpdating: dealState.isUpdating,
-
 
         //utils
         getFieldByCode,
@@ -87,4 +86,4 @@ export const useDeal = () => {
         setError: setErrorAction,
         clearError: clearErrorAction,
     };
-}; 
+};

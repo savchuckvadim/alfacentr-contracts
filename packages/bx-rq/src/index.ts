@@ -16,7 +16,7 @@ export * from './type/input-type';
 // Утилиты
 export * from './lib/rq-util';
 export * from './lib/field-items-util';
-export * from './lib/address-util'; 
+export * from './lib/address-util';
 
 //hooks
 export * from './hooks/use-bx-rq';

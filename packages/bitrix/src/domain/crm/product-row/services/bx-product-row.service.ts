@@ -1,19 +1,22 @@
-
-import { BxProductRowRepository } from "../repository/bx-product-row.repository";
-import { BitrixBaseApi } from "@bitrix/core";
-import { IBXProductRow, IBXProductRowRow } from "../interface/bx-product-row.interface";
-import { ListProductRowDto, ListProductRowResponseDto } from "../dto/list-product-row.dto";
-
+import { BxProductRowRepository } from '../repository/bx-product-row.repository';
+import { BitrixBaseApi } from '@bitrix/core';
+import {
+    IBXProductRow,
+    IBXProductRowRow,
+} from '../interface/bx-product-row.interface';
+import {
+    ListProductRowDto,
+    ListProductRowResponseDto,
+} from '../dto/list-product-row.dto';
 
 export class BxProductRowService {
-    private repo!: BxProductRowRepository
+    private repo!: BxProductRowRepository;
 
     clone(api: BitrixBaseApi): BxProductRowService {
         const instance = new BxProductRowService();
         instance.init(api);
         return instance;
     }
-
 
     init(api: BitrixBaseApi) {
         this.repo = new BxProductRowRepository(api);
@@ -28,5 +31,4 @@ export class BxProductRowService {
     async list(data: ListProductRowDto): Promise<ListProductRowResponseDto> {
         return (await this.repo.list(data)).result;
     }
-
-} 
+}

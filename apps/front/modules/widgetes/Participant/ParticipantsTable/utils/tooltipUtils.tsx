@@ -1,4 +1,4 @@
-import { getProductFieldByCodeValue } from "@/modules/entities"
+import { getProductFieldByCodeValue } from '@/modules/entities';
 
 export const createProgramsTooltip = (participantPpkTopicsStats: any[]) => (
     <div className="flex flex-col gap-2 w-[200px]">
@@ -8,14 +8,17 @@ export const createProgramsTooltip = (participantPpkTopicsStats: any[]) => (
             </div>
         ))}
     </div>
-)
+);
 
 export const createAssignedProductsTooltip = (assignedProducts: any[]) => (
     <div className="flex flex-col gap-2 w-[200px] text-foreground">
         {assignedProducts.map(product => {
-            const topic = getProductFieldByCodeValue(product, 'SEMINAR_TOPIC')
+            const topic = getProductFieldByCodeValue(product, 'SEMINAR_TOPIC');
             return (
-                <div key={product.id} className="flex flex-col gap-1 text-sm border-b border-border pb-2 last:border-b-0">
+                <div
+                    key={product.id}
+                    className="flex flex-col gap-1 text-sm border-b border-border pb-2 last:border-b-0"
+                >
                     <div className="font-medium">{product.productName}</div>
                     <div className="flex gap-4 text-xs text-muted-foreground">
                         <span>Количество: {product.quantity}</span>
@@ -27,21 +30,28 @@ export const createAssignedProductsTooltip = (assignedProducts: any[]) => (
                         </div>
                     )}
                 </div>
-            )
+            );
         })}
     </div>
-)
+);
 
-export const createMissingProductsTooltip = (participantPpkTopicsStats: any[]) => {
-    const missingProducts = participantPpkTopicsStats.filter(product => product.status !== 'ok')
-    
+export const createMissingProductsTooltip = (
+    participantPpkTopicsStats: any[],
+) => {
+    const missingProducts = participantPpkTopicsStats.filter(
+        product => product.status !== 'ok',
+    );
+
     return (
         <div className="flex flex-col gap-2 w-[200px] text-foreground">
             {missingProducts.map((product, index) => (
-                <div key={`${product.participantId}-${index}`} className="text-sm text-destructive">
+                <div
+                    key={`${product.participantId}-${index}`}
+                    className="text-sm text-destructive"
+                >
                     {product.message}
                 </div>
             ))}
         </div>
-    )
-} 
+    );
+};

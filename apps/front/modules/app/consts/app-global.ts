@@ -1,11 +1,10 @@
-
 // export const TESTING_DOMAIN = 'gsirk.bitrix24.ru'
 // export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru'
 
-import { IBXUser } from "@workspace/bitrix/src/domain/interfaces/bitrix.interface"
-import { Placement } from "@workspace/bx"
+import { IBXUser } from '@workspace/bitrix/src/domain/interfaces/bitrix.interface';
+import { Placement } from '@workspace/bx';
 // export const TESTING_DOMAIN = 'gsr.bitrix24.ru'
-export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru' as string
+export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru' as string;
 export const TESTING_USER = {
     ID: 502,
     ACTIVE: true,
@@ -33,14 +32,14 @@ export const TESTING_USER = {
     USER_TYPE: 'string',
     WORK_PHONE: 'string',
     WORK_POSITION: 'Оператор ТМЦ',
-} as IBXUser
+} as IBXUser;
 
-export const IS_REMEMBER_DEV = true
-export const TESTING_DEAL_ID = 34028  //11311
-export const TESTING_COMPANY_ID = 158587  as number // 158479
-export const DEV_CURRENT_USER_ID = 1
-// 11822 
-// 11822 
+export const IS_REMEMBER_DEV = true;
+export const TESTING_DEAL_ID = 34028; //11311
+export const TESTING_COMPANY_ID = 158587 as number; // 158479
+export const DEV_CURRENT_USER_ID = 1;
+// 11822
+// 11822
 // export const TESTING_DEAL_ID = 11388
 // 10500 month
 // 10536 abon + month
@@ -57,9 +56,9 @@ export const DEV_CURRENT_USER_ID = 1
 export const TESTING_PLACEMENT = {
     placement: 'CRM_DEAL_DETAIL_TAB',
     options: {
-        ID: TESTING_DEAL_ID
-    }
-} as Placement
+        ID: TESTING_DEAL_ID,
+    },
+} as Placement;
 
 // export const TESTING_PLACEMENT = {
 //     placement: 'TASK_VIEW_TOP_PANEL', //TASK_VIEW_SIDEBAR',
@@ -67,7 +66,6 @@ export const TESTING_PLACEMENT = {
 //         taskId: 5605
 //     }
 // } as Placement
-
 
 // export const TESTING_PLACEMENT = {
 //         placement: 'CALL_CARD',
@@ -98,7 +96,6 @@ export const TESTING_PLACEMENT = {
 
 // export const IS_DEV_SERVER = false
 // export const TESTING_TEMPLATE_ID = 13
-
 
 // //REPORT
 // export const IS_REPORT = false

@@ -13,19 +13,22 @@ export class TelegramService {
         private readonly httpService: HttpService,
         private readonly configService: ConfigService,
     ) {
-        this.botToken = this.configService.get<string>('TELEGRAM_BOT_TOKEN') as string;
-        this.adminChatId = this.configService.get<string>('TELEGRAM_ADMIN_CHAT_ID') as string;
-
+        this.botToken = this.configService.get<string>(
+            'TELEGRAM_BOT_TOKEN',
+        ) as string;
+        this.adminChatId = this.configService.get<string>(
+            'TELEGRAM_ADMIN_CHAT_ID',
+        ) as string;
     }
 
     async sendMessage(message: string) {
-        const cleanText = this.cleanText(message)
+        const cleanText = this.cleanText(message);
 
         const url = `https://api.telegram.org/bot${this.botToken}/sendMessage`;
         const payload = {
             chat_id: Number(this.adminChatId),
             text: `NEST ${cleanText}`,
-              parse_mode: 'Markdown',
+            parse_mode: 'Markdown',
         };
 
         try {
@@ -35,9 +38,7 @@ export class TelegramService {
         }
     }
     async sendMessageAdminError(message: string) {
-        const cleanText = this.cleanText(message)
-
-    
+        const cleanText = this.cleanText(message);
 
         const url = `https://api.telegram.org/bot${this.botToken}/sendMessage`;
         const payload = {

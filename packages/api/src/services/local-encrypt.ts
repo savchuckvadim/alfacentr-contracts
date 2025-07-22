@@ -18,14 +18,21 @@ export function getStorageKey(prefix: string) {
  * @param data Данные для сохранения
  * @param secret Секретный ключ для шифрования
  */
-export async function  saveToLocalStorage(key: string, data: any, secret: string) {
+export async function saveToLocalStorage(
+    key: string,
+    data: any,
+    secret: string,
+) {
     try {
         if (data) {
-            const encryptedData = AES.encrypt(JSON.stringify(data), secret).toString(); // Шифруем данные
+            const encryptedData = AES.encrypt(
+                JSON.stringify(data),
+                secret,
+            ).toString(); // Шифруем данные
 
             localStorage.setItem(key, encryptedData); // Сохраняем данные в LocalStorage
         } else {
-            clearFromLocalStorage(key)
+            clearFromLocalStorage(key);
         }
     } catch (e) {
         console.error('Error saving data:', e);
@@ -40,16 +47,16 @@ export async function  saveToLocalStorage(key: string, data: any, secret: string
  */
 export async function getFromLocalStorage(key: string, secret: string) {
     const storedData = localStorage.getItem(key);
-    
+
     if (storedData) {
-        
         try {
             // const parsedData = JSON.parse(storedData);
 
-            const decryptedData = AES.decrypt(storedData, secret).toString(encUtf8);
-            
-            return JSON.parse(decryptedData); // Возвращаем расшифрованные данные
+            const decryptedData = AES.decrypt(storedData, secret).toString(
+                encUtf8,
+            );
 
+            return JSON.parse(decryptedData); // Возвращаем расшифрованные данные
         } catch (e) {
             console.error('Error parsing or decrypting data:', e);
             return null;
@@ -58,16 +65,16 @@ export async function getFromLocalStorage(key: string, secret: string) {
     return null;
 }
 
-
 /**
  * Очистка данных из localStorage по ключу.
  * @param key Ключ для удаления данных
  */
-export async function  clearFromLocalStorage(key: string) {
+export async function clearFromLocalStorage(key: string) {
     try {
         localStorage.removeItem(key);
-        console.log(`Data with key "${key}" has been removed from localStorage.`);
-
+        console.log(
+            `Data with key "${key}" has been removed from localStorage.`,
+        );
     } catch (e) {
         console.error(`Error removing data with key "${key}":`, e);
     }

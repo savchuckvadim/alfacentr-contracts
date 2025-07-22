@@ -1,8 +1,10 @@
-import { IAlfaProduct } from "../model/ProductSlice";
-import { getProductFieldByCode } from "./product-field.util";
+import { IAlfaProduct } from '../model/ProductSlice';
+import { getProductFieldByCode } from './product-field.util';
 
 export const getProductFormat = (product: IAlfaProduct): string => {
-    const seminarPlaceField = product.fields.find(field => field.bitrixId === 'property158');
+    const seminarPlaceField = product.fields.find(
+        field => field.bitrixId === 'property158',
+    );
 
     if (!seminarPlaceField || !seminarPlaceField.value) {
         return 'Не указано';
@@ -27,11 +29,19 @@ export const getProductFormat = (product: IAlfaProduct): string => {
 const formatPlaceValue = (value: string): string => {
     const lowerValue = value.toLowerCase();
 
-    if (lowerValue.includes('дистанционно') || lowerValue.includes('онлайн') || lowerValue.includes('удаленно')) {
+    if (
+        lowerValue.includes('дистанционно') ||
+        lowerValue.includes('онлайн') ||
+        lowerValue.includes('удаленно')
+    ) {
         return 'Дистанционно';
     }
 
-    if (lowerValue.includes('очно') || lowerValue.includes('офлайн') || lowerValue.includes('в помещении')) {
+    if (
+        lowerValue.includes('очно') ||
+        lowerValue.includes('офлайн') ||
+        lowerValue.includes('в помещении')
+    ) {
         return 'Офлайн';
     }
 
@@ -42,7 +52,7 @@ export const getProductPrefix = (product: IAlfaProduct): string => {
     // Можно добавить логику для получения префикса продукта
     // Пока возвращаем ID как префикс
     const prifixField = getProductFieldByCode(product, 'PREFIX');
-    const value = prifixField?.value as { value: string, valueId: string };
-    
+    const value = prifixField?.value as { value: string; valueId: string };
+
     return value?.value || 'N/A';
-}; 
+};

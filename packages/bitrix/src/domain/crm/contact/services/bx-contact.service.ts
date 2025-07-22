@@ -1,18 +1,15 @@
-
-import { BxContactRepository } from "../repository/bx-contact.repository";
-import { BitrixBaseApi } from "@bitrix/core";
-import { IBXContact } from "../interface/bx-contact.interface";
-
+import { BxContactRepository } from '../repository/bx-contact.repository';
+import { BitrixBaseApi } from '@bitrix/core';
+import { IBXContact } from '../interface/bx-contact.interface';
 
 export class BxContactService {
-    private repo!: BxContactRepository
+    private repo!: BxContactRepository;
 
     clone(api: BitrixBaseApi): BxContactService {
         const instance = new BxContactService();
         instance.init(api);
         return instance;
     }
-
 
     init(api: BitrixBaseApi) {
         this.repo = new BxContactRepository(api);
@@ -26,7 +23,7 @@ export class BxContactService {
         return this.repo.getList(filter, select);
     }
 
-    set(data:  Partial<IBXContact>) {
+    set(data: Partial<IBXContact>) {
         return this.repo.set(data);
     }
 
@@ -41,4 +38,4 @@ export class BxContactService {
     getField(id: number | string) {
         return this.repo.getField(id);
     }
-} 
+}

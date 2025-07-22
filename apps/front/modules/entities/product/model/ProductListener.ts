@@ -11,7 +11,7 @@
 //   effect: async (action, listenerApi) => {
 //     const products = action.payload;
 //     console.log('Products fetched successfully:', products);
-    
+
 //     // Логика после успешной загрузки
 //   },
 // });
@@ -24,14 +24,14 @@
 //   predicate: (action, currentState, previousState) => {
 //     const currentProducts = (currentState as RootState).product.items;
 //     const previousProducts = (previousState as RootState).product.items;
-    
+
 //     // Проверяем, изменились ли продукты
 //     return currentProducts !== previousProducts;
 //   },
 //   effect: async (action, listenerApi) => {
 //     const state = listenerApi.getState() as RootState;
 //     const products = state.product.items;
-    
+
 //     console.log('Products state changed:', {
 //       action: action.type,
 //       productsCount: products.length
@@ -48,7 +48,7 @@
 //   effect: async (action, listenerApi) => {
 //     const state = listenerApi.getState() as RootState;
 //     const products = state.product.items;
-    
+
 //     console.log(`Products updated via ${action.type}:`, products);
 //   },
 // });
@@ -61,11 +61,11 @@
 //   effect: async (action, listenerApi) => {
 //     const state = listenerApi.getState() as RootState;
 //     const products = state.product.items;
-    
+
 //     // Выполняем логику только если есть продукты
 //     if (products.length > 0) {
 //       console.log('Products available:', products.length);
-      
+
 //       // Можно диспатчить дополнительные действия
 //       // listenerApi.dispatch(someOtherAction());
 //     }
@@ -80,10 +80,10 @@
 //   effect: async (action, listenerApi) => {
 //     // Ждем 500мс перед выполнением логики
 //     await listenerApi.delay(500);
-    
+
 //     const state = listenerApi.getState() as RootState;
 //     const products = state.product.items;
-    
+
 //     console.log('Products updated (debounced):', products);
 //   },
 // });
@@ -96,10 +96,10 @@
 //   effect: async (action, listenerApi) => {
 //     // Отменяем предыдущие вызовы этого listener
 //     listenerApi.cancelActiveListeners();
-    
+
 //     const state = listenerApi.getState() as RootState;
 //     const products = state.product.items;
-    
+
 //     console.log('Products updated (canceled previous):', products);
 //   },
 // });
@@ -112,11 +112,11 @@
 //   effect: async (action, listenerApi) => {
 //     const state = listenerApi.getState() as RootState;
 //     const currentProducts = state.product.items;
-    
+
 //     // Получаем предыдущее состояние
 //     const previousState = listenerApi.getOriginalState() as RootState;
 //     const previousProducts = previousState.product.items;
-    
+
 //     console.log('Products changed:', {
 //       previous: previousProducts.length,
 //       current: currentProducts.length,
@@ -136,9 +136,9 @@
 //   effect: async (action, listenerApi) => {
 //     const state = listenerApi.getState() as RootState;
 //     const products = state.product.items;
-    
+
 //     console.log('Products updated, dispatching additional action');
-    
+
 //     // Отправляем дополнительное действие
 //     listenerApi.dispatch(productsUpdated());
 //   },
@@ -154,4 +154,4 @@
 //   productCancelableListener,
 //   productPreviousStateListener,
 //   productActionDispatcherListener,
-// ]; 
+// ];

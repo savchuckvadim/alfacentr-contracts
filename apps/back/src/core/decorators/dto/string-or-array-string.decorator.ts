@@ -1,4 +1,8 @@
-import { registerDecorator, ValidationArguments, ValidationOptions } from "class-validator";
+import {
+    registerDecorator,
+    ValidationArguments,
+    ValidationOptions,
+} from 'class-validator';
 
 export function IsStringOrArrayString(validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
@@ -14,7 +18,6 @@ export function IsStringOrArrayString(validationOptions?: ValidationOptions) {
                 defaultMessage(args: ValidationArguments) {
                     return `${args.property} должно быть строкой либо массивом строк`;
                 },
-
             },
         });
     };

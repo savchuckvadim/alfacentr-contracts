@@ -9,4 +9,4 @@
 //     providers: [YandexAuthService, YandexStorageService],
 //     exports: [YandexAuthService, YandexStorageService],
 // })
-// export class YandexModule { } 
+// export class YandexModule { }

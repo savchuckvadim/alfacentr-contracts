@@ -1,8 +1,8 @@
-import { IBXItem } from "../interface/item.interface";
+import { IBXItem } from '../interface/item.interface';
 
 export class BxItemResponseDto {
-    item!: IBXItem
+    item!: IBXItem;
 }
 export class BxItemListResponseDto {
-    items!: IBXItem[]
+    items!: IBXItem[];
 }

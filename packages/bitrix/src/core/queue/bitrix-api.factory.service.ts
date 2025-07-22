@@ -4,8 +4,6 @@
 // import { TelegramService } from "src/modules/telegram/telegram.service";
 // import { BitrixApiQueueApiService } from "./bitrix-queue-api.service";
 
-
-
 // export class BitrixApiFactoryService {
 
 //   constructor(
@@ -19,4 +17,3 @@
 //   }
 
 // }
-

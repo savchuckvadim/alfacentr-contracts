@@ -9,7 +9,6 @@ import { GlobalExceptionFilter } from './core/filters/global-exception.filter';
 import { RedisModule } from './core/redis/redis.module';
 import { SilentJobHandlersModule } from './core/silence/silent-job-handlers.module';
 
-
 import { HealthController } from './health.controller';
 import { PBXModule } from './modules/pbx/pbx.module';
 import { WsModule } from './core/ws/ws.module';
@@ -21,7 +20,6 @@ import { AlfaActivityModule } from './modules/hooks/alfa/alfa-activity.module';
 // import { MetricsModule } from './core/metrics/metrics.module';
 // import { AlfaModule } from './apps/alfa/alfa.module';
 
-
 import { StorageModule } from './core/storage/storage.module';
 import { FileLinkModule } from './core/file-link/file-link.module';
 
@@ -32,85 +30,69 @@ import { OnDealInitModule } from './modules/on-deal-init/on-deal-init.module';
 import { AlfaProductsModule } from './modules/alfa-products';
 import { AlfaFieldsModule } from './modules/alfa-fields';
 import { FieldsModule } from './commands/fields/fields.module';
+import { AlfaActivityCommandsModule } from './commands/alfa/alfa-activity.module';
 import { DocumentGenerateModule } from './modules/document-generate/document-generate.module';
 import { DocumentNumberModule } from './modules/document-number/document-number.module';
 
-
 @Module({
-  imports: [
+    imports: [
+        // DevtoolsModule.register({
+        //   http: process.env.NODE_ENV !== 'production'
+        // }),
 
-    // DevtoolsModule.register({
-    //   http: process.env.NODE_ENV !== 'production'
-    // }),
+        ConfigModule.forRoot({
+            isGlobal: true,
+            envFilePath: '.env',
+            ignoreEnvFile: false,
+            load: [
+                () => ({
+                    REDIS_HOST: process.env.REDIS_HOST,
+                    REDIS_PORT: process.env.REDIS_PORT,
+                }),
+            ],
+        }),
+        ScheduleModule.forRoot(),
 
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env',
-      ignoreEnvFile: false,
-      load: [() => ({
-        REDIS_HOST: process.env.REDIS_HOST,
-        REDIS_PORT: process.env.REDIS_PORT,
-      })],
-    }),
-    ScheduleModule.forRoot(),
+        // MetricsModule,
+        WsModule,
+        QueueModule,
 
-    // MetricsModule,
-    WsModule,
-    QueueModule,
+        //apps
 
-    //apps
- 
-    // HooksModule,
-    AlfaActivityModule,
-    BitrixModule,
-    PortalModule,
-    PBXModule,
-    // PBXInstallModule,
-    // PbxDomainModule,
-    TelegramModule,
-    RedisModule,
-    SilentJobHandlersModule,
-    // KpiReportModule,
-    // EventSalesModule,
+        // HooksModule,
+        AlfaActivityModule,
+        BitrixModule,
+        PortalModule,
+        PBXModule,
 
+        TelegramModule,
+        RedisModule,
+        SilentJobHandlersModule,
 
-    // QueuePingModule,
-    // KonstructorModule,
-    // AlfaModule,
-    // EventServiceModule
-    OnDealInitModule,
-    AlfaProductsModule,
-    AlfaFieldsModule,
+        OnDealInitModule,
+        AlfaProductsModule,
+        AlfaFieldsModule,
 
+        //commands
+        // GarantPricesModule,
+        // GsrModule,
+        FieldsModule,
+        // AlfaActivityCommandsModule, //для собирания компаний из активностей юрфорум
+        // CategoryModule,
+        // ChangeDealCategoryModule,
 
-    //commands
-    // GarantPricesModule,
-    // GsrModule,
-    FieldsModule,
-    // CategoryModule,
-    // ChangeDealCategoryModule,
+        StorageModule,
+        FileLinkModule,
+        // GarantModule,
+        // PortalKonstructorModule,
 
-    StorageModule,
-    FileLinkModule,
-    // GarantModule,
-    // PortalKonstructorModule,
+        // BxDepartmentModule,
+        DocumentGenerateModule,
+        DocumentNumberModule,
 
-
-    // BxDepartmentModule,
-    DocumentGenerateModule,
-    DocumentNumberModule,
-
-
- 
-    HelperModule
-  ],
-  controllers: [
-    AppController,
-    HealthController
-  ],
-  providers: [
-    AppService,
-    GlobalExceptionFilter,
-  ],
+        HelperModule,
+    ],
+    controllers: [AppController, HealthController],
+    providers: [AppService, GlobalExceptionFilter],
 })
-export class AppModule { }
+export class AppModule {}

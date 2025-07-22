@@ -7,59 +7,58 @@ src/
 ├── main.ts
 ├── app.module.ts
 │
-├── core/                        # Общие абстракции, интерфейсы, базы и утилиты
-│   ├── config/                  # Глобальные конфиги (dotenv, envService, и т.п.)
-│   ├── exceptions/
-│   ├── interceptors/
-│   ├── filters/
-│   └── utils/
+├── core/ # Общие абстракции, интерфейсы, базы и утилиты
+│ ├── config/ # Глобальные конфиги (dotenv, envService, и т.п.)
+│ ├── exceptions/
+│ ├── interceptors/
+│ ├── filters/
+│ └── utils/
 │
-├── modules/                     # Все фичи и бизнес-домены
-│   ├── bitrix/                  # Работа с Bitrix
-│   │   ├── application/         # Сценарии использования (use-cases)
-│   │   ├── domain/              # Сущности, value objects, репозитории (интерфейсы)
-│   │   ├── infrastructure/      # Внешние клиенты, адаптеры (API, очереди и т.п.)
-│   │   ├── presentation/        # Контроллеры (endpoints)
-│   │   └── bitrix.module.ts
-│   │
-│   document/
-│    ├── contract/               # Контракты
-│    │   ├── application/
-│    │   ├── domain/
-│    │   ├── infrastructure/
-│    │   └── contract.module.ts
-│    ├── supply-report/         # Отчеты о поставке
-│    │   ├── application/
-│    │   ├── domain/
-│    │   ├── infrastructure/
-│    │   └── supply-report.module.ts
-│    ├── offer/                 # Коммерческие предложения
-│    │   ├── application/
-│    │   ├── domain/
-│    │   └── offer.module.ts
-│    ├── general/               # Общая логика (форматирование, шаблоны, константы)
-│    │   ├── utils/
-│    │   └── general.module.ts
-│    └── document.module.ts     # Импортирует все вышеперечисленные
+├── modules/ # Все фичи и бизнес-домены
+│ ├── bitrix/ # Работа с Bitrix
+│ │ ├── application/ # Сценарии использования (use-cases)
+│ │ ├── domain/ # Сущности, value objects, репозитории (интерфейсы)
+│ │ ├── infrastructure/ # Внешние клиенты, адаптеры (API, очереди и т.п.)
+│ │ ├── presentation/ # Контроллеры (endpoints)
+│ │ └── bitrix.module.ts
+│ │
+│ document/
+│ ├── contract/ # Контракты
+│ │ ├── application/
+│ │ ├── domain/
+│ │ ├── infrastructure/
+│ │ └── contract.module.ts
+│ ├── supply-report/ # Отчеты о поставке
+│ │ ├── application/
+│ │ ├── domain/
+│ │ ├── infrastructure/
+│ │ └── supply-report.module.ts
+│ ├── offer/ # Коммерческие предложения
+│ │ ├── application/
+│ │ ├── domain/
+│ │ └── offer.module.ts
+│ ├── general/ # Общая логика (форматирование, шаблоны, константы)
+│ │ ├── utils/
+│ │ └── general.module.ts
+│ └── document.module.ts # Импортирует все вышеперечисленные
 │
 │
-│   ├── event/
-│   │   ├── sales/
-│   │   │   ├── application/
-│   │   │   ├── domain/
-│   │   │   ├── infrastructure/
-│   │   │   ├── presentation/
-│   │   │   └── sales.module.ts
-│   │   └── event.module.ts
+│ ├── event/
+│ │ ├── sales/
+│ │ │ ├── application/
+│ │ │ ├── domain/
+│ │ │ ├── infrastructure/
+│ │ │ ├── presentation/
+│ │ │ └── sales.module.ts
+│ │ └── event.module.ts
 │
-│   ├── service/
-│   │   └── ...
+│ ├── service/
+│ │ └── ...
 │
-│   ├── clients/                 # API внешних сервисов (например, Laravel)
-│   │   └── ...
+│ ├── clients/ # API внешних сервисов (например, Laravel)
+│ │ └── ...
 │
-└── shared/                      # Общие DTO, декораторы, трансформеры, ошибки
-
+└── shared/ # Общие DTO, декораторы, трансформеры, ошибки
 
 ## Description
 

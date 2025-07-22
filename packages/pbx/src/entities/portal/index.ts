@@ -1,4 +1,3 @@
-
 //reducer
 export { portalReducer, portalActions } from './model/PortalSlice';
 export { portalAPI } from './model/PortalService';
@@ -14,5 +13,5 @@ export type {
     PBXField,
     PBXFieldItem,
     PBXCategory,
-    PBXStage
-} from './type/portal-type'
+    PBXStage,
+} from './type/portal-type';

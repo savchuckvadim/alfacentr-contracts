@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNumber, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 
 // export class TestClientTypeFieldDto {
 
@@ -28,7 +28,7 @@ import { IsEnum, IsNumber, IsString } from "class-validator";
 // }
 export enum TestClientTypeFieldEnum {
     FIZ = 18030,
-    UR = 18032
+    UR = 18032,
 }
 export class UpdateDealDto {
     @ApiProperty({ description: 'ID заявки', example: 34028 })
@@ -39,7 +39,10 @@ export class UpdateDealDto {
     @IsString()
     fieldId: string;
 
-    @ApiProperty({ description: 'Значение поля', enum: TestClientTypeFieldEnum })
+    @ApiProperty({
+        description: 'Значение поля',
+        enum: TestClientTypeFieldEnum,
+    })
     @IsEnum(TestClientTypeFieldEnum)
     value: TestClientTypeFieldEnum;
 }

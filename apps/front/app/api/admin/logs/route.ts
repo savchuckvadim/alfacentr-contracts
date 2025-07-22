@@ -1,14 +1,9 @@
 // apps/kpi-sales/app/api/admin/logs/route.ts
 
-import {  NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 // import { logServer } from '@/app/lib/logs/logServer'
 
-
 export const runtime = 'nodejs'; // <-- Добавить обязательно!
-
-
-
-
 
 export async function POST() {
     // req: NextRequest
@@ -25,7 +20,7 @@ export async function POST() {
         return NextResponse.json({ success: true });
     } catch (error) {
         const err = error as Error;
-        console.log(err)
+        console.log(err);
         // logServer(
         //     'domain',
         //     'userId',
@@ -33,14 +28,14 @@ export async function POST() {
         //     'KPI REPORT SALES api/bitrix/app',
         //     `Ошибка обработки POST /api/route: ${err?.message}`
         // )
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json(
+            { error: 'Internal Server Error' },
+            { status: 500 },
+        );
     }
 }
 
-
-
 // export async function GET() {
-
 
 //     try {
 //         const rawLogs = fs.readFileSync(LOG_FILE_PATH, 'utf8');
@@ -53,4 +48,3 @@ export async function POST() {
 //         return new NextResponse('Ошибка сервера', { status: 500 });
 //     }
 // }
-

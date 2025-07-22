@@ -1,26 +1,21 @@
-
 export interface IBitrixBatchResponse {
-
     result: IBitrixBatchResponseResult;
-
-
 }
 export interface IBitrixBatchResponseResult {
-
     result: {
         [key: string]: any;
     };
-    result_error: {
-        [key: string]: IBitrixBatchError;
-    } | [];
+    result_error:
+        | {
+              [key: string]: IBitrixBatchError;
+          }
+        | [];
     result_total: {
         [key: string]: any;
     }[];
     result_next: {
         [key: string]: any;
     }[];
-
-
 }
 export interface IBitrixBatchError {
     error: string;
@@ -51,27 +46,23 @@ export interface BitrixBatchResponse {
     };
 }
 
-
 export interface IBitrixResponse<T> {
-
     result: T;
     next: number;
     total: number;
     time: {
-        "start": string;
-        "finish": string;
-        "duration": string;
-        "processing": string;
-        "date_start": string;
-        "date_finish": string;
-        "operating_reset_at": string;
-        "operating": string;
-    }
-
+        start: string;
+        finish: string;
+        duration: string;
+        processing: string;
+        date_start: string;
+        date_finish: string;
+        operating_reset_at: string;
+        operating: string;
+    };
 }
 // export interface IBitrixResponseResult<T> {
 
 //     [key: string]: T;
-
 
 // }

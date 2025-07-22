@@ -11,5 +11,5 @@ export type {
     PBXField,
     PBXFieldItem,
     PBXCategory,
-    PBXStage
+    PBXStage,
 } from './entities/portal';

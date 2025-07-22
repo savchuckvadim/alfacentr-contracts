@@ -25,7 +25,7 @@ export class BigIntUtil {
         }
 
         if (Array.isArray(obj)) {
-            return obj.map(item => this.serializeBigInt(item));
+            return obj.map((item) => this.serializeBigInt(item));
         }
 
         if (typeof obj === 'object') {
@@ -38,4 +38,4 @@ export class BigIntUtil {
 
         return obj;
     }
-} 
+}

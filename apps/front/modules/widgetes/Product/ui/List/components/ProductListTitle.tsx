@@ -1,16 +1,20 @@
-import { useAlfaProducts } from "@/modules/entities/product/hook/useAlfaProducts"
-import { Badge } from "@workspace/ui/components/badge"
+import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts';
+import { Badge } from '@workspace/ui/components/badge';
 
 export const ProductListTitle = () => {
-    const { items, } = useAlfaProducts()
+    const { items } = useAlfaProducts();
 
-    return <div className="flex items-center justify-between">
-        <div>
-            <h1 className="text-3xl font-bold">Продукты</h1>
-            <p className="text-muted-foreground">Управление продуктами и статистика ППК</p>
+    return (
+        <div className="flex items-center justify-between">
+            <div>
+                <h1 className="text-3xl font-bold">Продукты</h1>
+                <p className="text-muted-foreground">
+                    Управление продуктами и статистика ППК
+                </p>
+            </div>
+            <Badge variant="outline" className="text-sm">
+                Всего: {items?.length || 0}
+            </Badge>
         </div>
-        <Badge variant="outline" className="text-sm">
-            Всего: {items?.length || 0}
-        </Badge>
-    </div>
-}
+    );
+};

@@ -1,22 +1,24 @@
+import { cn } from '@workspace/ui/lib/utils';
+import { Card, CardContent } from '@workspace/ui/components/card';
+import { Button } from '@workspace/ui/components/button';
+import { ExternalLink } from 'lucide-react';
 
-import { cn } from "@workspace/ui/lib/utils"
-import { Card, CardContent } from "@workspace/ui/components/card"
-import { Button } from "@workspace/ui/components/button"
-import { ExternalLink } from "lucide-react"
+import { IParticipant } from '@alfa/entities';
 
-import { IParticipant } from "@alfa/entities"
+import { ComponentPreloader, Tooltip } from '@/modules/shared';
+import Link from 'next/link';
+import { useParticipantInfo } from '../hook/useParticipantInfo';
 
-import { ComponentPreloader, Tooltip } from "@/modules/shared"
-import Link from "next/link"
-import { useParticipantInfo } from "../hook/useParticipantInfo"
+import { ParticipantCardHeader } from './components/CardHeader/ParticipantCardHeader';
+import { ParticipantContactInfo } from './components/CardContent/ParticipantContactInfo';
+import { ParticipantProductInfo } from './components/CardContent/ParticipantProductInfo';
+import { ParticipantPpkTopics } from './components/CardContent/ParticipantPpkTopics';
 
-import { ParticipantCardHeader } from "./components/CardHeader/ParticipantCardHeader"
-import { ParticipantContactInfo } from "./components/CardContent/ParticipantContactInfo"
-import { ParticipantProductInfo } from "./components/CardContent/ParticipantProductInfo"
-import { ParticipantPpkTopics } from "./components/CardContent/ParticipantPpkTopics"
-
-
-export const ParticipantInfoCard = ({ participant }: { participant: IParticipant }) => {
+export const ParticipantInfoCard = ({
+    participant,
+}: {
+    participant: IParticipant;
+}) => {
     // const { getParticipantPpkTopicsStats, isLoading, getParticipantProblems } = useParticipantPpk()
     // const { hasProblems, participantPpkTopicsStats } = getParticipantProblems(participant.id)
     // const { participantToProducts } = useParticipantPpk()
@@ -29,11 +31,11 @@ export const ParticipantInfoCard = ({ participant }: { participant: IParticipant
         participantToProducts,
         programsThemes,
         assignedProducts,
-        isPpk
-    } = useParticipantInfo(participant.id)
+        isPpk,
+    } = useParticipantInfo(participant.id);
 
     if (isPartisipantsLoading) {
-        return <ComponentPreloader text="Загрузка данных участника..." />
+        return <ComponentPreloader text="Загрузка данных участника..." />;
     }
     // const programsThemes = participantPpkTopicsStats.map(stat => stat.topic)
     // const assignedProducts = participantToProducts[participant.id] ?? []
@@ -42,33 +44,24 @@ export const ParticipantInfoCard = ({ participant }: { participant: IParticipant
         <Card
             key={participant.id}
             className={cn(
-                "hover:shadow-md transition-shadow cursor-pointer flex flex-col",
-                hasProblems && "border-destructive/50 bg-destructive/5"
+                'hover:shadow-md transition-shadow cursor-pointer flex flex-col',
+                hasProblems && 'border-destructive/50 bg-destructive/5',
             )}
         >
-
             <ParticipantCardHeader
                 participant={participant}
                 hasProblems={hasProblems}
             />
 
             <CardContent className="space-y-3 flex-1 flex flex-col">
-
                 {/* Контактная информация */}
                 <ParticipantContactInfo participant={participant} />
 
-
                 {/* Назначенные продукты */}
 
-                <ParticipantProductInfo
-                    participantId={participant.id}
-                />
+                <ParticipantProductInfo participantId={participant.id} />
 
-
-                <ParticipantPpkTopics
-                    participantId={participant.id}
-                />
-
+                <ParticipantPpkTopics participantId={participant.id} />
 
                 {/* Кнопка подробностей */}
                 <div className="pt-2 mt-auto ">
@@ -81,5 +74,5 @@ export const ParticipantInfoCard = ({ participant }: { participant: IParticipant
                 </div>
             </CardContent>
         </Card>
-    )
-}
+    );
+};

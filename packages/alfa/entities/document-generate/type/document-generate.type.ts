@@ -2,28 +2,28 @@ export enum EContractType {
     seminar = 'seminar',
     ppk = 'ppk',
     seminar_ppk = 'seminar_ppk',
-    up = 'up'
+    up = 'up',
 }
 export enum EContractName {
     seminar = 'Семинар',
     ppk = 'ППК',
     seminar_ppk = 'Семинар ППК',
-    up = 'УП'
+    up = 'УП',
 }
 
 export type DocumentGenerateFieldTemplateType = {
-    id: number
-    name: string
-    code: string
-    templateCode: string
-    type: string
-}
+    id: number;
+    name: string;
+    code: string;
+    templateCode: string;
+    type: string;
+};
 export type DocumentGenerateTemplateType = {
-    id: number
-    name: string
-    code: string
-    fields: DocumentGenerateFieldTemplateType[]
-}
+    id: number;
+    name: string;
+    code: string;
+    fields: DocumentGenerateFieldTemplateType[];
+};
 
 export const DocumentGenerateTemplatesType = {
     SEMINAR_PPK_DEAL: {
@@ -62,13 +62,8 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: 'Paragraph3',
                 type: 'string',
             },
-            
         ],
-        forContract: [
-            EContractType.seminar_ppk,
-        ] as EContractType[],
-
-
+        forContract: [EContractType.seminar_ppk] as EContractType[],
     } as const,
     INVOISE_WITH_STAMPS: {
         id: 136,
@@ -81,7 +76,6 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: 'InvoiceRq',
                 type: 'string',
             },
-
         ],
         forContract: [
             EContractType.seminar,
@@ -89,18 +83,18 @@ export const DocumentGenerateTemplatesType = {
             EContractType.ppk,
             EContractType.up,
         ] as EContractType[],
-
     } as const,
     INVOISE_WITHOUT_STAMPS: {
-        id: 137,
+        id: 138,
         name: 'Счет без печати СЕМИНАРЫ СДЕЛКА',
         code: 'InvoiceWithoutStamps',
-        fields: [{
-            name: 'Реквизиты для счета',
-            code: 'InvoiceRq',
-            templateCode: 'InvoiceRq',
-            type: 'string',
-        }
+        fields: [
+            {
+                name: 'Реквизиты для счета',
+                code: 'InvoiceRq',
+                templateCode: 'InvoiceRq',
+                type: 'string',
+            },
         ],
         forContract: [
             EContractType.seminar,
@@ -109,8 +103,25 @@ export const DocumentGenerateTemplatesType = {
             EContractType.up,
         ] as EContractType[],
     } as const,
-
-}
-
+    ACT: {
+        id: 132,
+        name: 'Акт оказанных услуг',
+        code: 'Act',
+        fields: [
+            {
+                name: 'Реквизиты для счета',
+                code: 'InvoiceRq',
+                templateCode: 'InvoiceRq',
+                type: 'string',
+            },
+        ],
+        forContract: [
+            EContractType.seminar,
+            EContractType.seminar_ppk,
+            EContractType.ppk,
+            EContractType.up,
+        ] as EContractType[],
+    } as const,
+};
 
 export type DocumentGenerateType = typeof DocumentGenerateTemplatesType;

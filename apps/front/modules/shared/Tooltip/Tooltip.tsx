@@ -1,38 +1,36 @@
-'use client'
+'use client';
 
 import {
     Tooltip as TooltipPrimitive,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
-import { ReactNode } from "react"
+} from '@workspace/ui/components/tooltip';
+import { ReactNode } from 'react';
 
 interface TooltipProps {
-    children: ReactNode
-    content: ReactNode
-    side?: "top" | "right" | "bottom" | "left"
-    align?: "start" | "center" | "end"
-    delayDuration?: number
-    className?: string
+    children: ReactNode;
+    content: ReactNode;
+    side?: 'top' | 'right' | 'bottom' | 'left';
+    align?: 'start' | 'center' | 'end';
+    delayDuration?: number;
+    className?: string;
 }
 
-export const Tooltip = ({ 
-    children, 
-    content, 
-    side = "top", 
-    align = "center", 
+export const Tooltip = ({
+    children,
+    content,
+    side = 'top',
+    align = 'center',
     delayDuration = 300,
-    className 
+    className,
 }: TooltipProps) => {
     return (
         <TooltipProvider>
             <TooltipPrimitive delayDuration={delayDuration}>
-                <TooltipTrigger asChild>
-                    {children}
-                </TooltipTrigger>
-                <TooltipContent 
-                    side={side} 
+                <TooltipTrigger asChild>{children}</TooltipTrigger>
+                <TooltipContent
+                    side={side}
                     align={align}
                     className={`${className} `}
                 >
@@ -40,5 +38,5 @@ export const Tooltip = ({
                 </TooltipContent>
             </TooltipPrimitive>
         </TooltipProvider>
-    )
-}
+    );
+};

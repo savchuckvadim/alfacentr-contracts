@@ -1,12 +1,14 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { portalActions } from './PortalSlice';
-import { getFromLocalStorage, getStorageKey, saveToLocalStorage } from '@workspace/api/';
+import {
+    getFromLocalStorage,
+    getStorageKey,
+    saveToLocalStorage,
+} from '@workspace/api/';
 import { API_METHOD, onlineHeaders } from '@workspace/api';
 import { onlineURL } from '@workspace/api';
 import { removeOldPortalCache } from '../lib/portal-util';
 import { Portal } from '../type/portal-type';
-
-
 
 export const portalAPI = createApi({
     reducerPath: 'portalAPI',
@@ -18,27 +20,28 @@ export const portalAPI = createApi({
             headers.set('content-type', onlineHeaders['content-type']);
             // headers.set('X-API-KEY', onlineHeaders['X-API-KEY']);
             return headers;
-        }
+        },
     }),
 
-    endpoints: (build) => ({
+    endpoints: build => ({
         fetchPortal: build.mutation<Portal, { domain: string }>({
             async queryFn(data, { signal }, extraOptions, fetchWithBQ) {
                 const localPrifix = 'portal_cache';
                 const storageKey = getStorageKey(localPrifix);
                 const secretKey = data.domain || 'nmbrsdntl'; // Ваш ключ для шифрования
 
-                removeOldPortalCache(localPrifix)
+                removeOldPortalCache(localPrifix);
                 // Попробуем получить данные из кеша
-                const cachedData = await getFromLocalStorage(storageKey, secretKey);
+                const cachedData = await getFromLocalStorage(
+                    storageKey,
+                    secretKey,
+                );
                 // console.log('pdomain')
                 // console.log(secretKey)
                 // console.log('pdata')
                 // console.log(cachedData)
 
-
                 if (cachedData) {
-
                     return { data: cachedData }; // Если данные в кеше, возвращаем их
                 }
 
@@ -46,7 +49,7 @@ export const portalAPI = createApi({
                 const response = await fetchWithBQ({
                     url: '/portal',
                     method: API_METHOD.POST,
-                    body: data
+                    body: data,
                 });
 
                 if (response.error) {
@@ -57,12 +60,25 @@ export const portalAPI = createApi({
 
                 // Проверяем resultCode
                 if (result.resultCode !== 0) {
-                    return { error: { status: 400, data: { message: result.message || 'An unexpected error occurred' } } };
+                    return {
+                        error: {
+                            status: 400,
+                            data: {
+                                message:
+                                    result.message ||
+                                    'An unexpected error occurred',
+                            },
+                        },
+                    };
                 }
                 // console.log('result.data.portal')
                 // console.log(result.data.portal)
                 // Сохраняем данные в localStorage
-                await saveToLocalStorage(storageKey, result.data.portal, secretKey);
+                await saveToLocalStorage(
+                    storageKey,
+                    result.data.portal,
+                    secretKey,
+                );
 
                 // Возвращаем данные
                 return { data: result.data.portal };
@@ -75,9 +91,8 @@ export const portalAPI = createApi({
                 } catch (error) {
                     console.error('Error fetching portal:', error);
                 }
-            }
+            },
         }),
-
     }),
 });
 

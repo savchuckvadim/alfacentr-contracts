@@ -1,7 +1,17 @@
-import { getProductFieldByCodeValue, IAlfaProduct } from "@/modules/entities"
-import { BxParticipantsDataKeys, bxProductData, IParticipant, IParticipantField, AlfaParticipantSmartItemUserFieldsEnum } from "@alfa/entities"
-import { getProductsByType } from "./product.util"
-import { IParicipantPpkThemesStats, ITopicStat, ParticipantPpkField } from "../../type/participant-ppk.type"
+import { getProductFieldByCodeValue, IAlfaProduct } from '@/modules/entities';
+import {
+    BxParticipantsDataKeys,
+    bxProductData,
+    IParticipant,
+    IParticipantField,
+    AlfaParticipantSmartItemUserFieldsEnum,
+} from '@alfa/entities';
+import { getProductsByType } from './product.util';
+import {
+    IParicipantPpkThemesStats,
+    ITopicStat,
+    ParticipantPpkField,
+} from '../../type/participant-ppk.type';
 
 const participantPpkFieldCodes = [
     BxParticipantsDataKeys.accountant_gos,
@@ -9,46 +19,50 @@ const participantPpkFieldCodes = [
     BxParticipantsDataKeys.zakupki,
     BxParticipantsDataKeys.kadry,
     BxParticipantsDataKeys.corruption,
+];
+export const getParticipantWithProducts = (
+    participant: IParticipant,
+    products: IAlfaProduct[],
+) => {
+    const ppkProducts = getProductsByType(products, 'ppk');
 
-]
-export const getParticipantWithProducts = (participant: IParticipant, products: IAlfaProduct[]) => {
-
-    const ppkProducts = getProductsByType(products, 'ppk')
-
-    const participantProductPpk = [] as IAlfaProduct[]
+    const participantProductPpk = [] as IAlfaProduct[];
 
     ppkProducts?.map(product => {
-
-        const searchedField = product.fields.find(field => field.bitrixId === bxProductData.SEMINAR_TOPIC.bitrixId)
+        const searchedField = product.fields.find(
+            field => field.bitrixId === bxProductData.SEMINAR_TOPIC.bitrixId,
+        );
 
         if (searchedField) {
-            const fieldValue = searchedField.value as { value: string }
+            const fieldValue = searchedField.value as { value: string };
 
             if (fieldValue?.value) {
                 participant.fields.map(partField => {
-                    if (participantPpkFieldCodes.includes(partField.code as BxParticipantsDataKeys)) {
-
+                    if (
+                        participantPpkFieldCodes.includes(
+                            partField.code as BxParticipantsDataKeys,
+                        )
+                    ) {
                         if (partField.value == fieldValue.value) {
-
-                            participantProductPpk.push(product)
+                            participantProductPpk.push(product);
                         } else if (partField.value.includes(fieldValue.value)) {
-                            participantProductPpk.push(product)
+                            participantProductPpk.push(product);
                         } else {
-
                         }
                     }
-                })
+                });
             }
         }
+    });
 
-    })
+    participantProductPpk;
+};
 
-    participantProductPpk
-}
-
-export const getMissingProductsByParticipantPpkThemes = (programsThemes: string[], products: IAlfaProduct[]): string[] => {
-
-    const missingProducts = [] as string[]
+export const getMissingProductsByParticipantPpkThemes = (
+    programsThemes: string[],
+    products: IAlfaProduct[],
+): string[] => {
+    const missingProducts = [] as string[];
 
     // products.forEach((product) => {
     //     const productTopicName = getProductFieldByCodeValue(product, 'SEMINAR_TOPIC')?.value
@@ -56,37 +70,47 @@ export const getMissingProductsByParticipantPpkThemes = (programsThemes: string[
     //     const searchedProduct = programsThemes.find((program) => program.includes(productTopicName))
     //     if (!searchedProduct) missingProducts.push(product)
     // })
-    programsThemes.forEach((program) => {
-        const searchedProduct = products.find((product) => getProductFieldByCodeValue(product, 'SEMINAR_TOPIC')?.value == program)
-        if (!searchedProduct) missingProducts.push(program)
-    })
+    programsThemes.forEach(program => {
+        const searchedProduct = products.find(
+            product =>
+                getProductFieldByCodeValue(product, 'SEMINAR_TOPIC')?.value ==
+                program,
+        );
+        if (!searchedProduct) missingProducts.push(program);
+    });
 
-    return missingProducts
-}
+    return missingProducts;
+};
 
-
-
-export const getParicipantPpkTopicsStats = (participant: IParticipant, topicStats: ITopicStat[], participantToProducts: Map<number, IAlfaProduct[]>): IParicipantPpkThemesStats[] | null => {
-    
-    const hasParticipantPpkTopic = topicStats.some(topic => topic.participants.find(prtcpnt => prtcpnt.id === participant.id))
-    const  productsOfParticipant = participantToProducts.get(Number(participant.id)) ?? undefined
+export const getParicipantPpkTopicsStats = (
+    participant: IParticipant,
+    topicStats: ITopicStat[],
+    participantToProducts: Map<number, IAlfaProduct[]>,
+): IParicipantPpkThemesStats[] | null => {
+    const hasParticipantPpkTopic = topicStats.some(topic =>
+        topic.participants.find(prtcpnt => prtcpnt.id === participant.id),
+    );
+    const productsOfParticipant =
+        participantToProducts.get(Number(participant.id)) ?? undefined;
     if (!hasParticipantPpkTopic) {
-        return null
+        return null;
     }
-    const participantPpkThemesStats: IParicipantPpkThemesStats[] = []
+    const participantPpkThemesStats: IParicipantPpkThemesStats[] = [];
 
     topicStats.forEach(topic => {
-        
-        const isTargetTopic = topic.participants.some(prtcpnt => prtcpnt.id === participant.id)
+        const isTargetTopic = topic.participants.some(
+            prtcpnt => prtcpnt.id === participant.id,
+        );
         if (!isTargetTopic) {
-            return
+            return;
         }
 
-        
-        const participantField = participant.fields.find(field => field.value.includes(topic.topic)) as ParticipantPpkField | undefined
+        const participantField = participant.fields.find(field =>
+            field.value.includes(topic.topic),
+        ) as ParticipantPpkField | undefined;
 
         if (!topic.products || topic.products.length === 0) {
-            //у топика нет ни одного продукта 
+            //у топика нет ни одного продукта
             participantPpkThemesStats.push({
                 participantField: participantField,
                 topic: topic.topic,
@@ -94,33 +118,32 @@ export const getParicipantPpkTopicsStats = (participant: IParticipant, topicStat
                 status: 'missing_ppk',
                 message: 'У Темы ппк нет ни одного Товара - добавьте товар ППК',
                 product: null,
-                potintialProduct: null
-            })
-            return
+                potintialProduct: null,
+            });
+            return;
         }
-        
-       
-        let currentProductInTopicInParticipant = false as false | IAlfaProduct
+
+        let currentProductInTopicInParticipant = false as false | IAlfaProduct;
         topic.products.forEach(product => {
-            
-           
-            if (productsOfParticipant) { //у участника есть продукты
-                for (const pProduct of productsOfParticipant) { //пербираем все продукты участника
-                    if (product.id === pProduct.id) { //одна из товарных позиций Топика равна одной из товарных позиций участника
-                        currentProductInTopicInParticipant = product
+            if (productsOfParticipant) {
+                //у участника есть продукты
+                for (const pProduct of productsOfParticipant) {
+                    //пербираем все продукты участника
+                    if (product.id === pProduct.id) {
+                        //одна из товарных позиций Топика равна одной из товарных позиций участника
+                        currentProductInTopicInParticipant = product;
                     } else {
                         //одна из товарных позиций Топика не равна одной из товарных позиций участника
-
                     }
                 }
-
             } else {
             }
-            
-        })
+        });
 
-        if (productsOfParticipant) { //у участника есть продукты
-            if (currentProductInTopicInParticipant) {  //у участника есть товар ППК и он есть в топике
+        if (productsOfParticipant) {
+            //у участника есть продукты
+            if (currentProductInTopicInParticipant) {
+                //у участника есть товар ППК и он есть в топике
                 participantPpkThemesStats.push({
                     participantField,
                     topic: topic.topic,
@@ -128,18 +151,20 @@ export const getParicipantPpkTopicsStats = (participant: IParticipant, topicStat
                     status: 'ok',
                     message: 'По данной теме участник имеет товар ППК',
                     product: currentProductInTopicInParticipant,
-                    potintialProduct: null
-                })
-            } else { //у участника есть товар ППК но в топике почему то он отсутствует 
+                    potintialProduct: null,
+                });
+            } else {
+                //у участника есть товар ППК но в топике почему то он отсутствует
                 participantPpkThemesStats.push({
                     participantField,
                     topic: topic.topic,
                     participantId: participant.id,
                     status: 'missing_ppk_quantity',
-                    message: 'По данной теме участник не имеет товара ППК. Данный товар есть в спике Товаров, но в недостаточном количестве',
+                    message:
+                        'По данной теме участник не имеет товара ППК. Данный товар есть в спике Товаров, но в недостаточном количестве',
                     product: null,
-                    potintialProduct: topic.products[0] ?? null
-                })
+                    potintialProduct: topic.products[0] ?? null,
+                });
             }
         } else {
             // у участника не ни одного продукта
@@ -148,20 +173,22 @@ export const getParicipantPpkTopicsStats = (participant: IParticipant, topicStat
                 topic: topic.topic,
                 participantId: participant.id,
                 status: 'missing_ppk_quantity',
-                message: 'По данной теме участник не имеет товара ППК. Данный товар есть в спике Товаров, но в недостаточном количестве',
+                message:
+                    'По данной теме участник не имеет товара ППК. Данный товар есть в спике Товаров, но в недостаточном количестве',
                 product: null,
-                potintialProduct: topic.products[0] ?? null
-            })
-            console.log('у участника не ни одного продукта', participant.id, topic.topic)
-            console.log(participantPpkThemesStats)
+                potintialProduct: topic.products[0] ?? null,
+            });
+            console.log(
+                'у участника не ни одного продукта',
+                participant.id,
+                topic.topic,
+            );
+            console.log(participantPpkThemesStats);
         }
-        
+    });
 
-    })
-    
-    return participantPpkThemesStats
-
-}
+    return participantPpkThemesStats;
+};
 // type TopicMap = Record<string, IAlfaProduct[]>;
 
 // function buildTopicToProductMap(products: IAlfaProduct[]): TopicMap {
@@ -182,7 +209,6 @@ export const getParicipantPpkTopicsStats = (participant: IParticipant, topicStat
 
 //     return topicMap;
 // }
-
 
 // type ParticipantMatch = {
 //     participant: IParticipant;
@@ -208,7 +234,6 @@ export const getParicipantPpkTopicsStats = (participant: IParticipant, topicStat
 
 //     return matches;
 // }
-
 
 // type TopicStats = {
 //     topic: string;

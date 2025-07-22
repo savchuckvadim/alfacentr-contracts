@@ -1,8 +1,8 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { updateDeal } from "../lib/service/deal-update.service";
-import { IDealFieldsData } from "../type/deal-field.type";
-import { BxDealDataKeys } from "@alfa/entities";
-import { RootState } from "@/modules/app/model/store";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { updateDeal } from '../lib/service/deal-update.service';
+import { IDealFieldsData } from '../type/deal-field.type';
+import { BxDealDataKeys } from '@alfa/entities';
+import { RootState } from '@/modules/app/model/store';
 
 export interface UpdateDealFieldPayload {
     dealId?: number;
@@ -24,17 +24,20 @@ export const updateDealField = createAsyncThunk(
             }
             // Вызываем сервис обновления сделки
             const res = await updateDeal(dealId, value, field);
-            
+
             // Возвращаем данные для обновления состояния
             return {
                 fieldKey: payload.fieldKey,
-                value: payload.value
+                value: payload.value,
             };
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка при обновлении поля сделки';
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : 'Неизвестная ошибка при обновлении поля сделки';
             return rejectWithValue(errorMessage);
         }
-    }
+    },
 );
 
 // Thunk для загрузки данных сделки (если понадобится в будущем)
@@ -50,4 +53,4 @@ export const updateDealField = createAsyncThunk(
 //             return rejectWithValue(errorMessage);
 //         }
 //     }
-// ); 
+// );

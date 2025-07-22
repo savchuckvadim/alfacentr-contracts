@@ -13,6 +13,7 @@
 ## Использование
 
 ### Базовое использование
+
 ```tsx
 import { BackButton } from "@/modules/shared"
 
@@ -24,6 +25,7 @@ import { BackButton } from "@/modules/shared"
 ```
 
 ### С fallback путем
+
 ```tsx
 // Если нет истории, вернется на /dashboard
 <BackButton fallbackPath="/dashboard" />
@@ -33,6 +35,7 @@ import { BackButton } from "@/modules/shared"
 ```
 
 ### Различные варианты стилизации
+
 ```tsx
 // Ghost вариант (по умолчанию)
 <BackButton variant="ghost" />
@@ -46,7 +49,7 @@ import { BackButton } from "@/modules/shared"
 <BackButton size="icon" />
 
 // С кастомными стилями
-<BackButton 
+<BackButton
     className="text-primary hover:text-primary/80"
     variant="ghost"
     size="sm"
@@ -55,31 +58,32 @@ import { BackButton } from "@/modules/shared"
 
 ## Props
 
-| Prop | Тип | По умолчанию | Описание |
-|------|-----|--------------|----------|
-| `fallbackPath` | `string` | - | Путь для возврата, если нет истории |
-| `className` | `string` | `""` | Дополнительные CSS классы |
-| `variant` | `"default" \| "ghost" \| "outline"` | `"ghost"` | Вариант кнопки |
-| `size` | `"default" \| "sm" \| "lg" \| "icon"` | `"sm"` | Размер кнопки |
-| `showText` | `boolean` | `false` | Показывать ли текст рядом с иконкой |
-| `children` | `React.ReactNode` | - | Кастомный текст (если showText=true) |
-| `alwaysShow` | `boolean` | `false` | Показывать всегда, если указан fallbackPath |
+| Prop           | Тип                                   | По умолчанию | Описание                                    |
+| -------------- | ------------------------------------- | ------------ | ------------------------------------------- |
+| `fallbackPath` | `string`                              | -            | Путь для возврата, если нет истории         |
+| `className`    | `string`                              | `""`         | Дополнительные CSS классы                   |
+| `variant`      | `"default" \| "ghost" \| "outline"`   | `"ghost"`    | Вариант кнопки                              |
+| `size`         | `"default" \| "sm" \| "lg" \| "icon"` | `"sm"`       | Размер кнопки                               |
+| `showText`     | `boolean`                             | `false`      | Показывать ли текст рядом с иконкой         |
+| `children`     | `React.ReactNode`                     | -            | Кастомный текст (если showText=true)        |
+| `alwaysShow`   | `boolean`                             | `false`      | Показывать всегда, если указан fallbackPath |
 
 ## Логика работы
 
 1. **Проверка истории**: Компонент проверяет `window.history.length > 1`
 2. **SessionStorage**: Сохраняет текущий путь и отслеживает предыдущий
 3. **Условия показа**: Кнопка показывается если:
-   - Есть история навигации
-   - Указан fallbackPath (и он отличается от текущего пути)
-   - Есть предыдущий путь в sessionStorage
+    - Есть история навигации
+    - Указан fallbackPath (и он отличается от текущего пути)
+    - Есть предыдущий путь в sessionStorage
 4. **Поведение при клике**:
-   - Если есть история → `router.back()`
-   - Если нет истории, но есть fallback → `router.push(fallbackPath)`
+    - Если есть история → `router.back()`
+    - Если нет истории, но есть fallback → `router.push(fallbackPath)`
 
 ## Примеры интеграции
 
 ### В хедере
+
 ```tsx
 <div className="flex items-center gap-4">
     <BackButton fallbackPath="/dashboard" />
@@ -88,6 +92,7 @@ import { BackButton } from "@/modules/shared"
 ```
 
 ### В модальном окне
+
 ```tsx
 <DialogHeader>
     <BackButton variant="ghost" size="sm" />
@@ -96,6 +101,7 @@ import { BackButton } from "@/modules/shared"
 ```
 
 ### В карточке
+
 ```tsx
 <Card>
     <CardHeader>
@@ -105,4 +111,4 @@ import { BackButton } from "@/modules/shared"
         </div>
     </CardHeader>
 </Card>
-``` 
+```

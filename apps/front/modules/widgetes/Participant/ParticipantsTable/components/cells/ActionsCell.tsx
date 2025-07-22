@@ -1,17 +1,21 @@
-import { TableCell } from "@workspace/ui/components/table"
-import { Button } from "@workspace/ui/components/button"
-import { Tooltip } from "@/modules/shared"
-import Link from "next/link"
-import { Eye, Edit, Trash2 } from "lucide-react"
-import { IParticipant } from "@alfa/entities"
+import { TableCell } from '@workspace/ui/components/table';
+import { Button } from '@workspace/ui/components/button';
+import { Tooltip } from '@/modules/shared';
+import Link from 'next/link';
+import { Eye, Edit, Trash2 } from 'lucide-react';
+import { IParticipant } from '@alfa/entities';
 
 interface ActionsCellProps {
-    participant: IParticipant
-    onEdit: (participantId: number) => void
-    onDelete: (participant: IParticipant) => void
+    participant: IParticipant;
+    onEdit: (participantId: number) => void;
+    onDelete: (participant: IParticipant) => void;
 }
 
-export const ActionsCell = ({ participant, onEdit, onDelete }: ActionsCellProps) => {
+export const ActionsCell = ({
+    participant,
+    onEdit,
+    onDelete,
+}: ActionsCellProps) => {
     return (
         <TableCell>
             <div className="flex items-center gap-1">
@@ -53,5 +57,5 @@ export const ActionsCell = ({ participant, onEdit, onDelete }: ActionsCellProps)
                 </Tooltip>
             </div>
         </TableCell>
-    )
-} 
+    );
+};

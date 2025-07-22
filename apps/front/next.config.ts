@@ -1,12 +1,7 @@
-import type { NextConfig } from 'next'
+import type { NextConfig } from 'next';
 
 // Проверяем наличие обязательных переменных окружения
-const requiredEnvVars = [
-    'ONLINE_API_KEY',
-    'IN_BITRIX',
-    'LOG_FILE_PATH',
-
-];
+const requiredEnvVars = ['ONLINE_API_KEY', 'IN_BITRIX', 'LOG_FILE_PATH'];
 for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
         console.error(`Missing required environment variable: ${envVar}`);
@@ -25,7 +20,7 @@ const nextConfig: NextConfig = {
     //     return config;
     // },
     // reactStrictMode: true,
-   
+
     // productionBrowserSourceMaps: true, // ✅ включаем sourcemaps для браузера
     env: {
         ONLINE_API_KEY: process.env.ONLINE_API_KEY,
@@ -34,7 +29,6 @@ const nextConfig: NextConfig = {
     },
     // Добавляем поддержку TypeScript для конфигурации
     typescript: {
-
         // Включаем проверку типов при сборке
         ignoreBuildErrors: false,
     },
@@ -56,8 +50,7 @@ const nextConfig: NextConfig = {
         // 'lucide-react',
         // 'framer-motion',
         // 'date-fns',
-
     ],
-}
+};
 
-export default nextConfig 
+export default nextConfig;

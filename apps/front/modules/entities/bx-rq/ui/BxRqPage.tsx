@@ -1,22 +1,55 @@
-'use client'
+'use client';
 
-import { useState } from "react"
-import { filterFieldItems, getFieldValuByCode, getRqShowName, RQ_ITEM_CODE, useBxRq } from "@workspace/bx-rq"
+import { useState } from 'react';
+import {
+    filterFieldItems,
+    getFieldValuByCode,
+    getRqShowName,
+    RQ_ITEM_CODE,
+    useBxRq,
+} from '@workspace/bx-rq';
 
-import { RQ_TYPE, CONTRACT_LTYPE, SupplyTypesType, EvsRqItem, getClinetTypeNameByCode, isFieldsEmpty, SupplyTypeEnum, ResolvedRQType, RqItem, BX_ADDRESS_TYPE } from "@workspace/bx-rq"
-import { BxRqBaseEdit } from './BxRqBaseEdit'
-import { BxRqAddressEdit } from './BxRqAddressEdit'
-import { BxRqBankEdit } from './BxRqBankEdit'
-import { Save, X } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
-import { Button } from "@workspace/ui/components/button"
-import { Badge } from "@workspace/ui/components/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@workspace/ui/components/tabs"
+import {
+    RQ_TYPE,
+    CONTRACT_LTYPE,
+    SupplyTypesType,
+    EvsRqItem,
+    getClinetTypeNameByCode,
+    isFieldsEmpty,
+    SupplyTypeEnum,
+    ResolvedRQType,
+    RqItem,
+    BX_ADDRESS_TYPE,
+} from '@workspace/bx-rq';
+import { BxRqBaseEdit } from './BxRqBaseEdit';
+import { BxRqAddressEdit } from './BxRqAddressEdit';
+import { BxRqBankEdit } from './BxRqBankEdit';
+import { Save, X } from 'lucide-react';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from '@workspace/ui/components/card';
+import { Button } from '@workspace/ui/components/button';
+import { Badge } from '@workspace/ui/components/badge';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@workspace/ui/components/select';
+import {
+    Tabs,
+    TabsList,
+    TabsTrigger,
+    TabsContent,
+} from '@workspace/ui/components/tabs';
 
-import { useClientType } from "@/modules/features/client-type/hook/useClientType"
-import { useApp, useAppSelector } from "@/modules/app"
-import { PagePreloader } from "@/modules/shared"
+import { useClientType } from '@/modules/features/client-type/hook/useClientType';
+import { useApp, useAppSelector } from '@/modules/app';
+import { PagePreloader } from '@/modules/shared';
 
 interface BxRqPageProps {
     currentClientType?: RQ_TYPE;
@@ -30,29 +63,26 @@ export const BxRqPage = ({
     //   currentClientType = RQ_TYPE.FIZ,
     //   contractType = CONTRACT_LTYPE.SERVICE,
     //   supplyType = SupplyTypeEnum.INTERNET,
-    onSave,  //для сохранения текущих реквизитов в карточку сделки
-    onCancel
+    onSave, //для сохранения текущих реквизитов в карточку сделки
+    onCancel,
 }: BxRqPageProps) => {
     const {
-        
         rqs,
         isLoading,
         isFetched,
         current,
-       
+
         setCurrent,
         saveBase,
-        getRqFillPercent
-   
-    } = useBxRq()
-
+        getRqFillPercent,
+    } = useBxRq();
 
     const domain = useAppSelector(state => state.app.domain);
     const companyId = useAppSelector(state => state.app.bitrix.company?.ID);
     // const [selectedRq, setSelectedRq] = useState<EvsRqItem | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-    const { clientType } = useClientType()
-    const percent = getRqFillPercent(current.item, clientType as RQ_TYPE)       
+    const { clientType } = useClientType();
+    const percent = getRqFillPercent(current.item, clientType as RQ_TYPE);
     // useEffect(() => {
     //     if (!isFetched && !isLoading && companyId) {
     //         fetchBXRQ(domain, companyId);
@@ -66,7 +96,6 @@ export const BxRqPage = ({
     // }, [rqs, currentClientType]);
 
     const handleSaveBase = async () => {
-
         setIsSaving(true);
         try {
             await saveBase(domain, companyId || 0, clientType as RQ_TYPE);
@@ -77,23 +106,21 @@ export const BxRqPage = ({
         }
     };
 
- 
-
     const handleCancel = () => {
         onCancel?.();
     };
 
-
     if (isLoading) {
-        return (<PagePreloader text="Загрузка реквизитов..." />
-        );
+        return <PagePreloader text="Загрузка реквизитов..." />;
     }
 
     if (!isFetched || !rqs) {
         return (
             <Card>
                 <CardContent className="p-6">
-                    <p className="text-muted-foreground">Реквизиты не загружены</p>
+                    <p className="text-muted-foreground">
+                        Реквизиты не загружены
+                    </p>
                 </CardContent>
             </Card>
         );
@@ -107,7 +134,9 @@ export const BxRqPage = ({
         return (
             <Card>
                 <CardContent className="p-6">
-                    <p className="text-muted-foreground">Реквизиты не найдены</p>
+                    <p className="text-muted-foreground">
+                        Реквизиты не найдены
+                    </p>
                 </CardContent>
             </Card>
         );
@@ -115,7 +144,7 @@ export const BxRqPage = ({
 
     const fields = filterFieldItems(
         currentRq.fields,
-        clientType || RQ_TYPE.ORGANIZATION as RQ_TYPE,
+        clientType || (RQ_TYPE.ORGANIZATION as RQ_TYPE),
         // contractType,
         // supplyType,
     );
@@ -123,11 +152,12 @@ export const BxRqPage = ({
     const isEmpty = fields ? isFieldsEmpty(fields) : false;
 
     const handleRqSelect = (rqId: string) => {
-        const selected = currentRqs.find((rq: EvsRqItem) => rq.bx_id.toString() === rqId);
+        const selected = currentRqs.find(
+            (rq: EvsRqItem) => rq.bx_id.toString() === rqId,
+        );
         if (selected) {
-
             setCurrent({
-                ...selected
+                ...selected,
             });
         }
     };
@@ -157,7 +187,10 @@ export const BxRqPage = ({
                     <CardTitle className="flex items-center gap-2">
                         <span>Реквизиты</span>
                         {currentRq.bx_id !== -1 && (
-                            <Badge variant="secondary" className="bg-primary/60 text-primary-foreground">
+                            <Badge
+                                variant="secondary"
+                                className="bg-primary/60 text-primary-foreground"
+                            >
                                 {getClinetTypeNameByCode(clientType)}
                             </Badge>
                         )}
@@ -169,15 +202,25 @@ export const BxRqPage = ({
                         <label className="text-sm font-medium">
                             {getClinetTypeNameByCode(clientType)}
                         </label>
-                        <Select value={currentRq.bx_id.toString()} onValueChange={handleRqSelect}>
+                        <Select
+                            value={currentRq.bx_id.toString()}
+                            onValueChange={handleRqSelect}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Выберите реквизиты" />
                             </SelectTrigger>
                             <SelectContent>
                                 {currentRqs.map((rq: EvsRqItem) => {
-                                    const displayName = getRqShowName(rq.fields, clientType as RQ_TYPE, 45)
+                                    const displayName = getRqShowName(
+                                        rq.fields,
+                                        clientType as RQ_TYPE,
+                                        45,
+                                    );
                                     return (
-                                        <SelectItem key={rq.bx_id} value={rq.bx_id.toString()}>
+                                        <SelectItem
+                                            key={rq.bx_id}
+                                            value={rq.bx_id.toString()}
+                                        >
                                             {displayName}
                                         </SelectItem>
                                     );
@@ -211,14 +254,16 @@ export const BxRqPage = ({
                         </TabsContent>
 
                         <TabsContent value="addresses" className="space-y-4">
-                            {!isEmpty && currentRq.address?.items && currentRq.address.items.length > 0 ? (
-                                <BxRqAddressEdit
-
-                                />
+                            {!isEmpty &&
+                            currentRq.address?.items &&
+                            currentRq.address.items.length > 0 ? (
+                                <BxRqAddressEdit />
                             ) : (
                                 <Card>
                                     <CardContent className="text-center p-6">
-                                        <p className="text-muted-foreground">Адреса отсутствуют</p>
+                                        <p className="text-muted-foreground">
+                                            Адреса отсутствуют
+                                        </p>
                                     </CardContent>
                                 </Card>
                             )}
@@ -235,7 +280,9 @@ export const BxRqPage = ({
                             ) : (
                                 <Card>
                                     <CardContent className="text-center p-6">
-                                        <p className="text-muted-foreground">Банковские реквизиты отсутствуют</p>
+                                        <p className="text-muted-foreground">
+                                            Банковские реквизиты отсутствуют
+                                        </p>
                                     </CardContent>
                                 </Card>
                             )}
@@ -246,7 +293,8 @@ export const BxRqPage = ({
                     {isEmpty && (
                         <div className="text-center p-6">
                             <p className="text-muted-foreground">
-                                Реквизиты не заполнены или не подходят для выбранного типа контракта
+                                Реквизиты не заполнены или не подходят для
+                                выбранного типа контракта
                             </p>
                         </div>
                     )}

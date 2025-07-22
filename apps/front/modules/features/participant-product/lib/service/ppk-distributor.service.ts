@@ -1,14 +1,20 @@
-import { IAlfaProduct } from "@/modules/entities";
-import { BxParticipantsDataKeys, bxProductData, IParticipant } from "@alfa/entities";
-import { getProductsByType } from "../utils/product.util";
-import { IParicipantPpkThemesStats, IParticipantPpkMap, IParticipantPpkTopicsStats, ITopicStat, ParticipantPpkFieldCodes } from "../../type/participant-ppk.type";
-import { getParicipantPpkTopicsStats } from "../utils/participant-products";
+import { IAlfaProduct } from '@/modules/entities';
+import {
+    BxParticipantsDataKeys,
+    bxProductData,
+    IParticipant,
+} from '@alfa/entities';
+import { getProductsByType } from '../utils/product.util';
+import {
+    IParicipantPpkThemesStats,
+    IParticipantPpkMap,
+    IParticipantPpkTopicsStats,
+    ITopicStat,
+    ParticipantPpkFieldCodes,
+} from '../../type/participant-ppk.type';
+import { getParicipantPpkTopicsStats } from '../utils/participant-products';
 
 type Topic = string;
-
-
-
-
 
 export class PpkDistributorService {
     private participants: IParticipant[];
@@ -30,7 +36,10 @@ export class PpkDistributorService {
         const productToParticipants = new Map<number, IParticipant[]>();
         const topicStats: ITopicStat[] = [];
 
-        for (const [topic, participants] of this.topicParticipantMap.entries()) {
+        for (const [
+            topic,
+            participants,
+        ] of this.topicParticipantMap.entries()) {
             const products = this.topicProductMap.get(topic) || [];
             const expandedProducts = this.expandProductsByQuantity(products); // продукт с quantity 2 → [prod, prod]
 
@@ -48,7 +57,7 @@ export class PpkDistributorService {
             });
 
             // Распределяем участников по продуктам (рандомно)
-            const shuffledParticipants = participants // this.shuffle([...participants]);
+            const shuffledParticipants = participants; // this.shuffle([...participants]);
 
             // for (let i = 0; i < Math.min(available, shuffledParticipants.length); i++) {
             //     const participant = shuffledParticipants[i];
@@ -85,19 +94,31 @@ export class PpkDistributorService {
                     productToParticipants.get(productId)!.push(participant);
                 } else {
                     // Нет свободного продукта — сохраняем участника
-                    if (!this.unassignedParticipants.some(p => p.id === participant.id)) {
+                    if (
+                        !this.unassignedParticipants.some(
+                            p => p.id === participant.id,
+                        )
+                    ) {
                         this.unassignedParticipants.push(participant);
                     }
                 }
             }
         }
-        const participantsPpkTopicsStats: IParticipantPpkTopicsStats = {}
+        const participantsPpkTopicsStats: IParticipantPpkTopicsStats = {};
         this.participants.forEach(participant => {
-            const participantPpkTopicsStats = getParicipantPpkTopicsStats(participant, topicStats, participantToProducts)
-            if (participantPpkTopicsStats && participantPpkTopicsStats.length > 0) {
-                participantsPpkTopicsStats[participant.id] = participantPpkTopicsStats
+            const participantPpkTopicsStats = getParicipantPpkTopicsStats(
+                participant,
+                topicStats,
+                participantToProducts,
+            );
+            if (
+                participantPpkTopicsStats &&
+                participantPpkTopicsStats.length > 0
+            ) {
+                participantsPpkTopicsStats[participant.id] =
+                    participantPpkTopicsStats;
             }
-        })
+        });
 
         return {
             participantsPpkTopicsStats,
@@ -137,7 +158,9 @@ export class PpkDistributorService {
     }
 
     private getProductTopic(product: IAlfaProduct): string | null {
-        const field = product.fields.find(f => f.bitrixId === bxProductData.SEMINAR_TOPIC.bitrixId);
+        const field = product.fields.find(
+            f => f.bitrixId === bxProductData.SEMINAR_TOPIC.bitrixId,
+        );
         return (field?.value as { value: string })?.value || null;
     }
 
@@ -145,9 +168,16 @@ export class PpkDistributorService {
         const result: string[] = [];
 
         for (const field of participant.fields) {
-            if (!ParticipantPpkFieldCodes.includes(field.code as BxParticipantsDataKeys)) continue;
+            if (
+                !ParticipantPpkFieldCodes.includes(
+                    field.code as BxParticipantsDataKeys,
+                )
+            )
+                continue;
 
-            const values = Array.isArray(field.value) ? field.value : [field.value];
+            const values = Array.isArray(field.value)
+                ? field.value
+                : [field.value];
             for (const v of values) {
                 if (v) result.push(v);
             }
@@ -197,6 +227,4 @@ export class PpkDistributorService {
 
     //     return result;
     // }
-
-
 }

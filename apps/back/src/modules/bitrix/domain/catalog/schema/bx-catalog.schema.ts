@@ -1,6 +1,6 @@
-import { EBxMethod } from "src/modules/bitrix/core";
-import { IBXProduct } from "../interface/bx-product.interface";
-import { CrmListRequestType } from "../../crm/type/crm-request.type";
+import { EBxMethod } from 'src/modules/bitrix/core';
+import { IBXProduct } from '../interface/bx-product.interface';
+import { CrmListRequestType } from '../../crm/type/crm-request.type';
 
 export type BxCatalogSchema = {
     [EBxMethod.GET]: {
@@ -8,14 +8,14 @@ export type BxCatalogSchema = {
             id: number | string;
             select?: string[];
         };
-        response: {product: IBXProduct};
+        response: { product: IBXProduct };
     };
     [EBxMethod.LIST]: {
-        request:  {
+        request: {
             filter: Partial<IBXProduct>;
             select?: string[];
             start: -1;
         };
-        response: {products: IBXProduct[]};
+        response: { products: IBXProduct[] };
     };
-}
+};

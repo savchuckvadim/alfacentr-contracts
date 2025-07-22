@@ -12,9 +12,7 @@
         "baseUrl": ".",
         "resolveJsonModule": true,
         "paths": {
-            "@/*": [
-                "src/*"
-            ] // Это указывает путь к алиасу
+            "@/*": ["src/*"] // Это указывает путь к алиасу
         }
     },
     "ts-node": {
@@ -22,8 +20,5 @@
             "module": "CommonJS"
         }
     },
-    "include": [
-        "src/**/*",
-        "src/global.d.ts"
-    ]
+    "include": ["src/**/*", "src/global.d.ts"]
 }

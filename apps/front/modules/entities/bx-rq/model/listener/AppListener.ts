@@ -1,11 +1,13 @@
-import { appActions } from "@/modules/app/model/AppSlice";
-import { RootState } from "@/modules/app/model/store";
+import { appActions } from '@/modules/app/model/AppSlice';
+import { RootState } from '@/modules/app/model/store';
 
-import {  ListenerMiddlewareInstance } from "@reduxjs/toolkit";
-import { isAnyOf } from "@reduxjs/toolkit";
-import { fetchBXRQ } from "@workspace/bx-rq";
+import { ListenerMiddlewareInstance } from '@reduxjs/toolkit';
+import { isAnyOf } from '@reduxjs/toolkit';
+import { fetchBXRQ } from '@workspace/bx-rq';
 
-export function setupRqAppListener(listenerMiddleware: ListenerMiddlewareInstance) {
+export function setupRqAppListener(
+    listenerMiddleware: ListenerMiddlewareInstance,
+) {
     listenerMiddleware.startListening({
         matcher: isAnyOf(appActions.setAppData),
         effect: async (action, listenerApi) => {
@@ -15,8 +17,8 @@ export function setupRqAppListener(listenerMiddleware: ListenerMiddlewareInstanc
             const companyId = state.app.bitrix.company?.ID;
 
             if (domain && companyId) {
-                dispatch(fetchBXRQ(domain, companyId) as any)
+                dispatch(fetchBXRQ(domain, companyId) as any);
             }
-        }
-    })
+        },
+    });
 }

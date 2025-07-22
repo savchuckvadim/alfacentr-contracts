@@ -1,25 +1,28 @@
 import { BitrixBaseApi } from './core/base/bitrix-base-api';
 // import { BitrixApiFactoryService } from './core/queue/bitrix-api.factory.service';
 import {
-    BxCompanyService, BxContactBatchService, BxContactService,
-    BxDealService, BxProductRowBatchService, BxProductRowService,
-    BxCategoryService, BxStatusService, BxItemService, BxItemBatchService,
-    BxTimelineService, BxTimelineBatchService
+    BxCompanyService,
+    BxContactBatchService,
+    BxContactService,
+    BxDealService,
+    BxProductRowBatchService,
+    BxProductRowService,
+    BxCategoryService,
+    BxStatusService,
+    BxItemService,
+    BxItemBatchService,
+    BxTimelineService,
+    BxTimelineBatchService,
 } from './domain/crm/';
 
 import { BxDealBatchService, BxCompanyBatchService } from './domain/crm/';
 import { ServiceClonerFactory } from './domain/service-clone.factory';
+import { BxProductBatchService, BxProductService } from './domain/catalog';
+import { BxListBatchService, BxListService } from './domain/list';
 import {
-
-    BxProductBatchService,
-    BxProductService
-} from './domain/catalog';
-import {
-    BxListBatchService,
-    BxListService,
-
-} from './domain/list';
-import { BxUserFieldConfigBatchService, BxUserFieldConfigService } from './domain/userfieldconfig';
+    BxUserFieldConfigBatchService,
+    BxUserFieldConfigService,
+} from './domain/userfieldconfig';
 import { BxSmartTypeService } from './domain/crm/smart-type/services/bx-smart-type.service';
 import { BxRpaItemService } from './domain/rpa/item/services/bx-rpa-item.service';
 import { BxRpaItemBatchService } from './domain/rpa/item/services/bx-rpa-item.batch.service';
@@ -29,23 +32,23 @@ import { IBXUser } from './domain/interfaces/bitrix.interface';
 // @Injectable()
 export class BitrixService {
     constructor() {}
-    
+
     private cloner: ServiceClonerFactory = new ServiceClonerFactory();
-    public api!: BitrixBaseApi
-    public deal!: BxDealService
-    public company!: BxCompanyService
-    public productRow!: BxProductRowService
-    public contact!: BxContactService
-    public category!: BxCategoryService
-    public status!: BxStatusService
-    public item!: BxItemService
-    public timeline!: BxTimelineService
-    public list!: BxListService
-    public product!: BxProductService
-    public userFieldConfig!: BxUserFieldConfigService
-    public smartType!: BxSmartTypeService
-    public rpaItem!: BxRpaItemService
-    public file!: BxFileService
+    public api!: BitrixBaseApi;
+    public deal!: BxDealService;
+    public company!: BxCompanyService;
+    public productRow!: BxProductRowService;
+    public contact!: BxContactService;
+    public category!: BxCategoryService;
+    public status!: BxStatusService;
+    public item!: BxItemService;
+    public timeline!: BxTimelineService;
+    public list!: BxListService;
+    public product!: BxProductService;
+    public userFieldConfig!: BxUserFieldConfigService;
+    public smartType!: BxSmartTypeService;
+    public rpaItem!: BxRpaItemService;
+    public file!: BxFileService;
 
     public batch = {
         deal: null as unknown as BxDealBatchService,
@@ -57,35 +60,32 @@ export class BitrixService {
         list: null as unknown as BxListBatchService,
         product: null as unknown as BxProductBatchService,
         userFieldConfig: null as unknown as BxUserFieldConfigBatchService,
-        rpaItem: null as unknown as BxRpaItemBatchService
-    }
-    
+        rpaItem: null as unknown as BxRpaItemBatchService,
+    };
+
     public async init(domain: string, user: IBXUser) {
         // this.cloner = new ServiceClonerFactory();
-        this.api = new BitrixBaseApi(
-            {
-                sendMessageAdminError: (message: string) => Promise.resolve(),
-            }
-        );
+        this.api = new BitrixBaseApi({
+            sendMessageAdminError: (message: string) => Promise.resolve(),
+        });
 
         await this.api.init(domain, user);
-        this.initDeal()
-        this.initCompany()
-        this.initProductRow()
-        this.initContact()
-        this.initCategory()
-        this.initStatus()
-        this.initItem()
-        this.initTimeline()
-        this.initList()
-        this.initProduct()
-        this.initUserFieldConfig()
-        this.initSmartType()
-        this.initRpaItem()
-        this.initFile()
+        this.initDeal();
+        this.initCompany();
+        this.initProductRow();
+        this.initContact();
+        this.initCategory();
+        this.initStatus();
+        this.initItem();
+        this.initTimeline();
+        this.initList();
+        this.initProduct();
+        this.initUserFieldConfig();
+        this.initSmartType();
+        this.initRpaItem();
+        this.initFile();
     }
 
-   
     private initDeal() {
         this.deal = this.cloner.clone(BxDealService, this.api);
         this.batch.deal = this.cloner.clone(BxDealBatchService, this.api);
@@ -97,7 +97,10 @@ export class BitrixService {
     }
     private initProductRow() {
         this.productRow = this.cloner.clone(BxProductRowService, this.api);
-        this.batch.productRow = this.cloner.clone(BxProductRowBatchService, this.api);
+        this.batch.productRow = this.cloner.clone(
+            BxProductRowBatchService,
+            this.api,
+        );
     }
     private initContact() {
         this.contact = this.cloner.clone(BxContactService, this.api);
@@ -115,7 +118,10 @@ export class BitrixService {
     }
     private initTimeline() {
         this.timeline = this.cloner.clone(BxTimelineService, this.api);
-        this.batch.timeline = this.cloner.clone(BxTimelineBatchService, this.api);
+        this.batch.timeline = this.cloner.clone(
+            BxTimelineBatchService,
+            this.api,
+        );
     }
     private initList() {
         this.list = this.cloner.clone(BxListService, this.api);
@@ -126,8 +132,14 @@ export class BitrixService {
         this.batch.product = this.cloner.clone(BxProductBatchService, this.api);
     }
     private initUserFieldConfig() {
-        this.userFieldConfig = this.cloner.clone(BxUserFieldConfigService, this.api);
-        this.batch.userFieldConfig = this.cloner.clone(BxUserFieldConfigBatchService, this.api);
+        this.userFieldConfig = this.cloner.clone(
+            BxUserFieldConfigService,
+            this.api,
+        );
+        this.batch.userFieldConfig = this.cloner.clone(
+            BxUserFieldConfigBatchService,
+            this.api,
+        );
     }
     private initSmartType() {
         this.smartType = this.cloner.clone(BxSmartTypeService, this.api);
@@ -139,5 +151,4 @@ export class BitrixService {
     private initFile() {
         this.file = this.cloner.clone(BxFileService, this.api);
     }
-
 }

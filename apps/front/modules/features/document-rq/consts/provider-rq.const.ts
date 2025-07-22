@@ -1,6 +1,6 @@
-import { RQ_TYPE } from "@workspace/bx-rq"
-import { DocumentRqAgent } from "../model/slice/DocumentRqSlice"
-import { EnumOrganizationRqFields } from "../type/document-rq.type"
+import { RQ_TYPE } from '@workspace/bx-rq';
+import { DocumentRqAgent } from '../model/slice/DocumentRqSlice';
+import { EnumOrganizationRqFields } from '../type/document-rq.type';
 
 export const PROVIDER_RQ_CONST = {
     shortName: 'ООО Альфацентр',
@@ -26,10 +26,9 @@ export const PROVIDER_RQ_CONST = {
     directorPosition: 'Директор',
     directorPositionCase: 'Директора',
     accountant: 'Управляющий',
-}
+};
 
 export const Provider: DocumentRqAgent<RQ_TYPE.ORGANIZATION> = {
-
     [EnumOrganizationRqFields.NAME]: PROVIDER_RQ_CONST.shortName,
     [EnumOrganizationRqFields.FULLNAME]: PROVIDER_RQ_CONST.fullname,
     [EnumOrganizationRqFields.INN]: `ИНН: ${PROVIDER_RQ_CONST.inn}`,
@@ -44,17 +43,18 @@ export const Provider: DocumentRqAgent<RQ_TYPE.ORGANIZATION> = {
     [EnumOrganizationRqFields.KS]: `к/с: ${PROVIDER_RQ_CONST.ks}`,
     [EnumOrganizationRqFields.OGRN]: `ОГРН: ${PROVIDER_RQ_CONST.ogrn}`,
     [EnumOrganizationRqFields.EDO]: `Оператор ЭДО: ${PROVIDER_RQ_CONST.edo}`,
-    [EnumOrganizationRqFields.SBIS_ID]: `СБИС ID: ${PROVIDER_RQ_CONST.sbisId}`,   
+    [EnumOrganizationRqFields.SBIS_ID]: `СБИС ID: ${PROVIDER_RQ_CONST.sbisId}`,
     [EnumOrganizationRqFields.BASED]: PROVIDER_RQ_CONST.based,
     [EnumOrganizationRqFields.KPP]: `КПП: ${PROVIDER_RQ_CONST.kpp}`,
     [EnumOrganizationRqFields.SHORTNAME]: `Сокращенное наименование: ${PROVIDER_RQ_CONST.shortName}`,
-    [EnumOrganizationRqFields.DIRECTOR_POSITION]: PROVIDER_RQ_CONST.directorPosition,
-    [EnumOrganizationRqFields.DIRECTOR_POSITION_CASE]: PROVIDER_RQ_CONST.directorPositionCase,
+    [EnumOrganizationRqFields.DIRECTOR_POSITION]:
+        PROVIDER_RQ_CONST.directorPosition,
+    [EnumOrganizationRqFields.DIRECTOR_POSITION_CASE]:
+        PROVIDER_RQ_CONST.directorPositionCase,
     [EnumOrganizationRqFields.DIRECTOR_FIO]: PROVIDER_RQ_CONST.directorFio,
     [EnumOrganizationRqFields.DIRECTOR_NAME]: PROVIDER_RQ_CONST.directorName,
     [EnumOrganizationRqFields.DIRECTOR_CASE]: PROVIDER_RQ_CONST.directorCase,
     [EnumOrganizationRqFields.ACCOUNTANT]: PROVIDER_RQ_CONST.accountant,
     [EnumOrganizationRqFields.OTHER]: '',
     [EnumOrganizationRqFields.TYPE]: RQ_TYPE.ORGANIZATION,
-}
-
+};

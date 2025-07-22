@@ -8,24 +8,14 @@ import { DepartmentBitrixService } from '../../domain/department/services/depart
 // import { BitrixContextService } from '../../services/bitrix-context.service';
 // ..C:\Projects\April-KP\april-next\back\src\modules\bitrix\endpoints\department\department.module.ts
 @Module({
-    imports: [
-        PortalModule,
-        RedisModule,
-        BitrixCoreModule
-    ],
-    controllers: [
-        DepartmentController
-    ],
+    imports: [PortalModule, RedisModule, BitrixCoreModule],
+    controllers: [DepartmentController],
     providers: [
         DepartmentResolverService,
         DepartmentBitrixService,
         // BitrixApiService, //new
         // BitrixContextService
-
     ],
-    exports: [
-        DepartmentResolverService
-    ],
-
+    exports: [DepartmentResolverService],
 })
-export class BitrixDepartmentEndpointModule { }
+export class BitrixDepartmentEndpointModule {}

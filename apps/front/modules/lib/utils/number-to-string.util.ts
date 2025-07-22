@@ -2,7 +2,7 @@
 // import { convert } from 'number-to-words-ru'
 //todo https://www.npmjs.com/package/number-to-words-ru
 export const formatRuble = (value: number): string => {
-    return value.toString()
+    return value.toString();
     // return convert(value, {
     //     currency: 'rub',
     //     declension: 'nominative',
@@ -23,7 +23,7 @@ export const formatRuble = (value: number): string => {
     // })
 
     // return convert(value)
-}
+};
 
 // Использование без опций
 // convertNumberToWordsRu('104')

@@ -1,21 +1,26 @@
-import { BitrixBaseApi } from "src/modules/bitrix/core/base/bitrix-base-api";
-import { EBxMethod, EBxNamespace } from "../../core/domain/consts/bitrix-api.enum";
-import { EBXEntity } from "../../core/domain/consts/bitrix-entities.enum";
-import { IBXTask } from "../interfaces/bitrix.interface";
-import { TBXResponse } from "../../core";
-import { IBitrixResponse } from "../../core/interface/bitrix-api.intterface";
-import {  BXActivityRequestFields, IBXActivity } from "./interfaces/bx-activity.interface";
-
+import { BitrixBaseApi } from 'src/modules/bitrix/core/base/bitrix-base-api';
+import {
+    EBxMethod,
+    EBxNamespace,
+} from '../../core/domain/consts/bitrix-api.enum';
+import { EBXEntity } from '../../core/domain/consts/bitrix-entities.enum';
+import { IBXTask } from '../interfaces/bitrix.interface';
+import { TBXResponse } from '../../core';
+import { IBitrixResponse } from '../../core/interface/bitrix-api.intterface';
+import {
+    BXActivityRequestFields,
+    IBXActivity,
+} from './interfaces/bx-activity.interface';
 
 export class BxActivityRepository {
-    constructor(private readonly bitrixService: BitrixBaseApi) { }
+    constructor(private readonly bitrixService: BitrixBaseApi) {}
 
     async get(id: number) {
         return this.bitrixService.callType(
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.GET,
-            { id }
+            { id },
         );
     }
 
@@ -25,74 +30,87 @@ export class BxActivityRepository {
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.GET,
-            { id: activityId, }
+            { id: activityId },
         );
     }
 
-    async getList(filter: Partial<BXActivityRequestFields>, select?: string[]): Promise<IBitrixResponse<TBXResponse<EBxNamespace.CRM, EBXEntity.ACTIVITY, EBxMethod.LIST>>> {
+    async getList(
+        filter: Partial<BXActivityRequestFields>,
+        select?: string[],
+        order?: { [key in keyof BXActivityRequestFields]?: 'ASC' | 'DESC' },
+    ): Promise<
+        IBitrixResponse<
+            TBXResponse<EBxNamespace.CRM, EBXEntity.ACTIVITY, EBxMethod.LIST>
+        >
+    > {
         return await this.bitrixService.callType(
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.LIST,
-            { select, filter }
+            { select, filter, order },
         );
     }
 
-
-
-    async getListBtch(cmdCode: string, filter: Partial<BXActivityRequestFields>, select?: string[]) {
+    async getListBtch(
+        cmdCode: string,
+        filter: Partial<BXActivityRequestFields>,
+        select?: string[],
+    ) {
         return this.bitrixService.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.LIST,
-            { select, filter }
+            { select, filter },
         );
     }
 
-    async getAll(filter: Partial<BXActivityRequestFields>, select?: string[]): Promise<{
-        activities: IBXActivity[],
-        total: number
+    async getAll(
+        filter: Partial<BXActivityRequestFields>,
+        select?: string[],
+    ): Promise<{
+        activities: IBXActivity[];
+        total: number;
     }> {
-        let condition = true
-        const results = [] as IBXActivity[]
-        let lastId = undefined as undefined | number | string
+        let condition = true;
+        const results = [] as IBXActivity[];
+        let lastId = undefined as undefined | number | string;
         while (condition) {
             const result = await this.bitrixService.callType(
                 EBxNamespace.CRM,
                 EBXEntity.ACTIVITY,
                 EBxMethod.LIST,
                 {
-                    select, filter: {
+                    select,
+                    filter: {
                         ...filter,
-                        '>ID': lastId
-
-                    }, order: { 'ID': 'asc' }
-                }
+                        '>ID': lastId,
+                    },
+                    order: { ID: 'asc' },
+                },
             );
             if (result && result.result) {
-                result.result.map(t => {
-                    lastId = t.id
-                    results.push(t)
-                })
+                result.result.map((t) => {
+                    lastId = t.id;
+                    results.push(t);
+                });
             }
             if (!result.total) {
-                condition = false
+                condition = false;
             }
         }
         return {
             activities: results,
-            total: results.length
-        }
+            total: results.length,
+        };
     }
-
 
     async delete(activityId: number | string) {
         return this.bitrixService.callType(
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.DELETE,
-            { id: activityId }
+            { id: activityId },
         );
     }
 
@@ -102,7 +120,7 @@ export class BxActivityRepository {
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.DELETE,
-            { id: activityId, }
+            { id: activityId },
         );
     }
     //     field_n — название поля, по которому будет отфильтрована выборка элементов
@@ -138,21 +156,21 @@ export class BxActivityRepository {
     //     );
     // }
 
-    async create(data:  Partial<IBXActivity>) {
+    async create(data: Partial<IBXActivity>) {
         return this.bitrixService.callType(
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.ADD,
-            { fields: data }
+            { fields: data },
         );
     }
-    async createBtch(cmdCode: string, data:  Partial<IBXActivity>) {
+    async createBtch(cmdCode: string, data: Partial<IBXActivity>) {
         return this.bitrixService.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.ADD,
-            { fields: data }
+            { fields: data },
         );
     }
     async update(id: number | string, data: Partial<IBXActivity>) {
@@ -160,17 +178,21 @@ export class BxActivityRepository {
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.UPDATE,
-            { id, fields: data }
+            { id, fields: data },
         );
     }
 
-    async updateBtch(cmdCode: string, id: number | string, data: Partial<IBXActivity>) {
+    async updateBtch(
+        cmdCode: string,
+        id: number | string,
+        data: Partial<IBXActivity>,
+    ) {
         return this.bitrixService.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.UPDATE,
-            { id, fields: data }
+            { id, fields: data },
         );
     }
 }

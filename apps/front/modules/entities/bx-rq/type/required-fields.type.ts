@@ -6,7 +6,6 @@ export enum E_REQUIRED_DOCUMENT_RQ_ITEM_CODE {
     FIRST_NAME = 'first_name',
     SECOND_NAME = 'second_name',
 
-
     DIRECTOR_NAME = 'director',
     DIRECTOR_POSITION = 'position',
     DIRECTOR_CASE = 'director_case',
@@ -25,7 +24,6 @@ export enum E_REQUIRED_DOCUMENT_RQ_ITEM_CODE {
     // OKVED_DESCRIPTION = 'okved_description',
     // OKVED_DESCRIPTION_CASE = 'okved_description_case',
 
-
     PHONE = 'phone',
     DOCUMENT = 'document',
     DOCUMENT_DATE = 'docDate',
@@ -33,8 +31,6 @@ export enum E_REQUIRED_DOCUMENT_RQ_ITEM_CODE {
     DOCUMENT_NUMBER = 'docNum',
     ISSUED_BY = 'issued_by',
     DEPARTMENT_CODE = 'dep_code',
-
-
 }
 export enum E_REQUIRED_DOCUMENT_ADDRESS_RQ_ITEM_CODE {
     ADDRESS_COUNTRY = 'address_country',

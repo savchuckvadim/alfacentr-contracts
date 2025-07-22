@@ -8,4 +8,4 @@ import { PBXModule } from '../pbx/pbx.module';
     imports: [PBXModule],
     providers: [OnDealInitUseCase],
 })
-export class OnDealInitModule { }   
+export class OnDealInitModule {}

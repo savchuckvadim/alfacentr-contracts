@@ -1,29 +1,30 @@
-import { IBXItem } from "@/modules/bitrix";
-
+import { IBXItem } from '@/modules/bitrix';
 
 export const bxSmartEntityTypeId = '1036';
 export const bxSmartCategoryId = '26';
 export const bxSmartSmartId = 12;
 
 export const bxSmartData = {
-  name: {
-    code: "name",
-    type: "string",
-    multiple: false,
-    name: "Название",
-    bitrixId: "UF_CRM_12_NAME",
-    bitrixCamelId: 'ufCrm12Name',
-
-
-  }
-}
-export interface IBXSmartItem<T extends number, C extends number, S extends string> extends IBXItem {
-  id?: number
-  xmlId?  : string
-  title?: string
-  createdBy?: number
-  updatedBy?: number
-  stageId?: `DT${T}_${C}:${S}`
+    name: {
+        code: 'name',
+        type: 'string',
+        multiple: false,
+        name: 'Название',
+        bitrixId: 'UF_CRM_12_NAME',
+        bitrixCamelId: 'ufCrm12Name',
+    },
+};
+export interface IBXSmartItem<
+    T extends number,
+    C extends number,
+    S extends string,
+> extends IBXItem {
+    id?: number;
+    xmlId?: string;
+    title?: string;
+    createdBy?: number;
+    updatedBy?: number;
+    stageId?: `DT${T}_${C}:${S}`;
 }
 // export interface IAlfaParticipantSmartItem<T extends EntityTypeId.PARTICIPANT, C extends 26, S extends StageId> extends IBXSmartItem<T, C, S> {
 //   id?: number

@@ -1,16 +1,18 @@
-import { Bitrix, BitrixOwnerTypeId, IBXProduct, IBXProductRowRow } from "@bitrix/index";
-import { bxProductData } from "@alfa/entities";
-import { BitrixService } from "@workspace/bitrix";
-import { BitrixOwnerType } from "@workspace/bitrix/";
-import { ListProductRowDto } from "@bitrix/domain/crm/product-row/dto/list-product-row.dto";
-import { BxProductRowWithProduct, IAlfaProduct } from "../model/ProductSlice";
-import { IBitrixBatchResponseResult } from "@bitrix/core/interface/bitrix-api.intterface";
-import { getProductsWithFields } from "../lib/get-products-with-fields";
-
-
+import {
+    Bitrix,
+    BitrixOwnerTypeId,
+    IBXProduct,
+    IBXProductRowRow,
+} from '@bitrix/index';
+import { bxProductData } from '@alfa/entities';
+import { BitrixService } from '@workspace/bitrix';
+import { BitrixOwnerType } from '@workspace/bitrix/';
+import { ListProductRowDto } from '@bitrix/domain/crm/product-row/dto/list-product-row.dto';
+import { BxProductRowWithProduct, IAlfaProduct } from '../model/ProductSlice';
+import { IBitrixBatchResponseResult } from '@bitrix/core/interface/bitrix-api.intterface';
+import { getProductsWithFields } from '../lib/get-products-with-fields';
 
 export interface AlfaProduct extends IBXProductRowRow {
-
     ownerType: BitrixOwnerType;
     ownerId: string | number;
     id?: number;
@@ -23,43 +25,39 @@ export interface AlfaProduct extends IBXProductRowRow {
 }
 
 export class AlfaBxProductService {
-    bitrix!: BitrixService
-    public constructor(
-
-    ) {
-        this.bitrix = Bitrix.getService()
+    bitrix!: BitrixService;
+    public constructor() {
+        this.bitrix = Bitrix.getService();
     }
 
     public async getDealProductRowsWithProducts(dealId: string) {
-        const productRows = await this.getDealProductRows(dealId)
+        const productRows = await this.getDealProductRows(dealId);
         productRows.map(async (row, index) => {
-            this.getProductBatch(row.productId as number, row.id?.toString() || index.toString())
-
-
-        })
-        const response = await this.bitrix.api.callBatch()
-        const rows = this.prepareRowToRowWithProduct(productRows, [response])
-        return { rows}
-
+            this.getProductBatch(
+                row.productId as number,
+                row.id?.toString() || index.toString(),
+            );
+        });
+        const response = await this.bitrix.api.callBatch();
+        const rows = this.prepareRowToRowWithProduct(productRows, [response]);
+        return { rows };
     }
-    private async getDealProductRows(dealId: string): Promise<IBXProductRowRow[]> {
+    private async getDealProductRows(
+        dealId: string,
+    ): Promise<IBXProductRowRow[]> {
         const getProductRowsData: ListProductRowDto = {
-            "=ownerType": BitrixOwnerTypeId.DEAL as unknown as string,
-            "=ownerId": dealId
+            '=ownerType': BitrixOwnerTypeId.DEAL as unknown as string,
+            '=ownerId': dealId,
+        };
 
-        }
-        
-        const response = await this.bitrix.productRow.list(getProductRowsData)
-        
-        return response.productRows
+        const response = await this.bitrix.productRow.list(getProductRowsData);
+
+        return response.productRows;
     }
-
-
 
     private getProductBatch(productId: number, batchKey: string): void {
-
         const select = [
-            "iblockId",
+            'iblockId',
             'active',
             'name',
             'price',
@@ -81,28 +79,30 @@ export class AlfaBxProductService {
             'property220',
             'property221',
             bxProductData.SEMINAR_TOPIC.bitrixId.toString(),
-        ]
+        ];
 
-     this.bitrix.batch.product.get(batchKey, productId, select)
+        this.bitrix.batch.product.get(batchKey, productId, select);
     }
-    private prepareRowToRowWithProduct(rows: IBXProductRowRow[], responses: IBitrixBatchResponseResult[]): IAlfaProduct[] {
-        const products: BxProductRowWithProduct[] = []
+    private prepareRowToRowWithProduct(
+        rows: IBXProductRowRow[],
+        responses: IBitrixBatchResponseResult[],
+    ): IAlfaProduct[] {
+        const products: BxProductRowWithProduct[] = [];
         rows.map((row, index) => {
-            let product: IBXProduct | null = null
+            let product: IBXProduct | null = null;
             responses.map(response => {
-                const resultKey = row.id?.toString() || index.toString()
-                product = response.result[resultKey].product as IBXProduct
-
-            })
+                const resultKey = row.id?.toString() || index.toString();
+                product = response.result[resultKey].product as IBXProduct;
+            });
             if (product) {
                 const resultRow = {
                     ...row,
-                    product: product as IBXProduct
-                } as BxProductRowWithProduct
-                products.push(resultRow)
+                    product: product as IBXProduct,
+                } as BxProductRowWithProduct;
+                products.push(resultRow);
             }
-        })
-        const alfaProducts = getProductsWithFields(products)
-        return alfaProducts
+        });
+        const alfaProducts = getProductsWithFields(products);
+        return alfaProducts;
     }
 }

@@ -1,18 +1,19 @@
-import { BitrixBaseApi } from "@bitrix/core";
-import { EBXEntity } from "../../../../core/domain/consts/bitrix-entities.enum";
-import { EBxMethod, EBxNamespace } from "../../../../core/domain/consts/bitrix-api.enum";
-import { IBXTimelineComment } from "../interface/bx-timeline.interface";
+import { BitrixBaseApi } from '@bitrix/core';
+import { EBXEntity } from '../../../../core/domain/consts/bitrix-entities.enum';
+import {
+    EBxMethod,
+    EBxNamespace,
+} from '../../../../core/domain/consts/bitrix-api.enum';
+import { IBXTimelineComment } from '../interface/bx-timeline.interface';
 
 export class BxTimelineRepository {
-    constructor(
-        private readonly bxApi: BitrixBaseApi
-    ) { }
+    constructor(private readonly bxApi: BitrixBaseApi) {}
     async addTimelineComment(data: IBXTimelineComment) {
         return await this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.TIMELINE_COMMENT,
             EBxMethod.ADD,
-            { fields: data }
+            { fields: data },
         );
     }
     addTimelineCommentBtch(cmd: string, data: IBXTimelineComment) {
@@ -21,7 +22,7 @@ export class BxTimelineRepository {
             EBxNamespace.CRM,
             EBXEntity.TIMELINE_COMMENT,
             EBxMethod.ADD,
-            { fields: data }
+            { fields: data },
         );
     }
 }

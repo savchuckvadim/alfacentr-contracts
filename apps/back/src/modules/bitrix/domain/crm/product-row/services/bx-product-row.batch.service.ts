@@ -1,12 +1,15 @@
-import { Injectable } from "@nestjs/common";
-import { BxProductRowRepository } from "../repository/bx-product-row.repository";
-import { BitrixBaseApi } from "src/modules/bitrix/core/base/bitrix-base-api";
-import { IBXProductRow, IBXProductRowRow } from "../interface/bx-product-row.interface";
+import { Injectable } from '@nestjs/common';
+import { BxProductRowRepository } from '../repository/bx-product-row.repository';
+import { BitrixBaseApi } from 'src/modules/bitrix/core/base/bitrix-base-api';
+import {
+    IBXProductRow,
+    IBXProductRowRow,
+} from '../interface/bx-product-row.interface';
 
 @Injectable()
 export class BxProductRowBatchService {
-    private repo: BxProductRowRepository
-    constructor() { }
+    private repo: BxProductRowRepository;
+    constructor() {}
 
     init(api: BitrixBaseApi) {
         this.repo = new BxProductRowRepository(api);
@@ -18,4 +21,4 @@ export class BxProductRowBatchService {
     add(cmdCode: string, data: IBXProductRowRow) {
         return this.repo.addBtch(cmdCode, data);
     }
-} 
+}

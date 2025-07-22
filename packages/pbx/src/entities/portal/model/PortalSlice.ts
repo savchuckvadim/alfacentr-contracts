@@ -1,40 +1,31 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { Portal } from "../type/portal-type";
-
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { Portal } from '../type/portal-type';
 
 //TYPES
-export type EventReportState = typeof initialState
-
+export type EventReportState = typeof initialState;
 
 export interface SetPortalProps {
-    portal: Portal
+    portal: Portal;
 }
 
 const initialState = {
-
     portal: null as null | Portal,
     isFetched: false as boolean,
     error: '',
-
-
-}
-
+};
 
 const portalSlice = createSlice({
     name: 'Portal',
     initialState,
     reducers: {
-
         setPortal: (
             state: EventReportState,
-            action: PayloadAction<SetPortalProps>
-
+            action: PayloadAction<SetPortalProps>,
         ) => {
             const payload = action.payload;
 
-            state.portal = payload.portal
+            state.portal = payload.portal;
         },
-
     },
 
     // extraReducers: (builder) => {
@@ -57,14 +48,9 @@ const portalSlice = createSlice({
     //             }
     //         );
     // }
-
 });
 
-
-
-
 //utils
-
 
 export const portalReducer = portalSlice.reducer;
 

@@ -1,10 +1,10 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // import { fetchProducts } from "./ProductThunk";
-import { IBXProduct } from "@bitrix/domain/catalog/interface/bx-product.interface";
-import { IBXProductRowRow } from "@bitrix/domain/crm/product-row/interface/bx-product-row.interface";
-import { BitrixOwnerType } from "@bitrix/domain/enums/bitrix-constants.enum";
-import { fetchProducts } from "./ProductThunk";
-import { handleSliceError } from "@/modules/app/lib/thunk-error-handler";
+import { IBXProduct } from '@bitrix/domain/catalog/interface/bx-product.interface';
+import { IBXProductRowRow } from '@bitrix/domain/crm/product-row/interface/bx-product-row.interface';
+import { BitrixOwnerType } from '@bitrix/domain/enums/bitrix-constants.enum';
+import { fetchProducts } from './ProductThunk';
+import { handleSliceError } from '@/modules/app/lib/thunk-error-handler';
 
 // Временный тип для продукта, пока не создадим в alfa пакете
 
@@ -21,32 +21,35 @@ export interface BxProductRowWithProduct extends IBXProductRowRow {
 }
 
 export interface IProductField {
-    bitrixId: string 
-    name: string
-    userType: string
-    isMultiple: boolean
-    value: string | string[] | {
-        value: string
-        valueId: string
-        valueEnum?: string
-    }
+    bitrixId: string;
+    name: string;
+    userType: string;
+    isMultiple: boolean;
+    value:
+        | string
+        | string[]
+        | {
+              value: string;
+              valueId: string;
+              valueEnum?: string;
+          };
 }
 
 export type IProductState = {
-    items: BxProductRowWithProduct[]
-    editable: BxProductRowWithProduct | null
-    loading: boolean
-    error: null | string
-}
+    items: BxProductRowWithProduct[];
+    editable: BxProductRowWithProduct | null;
+    loading: boolean;
+    error: null | string;
+};
 export interface IAlfaProduct extends BxProductRowWithProduct {
-    fields: IProductField[]
+    fields: IProductField[];
 }
 const initialState = {
     items: [] as IAlfaProduct[],
     editable: null as IAlfaProduct | null,
     loading: false,
-    error: null as null | string
-}
+    error: null as null | string,
+};
 
 const productSlice = createSlice({
     name: 'product',
@@ -55,30 +58,41 @@ const productSlice = createSlice({
         // setProducts: (state, action: PayloadAction<IAlfaProduct[]>) => {
         //     state.items = action.payload
         // },
-        setEditableProduct: (state, action: PayloadAction<IAlfaProduct | null>) => {
-            state.editable = action.payload
+        setEditableProduct: (
+            state,
+            action: PayloadAction<IAlfaProduct | null>,
+        ) => {
+            state.editable = action.payload;
         },
         setFetchedProducts: (state, action: PayloadAction<IAlfaProduct[]>) => {
-            state.items = action.payload
-        }
-       
+            state.items = action.payload;
+        },
     },
-    extraReducers: (builder) => {
+    extraReducers: builder => {
         // fetchProducts
         builder.addCase(fetchProducts.pending, (state: IProductState) => {
-            state.loading = true
-            state.error = null
-        })
-        builder.addCase(fetchProducts.fulfilled, (state: IProductState, action: PayloadAction<IAlfaProduct[]>) => {
-            state.items = action.payload
-            
-            state.loading = false
-            state.error = null
-        })
-        builder.addCase(fetchProducts.rejected, (state: IProductState, action) => {
-            state.loading = false
-            state.error = handleSliceError(action, 'Ошибка загрузки продуктов')
-        })
+            state.loading = true;
+            state.error = null;
+        });
+        builder.addCase(
+            fetchProducts.fulfilled,
+            (state: IProductState, action: PayloadAction<IAlfaProduct[]>) => {
+                state.items = action.payload;
+
+                state.loading = false;
+                state.error = null;
+            },
+        );
+        builder.addCase(
+            fetchProducts.rejected,
+            (state: IProductState, action) => {
+                state.loading = false;
+                state.error = handleSliceError(
+                    action,
+                    'Ошибка загрузки продуктов',
+                );
+            },
+        );
 
         // // createProduct
         // builder.addCase(createProduct.pending, (state: IProductState) => {
@@ -127,13 +141,13 @@ const productSlice = createSlice({
         //     state.loading = false
         //     state.error = handleSliceError(action, 'Ошибка удаления продукта')
         // })
-    }
-})
+    },
+});
 
 export const {
     // setProducts,
     setEditableProduct,
     setFetchedProducts,
-} = productSlice.actions
+} = productSlice.actions;
 
-export const productReducer = productSlice.reducer 
+export const productReducer = productSlice.reducer;

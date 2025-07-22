@@ -6,8 +6,8 @@
 // participantPpkQuantity - колиество всех ппк программ в участниках
 // participantSeminarQuantity - колиество всех участников
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IParticipantPpk } from "../../type/participant-ppk.type";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IParticipantPpk } from '../../type/participant-ppk.type';
 
 //participantInSeminar
 //participantInPpkProduct
@@ -35,7 +35,7 @@ import { IParticipantPpk } from "../../type/participant-ppk.type";
 //     ppkProductWithoutParticipant = 'ppkProductWithoutParticipant'
 // }
 export interface IParticipantProductState {
-    ppkDistribution: IParticipantPpk
+    ppkDistribution: IParticipantPpk;
 }
 const initialState: IParticipantProductState = {
     ppkDistribution: {
@@ -43,25 +43,23 @@ const initialState: IParticipantProductState = {
         participantToProducts: {},
         productToParticipants: {},
         topicStats: [],
-        unassignedParticipants: []
-    }
-}
+        unassignedParticipants: [],
+    },
+};
 
 export const participantProductSlice = createSlice({
     name: 'participantProduct',
     initialState,
     reducers: {
-        setParticipantPpk: (state: IParticipantProductState, action: PayloadAction<IParticipantPpk>) => {
-            console.log('setParticipantPpk', action.payload)
-            console.log('topicStats', action.payload.topicStats)
-            state.ppkDistribution = action.payload
-        }
-    }
-})
-export const { setParticipantPpk } = participantProductSlice.actions
-export const participantProductReducer = participantProductSlice.reducer
-
-
-
-
-
+        setParticipantPpk: (
+            state: IParticipantProductState,
+            action: PayloadAction<IParticipantPpk>,
+        ) => {
+            console.log('setParticipantPpk', action.payload);
+            console.log('topicStats', action.payload.topicStats);
+            state.ppkDistribution = action.payload;
+        },
+    },
+});
+export const { setParticipantPpk } = participantProductSlice.actions;
+export const participantProductReducer = participantProductSlice.reducer;

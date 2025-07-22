@@ -1,93 +1,87 @@
-
-
 export const localAPI = {
     getData: async (name: string) => {
         let myStorage;
-        let data = null
+        let data = null;
 
         try {
-
             myStorage = window.localStorage;
             data = myStorage.getItem(name); // Попробуйте записать что-то в localStorage
 
-            return data
-
+            return data;
         } catch (e) {
-
-            // Если возникла ошибка (например, из-за отключенного localStorage), 
+            // Если возникла ошибка (например, из-за отключенного localStorage),
             // вы можете показать сообщение пользователю или обработать это иначе
-            console.log("Ваш браузер не поддерживает использование localStorage или он отключен. Некоторые функции могут быть ограничены. Обратитесь к Админимстратору.");
-            return data
+            console.log(
+                'Ваш браузер не поддерживает использование localStorage или он отключен. Некоторые функции могут быть ограничены. Обратитесь к Админимстратору.',
+            );
+            return data;
         }
-
     },
     getParsedData: async (name: string) => {
         let myStorage;
-        let data = null
+        let data = null;
 
         try {
-
             myStorage = window.localStorage;
             data = myStorage.getItem(name); // Попробуйте записать что-то в localStorage
             if (!data) {
-                return null
+                return null;
             }
-            const parsedData = JSON.parse(data as string)
-            return parsedData
-
+            const parsedData = JSON.parse(data as string);
+            return parsedData;
         } catch (e) {
-
-            // Если возникла ошибка (например, из-за отключенного localStorage), 
+            // Если возникла ошибка (например, из-за отключенного localStorage),
             // вы можете показать сообщение пользователю или обработать это иначе
-            console.log("Ваш браузер не поддерживает использование localStorage или он отключен. Некоторые функции могут быть ограничены. Обратитесь к Админимстратору.");
-            return data
+            console.log(
+                'Ваш браузер не поддерживает использование localStorage или он отключен. Некоторые функции могут быть ограничены. Обратитесь к Админимстратору.',
+            );
+            return data;
         }
-
     },
 
     setData: async (data: any, name: string) => {
         try {
             let myStorage;
-            let jsnData = JSON.stringify({ ...data })
+            let jsnData = JSON.stringify({ ...data });
             myStorage = window.localStorage;
             myStorage.setItem(name, jsnData);
             let jsnupdtdData = myStorage.getItem(name);
             if (!jsnupdtdData) {
-                return null
+                return null;
             }
-            let updtdData = JSON.parse(jsnupdtdData as string)
+            let updtdData = JSON.parse(jsnupdtdData as string);
 
-            return updtdData
-
+            return updtdData;
         } catch (e) {
-            // Если возникла ошибка (например, из-за отключенного localStorage), 
+            // Если возникла ошибка (например, из-за отключенного localStorage),
             // вы можете показать сообщение пользователю или обработать это иначе
-            console.log("Ваш браузер не поддерживает использование localStorage или он отключен. Некоторые функции могут быть ограничены. Обратитесь пожалуйста к разработчику");
-            return null
+            console.log(
+                'Ваш браузер не поддерживает использование localStorage или он отключен. Некоторые функции могут быть ограничены. Обратитесь пожалуйста к разработчику',
+            );
+            return null;
         }
-
     },
 
     setReportData: async (data: any, name: string) => {
         try {
             let myStorage;
-            let jsnData = JSON.stringify(data)
+            let jsnData = JSON.stringify(data);
             myStorage = window.localStorage;
             myStorage.setItem(name, jsnData);
             let jsnupdtdData = myStorage.getItem(name);
             if (!jsnupdtdData) {
-                return null
+                return null;
             }
-            let updtdData = JSON.parse(jsnupdtdData as string)
+            let updtdData = JSON.parse(jsnupdtdData as string);
 
-            return updtdData
-
+            return updtdData;
         } catch (e) {
-            // Если возникла ошибка (например, из-за отключенного localStorage), 
+            // Если возникла ошибка (например, из-за отключенного localStorage),
             // вы можете показать сообщение пользователю или обработать это иначе
-            console.log("Ваш браузер не поддерживает использование localStorage или он отключен. Некоторые функции могут быть ограничены. Обратитесь пожалуйста к разработчику");
-            return null
+            console.log(
+                'Ваш браузер не поддерживает использование localStorage или он отключен. Некоторые функции могут быть ограничены. Обратитесь пожалуйста к разработчику',
+            );
+            return null;
         }
-    }
-
-}
+    },
+};

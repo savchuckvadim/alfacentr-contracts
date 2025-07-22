@@ -1,6 +1,9 @@
-import { INestApplication } from "@nestjs/common";
-import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from "@nestjs/swagger";
-
+import { INestApplication } from '@nestjs/common';
+import {
+    DocumentBuilder,
+    SwaggerDocumentOptions,
+    SwaggerModule,
+} from '@nestjs/swagger';
 
 export const getSwaggerConfig = (app: INestApplication) => {
     const appName = process.env.APP_NAME || 'alfacentr';
@@ -12,11 +15,10 @@ export const getSwaggerConfig = (app: INestApplication) => {
         .build();
 
     const options: SwaggerDocumentOptions = {
-        operationIdFactory: (
-            controllerKey: string,
-            methodKey: string
-        ) => methodKey
+        operationIdFactory: (controllerKey: string, methodKey: string) =>
+            methodKey,
     };
-    const documentFactory = () => SwaggerModule.createDocument(app, config, options);
+    const documentFactory = () =>
+        SwaggerModule.createDocument(app, config, options);
     SwaggerModule.setup('docs/api', app, documentFactory);
-}
+};

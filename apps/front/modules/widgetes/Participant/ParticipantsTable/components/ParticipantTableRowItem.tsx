@@ -1,7 +1,7 @@
-import { TableRow } from "@workspace/ui/components/table"
-import { IParticipant } from "@alfa/entities"
-import { useEditParticipant } from "../../ParticipantEdit/hook/useParticipantEdit"
-import { useParticipantRowData } from "../hooks/useParticipantRowData"
+import { TableRow } from '@workspace/ui/components/table';
+import { IParticipant } from '@alfa/entities';
+import { useEditParticipant } from '../../ParticipantEdit/hook/useParticipantEdit';
+import { useParticipantRowData } from '../hooks/useParticipantRowData';
 import {
     IndexCell,
     NameCell,
@@ -10,21 +10,21 @@ import {
     ProgramsCell,
     ProductsCell,
     PpkStatusCell,
-    ActionsCell
-} from "./cells"
+    ActionsCell,
+} from './cells';
 
 interface ParticipantTableRowItemProps {
-    participant: IParticipant
-    index: number
-    handleDeleteClick: (participant: IParticipant) => void
+    participant: IParticipant;
+    index: number;
+    handleDeleteClick: (participant: IParticipant) => void;
 }
 
 export function ParticipantTableRowItem({
     participant,
     index,
-    handleDeleteClick
+    handleDeleteClick,
 }: ParticipantTableRowItemProps) {
-    const { activateEditable } = useEditParticipant(participant.id)
+    const { activateEditable } = useEditParticipant(participant.id);
     const {
         name,
         email,
@@ -34,50 +34,41 @@ export function ParticipantTableRowItem({
         programs,
         participantPpkTopicsStats,
         assignedProducts,
-    } = useParticipantRowData(participant.id)
+    } = useParticipantRowData(participant.id);
 
     const handleEdit = (participantId: number) => {
-        activateEditable(participantId)
-    }
+        activateEditable(participantId);
+    };
 
     return (
         <TableRow key={participant.id}>
             <IndexCell index={index} />
-            
-            <NameCell 
-                participant={participant} 
-                name={name} 
-            />
-            
-            <ContactCell 
-                value={email} 
-                type="email" 
-            />
-            
-            <ContactCell 
-                value={phone} 
-                type="phone" 
-            />
-            
+
+            <NameCell participant={participant} name={name} />
+
+            <ContactCell value={email} type="email" />
+
+            <ContactCell value={phone} type="phone" />
+
             <FormatCell format={format} />
-            
-            <ProgramsCell 
+
+            <ProgramsCell
                 programs={programs}
                 participantPpkTopicsStats={participantPpkTopicsStats}
             />
-            
-            <ProductsCell 
+
+            <ProductsCell
                 assignedProducts={assignedProducts}
                 participantPpkTopicsStats={participantPpkTopicsStats}
             />
-            
+
             <PpkStatusCell isPpk={isPpk} />
-            
-            <ActionsCell 
+
+            <ActionsCell
                 participant={participant}
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}
             />
         </TableRow>
-    )
+    );
 }

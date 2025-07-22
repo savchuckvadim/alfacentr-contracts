@@ -1,5 +1,4 @@
-
-export interface BXRQ{
+export interface BXRQ {
     ID: number;
     NAME: string;
     ACTIVE: boolean;

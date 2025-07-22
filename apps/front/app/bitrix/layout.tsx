@@ -1,38 +1,29 @@
+import '@workspace/ui/globals.css';
 
-
-import "@workspace/ui/globals.css"
-
-import { Header } from "@/modules/widgetes/Header/Header"
-import { CompanyBrand } from "@/modules/entities/company"
-import { App } from "@/modules/app"
-
-
+import { Header } from '@/modules/widgetes/Header/Header';
+import { CompanyBrand } from '@/modules/entities/company';
+import { App } from '@/modules/app';
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode
+    children: React.ReactNode;
 }>) {
-  return (
+    return (
+        // <html lang="en" suppressHydrationWarning>
 
-    // <html lang="en" suppressHydrationWarning>
-
-    //   <body
-    //     className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
-    //   >
-    //     <Providers>
-          <div >
+        //   <body
+        //     className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
+        //   >
+        //     <Providers>
+        <div>
             {/* Хедер */}
             <Header brandComponent={<CompanyBrand />} />
-            <App>
+            <App>{children}</App>
+        </div>
+        //     </Providers>
+        //   </body>
 
-              {children}
-            </App>
-          </div>
-    //     </Providers>
-    //   </body>
-
-    // </html>
-
-  )
+        // </html>
+    );
 }

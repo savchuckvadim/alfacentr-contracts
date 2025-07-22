@@ -1,1 +1,1 @@
-export * from './ProductsTableWidget'
+export * from './ProductsTableWidget';

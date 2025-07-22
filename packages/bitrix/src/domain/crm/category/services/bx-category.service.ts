@@ -1,18 +1,15 @@
-
-import { BxCategoryRepository } from "../repository/bx-category.repository";
-import { BitrixBaseApi } from "@bitrix/core";
-import { BitrixOwnerTypeId } from "@bitrix/domain/enums/bitrix-constants.enum";
-
+import { BxCategoryRepository } from '../repository/bx-category.repository';
+import { BitrixBaseApi } from '@bitrix/core';
+import { BitrixOwnerTypeId } from '@bitrix/domain/enums/bitrix-constants.enum';
 
 export class BxCategoryService {
     private repo!: BxCategoryRepository;
-    
+
     clone(api: BitrixBaseApi): BxCategoryService {
         const instance = new BxCategoryService();
         instance.init(api);
         return instance;
     }
-
 
     init(api: BitrixBaseApi) {
         this.repo = new BxCategoryRepository(api);

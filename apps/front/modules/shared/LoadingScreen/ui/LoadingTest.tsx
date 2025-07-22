@@ -18,7 +18,6 @@ export default function LoadingTest() {
         return () => window.removeEventListener('load', onLoad);
     }, []);
 
-
     return (
         <AnimatePresence>
             {!isDone && (

@@ -1,1 +1,1 @@
-export * from './ui/ContractPreview'
+export * from './ui/ContractPreview';

@@ -1,18 +1,16 @@
-
-import { BxCompanyRepository } from "../repository/bx-company.repository";
-import { BitrixBaseApi } from "@bitrix/core";
-import { IBXCompany } from "../interface/bx-company.interface";
-import { IBXField } from "../../fields/bx-field.interface";
+import { BxCompanyRepository } from '../repository/bx-company.repository';
+import { BitrixBaseApi } from '@bitrix/core';
+import { IBXCompany } from '../interface/bx-company.interface';
+import { IBXField } from '../../fields/bx-field.interface';
 
 export class BxCompanyBatchService {
-    private repo!: BxCompanyRepository
+    private repo!: BxCompanyRepository;
 
     clone(api: BitrixBaseApi): BxCompanyBatchService {
         const instance = new BxCompanyBatchService();
         instance.init(api);
         return instance;
     }
-
 
     init(api: BitrixBaseApi) {
         this.repo = new BxCompanyRepository(api);
@@ -30,7 +28,11 @@ export class BxCompanyBatchService {
         return this.repo.setBtch(cmdCode, data);
     }
 
-    update(cmdCode: string, companyId: number | string, data: Partial<IBXCompany>) {
+    update(
+        cmdCode: string,
+        companyId: number | string,
+        data: Partial<IBXCompany>,
+    ) {
         return this.repo.updateBtch(cmdCode, companyId, data);
     }
 

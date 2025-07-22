@@ -12,7 +12,7 @@ export const getConfig = () => config;
 
 export const getApiHeaders = () => ({
     'content-type': 'application/json',
-    'accept': 'application/json',
+    accept: 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
     'X-API-KEY': config.apiKey || '',
-}); 
+});

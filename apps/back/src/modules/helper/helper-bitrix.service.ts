@@ -1,11 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { PBXService } from "../pbx";
+import { Injectable } from '@nestjs/common';
+import { PBXService } from '../pbx';
 
 @Injectable()
 export class HelperBitrixService {
-    constructor(
-        private readonly pbxService: PBXService
-    ) { }
+    constructor(private readonly pbxService: PBXService) {}
 
     async bxMethod(domain: string, method: string, params: any) {
         const { bitrix } = await this.pbxService.init(domain);

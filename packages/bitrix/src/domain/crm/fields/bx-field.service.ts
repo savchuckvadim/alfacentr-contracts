@@ -1,6 +1,5 @@
-import { BxFieldRepository } from "./bx-field.repository";
-import { BitrixBaseApi } from "@bitrix/core";
-
+import { BxFieldRepository } from './bx-field.repository';
+import { BitrixBaseApi } from '@bitrix/core';
 
 export class BxFieldService {
     private repo!: BxFieldRepository;

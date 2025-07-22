@@ -1,15 +1,18 @@
-import { TableCell } from "@workspace/ui/components/table"
-import { Badge } from "@workspace/ui/components/badge"
+import { TableCell } from '@workspace/ui/components/table';
+import { Badge } from '@workspace/ui/components/badge';
 
 interface PpkStatusCellProps {
-    isPpk: boolean
+    isPpk: boolean;
 }
 
 export const PpkStatusCell = ({ isPpk }: PpkStatusCellProps) => {
     return (
         <TableCell>
             {isPpk ? (
-                <Badge variant="default" className="bg-green-100 text-green-800">
+                <Badge
+                    variant="default"
+                    className="bg-green-100 text-green-800"
+                >
                     Да
                 </Badge>
             ) : (
@@ -18,5 +21,5 @@ export const PpkStatusCell = ({ isPpk }: PpkStatusCellProps) => {
                 </Badge>
             )}
         </TableCell>
-    )
-} 
+    );
+};

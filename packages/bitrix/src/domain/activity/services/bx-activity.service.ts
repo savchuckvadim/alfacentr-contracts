@@ -1,17 +1,15 @@
-import { BxActivityRepository } from "../bx-activity.repository";
-import { IBXActivity } from "../interfaces/bx-activity.interface";
-import { BitrixBaseApi } from "@bitrix/core";
+import { BxActivityRepository } from '../bx-activity.repository';
+import { IBXActivity } from '../interfaces/bx-activity.interface';
+import { BitrixBaseApi } from '@bitrix/core';
 
 export class ActivityService {
     private repo!: BxActivityRepository;
 
-    
     clone(api: BitrixBaseApi): ActivityService {
         const instance = new ActivityService();
         instance.init(api);
         return instance;
     }
-
 
     init(api: BitrixBaseApi) {
         this.repo = new BxActivityRepository(api);

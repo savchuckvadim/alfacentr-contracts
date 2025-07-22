@@ -1,1 +1,1 @@
-export * from "./ui/ParticipantInfoCard"
+export * from './ui/ParticipantInfoCard';

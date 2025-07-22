@@ -1,4 +1,4 @@
-import { BitrixEntityType } from "@bitrix/index";
+import { BitrixEntityType } from '@bitrix/index';
 
 export interface IBXTimelineComment {
     ID?: number | string;
@@ -6,14 +6,5 @@ export interface IBXTimelineComment {
     ENTITY_TYPE: BitrixEntityType | string;
     COMMENT: string;
     AUTHOR_ID: string;
-    FILES?: [
-        [
-            "file name",
-            "file content"
-        ],
-        [
-            "file name",
-            "file content"
-        ],
-    ]
+    FILES?: [['file name', 'file content'], ['file name', 'file content']];
 }

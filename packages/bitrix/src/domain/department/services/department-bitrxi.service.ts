@@ -1,8 +1,5 @@
 // import { BitrixBaseApi, EBXEntity, EBxMethod, EBxNamespace } from "@bitrix/core";
 
-
-
-
 // export class DepartmentBitrixService {
 //   constructor(
 //     private readonly bitrixApi: BitrixBaseApi

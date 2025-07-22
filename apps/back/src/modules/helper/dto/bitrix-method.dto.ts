@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsObject, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsObject, IsString } from 'class-validator';
 
 export class BitrixMethodDto {
     @ApiProperty({ description: 'Domain of the portal' })

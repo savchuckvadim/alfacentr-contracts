@@ -1,2 +1,1 @@
-export * from './ws-init'
-export * from './ws-handlers-registry'
+export * from './ws-handlers-registry';

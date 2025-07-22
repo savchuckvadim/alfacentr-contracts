@@ -1,13 +1,18 @@
-import { EBxMethod } from "@bitrix/core";
-import { CrmItemAddRequestType, CrmItemGetRequestType, CrmItemListRequestType, CrmUpdateItemRequestType } from "../../type/crm-request.type";
+import { EBxMethod } from '@bitrix/core';
+import {
+    CrmItemAddRequestType,
+    CrmItemGetRequestType,
+    CrmItemListRequestType,
+    CrmUpdateItemRequestType,
+} from '../../type/crm-request.type';
 
-import { IBXItem } from "../interface/item.interface";
-import { BxItemListResponseDto, BxItemResponseDto } from "../dto/item-response.dto";
-
+import { IBXItem } from '../interface/item.interface';
+import {
+    BxItemListResponseDto,
+    BxItemResponseDto,
+} from '../dto/item-response.dto';
 
 export type BxItemSchema = {
-
-
     [EBxMethod.UPDATE]: {
         request: CrmUpdateItemRequestType<IBXItem>;
         response: BxItemResponseDto;

@@ -18,42 +18,40 @@ import { OnlineClientModule } from '../../clients/online';
         RedisModule,
         // ClientsModule,
         TelegramModule,
-        OnlineClientModule
+        OnlineClientModule,
     ],
     providers: [
-        PortalService,  //for standalone queue etc
+        PortalService, //for standalone queue etc
         PortalContextService, //from request
 
         PortalModelFactory,
-        APIOnlineClient
+        APIOnlineClient,
     ],
     exports: [
         PortalService, //for standalone queue etc
         PortalContextService, //from request
 
-        PortalModelFactory
-    ]
+        PortalModelFactory,
+    ],
 })
 export class PortalModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(PortalContextMiddleware)
             .exclude({ path: '/queue/ping', method: RequestMethod.ALL })
-            .exclude('/hooks/*path')  // не кладём portal
-            .exclude('/kpi-report/download')  // не кладём portal
-            .exclude('api/queue/ping')  // не кладём portal
-            .forRoutes(
+            .exclude('/hooks/*path') // не кладём portal
+            .exclude('/kpi-report/download') // не кладём portal
+            .exclude('api/queue/ping') // не кладём portal
+            .forRoutes
 
-                // AlfaController,
-                // ListController
-            )
+            // AlfaController,
+            // ListController
+            ();
         // .forRoutes({ path: '*', method: RequestMethod.ALL });
 
         // .forRoutes({ path: 'api/*path', method: RequestMethod.ALL });
     }
 }
-
-
 
 // PortalService	Получает портал (с кэшем в Redis)
 // PortalModelFactory + PortalModel	Доступ к методам портала

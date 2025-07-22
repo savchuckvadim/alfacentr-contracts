@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { IAlfaProduct } from "../model/ProductSlice";
+import { useState } from 'react';
+import { IAlfaProduct } from '../model/ProductSlice';
 
 export const useDeleteEditMode = () => {
-    const [onDelete, setOnDelete] = useState<number | null>(null)
-    const [onEdit, setOnEdit] = useState<IAlfaProduct | null>(null)
-    const [isDeleting, setIsDeleting] = useState(false)
-    const [deletingProduct, setDeletingProduct] = useState<IAlfaProduct | null>(null)
+    const [onDelete, setOnDelete] = useState<number | null>(null);
+    const [onEdit, setOnEdit] = useState<IAlfaProduct | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deletingProduct, setDeletingProduct] = useState<IAlfaProduct | null>(
+        null,
+    );
     // const [deleteModal, setDeleteModal] = useState<{
     //   isOpen: boolean;
     //   product: IAlfaProduct | null;
@@ -13,24 +15,21 @@ export const useDeleteEditMode = () => {
     //   isOpen: false,
     //   product: null
     // });
-  
+
     const handleDeleteClick = (product: IAlfaProduct) => {
-      
-      setIsDeleting(true);
-      setDeletingProduct(product);
+        setIsDeleting(true);
+        setDeletingProduct(product);
     };
-  
+
     const handleDeleteConfirm = () => {
-   
         setIsDeleting(false);
         setDeletingProduct(null);
-      
     };
-  
+
     const handleDeleteCancel = () => {
-      setIsDeleting(false);
-      setDeletingProduct(null);
-    };                      
+        setIsDeleting(false);
+        setDeletingProduct(null);
+    };
 
     return {
         onDelete,
@@ -39,6 +38,6 @@ export const useDeleteEditMode = () => {
         deletingProduct,
         handleDeleteClick,
         handleDeleteConfirm,
-        handleDeleteCancel
-    }
-}
+        handleDeleteCancel,
+    };
+};

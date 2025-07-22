@@ -1,8 +1,8 @@
-import { TableCell } from "@workspace/ui/components/table"
-import { Badge } from "@workspace/ui/components/badge"
+import { TableCell } from '@workspace/ui/components/table';
+import { Badge } from '@workspace/ui/components/badge';
 
 interface FormatCellProps {
-    format: string
+    format: string;
 }
 
 export const FormatCell = ({ format }: FormatCellProps) => {
@@ -11,39 +11,39 @@ export const FormatCell = ({ format }: FormatCellProps) => {
             <TableCell>
                 <span className="text-muted-foreground text-sm">Не указан</span>
             </TableCell>
-        )
+        );
     }
 
     const getFormatVariant = (format: string) => {
         switch (format) {
             case 'Онлайн':
-                return 'secondary'
+                return 'secondary';
             case 'Очно':
-                return 'outline'
+                return 'outline';
             default:
-                return 'outline'
+                return 'outline';
         }
-    }
+    };
 
     const getFormatStyles = (format: string) => {
         switch (format) {
             case 'Онлайн':
-                return 'bg-sky-100 text-sky-800'
+                return 'bg-sky-100 text-sky-800';
             case 'Очно':
-                return 'bg-green-100 text-green-800'
+                return 'bg-green-100 text-green-800';
             default:
-                return 'bg-orange-100 text-orange-800'
+                return 'bg-orange-100 text-orange-800';
         }
-    }
+    };
 
     return (
         <TableCell>
-            <Badge 
+            <Badge
                 variant={getFormatVariant(format)}
                 className={`text-xs ${getFormatStyles(format)}`}
             >
                 {format}
             </Badge>
         </TableCell>
-    )
-} 
+    );
+};

@@ -1,11 +1,10 @@
-
 export enum CONTRACT_RQ_GROUP {
-    RQ = "rq",
-    BANK = "bank",
-    ADDRESS = "address",
-    CONTRACT = "contract",
-    SPECIFICATION = "specification",
-    SUPPLY = "supply",
+    RQ = 'rq',
+    BANK = 'bank',
+    ADDRESS = 'address',
+    CONTRACT = 'contract',
+    SPECIFICATION = 'specification',
+    SUPPLY = 'supply',
 }
 
 // Общий тип для элементов, которые входят в массив items
@@ -17,7 +16,7 @@ export interface SelectItem {
 }
 
 export interface ARQInput<T = string> {
-    type: "string" | "text" | "date" | "select" | "file";
+    type: 'string' | 'text' | 'date' | 'select' | 'file';
     name: string;
     isRequired: boolean;
     code: T;
@@ -28,24 +27,24 @@ export interface ARQInput<T = string> {
     isActive: boolean;
     isDisable: boolean;
     order: number;
-    component?: "base" | "contract" | "invoice" | "client";
+    component?: 'base' | 'contract' | 'invoice' | 'client';
     isHidden?: boolean; //скрытый
 }
 // Тип для объектов с type 'select'
 export interface SelectInput<T = string> extends ARQInput<T> {
-    type: "select";
+    type: 'select';
     items: SelectItem[];
     value: SelectItem;
 }
 export interface FileInput extends ARQInput<string> {
-    type: "file";
+    type: 'file';
     file: File | undefined;
     value: string | BXCurrentFile | BXCurrentSmartFile;
 }
 
 export interface BXCurrentFile {
     id: number;
-    downloadUrl: string
+    downloadUrl: string;
 }
 
 export interface BXCurrentSmartFile {
@@ -55,7 +54,7 @@ export interface BXCurrentSmartFile {
 
 // Тип для объектов с type 'string'
 export interface StringInput extends ARQInput<string> {
-    type: "string" | "text" | "date";
+    type: 'string' | 'text' | 'date';
     value: string;
 }
 
@@ -64,33 +63,30 @@ export type DocumentInputValue = string | null;
 export type RqItem = SelectInput | StringInput | FileInput;
 
 export enum RQ_TYPE {
-    ORGANIZATION = "org",
-    BUDGET = "org_state",
-    IP = "ip",
-    FIZ = "fiz",
+    ORGANIZATION = 'org',
+    BUDGET = 'org_state',
+    IP = 'ip',
+    FIZ = 'fiz',
 }
 export enum RQ_TYPE_NAME {
-    ORGANIZATION = "Организация",
-    BUDGET = "Бюджетники",
-    IP = "ИП",
-    FIZ = "Физ лицо",
+    ORGANIZATION = 'Организация',
+    BUDGET = 'Бюджетники',
+    IP = 'ИП',
+    FIZ = 'Физ лицо',
 }
-
 
 export enum SupplyTypeEnum {
     INTERNET = 'internet',
-    PROXIMA = 'proxima'
+    PROXIMA = 'proxima',
 }
 
-export type SupplyTypesType = SupplyTypeEnum.INTERNET | SupplyTypeEnum.PROXIMA
+export type SupplyTypesType = SupplyTypeEnum.INTERNET | SupplyTypeEnum.PROXIMA;
 export enum CONTRACT_LTYPE {
-
     SERVICE = 'service',
     ABON = 'abon',
     LIC = 'lic',
     KEY = 'key',
 }
-
 
 export enum RQ_ITEM_CODE {
     FULLNAME = 'fullname',
@@ -99,7 +95,6 @@ export enum RQ_ITEM_CODE {
     LAST_NAME = 'last_name',
     FIRST_NAME = 'first_name',
     SECOND_NAME = 'second_name',
-
 
     DIRECTOR_NAME = 'director',
     DIRECTOR_POSITION = 'position',
@@ -119,7 +114,6 @@ export enum RQ_ITEM_CODE {
     OKVED_DESCRIPTION = 'okved_description',
     OKVED_DESCRIPTION_CASE = 'okved_description_case',
 
-
     PHONE = 'phone',
     DOCUMENT = 'document',
     DOCUMENT_DATE = 'docDate',
@@ -127,8 +121,6 @@ export enum RQ_ITEM_CODE {
     DOCUMENT_NUMBER = 'docNum',
     ISSUED_BY = 'issued_by',
     DEPARTMENT_CODE = 'dep_code',
-
-
 }
 export enum ADDRESS_RQ_ITEM_CODE {
     ADDRESS_COUNTRY = 'address_country',

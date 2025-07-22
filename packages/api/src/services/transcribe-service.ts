@@ -1,10 +1,9 @@
-import { API_METHOD } from "../type/type";
-import axios from "axios"
+import { API_METHOD } from '../type/type';
+import axios from 'axios';
 
-const url = 'https://april-hook.ru/api'
+const url = 'https://april-hook.ru/api';
 export enum AI_ENDPOINT {
-    TRANSCRIPTION = "transcription",
-
+    TRANSCRIPTION = 'transcription',
 }
 
 // interface TranscribeResponse {
@@ -16,10 +15,10 @@ export enum AI_ENDPOINT {
 
 const headers = {
     'content-type': 'application/json',
-    'accept': 'application/json',
+    accept: 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
     // 'X-API-KEY': __ONLINE_API_KEY__,
-}
+};
 
 const transcribe = axios.create({
     baseURL: url,
@@ -28,30 +27,31 @@ const transcribe = axios.create({
 });
 
 export const TranscribeServiceAPI = {
-    service: async (url: string, method: API_METHOD, model: string, data: any) => {
-        let result = null
+    service: async (
+        url: string,
+        method: API_METHOD,
+        model: string,
+        data: any,
+    ) => {
+        let result = null;
         try {
-
-            const response = await transcribe[method](url, data)
+            const response = await transcribe[method](url, data);
 
             if (response && response.data) {
                 if (response.data.resultCode === 0) {
-
-                    let data = response.data
+                    let data = response.data;
                     if (data.data) {
-                        data = data.data
+                        data = data.data;
                     }
 
-                    result = data[model]
+                    result = data[model];
                 } else {
-
                 }
             }
 
-            return result
+            return result;
         } catch (error) {
-
-            return result
+            return result;
         }
-    }
+    },
 };

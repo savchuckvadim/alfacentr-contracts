@@ -2,16 +2,14 @@
 // import { type TypeB24 } from '@bitrix24/b24jssdk'
 
 import {
-
     // LoggerBrowser,
 
     Result,
     EnumCrmEntityTypeId,
     AuthData,
-
-} from '@bitrix24/b24jssdk'
-import { initializeB24Frame } from '@bitrix24/b24jssdk'
-import { getLayout } from "./bx-helper/activity-helper"
+} from '@bitrix24/b24jssdk';
+import { initializeB24Frame } from '@bitrix24/b24jssdk';
+import { getLayout } from './bx-helper/activity-helper';
 import { BXUser, CustomPlacement, Placement } from '@workspace/bx';
 import { PlacementPlace } from '@workspace/bx/src/type/placement-type';
 import { hookAPI } from './april-hook-api';
@@ -49,13 +47,11 @@ export async function getBxService(): Promise<B24> {
 }
 
 export const bxAPI = {
-
     install: async () => {
         const b24 = await getBxService();
         await b24.installFinish();
     },
     method: () => {
-
         //    const manager = new PlacementManager()
         // const bx = B24Frame
         // const result = await callMethod()
@@ -64,39 +60,35 @@ export const bxAPI = {
         const b24 = await getBxService();
         return {
             options: b24.placement.options,
-            placement: b24.placement.title as PlacementPlace
-        }
+            placement: b24.placement.title as PlacementPlace,
+        };
     },
     getFit: async () => {
         const b24 = await getBxService();
-        return await b24.parent.fitWindow()
-
+        return await b24.parent.fitWindow();
     },
     getDomain: async () => {
         const b24 = await getBxService();
-        const authData = b24.auth.getAuthData() as false | AuthData
+        const authData = b24.auth.getAuthData() as false | AuthData;
         // Проверка, чтобы не упасть, если authData = false
-        console.log('authData')
-        console.log(authData)
+        console.log('authData');
+        console.log(authData);
         if (!authData) return null;
         const domain = authData.domain;
         const hostname = new URL(domain).hostname;
-        console.log('hostname')
-        console.log(hostname)
+        console.log('hostname');
+        console.log(hostname);
         return hostname;
-
-
     },
     getCurrentUser: async () => {
         const b24 = await getBxService();
-        let currentUser = null as null | BXUser
+        let currentUser = null as null | BXUser;
         try {
-            const currentUserData = await b24.callMethod('user.current')
+            const currentUserData = await b24.callMethod('user.current');
             if (currentUserData) {
                 if (currentUserData.isSuccess) {
-
-                    currentUser = currentUserData.getData().result as unknown as BXUser;
-
+                    currentUser = currentUserData.getData()
+                        .result as unknown as BXUser;
                 }
             }
             return currentUser;
@@ -109,20 +101,20 @@ export const bxAPI = {
         method: string,
         data: object,
         domain: string = '',
-        inBitrix: boolean = false
-
+        inBitrix: boolean = false,
     ) => {
-
         let result = null as null | any;
         let response = null;
         try {
             if (inBitrix) {
                 const b24 = await getBxService();
-                const bxRresponse = await b24.callMethod(method, data) as Result;
-                response = bxRresponse.getData()
-                console.log('response')
-                console.log(response)
-              
+                const bxRresponse = (await b24.callMethod(
+                    method,
+                    data,
+                )) as Result;
+                response = bxRresponse.getData();
+                console.log('response');
+                console.log(response);
             } else {
                 const bxReqHookData = {
                     domain,
@@ -131,49 +123,44 @@ export const bxAPI = {
                 };
                 const backReponse = await backAPI.service<{ result: any }>(
                     EBACK_ENDPOINT.BITRIX_METHOD,
-                    API_METHOD.POST, bxReqHookData
+                    API_METHOD.POST,
+                    bxReqHookData,
                 );
-                result = backReponse?.data?.result || null
+                result = backReponse?.data?.result || null;
             }
             if (response) {
                 result = response;
             }
             if (response && response.result) {
-                result = response.result
+                result = response.result;
             }
 
             return result;
         } catch (error) {
-            console.log("error");
+            console.log('error');
             console.log(response);
             console.log(error);
 
             return result;
         }
     },
-    saleInit: async (dealId: null | number, companyId: null | number,) => {
+    saleInit: async (dealId: null | number, companyId: null | number) => {
         const b24 = await getBxService();
 
-        const placement = b24.placement
-        console.log('b24test plcmnt')
-        console.log(placement)
-        const authData = b24.auth.getAuthData()
-
-
+        const placement = b24.placement;
+        console.log('b24test plcmnt');
+        console.log(placement);
+        const authData = b24.auth.getAuthData();
 
         try {
-            const result = await b24.callBatch({
+            const result = (await b24.callBatch({
                 CompanyList: {
                     method: 'crm.item.list',
                     params: {
                         entityTypeId: EnumCrmEntityTypeId.company,
                         order: { id: 'desc' },
-                        select: [
-                            'id',
-                            'title',
-                            'createdTime'
-                        ]
-                    }
+                        select: ['id', 'title', 'createdTime'],
+                    },
                 },
                 123: {
                     method: '',
@@ -186,30 +173,27 @@ export const bxAPI = {
                             'id',
                             'title',
                             'createdTime',
-                            'UF_CRM_1586947711880' // UF_CRM_1586947711880 - field with date
+                            'UF_CRM_1586947711880', // UF_CRM_1586947711880 - field with date
                         ],
-
-                    }
+                    },
                 },
                 UserList: {
                     method: 'user.current.get',
                     params: {},
                 },
-            }) as Result
-            console.log('b24test result')
-            console.log(result)
+            })) as Result;
+            console.log('b24test result');
+            console.log(result);
 
-            console.log('b24test result')
+            console.log('b24test result');
             // console.log(result.getData())
             // logger.info('result >> ', result)
 
-            return result
-
+            return result;
         } catch (error) {
-            console.log('b24test error')
-            console.log(error)
+            console.log('b24test error');
+            console.log(error);
         }
-
     },
 
     setActivity: async (
@@ -217,31 +201,28 @@ export const bxAPI = {
         report: any,
         description: string,
         responsibilityId: number,
-        planEvent: { code: string, name: string, description: string },
+        planEvent: { code: string; name: string; description: string },
         deadline: string,
         color: string,
-
     ) => {
         const b24 = await getBxService();
         // const authData = b24.auth.getAuthData()
         // console.log(authData)
 
-        let result = null
-        let dealResponse = null
+        let result = null;
+        let dealResponse = null;
         const fields = {
             // "RESPOSIBLE_ID": responsibilityId || 1,
             // "DEADLINE": deadline
-            "responsibleId": responsibilityId || 1,
-            "deadline": deadline,
-            "completed": "N",
-            "pingOffset": [0, 5, 15, 30, 60],
+            responsibleId: responsibilityId || 1,
+            deadline: deadline,
+            completed: 'N',
+            pingOffset: [0, 5, 15, 30, 60],
             // "badgeCode": "myCustomBadge"  // сначала зарегистрировать на портал е badge
+        };
+        let eventType = planEvent.code || 'Звонок';
 
-        }
-        let eventType = planEvent.code || 'Звонок'
-
-
-        let title = planEvent.name
+        let title = planEvent.name;
 
         // if (!isPlanned && currentTask) {
         //     title = currentTask.title
@@ -253,8 +234,8 @@ export const bxAPI = {
             description,
             eventType,
             deadline,
-            color
-        )
+            color,
+        );
 
         // https://dev.1c-bitrix.ru/rest_help/crm/rest_activity/configurable/structure/actiondto.php
 
@@ -263,38 +244,33 @@ export const bxAPI = {
             ownerId: companyId,
             fields,
             layout,
-
-
-        }
+        };
 
         try {
             dealResponse = await b24.callMethod(
                 'crm.activity.configurable.add',
-                data
+                data,
             );
             // console.log('setActivity')
             // console.log('dealResponse')
 
             if (dealResponse) {
-                result = dealResponse.getData()
-                console.info(result)
+                result = dealResponse.getData();
+                console.info(result);
 
-                const selectedUser = await b24.dialog.selectUser()
-                console.info(selectedUser)
-
+                const selectedUser = await b24.dialog.selectUser();
+                console.info(selectedUser);
             }
-            return result
+            return result;
         } catch (error) {
-            console.log('error')
-            console.log(dealResponse)
-            console.log(error)
-            return result
+            console.log('error');
+            console.log(dealResponse);
+            console.log(error);
+            return result;
         }
-
     },
 
     // auth: () => {
     //     AuthManager.getAuth()
     // },
-
-}
+};

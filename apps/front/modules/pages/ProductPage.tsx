@@ -1,6 +1,5 @@
-'use client'
-import { ProductList } from "@/modules/widgetes"
-
+'use client';
+import { ProductList } from '@/modules/widgetes';
 
 export const ProductPage = () => {
     // const { isClient } = useApp()
@@ -9,9 +8,7 @@ export const ProductPage = () => {
     // }
     return (
         <div className="container mx-auto">
-
             <ProductList />
         </div>
-    )
-}
-
+    );
+};

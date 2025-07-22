@@ -11,7 +11,6 @@
 //     up = 'УП'
 // }
 
-
 // export const DocumentGenerateTemplatesType = {
 //     SEMINAR_PPK_DEAL: {
 //         id: 134,
@@ -29,7 +28,6 @@
 //         forContract: [
 //             EContractType.seminar_ppk,
 //         ] as EContractType[],
-
 
 //     } as const,
 //     INVOISE_WITH_STAMPS: {
@@ -73,6 +71,5 @@
 //     } as const,
 
 // }
-
 
 // export type DocumentGenerateType = typeof DocumentGenerateTemplatesType;

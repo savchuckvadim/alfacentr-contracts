@@ -1,1 +1,1 @@
-export * from './deal-field.type'; 
+export * from './deal-field.type';

@@ -1,72 +1,82 @@
-'use client'
-import { useAppSelector } from "@/modules/app";
-import { getParticipantName, useParticipant } from "@/modules/entities";
-import { useAlfaProducts } from "@/modules/entities/product/hook/useAlfaProducts";
-import { useEffect, useState } from "react";
-import { getParticipantPpkProblems } from "../lib/utils/participant-ppk-problem.util";
-import { IParticipant } from "@alfa/entities";
+'use client';
+import { useAppSelector } from '@/modules/app';
+import { getParticipantName, useParticipant } from '@/modules/entities';
+import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts';
+import { useEffect, useState } from 'react';
+import { getParticipantPpkProblems } from '../lib/utils/participant-ppk-problem.util';
+import { IParticipant } from '@alfa/entities';
 
 export const useParticipantPpk = () => {
-    const { loading: isParticipantLoading } = useParticipant()
-    const { loading: isProductsLoading } = useAlfaProducts()
-    const [isLoading, setIsLoading] = useState(false)
+    const { loading: isParticipantLoading } = useParticipant();
+    const { loading: isProductsLoading } = useAlfaProducts();
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        setIsLoading(isParticipantLoading || isProductsLoading)
-    }, [isParticipantLoading, isProductsLoading])
-    const ppkDistribution = useAppSelector(state => state.participantProduct.ppkDistribution)
-    const topicStats = ppkDistribution.topicStats
-    const participantToProducts = ppkDistribution.participantToProducts
-    const productToParticipants = ppkDistribution.productToParticipants
-    const unassignedParticipants = ppkDistribution.unassignedParticipants
-    const participantsPpkTopicsStats = ppkDistribution.participantsPpkTopicsStats
+        setIsLoading(isParticipantLoading || isProductsLoading);
+    }, [isParticipantLoading, isProductsLoading]);
+    const ppkDistribution = useAppSelector(
+        state => state.participantProduct.ppkDistribution,
+    );
+    const topicStats = ppkDistribution.topicStats;
+    const participantToProducts = ppkDistribution.participantToProducts;
+    const productToParticipants = ppkDistribution.productToParticipants;
+    const unassignedParticipants = ppkDistribution.unassignedParticipants;
+    const participantsPpkTopicsStats =
+        ppkDistribution.participantsPpkTopicsStats;
     const isProductPpk = (productId: number) => {
-        return productToParticipants[productId]
-    }
-
+        return productToParticipants[productId];
+    };
 
     const isParticipantPpk = (participantId: number) => {
-
-        let isPpk = false
-        if (participantsPpkTopicsStats[participantId] && participantsPpkTopicsStats[participantId].length > 0) {
-            isPpk = true
+        let isPpk = false;
+        if (
+            participantsPpkTopicsStats[participantId] &&
+            participantsPpkTopicsStats[participantId].length > 0
+        ) {
+            isPpk = true;
         }
-        return isPpk
-    }
+        return isPpk;
+    };
     const getParticipantPpkTopicsStats = (participantId: number) => {
-        return participantsPpkTopicsStats[participantId]
-    }
+        return participantsPpkTopicsStats[participantId];
+    };
     const getParticipantProblems = (participantId: number) => {
-        return getParticipantPpkProblems(participantsPpkTopicsStats, participantId)
-    }
+        return getParticipantPpkProblems(
+            participantsPpkTopicsStats,
+            participantId,
+        );
+    };
     const getParticipantsProblems = (participants: IParticipant[]) => {
-        let problemsCount = 0
+        let problemsCount = 0;
         const participantsProblems = participants.map(participant => {
-            const { problems } = getParticipantProblems(participant.id)
+            const { problems } = getParticipantProblems(participant.id);
             return {
                 [participant.id]: {
                     name: getParticipantName(participant),
-                    problems
-                }
-            }
-        })
-        let hasProblems = false
+                    problems,
+                },
+            };
+        });
+        let hasProblems = false;
         participantsProblems.forEach(problem => {
             for (const key in problem) {
-                const typeKey = Number(key) as number
-                if (problem[typeKey]?.problems && problem[typeKey]?.problems.length > 0) {
-                    hasProblems = true
-                    problemsCount += problem[typeKey]?.problems.length
+                const typeKey = Number(key) as number;
+                if (
+                    problem[typeKey]?.problems &&
+                    problem[typeKey]?.problems.length > 0
+                ) {
+                    hasProblems = true;
+                    problemsCount += problem[typeKey]?.problems.length;
                 }
             }
-        })
-        
+        });
+
         return {
             participantsProblems,
             hasProblems,
-            problemsCount
-        }
-    }
+            problemsCount,
+        };
+    };
     return {
         topicStats,
         participantToProducts,
@@ -78,11 +88,6 @@ export const useParticipantPpk = () => {
         isParticipantPpk,
         getParticipantPpkTopicsStats,
         getParticipantProblems,
-        getParticipantsProblems
-    }
-}
-
-
-
-
-
+        getParticipantsProblems,
+    };
+};

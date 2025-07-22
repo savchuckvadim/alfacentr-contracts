@@ -1,42 +1,41 @@
-import { CustomPlacement, DISPLAY_MODE, EntitiesFromPlacement } from "@workspace/bx/src/type/placement-type";
-import { BXCompany, BXDeal, BXTask } from "@workspace/bx/src/type/bitrix-type";
-import { Placement, PlacementCallCard } from "@workspace/bx/src/type/placement-type";
+import {
+    CustomPlacement,
+    DISPLAY_MODE,
+    EntitiesFromPlacement,
+} from '@workspace/bx/src/type/placement-type';
+import { BXCompany, BXDeal, BXTask } from '@workspace/bx/src/type/bitrix-type';
+import {
+    Placement,
+    PlacementCallCard,
+} from '@workspace/bx/src/type/placement-type';
 // import { bx } from "@workspace/api";
 
-
-export const getDisplayMode = (placement: Placement | PlacementCallCard): DISPLAY_MODE => {
-
-    let result = DISPLAY_MODE.PUBLIC
+export const getDisplayMode = (
+    placement: Placement | PlacementCallCard,
+): DISPLAY_MODE => {
+    let result = DISPLAY_MODE.PUBLIC;
     if (placement.placement) {
+        const currentEntityPlacementType = placement.placement;
 
-        const currentEntityPlacementType = placement.placement
-
-
-        if (currentEntityPlacementType.includes("DETAIL")) {
-            result = DISPLAY_MODE.ENTITY_CARD
-
+        if (currentEntityPlacementType.includes('DETAIL')) {
+            result = DISPLAY_MODE.ENTITY_CARD;
         }
-        if (currentEntityPlacementType.includes("TASK")) {
-            result = DISPLAY_MODE.TASK
-
+        if (currentEntityPlacementType.includes('TASK')) {
+            result = DISPLAY_MODE.TASK;
         }
 
-        if (currentEntityPlacementType.includes("ACTIVITY")) {
-            result = DISPLAY_MODE.TIMELINE
-
+        if (currentEntityPlacementType.includes('ACTIVITY')) {
+            result = DISPLAY_MODE.TIMELINE;
         }
 
-        if (currentEntityPlacementType.includes("CALL_CARD")) {
-            result = DISPLAY_MODE.CALL_CARD
-
+        if (currentEntityPlacementType.includes('CALL_CARD')) {
+            result = DISPLAY_MODE.CALL_CARD;
         }
-
     }
-    console.log('DISPLAY_MODE')
-    console.log(result)
-    return result
-}
-
+    console.log('DISPLAY_MODE');
+    console.log(result);
+    return result;
+};
 
 // export const isDetailPlacement = (placement: Placement): boolean => {
 
@@ -68,9 +67,6 @@ export const getDisplayMode = (placement: Placement | PlacementCallCard): DISPLA
 //     return result
 // }
 
-
-
-
 // export const isTaskPlacement = (placement: Placement): boolean => {
 
 //     let result = false
@@ -88,29 +84,25 @@ export const getDisplayMode = (placement: Placement | PlacementCallCard): DISPLA
 //     return result
 // }
 
-
-
-
-export const getEntitiesFromPlacement = async (placement: Placement | PlacementCallCard | CustomPlacement, domain: string): Promise<EntitiesFromPlacement> => {
-
+export const getEntitiesFromPlacement = async (
+    placement: Placement | PlacementCallCard | CustomPlacement,
+    domain: string,
+): Promise<EntitiesFromPlacement> => {
     let companyPlacement = {
         placement: 'CRM_COMPANY_DETAIL_TAB',
         options: {
-            ID: 0
-        }
-    } as Placement
-
+            ID: 0,
+        },
+    } as Placement;
 
     const result = {
         companyPlacement,
         currentCompany: null as null | BXCompany,
         currentDeal: null as null | BXDeal,
-        currentTask: null as null | BXTask
-    } as EntitiesFromPlacement
+        currentTask: null as null | BXTask,
+    } as EntitiesFromPlacement;
     try {
-
-
-        placement = placement as Placement
+        placement = placement as Placement;
         // if (placement.placement && placement.options) {
         //     const currentEntityPlacementType = placement.placement
         //     if (currentEntityPlacementType.includes("DEAL")) {
@@ -131,7 +123,6 @@ export const getEntitiesFromPlacement = async (placement: Placement | PlacementC
         //         const currentEntities = await bx
         //             .getDealAndCompany(null, placement.options.ID, domain)
 
-
         //         result.currentCompany = currentEntities.company
         //         result.currentDeal = currentEntities.deal
         //         result.companyPlacement.options.ID = placement.options.ID
@@ -144,7 +135,6 @@ export const getEntitiesFromPlacement = async (placement: Placement | PlacementC
         //         } else if (placement.options.TASK_ID) {
         //             taskId = placement.options.TASK_ID
         //         }
-
 
         //         let currentTaskData = await bx.getMethod(
         //             'tasks.task.get',
@@ -198,7 +188,6 @@ export const getEntitiesFromPlacement = async (placement: Placement | PlacementC
         //                         domain
         //                     )
 
-
         //                 result.currentCompany = currentEntities.company
         //                 result.currentDeal = currentEntities.deal
         //                 result.companyPlacement.options.ID = companyIdFromTask
@@ -206,7 +195,6 @@ export const getEntitiesFromPlacement = async (placement: Placement | PlacementC
         //             }
         //         }
         //         // console.log('in company')
-
 
         //     } else if (currentEntityPlacementType.includes("CALL_CARD")) {
         //         placement = placement as PlacementCallCard
@@ -255,8 +243,6 @@ export const getEntitiesFromPlacement = async (placement: Placement | PlacementC
 
         //             const currentEntities = await bx.getDealAndCompany(null, currentCompanyId, domain)
 
-
-
         //             // console.log('currentEntities')
         //             // console.log(currentEntities)
 
@@ -275,7 +261,6 @@ export const getEntitiesFromPlacement = async (placement: Placement | PlacementC
         //         const currentEntities = await bx
         //             .getDealAndCompany(null, placement.options.companyId, domain)
 
-
         //         result.currentCompany = currentEntities.company
         //         result.currentDeal = currentEntities.deal
         //         result.companyPlacement.options.ID = placement.options.companyId
@@ -283,18 +268,15 @@ export const getEntitiesFromPlacement = async (placement: Placement | PlacementC
         //     }
         // }
 
-
-        console.log('result')
-        console.log(result)
-        return result
+        console.log('result');
+        console.log(result);
+        return result;
     } catch (error) {
-        console.log('error')
-        console.log(error)
-        return result
+        console.log('error');
+        console.log(error);
+        return result;
     }
-
-}
-
+};
 
 // const getCompanyIdFromtask = (task: BXTask): number | undefined => {
 
@@ -318,40 +300,3 @@ export const getEntitiesFromPlacement = async (placement: Placement | PlacementC
 //     return resultCompanyId;
 
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,13 +1,9 @@
-
-import { BxDealRepository } from "../repository/bx-deal.repository";
-import { BitrixBaseApi } from "@bitrix/core";
-import { IBXDeal } from "../interface/bx-deal.interface";
-
-
+import { BxDealRepository } from '../repository/bx-deal.repository';
+import { BitrixBaseApi } from '@bitrix/core';
+import { IBXDeal } from '../interface/bx-deal.interface';
 
 export class BxDealBatchService {
-    private repo!: BxDealRepository
-
+    private repo!: BxDealRepository;
 
     clone(api: BitrixBaseApi): BxDealBatchService {
         const instance = new BxDealBatchService();
@@ -22,7 +18,12 @@ export class BxDealBatchService {
         return this.repo.getBtch(cmdCode, dealId);
     }
 
-    getList(cmdCode: string, filter: Partial<IBXDeal>, select?: string[], order?: { [key in keyof IBXDeal]?: 'asc' | 'desc' | 'ASC' | 'DESC' }) {
+    getList(
+        cmdCode: string,
+        filter: Partial<IBXDeal>,
+        select?: string[],
+        order?: { [key in keyof IBXDeal]?: 'asc' | 'desc' | 'ASC' | 'DESC' },
+    ) {
         return this.repo.getListBtch(cmdCode, filter, select, order);
     }
 
@@ -35,7 +36,11 @@ export class BxDealBatchService {
     getField(cmdCode: string, id: number | string) {
         return this.repo.getFieldBtch(cmdCode, id);
     }
-    contactItemsSet(cmdCode: string, dealId: number | string, contactIds: number[] | string[]) {
+    contactItemsSet(
+        cmdCode: string,
+        dealId: number | string,
+        contactIds: number[] | string[],
+    ) {
         return this.repo.contactItemsSetBtch(cmdCode, dealId, contactIds);
     }
 }

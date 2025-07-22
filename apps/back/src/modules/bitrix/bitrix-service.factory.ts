@@ -7,20 +7,18 @@ import { ServiceClonerFactory } from './domain/service-clone.factory';
 
 @Injectable()
 export class BitrixServiceFactory {
-  constructor(
-    private readonly bitrixApiFactoryService: BitrixApiFactoryService,
-    private readonly cloner: ServiceClonerFactory,
-   
-  ) {}
+    constructor(
+        private readonly bitrixApiFactoryService: BitrixApiFactoryService,
+        private readonly cloner: ServiceClonerFactory,
+    ) {}
 
-  create(portal: IPortal): BitrixService {
-    const instance = new BitrixService(
-      this.bitrixApiFactoryService,
-      this.cloner,
-  
-    );
+    create(portal: IPortal): BitrixService {
+        const instance = new BitrixService(
+            this.bitrixApiFactoryService,
+            this.cloner,
+        );
 
-    instance.init(portal);
-    return instance;
-  }
+        instance.init(portal);
+        return instance;
+    }
 }

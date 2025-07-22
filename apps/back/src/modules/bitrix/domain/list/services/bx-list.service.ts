@@ -1,8 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { BxListRepository } from "../repository/bx-list.repository";
-import { BitrixBaseApi } from "src/modules/bitrix/core/base/bitrix-base-api";
-import { EBxListCode } from "../interface/bx-list.interface";
-
+import { Injectable } from '@nestjs/common';
+import { BxListRepository } from '../repository/bx-list.repository';
+import { BitrixBaseApi } from 'src/modules/bitrix/core/base/bitrix-base-api';
+import { EBxListCode } from '../interface/bx-list.interface';
 
 @Injectable()
 export class BxListService {
@@ -18,20 +17,15 @@ export class BxListService {
         this.repo = new BxListRepository(api);
     }
 
-    getList(IBLOCK_CODE?: EBxListCode) {
-        return this.repo.getList(IBLOCK_CODE);
+    async getList(IBLOCK_CODE?: EBxListCode, IBLOCK_ID?: number) {
+        return await this.repo.getList(IBLOCK_CODE, IBLOCK_ID);
     }
 
-    getListField(
-        code: EBxListCode,
-        ID: string | number
-    ) {
-        return this.repo.getListField(code, ID);
+    async getListField(code: EBxListCode, ID: string | number) {
+        return await this.repo.getListField(code, ID);
     }
 
-    getListFields(
-        code: EBxListCode
-    ) {
-        return this.repo.getListFields(code);
+    async getListFields(code: EBxListCode) {
+        return await this.repo.getListFields(code);
     }
-} 
+}

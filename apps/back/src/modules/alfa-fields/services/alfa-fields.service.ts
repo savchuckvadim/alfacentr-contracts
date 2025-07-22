@@ -1,14 +1,12 @@
-import { PBXService } from "@/modules/pbx";
-import { BxFieldsService } from "./bx-field.service";
-import { AlfaBxField } from "@/modules/on-deal-init/type/bx-deal-field.type";
-import { TDealData } from "@alfa/entities";
-import { DealFieldHelperService } from "@/modules/on-deal-init/services/deal-helper/deal-field-helper.service";
-import { BitrixService } from "@/modules/bitrix";
-
+import { PBXService } from '@/modules/pbx';
+import { BxFieldsService } from './bx-field.service';
+import { AlfaBxField } from '@/modules/on-deal-init/type/bx-deal-field.type';
+import { TDealData } from '@alfa/entities';
+import { DealFieldHelperService } from '@/modules/on-deal-init/services/deal-helper/deal-field-helper.service';
+import { BitrixService } from '@/modules/bitrix';
 
 export class AlfaFieldsService {
-    private bitrix!: BitrixService
-
+    private bitrix!: BitrixService;
 
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;
@@ -22,17 +20,19 @@ export class AlfaFieldsService {
 
     async getFieldsData(): Promise<TDealData> {
         const fields = await this.getFields();
-        const fieldData = DealFieldHelperService.updateDealDataFromBitrixResponse(fields);
+        const fieldData =
+            DealFieldHelperService.updateDealDataFromBitrixResponse(fields);
         return fieldData;
     }
     getBxFieldsIdsForSelect(fieldData: TDealData): string[] {
-        const bxFieldsIds = DealFieldHelperService.getBxFieldsIdsForSelect(fieldData);
+        const bxFieldsIds =
+            DealFieldHelperService.getBxFieldsIdsForSelect(fieldData);
         return bxFieldsIds;
     }
 
     async getDealFieldsDataWithIds(): Promise<{
-        fieldData: TDealData,
-        bxFieldsIds: string[]
+        fieldData: TDealData;
+        bxFieldsIds: string[];
     }> {
         const fieldData = await this.getFieldsData();
         const bxFieldsIds = this.getBxFieldsIdsForSelect(fieldData);

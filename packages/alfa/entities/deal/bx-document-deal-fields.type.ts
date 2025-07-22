@@ -5,6 +5,7 @@ export enum EnumDealCurrentDocumentFieldCode {
     CURRENT_ACT_WITH_PT = 'current_act_with_pt',
     CURRENT_ACT_WITHOUT_PT = 'current_act_without_pt',
     CURRENT_CONTRACT_WITH_PT = 'current_contract_with_pt',
+    CURRENT_CONTRACT_WITHOUT_PT = 'current_contract_without_pt',
     CURRENT_INVOICES_WITH_PT = 'current_invoices_with_pt',
     CURRENT_INVOICES_WITHOUT_PT = 'current_invoices_without_pt',
 }
@@ -19,11 +20,9 @@ export enum EnumDealDocumentFieldCode {
     NUMBER_DOC = 'number_doc',
     NUMBER_CURRENT_DOC = 'number_current_doc',
     COMMENT_FOR_OD = 'comment_for_od',
-    PREFIX_DINMYC = 'prefix_dinmyc',
+    PREFIX_DYNAMIC = 'prefix_dynamic',
     CONSULTING_POINT_CONTRACT = 'consulting_point_contract',
     PAYMENT_POIT_DOC = 'payment_poit_doc',
     SUBJECT_FOR_SEND_MESSAGE = 'subject_for_send_message',
     CONTRACT_TYPE = 'contract_type',
-
-
 }

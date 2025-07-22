@@ -1,16 +1,16 @@
-"use client"
-import { useReload } from "@/modules/app"
-import { RefreshCcw } from "lucide-react"
-import { Tooltip } from "../Tooltip"
-import { motion, useMotionValue, useTransform, animate } from "framer-motion"
-import { useEffect } from "react"
+'use client';
+import { useReload } from '@/modules/app';
+import { RefreshCcw } from 'lucide-react';
+import { Tooltip } from '../Tooltip';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { useEffect } from 'react';
 
 export const ReloadApp = () => {
-    const { reload,  isReloading } = useReload()
+    const { reload, isReloading } = useReload();
 
-    const isSpinning =  isReloading
-    const rotation = useMotionValue(0)
-    const rotate = useTransform(rotation, (value) => `${value}deg`)
+    const isSpinning = isReloading;
+    const rotation = useMotionValue(0);
+    const rotate = useTransform(rotation, value => `${value}deg`);
 
     useEffect(() => {
         if (isSpinning) {
@@ -18,20 +18,20 @@ export const ReloadApp = () => {
             const animation = animate(rotation, [0, 360], {
                 duration: 0.2, // Быстрая анимация
                 delay: 0.1,
-                ease: "linear",
+                ease: 'linear',
                 repeat: Infinity,
-                repeatType: "loop"
-            })
-            
-            return animation.stop
+                repeatType: 'loop',
+            });
+
+            return animation.stop;
         } else {
             // Плавная остановка
             animate(rotation, 0, {
                 duration: 0.1,
-                ease: "easeOut"
-            })
+                ease: 'easeOut',
+            });
         }
-    }, [isSpinning, rotation])
+    }, [isSpinning, rotation]);
 
     return (
         <Tooltip content="Перезагрузить приложение">
@@ -44,5 +44,5 @@ export const ReloadApp = () => {
                 </motion.div>
             </div>
         </Tooltip>
-    )
-}
+    );
+};

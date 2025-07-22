@@ -1,21 +1,26 @@
-import { BitrixBaseApi } from "@bitrix/core";
-import { EBXEntity } from "../../../core/domain/consts/bitrix-entities.enum";
-import { EBxMethod, EBxNamespace } from "../../../core/domain/consts/bitrix-api.enum";
-import { UserFieldConfigAddDto, UserFieldConfigDeleteDto, UserFieldConfigGetDto, UserFieldConfigListDto, UserFieldConfigUpdateDto } from "../dto/userfieldconfig.dto";
-
+import { BitrixBaseApi } from '@bitrix/core';
+import { EBXEntity } from '../../../core/domain/consts/bitrix-entities.enum';
+import {
+    EBxMethod,
+    EBxNamespace,
+} from '../../../core/domain/consts/bitrix-api.enum';
+import {
+    UserFieldConfigAddDto,
+    UserFieldConfigDeleteDto,
+    UserFieldConfigGetDto,
+    UserFieldConfigListDto,
+    UserFieldConfigUpdateDto,
+} from '../dto/userfieldconfig.dto';
 
 export class UserFieldConfigRepository {
-
-    constructor(
-        private readonly bxApi: BitrixBaseApi
-    ) { }
+    constructor(private readonly bxApi: BitrixBaseApi) {}
 
     async get(dto: UserFieldConfigGetDto) {
         return this.bxApi.callType(
             EBxNamespace.WITHOUT_NAMESPACE,
             EBXEntity.USER_FIELD_CONFIG,
             EBxMethod.GET,
-            dto
+            dto,
         );
     }
     getBtch(btchCommand: string, dto: UserFieldConfigGetDto) {
@@ -24,7 +29,7 @@ export class UserFieldConfigRepository {
             EBxNamespace.WITHOUT_NAMESPACE,
             EBXEntity.USER_FIELD_CONFIG,
             EBxMethod.GET,
-            dto
+            dto,
         );
     }
     async add(dto: UserFieldConfigAddDto) {
@@ -32,7 +37,7 @@ export class UserFieldConfigRepository {
             EBxNamespace.WITHOUT_NAMESPACE,
             EBXEntity.USER_FIELD_CONFIG,
             EBxMethod.ADD,
-            dto
+            dto,
         );
     }
     addBtch(btchCommand: string, dto: UserFieldConfigAddDto) {
@@ -41,7 +46,7 @@ export class UserFieldConfigRepository {
             EBxNamespace.WITHOUT_NAMESPACE,
             EBXEntity.USER_FIELD_CONFIG,
             EBxMethod.ADD,
-            dto
+            dto,
         );
     }
     async update(dto: UserFieldConfigUpdateDto) {
@@ -49,7 +54,7 @@ export class UserFieldConfigRepository {
             EBxNamespace.WITHOUT_NAMESPACE,
             EBXEntity.USER_FIELD_CONFIG,
             EBxMethod.UPDATE,
-            dto
+            dto,
         );
     }
     updateBtch(btchCommand: string, dto: UserFieldConfigUpdateDto) {
@@ -58,7 +63,7 @@ export class UserFieldConfigRepository {
             EBxNamespace.WITHOUT_NAMESPACE,
             EBXEntity.USER_FIELD_CONFIG,
             EBxMethod.UPDATE,
-            dto
+            dto,
         );
     }
     async delete(dto: UserFieldConfigDeleteDto) {
@@ -66,7 +71,7 @@ export class UserFieldConfigRepository {
             EBxNamespace.WITHOUT_NAMESPACE,
             EBXEntity.USER_FIELD_CONFIG,
             EBxMethod.DELETE,
-            dto
+            dto,
         );
     }
     deleteBtch(btchCommand: string, dto: UserFieldConfigDeleteDto) {
@@ -75,7 +80,7 @@ export class UserFieldConfigRepository {
             EBxNamespace.WITHOUT_NAMESPACE,
             EBXEntity.USER_FIELD_CONFIG,
             EBxMethod.DELETE,
-            dto
+            dto,
         );
     }
     async list(dto: UserFieldConfigListDto) {
@@ -83,7 +88,7 @@ export class UserFieldConfigRepository {
             EBxNamespace.WITHOUT_NAMESPACE,
             EBXEntity.USER_FIELD_CONFIG,
             EBxMethod.LIST,
-            dto
+            dto,
         );
     }
     listBtch(btchCommand: string, dto: UserFieldConfigListDto) {
@@ -92,9 +97,7 @@ export class UserFieldConfigRepository {
             EBxNamespace.WITHOUT_NAMESPACE,
             EBXEntity.USER_FIELD_CONFIG,
             EBxMethod.LIST,
-            dto
+            dto,
         );
     }
-
-
 }

@@ -1,12 +1,12 @@
-import { BxProductRowRepository } from "../repository/bx-product-row.repository";
-import { BitrixBaseApi } from "@bitrix/core";
-import { IBXProductRow, IBXProductRowRow } from "../interface/bx-product-row.interface";
-
-
+import { BxProductRowRepository } from '../repository/bx-product-row.repository';
+import { BitrixBaseApi } from '@bitrix/core';
+import {
+    IBXProductRow,
+    IBXProductRowRow,
+} from '../interface/bx-product-row.interface';
 
 export class BxProductRowBatchService {
-    private repo!: BxProductRowRepository
-
+    private repo!: BxProductRowRepository;
 
     clone(api: BitrixBaseApi): BxProductRowBatchService {
         const instance = new BxProductRowBatchService();
@@ -24,4 +24,4 @@ export class BxProductRowBatchService {
     add(cmdCode: string, data: IBXProductRowRow) {
         return this.repo.addBtch(cmdCode, data);
     }
-} 
+}

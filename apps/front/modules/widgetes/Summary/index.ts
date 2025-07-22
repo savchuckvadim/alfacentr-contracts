@@ -1,1 +1,1 @@
-export * from './SummaryPanel'
+export * from './SummaryPanel';

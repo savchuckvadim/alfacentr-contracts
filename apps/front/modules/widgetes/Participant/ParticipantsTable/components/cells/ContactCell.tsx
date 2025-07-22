@@ -1,9 +1,9 @@
-import { TableCell } from "@workspace/ui/components/table"
-import { Mail, Phone } from "lucide-react"
+import { TableCell } from '@workspace/ui/components/table';
+import { Mail, Phone } from 'lucide-react';
 
 interface ContactCellProps {
-    value: string
-    type: 'email' | 'phone'
+    value: string;
+    type: 'email' | 'phone';
 }
 
 export const ContactCell = ({ value, type }: ContactCellProps) => {
@@ -12,12 +12,12 @@ export const ContactCell = ({ value, type }: ContactCellProps) => {
             <TableCell>
                 <span className="text-muted-foreground text-sm">Не указан</span>
             </TableCell>
-        )
+        );
     }
 
-    const href = type === 'email' ? `mailto:${value}` : `tel:${value}`
-    const icon = type === 'email' ? Mail : Phone
-    const IconComponent = icon
+    const href = type === 'email' ? `mailto:${value}` : `tel:${value}`;
+    const icon = type === 'email' ? Mail : Phone;
+    const IconComponent = icon;
 
     return (
         <TableCell>
@@ -29,5 +29,5 @@ export const ContactCell = ({ value, type }: ContactCellProps) => {
                 <span className="text-sm">{value}</span>
             </a>
         </TableCell>
-    )
-} 
+    );
+};

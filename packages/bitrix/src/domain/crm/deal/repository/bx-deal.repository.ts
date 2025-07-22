@@ -1,24 +1,32 @@
 // import { BitrixBaseApi } from "@bitrix/core";
-import { BitrixBaseApi, TBXResponse } from "@bitrix/core";
-import { EBxMethod, EBxNamespace } from "../../../../core/domain/consts/bitrix-api.enum";
-import { EBXEntity } from "../../../../core/domain/consts/bitrix-entities.enum";
-import { IBXDeal } from "../interface/bx-deal.interface";
-import { IBitrixResponse } from "@bitrix/core/interface/bitrix-api.intterface";
+import { BitrixBaseApi, TBXResponse } from '@bitrix/core';
+import {
+    EBxMethod,
+    EBxNamespace,
+} from '../../../../core/domain/consts/bitrix-api.enum';
+import { EBXEntity } from '../../../../core/domain/consts/bitrix-entities.enum';
+import { IBXDeal } from '../interface/bx-deal.interface';
+import { IBitrixResponse } from '@bitrix/core/interface/bitrix-api.intterface';
 
 export class BxDealRepository {
     // private bxApi: BitrixBaseApi;
-    constructor(
-        private readonly bxApi: BitrixBaseApi
-    ) {
+    constructor(private readonly bxApi: BitrixBaseApi) {
         // this.bxApi = this.bxApiFactoryService.getBitrixApi();
     }
 
-    async get(dealId: number, select?: string[]): Promise<IBitrixResponse<TBXResponse<EBxNamespace.CRM, EBXEntity.DEAL, EBxMethod.GET>>> {
+    async get(
+        dealId: number,
+        select?: string[],
+    ): Promise<
+        IBitrixResponse<
+            TBXResponse<EBxNamespace.CRM, EBXEntity.DEAL, EBxMethod.GET>
+        >
+    > {
         return await this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.GET,
-            { ID: dealId, select }
+            { ID: dealId, select },
         );
     }
 
@@ -28,26 +36,35 @@ export class BxDealRepository {
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.GET,
-            { ID: dealId, select: ['ID', 'UF_CRM_UC_ID'] }
+            { ID: dealId, select: ['ID', 'UF_CRM_UC_ID'] },
         );
     }
 
-    async getList(filter: Partial<IBXDeal>, select?: string[], order?: { [key in keyof IBXDeal]?: 'asc' | 'desc' | 'ASC' | 'DESC' }) {
+    async getList(
+        filter: Partial<IBXDeal>,
+        select?: string[],
+        order?: { [key in keyof IBXDeal]?: 'asc' | 'desc' | 'ASC' | 'DESC' },
+    ) {
         return this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.LIST,
-            { select, filter, order }
+            { select, filter, order },
         );
     }
 
-    async getListBtch(cmdCode: string, filter: Partial<IBXDeal>, select?: string[], order?: { [key in keyof IBXDeal]?: 'asc' | 'desc' | 'ASC' | 'DESC' }) {
+    async getListBtch(
+        cmdCode: string,
+        filter: Partial<IBXDeal>,
+        select?: string[],
+        order?: { [key in keyof IBXDeal]?: 'asc' | 'desc' | 'ASC' | 'DESC' },
+    ) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.LIST,
-            { select, filter, order }
+            { select, filter, order },
         );
     }
     //     field_n — название поля, по которому будет отфильтрована выборка элементов
@@ -79,7 +96,7 @@ export class BxDealRepository {
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.ADD,
-            { fields: data }
+            { fields: data },
         );
     }
     async setBtch(cmdCode: string, data: Partial<IBXDeal>) {
@@ -88,7 +105,7 @@ export class BxDealRepository {
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.ADD,
-            { fields: data }
+            { fields: data },
         );
     }
 
@@ -97,17 +114,21 @@ export class BxDealRepository {
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.UPDATE,
-            { id: dealId, fields: data }
+            { id: dealId, fields: data },
         );
     }
 
-    async updateBtch(cmdCode: string, dealId: number | string, data: Partial<IBXDeal>) {
+    async updateBtch(
+        cmdCode: string,
+        dealId: number | string,
+        data: Partial<IBXDeal>,
+    ) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.UPDATE,
-            { id: dealId, fields: data }
+            { id: dealId, fields: data },
         );
     }
     async getFieldList(filter: { [key: string]: any }, select?: string[]) {
@@ -115,7 +136,7 @@ export class BxDealRepository {
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.USER_FIELD_LIST,
-            { select, filter }
+            { select, filter },
         );
     }
 
@@ -124,7 +145,17 @@ export class BxDealRepository {
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.USER_FIELD_GET,
-            { id, select: ['ID', 'USER_TYPE_ID', 'FIELD_NAME', 'MULTIPLE', 'EDIT_FORM_LABEL', 'LIST'] }
+            {
+                id,
+                select: [
+                    'ID',
+                    'USER_TYPE_ID',
+                    'FIELD_NAME',
+                    'MULTIPLE',
+                    'EDIT_FORM_LABEL',
+                    'LIST',
+                ],
+            },
         );
     }
 
@@ -134,26 +165,47 @@ export class BxDealRepository {
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.USER_FIELD_GET,
-            { id, select: ['ID', 'USER_TYPE_ID', 'FIELD_NAME', 'MULTIPLE', 'EDIT_FORM_LABEL', 'LIST'] }
+            {
+                id,
+                select: [
+                    'ID',
+                    'USER_TYPE_ID',
+                    'FIELD_NAME',
+                    'MULTIPLE',
+                    'EDIT_FORM_LABEL',
+                    'LIST',
+                ],
+            },
         );
     }
 
-    async contactItemsSet(dealId: number | string, contactIds: number[] | string[]) {
+    async contactItemsSet(
+        dealId: number | string,
+        contactIds: number[] | string[],
+    ) {
         return this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.CONTACT_ITEMS_SET,
-            { id: dealId, items: contactIds.map(id => ({ CONTACT_ID: id })) }
+            { id: dealId, items: contactIds.map(id => ({ CONTACT_ID: id })) },
         );
     }
-    async contactItemsSetBtch(cmdCode: string, dealId: number | string, contactIds: number[] | string[]) {
+    async contactItemsSetBtch(
+        cmdCode: string,
+        dealId: number | string,
+        contactIds: number[] | string[],
+    ) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.CONTACT_ITEMS_SET,
-            { id: dealId, items: contactIds.map((id: number | string) => ({ CONTACT_ID: id })) }
+            {
+                id: dealId,
+                items: contactIds.map((id: number | string) => ({
+                    CONTACT_ID: id,
+                })),
+            },
         );
     }
-
 }

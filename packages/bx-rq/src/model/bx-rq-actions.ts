@@ -6,8 +6,6 @@
 // import { CONTRACT_LTYPE } from "@bx-rq/types/contract-type";
 // import { BXRQState } from "./bx-rq-reducer";
 
-
-
 // //ACION CREATORS
 // export const BXRQAC = {
 //   setFetched: (bxrq: EVSBXRQ) =>
@@ -28,7 +26,6 @@
 
 //   // saveCurrent: (departament: Array<BitrixUser>) =>
 //   //   ({ type: "bxrq/SAVE_CURRENT", departament } as const),
-
 
 //   initBaseCreating: (
 //     currentClientType: RQ_TYPE | undefined,
@@ -54,7 +51,6 @@
 
 //   saveBankCreating: (bankId: number, clientType: RQ_TYPE) => ({ type: "bxrq/SAVE_BANK_CREATING", bankId, clientType } as const),
 //   cancelBankCreating: () => ({ type: "bxrq/CANCEL_BANK_CREATING" } as const),
-
 
 //   setBaseProp: (code: string, value: string) => ({ type: "bxrq/SET_BASE_PROP", code, value } as const),
 //   setFullBaseProp: (code: string, value: string) => ({ type: "bxrq/SET_FULL_BASE_PROP", code, value } as const), // не добавляет а заменяет значения

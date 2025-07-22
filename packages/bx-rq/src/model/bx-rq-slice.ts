@@ -1,12 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { EVSBXRQ, EvsRqItem, AddressRqItem, BankRqItem, ResolvedRQType } from '../type/evs-rq-type';
-import { CONTRACT_LTYPE, RQ_TYPE, SupplyTypesType, StringInput } from '../type/input-type';
+import {
+    EVSBXRQ,
+    EvsRqItem,
+    AddressRqItem,
+    BankRqItem,
+    ResolvedRQType,
+} from '../type/evs-rq-type';
+import {
+    CONTRACT_LTYPE,
+    RQ_TYPE,
+    SupplyTypesType,
+    StringInput,
+} from '../type/input-type';
 import { getResolvedType } from '../lib/rq-util';
 import { filterFieldItems } from '../lib/field-items-util';
 import { addressMap, AddressTypeId } from '../type/evs-address-type';
-
-
-
 
 // Типы состояния
 export type BXRQState = typeof initialState;
@@ -17,8 +25,6 @@ const initialState = {
     current: {
         items: [] as EvsRqItem[],
         item: null as EvsRqItem | null,
-
-
     },
     creating: {
         base: null as EvsRqItem | null,
@@ -45,32 +51,43 @@ export const bxrqSlice = createSlice({
         setLoading: (state: BXRQState, action: PayloadAction<boolean>) => {
             state.isLoading = action.payload;
         },
-        setFetched: (state: BXRQState, action: PayloadAction<{
-            bxrq: EVSBXRQ
-        }>) => {
-            const pay = action.payload
+        setFetched: (
+            state: BXRQState,
+            action: PayloadAction<{
+                bxrq: EVSBXRQ;
+            }>,
+        ) => {
+            const pay = action.payload;
 
             state.rqs = {
                 ...state.rqs,
-                [RQ_TYPE.ORGANIZATION]: pay.bxrq?.[RQ_TYPE.ORGANIZATION] || null,
+                [RQ_TYPE.ORGANIZATION]:
+                    pay.bxrq?.[RQ_TYPE.ORGANIZATION] || null,
                 [RQ_TYPE.IP]: pay.bxrq[RQ_TYPE.IP] || null,
                 [RQ_TYPE.FIZ]: pay.bxrq[RQ_TYPE.FIZ] || null,
                 current: pay.bxrq.current,
-
             };
             state.isFetched = true;
             state.isLoading = false;
             state.errors = null;
         },
-        setFetchedStatus: (state: BXRQState, action: PayloadAction<boolean>) => {
-
+        setFetchedStatus: (
+            state: BXRQState,
+            action: PayloadAction<boolean>,
+        ) => {
             state.isFetched = action.payload;
             state.isLoading = false;
         },
-        setCreatingLoadingStatus: (state: BXRQState, action: PayloadAction<boolean>) => {
+        setCreatingLoadingStatus: (
+            state: BXRQState,
+            action: PayloadAction<boolean>,
+        ) => {
             state.isCreatingLoading = action.payload;
         },
-        setCurrentRqItems: (state: BXRQState, action: PayloadAction<{ clientType: RQ_TYPE }>) => {
+        setCurrentRqItems: (
+            state: BXRQState,
+            action: PayloadAction<{ clientType: RQ_TYPE }>,
+        ) => {
             if (!state.rqs) return;
 
             const resolvedType = getResolvedType(action.payload.clientType);
@@ -78,66 +95,97 @@ export const bxrqSlice = createSlice({
 
             if (!rqData) return;
 
-            const isDefault = !rqData.items || !rqData.items.length || rqData.items[0]?.bx_id === -1;
+            const isDefault =
+                !rqData.items ||
+                !rqData.items.length ||
+                rqData.items[0]?.bx_id === -1;
             const items: EvsRqItem[] = !isDefault
                 ? rqData.items
                 : [rqData.default];
 
-            const item: EvsRqItem = items.length > 0 ? items[0]! : rqData.default!;
+            const item: EvsRqItem =
+                items.length > 0 ? items[0]! : rqData.default!;
 
             state.current.items = items;
             state.current.item = item;
         },
-        saveCurrentRqItems: (state: BXRQState, action: PayloadAction<{ clientType: RQ_TYPE }>) => {
+        saveCurrentRqItems: (
+            state: BXRQState,
+            action: PayloadAction<{ clientType: RQ_TYPE }>,
+        ) => {
             if (state.rqs) {
-                const resolvedType = getResolvedType(action.payload.clientType) as ResolvedRQType;
+                const resolvedType = getResolvedType(
+                    action.payload.clientType,
+                ) as ResolvedRQType;
                 state.rqs[resolvedType].items = state.current.items;
             }
         },
-        setCurrentItem: (state: BXRQState, action: PayloadAction<{ item: EvsRqItem }>) => {
-            const searchingCurrent = state.current.items.find(item => item.bx_id === action.payload.item.bx_id) || state.current.item;
+        setCurrentItem: (
+            state: BXRQState,
+            action: PayloadAction<{ item: EvsRqItem }>,
+        ) => {
+            const searchingCurrent =
+                state.current.items.find(
+                    item => item.bx_id === action.payload.item.bx_id,
+                ) || state.current.item;
 
-            state.current.item = !searchingCurrent ? null : { ...action.payload.item };
+            state.current.item = !searchingCurrent
+                ? null
+                : { ...action.payload.item };
         },
-        initBaseCreating: (state: BXRQState, action: PayloadAction<{
-            currentClientType: RQ_TYPE;
-            // contractType: CONTRACT_LTYPE;
-            // supplyType: SupplyTypesType;
-        }>) => {
+        initBaseCreating: (
+            state: BXRQState,
+            action: PayloadAction<{
+                currentClientType: RQ_TYPE;
+                // contractType: CONTRACT_LTYPE;
+                // supplyType: SupplyTypesType;
+            }>,
+        ) => {
             if (state.current.item) {
                 const base = { ...state.current.item };
-                base.fields = base.fields ? filterFieldItems(
-                    base.fields,
-                    action.payload.currentClientType,
-                    // action.payload.contractType,
-                    // action.payload.supplyType,
-                ) : base.fields;
+                base.fields = base.fields
+                    ? filterFieldItems(
+                          base.fields,
+                          action.payload.currentClientType,
+                          // action.payload.contractType,
+                          // action.payload.supplyType,
+                      )
+                    : base.fields;
 
                 state.creating.base = base;
             }
         },
-        saveBaseCreating: (state: BXRQState, action: PayloadAction<{ updatedState: Partial<BXRQState> }>) => {
+        saveBaseCreating: (
+            state: BXRQState,
+            action: PayloadAction<{ updatedState: Partial<BXRQState> }>,
+        ) => {
             Object.assign(state, action.payload.updatedState);
         },
         cancelBaseCreating: (state: BXRQState) => {
             state.creating.base = null;
         },
-        initAddressCreating: (state: BXRQState, action: PayloadAction<{ typeId: AddressTypeId }>) => {
+        initAddressCreating: (
+            state: BXRQState,
+            action: PayloadAction<{ typeId: AddressTypeId }>,
+        ) => {
             if (!state.current.item) return;
 
-            const searchingCreating = state.current.item.address.items.find(address =>
-                address.type_id === action.payload.typeId
+            const searchingCreating = state.current.item.address.items.find(
+                address => address.type_id === action.payload.typeId,
             );
 
             if (searchingCreating) {
                 state.creating.address = { ...searchingCreating };
             }
         },
-        initCopyAddressCreating: (state: BXRQState, action: PayloadAction<{ typeId: AddressTypeId }>) => {
+        initCopyAddressCreating: (
+            state: BXRQState,
+            action: PayloadAction<{ typeId: AddressTypeId }>,
+        ) => {
             if (!state.current.item) return;
 
-            const copySearchingCreating = state.current.item.address.items.find(address =>
-                address.type_id !== action.payload.typeId
+            const copySearchingCreating = state.current.item.address.items.find(
+                address => address.type_id !== action.payload.typeId,
             );
 
             if (copySearchingCreating) {
@@ -148,18 +196,25 @@ export const bxrqSlice = createSlice({
                 };
             }
         },
-        saveAddressCreating: (state: BXRQState, action: PayloadAction<{ typeId: AddressTypeId; clientType: RQ_TYPE }>) => {
+        saveAddressCreating: (
+            state: BXRQState,
+            action: PayloadAction<{
+                typeId: AddressTypeId;
+                clientType: RQ_TYPE;
+            }>,
+        ) => {
             if (!state.current.item || !state.creating.address) {
                 return;
             }
 
             // Обновляем адреса в текущем элементе
-            state.current.item.address.items = state.current.item.address.items.map(ad => {
-                if (ad.type_id === action.payload.typeId) {
-                    return state.creating.address!;
-                }
-                return ad;
-            });
+            state.current.item.address.items =
+                state.current.item.address.items.map(ad => {
+                    if (ad.type_id === action.payload.typeId) {
+                        return state.creating.address!;
+                    }
+                    return ad;
+                });
 
             // Обновляем элементы в current.items
             state.current.items = state.current.items.map((rq: EvsRqItem) => {
@@ -170,7 +225,9 @@ export const bxrqSlice = createSlice({
             });
 
             // Обновляем rqs
-            const resolvedType = getResolvedType(action.payload.clientType) as ResolvedRQType;
+            const resolvedType = getResolvedType(
+                action.payload.clientType,
+            ) as ResolvedRQType;
             if (state.rqs) {
                 state.rqs[resolvedType].items = state.current.items;
             }
@@ -181,7 +238,10 @@ export const bxrqSlice = createSlice({
         cancelAddressCreating: (state: BXRQState) => {
             state.creating.address = null;
         },
-        initBankCreating: (state: BXRQState, action: PayloadAction<{ bankId?: number }>) => {
+        initBankCreating: (
+            state: BXRQState,
+            action: PayloadAction<{ bankId?: number }>,
+        ) => {
             let currentBank = state.current.item?.bank.items[0];
             if (!currentBank) {
                 currentBank = state.current.item?.bank.current;
@@ -190,7 +250,10 @@ export const bxrqSlice = createSlice({
                 state.creating.bank = { ...currentBank };
             }
         },
-        saveBankCreating: (state: BXRQState, action: PayloadAction<{ bankId: number; clientType: RQ_TYPE }>) => {
+        saveBankCreating: (
+            state: BXRQState,
+            action: PayloadAction<{ bankId: number; clientType: RQ_TYPE }>,
+        ) => {
             if (!state.creating.bank || !state.current.item) {
                 return;
             }
@@ -198,7 +261,7 @@ export const bxrqSlice = createSlice({
             // Создаем обновленный банк
             const updatedBank: BankRqItem = {
                 ...state.creating.bank,
-                id: action.payload.bankId
+                id: action.payload.bankId,
             };
 
             // Обновляем банк в текущем элементе
@@ -206,7 +269,7 @@ export const bxrqSlice = createSlice({
                 ...state.current.item.bank,
                 items: [updatedBank],
                 current: updatedBank,
-                fields: updatedBank.fields
+                fields: updatedBank.fields,
             };
 
             // Обновляем элементы в current.items
@@ -218,7 +281,9 @@ export const bxrqSlice = createSlice({
             });
 
             // Обновляем rqs
-            const resolvedType = getResolvedType(action.payload.clientType) as ResolvedRQType;
+            const resolvedType = getResolvedType(
+                action.payload.clientType,
+            ) as ResolvedRQType;
             if (state.rqs) {
                 state.rqs[resolvedType].items = state.current.items;
             }
@@ -229,63 +294,111 @@ export const bxrqSlice = createSlice({
         cancelBankCreating: (state: BXRQState) => {
             state.creating.bank = null;
         },
-        setBaseProp: (state: BXRQState, action: PayloadAction<{ code: string; value: string }>) => {
+        setBaseProp: (
+            state: BXRQState,
+            action: PayloadAction<{ code: string; value: string }>,
+        ) => {
             if (state.creating.base?.fields) {
-                state.creating.base.fields = state.creating.base.fields.map(f => {
-                    if (f.type !== "select" && f.code === action.payload.code) {
-                        return { ...f, value: action.payload.value } as StringInput;
-                    }
-                    return f;
-                });
+                state.creating.base.fields = state.creating.base.fields.map(
+                    f => {
+                        if (
+                            f.type !== 'select' &&
+                            f.code === action.payload.code
+                        ) {
+                            return {
+                                ...f,
+                                value: action.payload.value,
+                            } as StringInput;
+                        }
+                        return f;
+                    },
+                );
             }
         },
-        setCaseLoading: (state: BXRQState, action: PayloadAction<{ code: string }>) => {
+        setCaseLoading: (
+            state: BXRQState,
+            action: PayloadAction<{ code: string }>,
+        ) => {
             if (!state.caseLoading.includes(action.payload.code)) {
-                state.caseLoading.push(action.payload.code)
+                state.caseLoading.push(action.payload.code);
             } else {
-                state.caseLoading = state.caseLoading.filter(code => code !== action.payload.code)
+                state.caseLoading = state.caseLoading.filter(
+                    code => code !== action.payload.code,
+                );
             }
         },
-        setAddressProp: (state: BXRQState, action: PayloadAction<{ code: string; value: string }>) => {
+        setAddressProp: (
+            state: BXRQState,
+            action: PayloadAction<{ code: string; value: string }>,
+        ) => {
             if (state.creating.address?.fields) {
-                state.creating.address.fields = state.creating.address.fields.map(f => {
-                    if (f.code === action.payload.code) {
-                        return { ...f, value: action.payload.value } as StringInput;
-                    }
-                    return f;
-                });
+                state.creating.address.fields =
+                    state.creating.address.fields.map(f => {
+                        if (f.code === action.payload.code) {
+                            return {
+                                ...f,
+                                value: action.payload.value,
+                            } as StringInput;
+                        }
+                        return f;
+                    });
             }
         },
-        setBankProp: (state: BXRQState, action: PayloadAction<{ code: string; value: string }>) => {
+        setBankProp: (
+            state: BXRQState,
+            action: PayloadAction<{ code: string; value: string }>,
+        ) => {
             if (state.creating.bank?.fields) {
-                state.creating.bank.fields = state.creating.bank.fields.map(f => {
-                    if (f.type !== "select" && f.code === action.payload.code) {
-                        return { ...f, value: action.payload.value } as StringInput;
-                    }
-                    return f;
-                });
+                state.creating.bank.fields = state.creating.bank.fields.map(
+                    f => {
+                        if (
+                            f.type !== 'select' &&
+                            f.code === action.payload.code
+                        ) {
+                            return {
+                                ...f,
+                                value: action.payload.value,
+                            } as StringInput;
+                        }
+                        return f;
+                    },
+                );
             }
         },
-        setError: (state: BXRQState, action: PayloadAction<{ code: string; value: string }>) => {
+        setError: (
+            state: BXRQState,
+            action: PayloadAction<{ code: string; value: string }>,
+        ) => {
             if (!state.errors) {
                 state.errors = {};
             }
             state.errors[action.payload.code] = action.payload.value;
         },
-        cleanError: (state: BXRQState, action: PayloadAction<{ code: string }>) => {
+        cleanError: (
+            state: BXRQState,
+            action: PayloadAction<{ code: string }>,
+        ) => {
             if (state.errors) {
-                const { [action.payload.code]: _, ...restErrors } = state.errors;
-                state.errors = Object.keys(restErrors).length > 0 ? restErrors : null;
+                const { [action.payload.code]: _, ...restErrors } =
+                    state.errors;
+                state.errors =
+                    Object.keys(restErrors).length > 0 ? restErrors : null;
             }
         },
         cleanErrors: (state: BXRQState) => {
             state.errors = null;
         },
-        setRequired: (state: BXRQState, action: PayloadAction<{ errors: string[] }>) => {
+        setRequired: (
+            state: BXRQState,
+            action: PayloadAction<{ errors: string[] }>,
+        ) => {
             state.push.reqired = action.payload.errors;
             state.push.isUnderstanding = action.payload.errors.length < 1;
         },
-        setRequiredUnderstand: (state: BXRQState, action: PayloadAction<{ status: boolean }>) => {
+        setRequiredUnderstand: (
+            state: BXRQState,
+            action: PayloadAction<{ status: boolean }>,
+        ) => {
             state.push.reqired = [];
             state.push.isUnderstanding = action.payload.status;
         },
@@ -319,7 +432,7 @@ export const {
     cleanError,
     cleanErrors,
     setRequired,
-    setRequiredUnderstand
+    setRequiredUnderstand,
 } = bxrqSlice.actions;
 
 // Экспортируем редюсер
@@ -328,12 +441,21 @@ export const bxrqReducer = bxrqSlice.reducer;
 // Селекторы
 export const selectBXRQState = (state: { bxrq: BXRQState }) => state.bxrq;
 export const selectBXRQData = (state: { bxrq: BXRQState }) => state.bxrq.rqs;
-export const selectBXRQLoading = (state: { bxrq: BXRQState }) => state.bxrq.isLoading;
-export const selectBXRQError = (state: { bxrq: BXRQState }) => state.bxrq.errors;
-export const selectBXRQCurrentItem = (state: { bxrq: BXRQState }) => state.bxrq.current.item;
-export const selectBXRQCurrentItems = (state: { bxrq: BXRQState }) => state.bxrq.current.items;
-export const selectBXRQCreatingBase = (state: { bxrq: BXRQState }) => state.bxrq.creating.base;
-export const selectBXRQCreatingAddress = (state: { bxrq: BXRQState }) => state.bxrq.creating.address;
-export const selectBXRQCreatingBank = (state: { bxrq: BXRQState }) => state.bxrq.creating.bank;
-export const selectBXRQRequired = (state: { bxrq: BXRQState }) => state.bxrq.push.reqired;
-export const selectBXRQIsUnderstanding = (state: { bxrq: BXRQState }) => state.bxrq.push.isUnderstanding; 
+export const selectBXRQLoading = (state: { bxrq: BXRQState }) =>
+    state.bxrq.isLoading;
+export const selectBXRQError = (state: { bxrq: BXRQState }) =>
+    state.bxrq.errors;
+export const selectBXRQCurrentItem = (state: { bxrq: BXRQState }) =>
+    state.bxrq.current.item;
+export const selectBXRQCurrentItems = (state: { bxrq: BXRQState }) =>
+    state.bxrq.current.items;
+export const selectBXRQCreatingBase = (state: { bxrq: BXRQState }) =>
+    state.bxrq.creating.base;
+export const selectBXRQCreatingAddress = (state: { bxrq: BXRQState }) =>
+    state.bxrq.creating.address;
+export const selectBXRQCreatingBank = (state: { bxrq: BXRQState }) =>
+    state.bxrq.creating.bank;
+export const selectBXRQRequired = (state: { bxrq: BXRQState }) =>
+    state.bxrq.push.reqired;
+export const selectBXRQIsUnderstanding = (state: { bxrq: BXRQState }) =>
+    state.bxrq.push.isUnderstanding;

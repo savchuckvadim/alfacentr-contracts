@@ -1,6 +1,5 @@
-import { EBxMethod } from "@bitrix/core";
-import { IBXProduct } from "../interface/bx-product.interface";
-
+import { EBxMethod } from '@bitrix/core';
+import { IBXProduct } from '../interface/bx-product.interface';
 
 export type BxCatalogSchema = {
     [EBxMethod.GET]: {
@@ -8,14 +7,14 @@ export type BxCatalogSchema = {
             id: number | string;
             select?: string[];
         };
-        response: {product: IBXProduct};
+        response: { product: IBXProduct };
     };
     [EBxMethod.LIST]: {
-        request:  {
+        request: {
             filter: Partial<IBXProduct>;
             select?: string[];
             start: -1;
         };
-        response: {products: IBXProduct[]};
+        response: { products: IBXProduct[] };
     };
-}
+};

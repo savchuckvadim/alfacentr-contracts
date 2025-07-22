@@ -1,12 +1,10 @@
-
-import { BxCompanyRepository } from "../repository/bx-company.repository";
-import { BitrixBaseApi } from "@bitrix/core";
-import { IBXCompany } from "../interface/bx-company.interface";
-import { IBXField } from "../../fields/bx-field.interface";
-
+import { BxCompanyRepository } from '../repository/bx-company.repository';
+import { BitrixBaseApi } from '@bitrix/core';
+import { IBXCompany } from '../interface/bx-company.interface';
+import { IBXField } from '../../fields/bx-field.interface';
 
 export class BxCompanyService {
-    private repo!: BxCompanyRepository
+    private repo!: BxCompanyRepository;
 
     clone(api: BitrixBaseApi): BxCompanyService {
         const instance = new BxCompanyService();
@@ -22,7 +20,10 @@ export class BxCompanyService {
         return (await this.repo.get(companyId)).result;
     }
 
-    async getList(filter: Partial<IBXCompany>, select?: string[]): Promise<IBXCompany[] | null> {
+    async getList(
+        filter: Partial<IBXCompany>,
+        select?: string[],
+    ): Promise<IBXCompany[] | null> {
         return (await this.repo.getList(filter, select)).result;
     }
 
@@ -30,11 +31,17 @@ export class BxCompanyService {
         return (await this.repo.set(data)).result;
     }
 
-    async update(companyId: number | string, data: Partial<IBXCompany>): Promise<number | null> {
+    async update(
+        companyId: number | string,
+        data: Partial<IBXCompany>,
+    ): Promise<number | null> {
         return (await this.repo.update(companyId, data)).result;
     }
 
-    async getFieldsList(filter: { [key: string]: any }, select?: string[]): Promise<IBXField[] | null> {
+    async getFieldsList(
+        filter: { [key: string]: any },
+        select?: string[],
+    ): Promise<IBXField[] | null> {
         return (await this.repo.getFieldList(filter, select)).result;
     }
 

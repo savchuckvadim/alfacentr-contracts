@@ -1,21 +1,18 @@
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { createAsyncThunk } from "@reduxjs/toolkit";
-
-import { Bitrix } from "@bitrix/bitrix";
-import { BxProductRowWithProduct } from "./ProductSlice";
-import { AlfaBxProductService } from "../services/alfa-bx-product.service";
-import { API_METHOD, backAPI, EBACK_ENDPOINT } from "@workspace/api";
-import { validateApiResponse } from "@/modules/app/lib/thunk-error-handler";
-import { getProductsWithFields } from "../lib/get-products-with-fields";
-
-
+import { Bitrix } from '@bitrix/bitrix';
+import { BxProductRowWithProduct } from './ProductSlice';
+import { AlfaBxProductService } from '../services/alfa-bx-product.service';
+import { API_METHOD, backAPI, EBACK_ENDPOINT } from '@workspace/api';
+import { validateApiResponse } from '@/modules/app/lib/thunk-error-handler';
+import { getProductsWithFields } from '../lib/get-products-with-fields';
 
 // export const setFetchedProducts = createAsyncThunk(
 //     'product/fetchProducts',
 //     async (rows: BxProductRowWithProduct[], { rejectWithValue }) => {
 //         try {
 //             console.log(rows)
-          
+
 //             // const response = await backAPI.service<{rowsWithProducts:BxProductRowWithProduct[] }| null>(
 //             //     EBACK_ENDPOINT.ALFA_DEAL_PRODUCTS,
 //             //     API_METHOD.GET,
@@ -42,34 +39,48 @@ export const fetchProducts = createAsyncThunk(
     'product/fetchProducts',
     async (dealId: string, { rejectWithValue }) => {
         try {
-            console.log(dealId)
-            const bitrix = Bitrix.getService()
-            const domain = bitrix.api.getDomain()
+            console.log(dealId);
+            const bitrix = Bitrix.getService();
+            const domain = bitrix.api.getDomain();
             // const service = new AlfaBxProductService()
             // const response = await service.getDealProductRowsWithProducts(dealId)
-            
-                const response = await backAPI.service<{rowsWithProducts:BxProductRowWithProduct[] }| null>(
-                    EBACK_ENDPOINT.ALFA_DEAL_PRODUCTS,
-                    API_METHOD.GET,
-                    {},
-                    `${domain}/${dealId}`
-                )
-                
-                // Проверяем различные случаи ошибок с помощью утилиты
-                const validResponse = validateApiResponse(response, 'Ошибка получения продуктов: пустой ответ от сервера')
-                const validResponseData = validateApiResponse(validResponse.data, 'Ошибка получения продуктов: пустой ответ от сервера')
-                const validResponseDataRows = validateApiResponse(validResponseData?.rowsWithProducts, 'Ошибка получения продуктов: пустой ответ от сервера')
 
-                const products = validResponseDataRows as BxProductRowWithProduct[]
-                const alfaProducts = getProductsWithFields(products)
-                console.log(products)
-                return alfaProducts;
+            const response = await backAPI.service<{
+                rowsWithProducts: BxProductRowWithProduct[];
+            } | null>(
+                EBACK_ENDPOINT.ALFA_DEAL_PRODUCTS,
+                API_METHOD.GET,
+                {},
+                `${domain}/${dealId}`,
+            );
+
+            // Проверяем различные случаи ошибок с помощью утилиты
+            const validResponse = validateApiResponse(
+                response,
+                'Ошибка получения продуктов: пустой ответ от сервера',
+            );
+            const validResponseData = validateApiResponse(
+                validResponse.data,
+                'Ошибка получения продуктов: пустой ответ от сервера',
+            );
+            const validResponseDataRows = validateApiResponse(
+                validResponseData?.rowsWithProducts,
+                'Ошибка получения продуктов: пустой ответ от сервера',
+            );
+
+            const products = validResponseDataRows as BxProductRowWithProduct[];
+            const alfaProducts = getProductsWithFields(products);
+            console.log(products);
+            return alfaProducts;
         } catch (error) {
             // Обрабатываем сетевые ошибки и другие исключения
-            const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка при получении продуктов'
-            return rejectWithValue(errorMessage)
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : 'Неизвестная ошибка при получении продуктов';
+            return rejectWithValue(errorMessage);
         }
-    }
+    },
 );
 
 // export const createProduct = createAsyncThunk(
@@ -85,7 +96,7 @@ export const fetchProducts = createAsyncThunk(
 //                 },
 //                 domain
 //             )
-            
+
 //             const validResponse = validateApiResponse(response, 'Ошибка создания продукта: пустой ответ от сервера')
 //             const product = getProduct(validResponse)
 //             return product;
@@ -110,7 +121,7 @@ export const fetchProducts = createAsyncThunk(
 //                 },
 //                 domain
 //             )
-            
+
 //             const validResponse = validateApiResponse(response, 'Ошибка обновления продукта: пустой ответ от сервера')
 //             const product = getProduct(validResponse)
 //             return product;
@@ -134,7 +145,7 @@ export const fetchProducts = createAsyncThunk(
 //                 },
 //                 domain
 //             )
-            
+
 //             const validResponse = validateApiResponse(response, 'Ошибка удаления продукта: пустой ответ от сервера')
 //             return productId; // Возвращаем ID удаленного продукта
 //         } catch (error) {
@@ -142,4 +153,4 @@ export const fetchProducts = createAsyncThunk(
 //             return rejectWithValue(errorMessage)
 //         }
 //     }
-// ); 
+// );

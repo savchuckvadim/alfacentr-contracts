@@ -1,10 +1,5 @@
-
-import {
-    Result,
-    EnumCrmEntityTypeId,
-} from '@bitrix24/b24jssdk'
-import { initializeB24Frame } from '@bitrix24/b24jssdk'
-
+import { Result, EnumCrmEntityTypeId } from '@bitrix24/b24jssdk';
+import { initializeB24Frame } from '@bitrix24/b24jssdk';
 
 type B24 = Awaited<ReturnType<typeof initializeB24Frame>>;
 
@@ -38,42 +33,31 @@ export async function getBxService(): Promise<B24> {
 
 export interface IBatchRequest {
     [key: string]: {
-        method: string
-        params: any
-    }
+        method: string;
+        params: any;
+    };
 }
 
 export const bxBatchAPI = {
-
-
     callBatch: async (batch: IBatchRequest) => {
         const b24 = await getBxService();
 
-        const placement = b24.placement
-        console.log('b24test plcmnt')
-        console.log(placement)
-        const authData = b24.auth.getAuthData()
-
-
+        const placement = b24.placement;
+        console.log('b24test plcmnt');
+        console.log(placement);
+        const authData = b24.auth.getAuthData();
 
         try {
-            const result = await b24.callBatch(batch) as Result
-            console.log('b24 batch test result')
-            console.log(result)
+            const result = (await b24.callBatch(batch)) as Result;
+            console.log('b24 batch test result');
+            console.log(result);
 
-            console.log('b24 batch test result')
+            console.log('b24 batch test result');
 
-
-            return result
-
+            return result;
         } catch (error) {
-            console.log('b24test error')
-            console.log(error)
+            console.log('b24test error');
+            console.log(error);
         }
-
     },
-
-
-
-
-}
+};

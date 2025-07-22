@@ -30,13 +30,13 @@ deal/
 import { useDeal } from '@/modules/entities/deal';
 
 const MyComponent = () => {
-    const { 
-        dealData, 
-        dealId, 
-        setDeal, 
-        setDealId, 
-        updateField, 
-        updateFieldWithAPI 
+    const {
+        dealData,
+        dealId,
+        setDeal,
+        setDealId,
+        updateField,
+        updateFieldWithAPI,
     } = useDeal();
 
     // Установка ID сделки
@@ -57,9 +57,9 @@ const MyComponent = () => {
 const DealField = ({ fieldKey, field, dealId }) => {
     const { updateField, updateFieldWithAPI, isUpdating } = useDeal();
 
-    const handleChange = (e) => {
+    const handleChange = e => {
         const newValue = e.target.value;
-        
+
         // Обновляем локальное состояние
         updateField(fieldKey, newValue);
     };
@@ -70,7 +70,7 @@ const DealField = ({ fieldKey, field, dealId }) => {
             dealId,
             fieldKey,
             value: newValue,
-            field
+            field,
         });
     };
 
@@ -114,4 +114,4 @@ Slice предоставляет следующее состояние:
 
 ## Пример полного компонента
 
-См. файл `lib/example-usage.tsx` для полного примера использования. 
+См. файл `lib/example-usage.tsx` для полного примера использования.

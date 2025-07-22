@@ -1,4 +1,4 @@
-import { RQ_TYPE } from "@workspace/bx-rq";
+import { RQ_TYPE } from '@workspace/bx-rq';
 
 export enum EnumFizRqFields {
     INN = 'inn',
@@ -21,7 +21,6 @@ export enum EnumFizRqFields {
     TYPE = 'type',
 }
 
-
 export enum EnumOrganizationRqFields {
     INN = 'inn',
     KPP = 'kpp',
@@ -29,7 +28,7 @@ export enum EnumOrganizationRqFields {
     PRIMARY_ADDRESS = 'primaryAddress',
     PHONE = 'phone',
     EMAIL = 'email',
-   
+
     BANK = 'bank',
     BANK_ADDRESS = 'bankAddress',
     NAME = 'name',
@@ -41,7 +40,6 @@ export enum EnumOrganizationRqFields {
     EDO = 'edo',
     SBIS_ID = 'sbisId',
 
-
     FULLNAME = 'fullname',
     SHORTNAME = 'shortName',
     DIRECTOR_NAME = 'director',
@@ -50,13 +48,11 @@ export enum EnumOrganizationRqFields {
     DIRECTOR_POSITION = 'directorPosition',
     DIRECTOR_POSITION_CASE = 'directorPositionCase',
 
-
     ACCOUNTANT = 'accountant',
     OTHER = 'other',
 
     TYPE = 'type',
 }
-
 
 export enum EnumDocumentFizRqFields {
     INN = 'inn',
@@ -79,9 +75,7 @@ export enum EnumDocumentFizRqFields {
     TYPE = 'type',
 }
 
-
 export enum EnumDocumentOrganizationRqFields {
- 
     FULLNAME = 'fullname',
     INN = 'inn',
     KPP = 'kpp',
@@ -95,7 +89,6 @@ export enum EnumDocumentOrganizationRqFields {
     BANK = 'bank',
     BIK = 'bik',
 
-
     // FULLNAME = 'fullname',
     // SHORTNAME = 'shortName',
     // DIRECTOR_NAME = 'director',
@@ -103,7 +96,6 @@ export enum EnumDocumentOrganizationRqFields {
     // DIRECTOR_FIO = 'directorFio',
     // DIRECTOR_POSITION = 'directorPosition',
     // DIRECTOR_POSITION_CASE = 'directorPositionCase',
-
 
     // ACCOUNTANT = 'accountant',
     OTHER = 'other',

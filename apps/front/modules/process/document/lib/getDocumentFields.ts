@@ -1,11 +1,12 @@
-import { RootState } from "@/modules/app/model/store"
+import { RootState } from '@/modules/app/model/store';
 
 export const getDocumentFields = (state: RootState) => {
-    const { client, general, provider } = state.documentRq
-    const header = general.header
+    const { client, general, provider, clientShortRq } = state.documentRq;
+    const header = general.header;
     return {
         client,
         header,
-        provider
-    }
-}
+        provider,
+        clientShortRq
+    };
+};

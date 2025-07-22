@@ -1,19 +1,20 @@
-
-import { BxRpaItemRepository } from "../repository/bx-rpa-item.repository";
-import { BitrixBaseApi } from "@bitrix/core";
-import { AddRpaItemDto, GetRpaItemDto, ListRpaItemDto, UpdateRpaItemDto } from "../dto/rpa-item.dto";
-
+import { BxRpaItemRepository } from '../repository/bx-rpa-item.repository';
+import { BitrixBaseApi } from '@bitrix/core';
+import {
+    AddRpaItemDto,
+    GetRpaItemDto,
+    ListRpaItemDto,
+    UpdateRpaItemDto,
+} from '../dto/rpa-item.dto';
 
 export class BxRpaItemService {
-    private repo!: BxRpaItemRepository
-
+    private repo!: BxRpaItemRepository;
 
     public clone(api: BitrixBaseApi): BxRpaItemService {
         const instance = new BxRpaItemService();
         instance.init(api);
         return instance;
     }
-
 
     public init(api: BitrixBaseApi) {
         this.repo = new BxRpaItemRepository(api);

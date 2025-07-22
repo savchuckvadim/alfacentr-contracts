@@ -1,19 +1,15 @@
-import { BxListRepository } from "../repository/bx-list.repository";
-import { BitrixBaseApi } from "@bitrix/core";
-import { EBxListCode } from "../interface/bx-list.interface";
-
-
+import { BxListRepository } from '../repository/bx-list.repository';
+import { BitrixBaseApi } from '@bitrix/core';
+import { EBxListCode } from '../interface/bx-list.interface';
 
 export class BxListService {
     private repo!: BxListRepository;
-    
+
     clone(api: BitrixBaseApi): BxListService {
         const instance = new BxListService();
         instance.init(api);
         return instance;
     }
-
-    
 
     init(api: BitrixBaseApi) {
         this.repo = new BxListRepository(api);
@@ -23,16 +19,11 @@ export class BxListService {
         return this.repo.getList(IBLOCK_CODE);
     }
 
-    getListField(
-        code: EBxListCode,
-        ID: string | number
-    ) {
+    getListField(code: EBxListCode, ID: string | number) {
         return this.repo.getListField(code, ID);
     }
 
-    getListFields(
-        code: EBxListCode
-    ) {
+    getListFields(code: EBxListCode) {
         return this.repo.getListFields(code);
     }
-} 
+}
