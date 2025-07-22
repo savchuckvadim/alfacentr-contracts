@@ -5,11 +5,11 @@ import {
     Logger,
     Param,
     ValidationPipe,
-    Get,
-    Query,
+
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OnDealInitUseCase } from '../use-cases/on-deal-init.use-case';
+import { BitrixHookDto } from '@/lib/dto';
 import { OnDealInitRequestDto } from '../dto/on-deal-init-request.dto';
 
 @ApiTags('Alfa')
@@ -20,11 +20,11 @@ export class OnDealInitController {
     @ApiOperation({ summary: 'On deal init' })
     @Post('create-deal/:dealId')
     async createDeal(
-        @Body(ValidationPipe) body: OnDealInitRequestDto,
+        @Body(ValidationPipe) body: BitrixHookDto,
         @Param('dealId') dealId: string,
     ) {
-        const fullDto = { ...body, dealId: Number(dealId) };
-        Logger.log(body);
+        const fullDto = { ...body, dealId: Number(dealId) } as OnDealInitRequestDto;
+
         return this.alfaUseCase.onDealCreate(fullDto);
     }
 }
