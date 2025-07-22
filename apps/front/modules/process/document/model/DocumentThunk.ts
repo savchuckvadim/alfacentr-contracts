@@ -138,10 +138,16 @@ export const documentGenerate = createAsyncThunk<
     debugger
     await delay(2000);
 
+    const redirectLink = `https://alfacentr.bitrix24.ru/crm/deal/details/${dealId}/`;
+    window &&
+        window.top &&
+        window.top.location.replace(redirectLink)
+
+
     // // Редирект на страницу с документом
-    if (typeof window !== 'undefined') {
-        window.location.href = `https://alfacentr.bitrix24.ru/crm/deal/details/${dealId}/`;
-    }
+    // if (typeof window !== 'undefined') {
+    //     window.location.href = `https://alfacentr.bitrix24.ru/crm/deal/details/${dealId}/`;
+    // }
     //for dev
     //     window.open(
     //         `https://alfacentr.bitrix24.ru/crm/deal/details/${dealId}/`,
