@@ -17,7 +17,7 @@ import {
 import { BxDealCompanyService } from './bx-deal-compny.service';
 import { BxParticipantService } from '@/modules/entities/participant/lib/service/bx-participant.service';
 import { IParticipant } from '@alfa/entities';
-
+const IS_PROD = true;
 // export interface IDealProductRowWithProduct extends IBXProductRowRow {
 //     ownerType: BitrixOwnerType;
 //     ownerId: string | number;
@@ -50,9 +50,16 @@ export class BxInitService {
     private participantService: BxParticipantService;
     constructor() {
         this.bitrix = Bitrix.getService();
+
+
         // this.productService = new AlfaBxProductService()
         this.dealCompanyService = new BxDealCompanyService();
         this.participantService = new BxParticipantService();
+
+        if (!this.bitrix.api.getInitializedData().inFrame && IS_PROD) {
+            window.location.href = '/none-auth';
+            return;
+        }
     }
 
     public async init(): Promise<IBitrixinitResult> {

@@ -73,7 +73,7 @@ export const filterProductFieldsForDetails = (fields: IProductField[]) => {
     ] as string[];
 
     const fieldsFilter = [
-        bxProductData.SEMINAR_TOPIC.bitrixId,
+        // bxProductData.SEMINAR_TOPIC.bitrixId,
         bxProductData.PREFIX.bitrixId,
     ] as string[];
 

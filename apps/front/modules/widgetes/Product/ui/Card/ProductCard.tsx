@@ -125,7 +125,7 @@ export const ProductCard = ({ product }: IProductCardProps) => {
                         <CardDescription className="mt-1 text-sm">
                             <Link
                                 target="_blank"
-                                href={`https://alfacentr.bitrix24.ru/crm/catalog/24/product//${product.productId}/`}
+                                href={`https://alfacentr.bitrix24.ru/crm/catalog/24/product/${product.productId}/`}
                             >
                                 ID: {product.productId} • Тип:{' '}
                                 {productType.toUpperCase()}

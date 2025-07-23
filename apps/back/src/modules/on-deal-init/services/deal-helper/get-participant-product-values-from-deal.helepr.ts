@@ -59,7 +59,7 @@ export const getParticipantValuesFromDeal = (
             if (value.name.includes(`Участник ${i}`)) {
                 console.log('value', value);
             }
-            if (value) {
+            if (value && value.value && value.code !== 'is_ppk') {
                 if (
                     value.name.includes(`Участник ${i}`) &&
                     ((i === 1 && !value.name.includes(`Участник 10`)) ||
