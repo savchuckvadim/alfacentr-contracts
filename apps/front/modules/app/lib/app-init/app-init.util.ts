@@ -9,6 +9,7 @@ import { wsInit } from '../../model/queue-ws-ping-test/QueueWsPingListener';
 import { appActions } from '../../model/AppSlice';
 import { bitrixInit } from '../bitrix-init/bitrix-init.util';
 import { WSClient } from '@/modules/shared/Websocket/ws-client';
+import { IS_PROD } from '../services/bx-init.service';
 
 export const appInit = async (
     dispatch: AppDispatch,
@@ -19,7 +20,14 @@ export const appInit = async (
     const bitrix = await Bitrix.start(TESTING_DOMAIN, TESTING_USER);
     console.log('bitrix', bitrix.api);
     console.log('bitrix initialized', bitrix.api.getInitializedData());
-    const { domain, user } = bitrix.api.getInitializedData();
+    const { domain, user, inFrame } = bitrix.api.getInitializedData();
+
+    if (!inFrame && IS_PROD) {
+        window.location.href = '/none-auth';
+        return;
+    }
+
+
     const wsService = new WSClient(Number(user.ID), domain); // создаём сокет
     wsService.init(); // <- здесь создаёшь сокет
 
