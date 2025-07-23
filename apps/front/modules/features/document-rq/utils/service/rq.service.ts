@@ -30,6 +30,7 @@ export class ContractRqService {
         );
         const roles = this.getRoles();
         const clientShortRq = this.getClientShortRq(clientRq, clientType);
+        debugger;
         return {
             client: clientRqData,
             clientShortRq,

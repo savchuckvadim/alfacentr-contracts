@@ -17,7 +17,7 @@ import {
 import { BxDealCompanyService } from './bx-deal-compny.service';
 import { BxParticipantService } from '@/modules/entities/participant/lib/service/bx-participant.service';
 import { IParticipant } from '@alfa/entities';
-const IS_PROD = true;
+const IS_PROD = false;
 // export interface IDealProductRowWithProduct extends IBXProductRowRow {
 //     ownerType: BitrixOwnerType;
 //     ownerId: string | number;

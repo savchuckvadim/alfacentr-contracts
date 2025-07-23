@@ -24,7 +24,7 @@ export class BxClientRqService {
 
             return this.prepareClientFizRq(clientRq);
         } else {
-           
+
 
             return this.prepareClientOrgRq(clientRq);
         }
@@ -118,6 +118,7 @@ export class BxClientRqService {
             BX_ADDRESS_TYPE.PRIMARY,
             RQ_TYPE.FIZ,
         );
+        debugger;
         result.primaryAddress = primaryAddress;
         result.address = address;
         return result;
@@ -285,11 +286,13 @@ export class BxClientRqService {
             clientRq,
             BX_ADDRESS_TYPE.REGISTERED,
             RQ_TYPE.ORGANIZATION,
+            true,
         );
         const primaryAddress = this.getAddressString(
             clientRq,
             BX_ADDRESS_TYPE.PRIMARY,
             RQ_TYPE.ORGANIZATION,
+            true,
         );
 
         addressResult = primaryAddress ? `Адрес: ${primaryAddress}` : address ? `Адрес: ${address}` : `${addressResult}`;
@@ -354,7 +357,11 @@ export class BxClientRqService {
         const docDateValue = clientRq.fields.find(
             fld => fld.code === RQ_ITEM_CODE.DOCUMENT_DATE,
         )?.value;
-        docDate = `Документ выдан: ${docDate || docDate}`;
+        if (docDateValue) {
+            docDate = `Документ выдан: ${docDateValue}`;
+        } else {
+            docDate = `Документ выдан: ${docDate}`;
+        }
         const issuedByValue = clientRq.fields.find(
             fld => fld.code === RQ_ITEM_CODE.ISSUED_BY,
         )?.value;
@@ -371,11 +378,13 @@ export class BxClientRqService {
             clientRq,
             BX_ADDRESS_TYPE.REGISTERED,
             RQ_TYPE.FIZ,
+            true,
         );
         const primaryAddress = this.getAddressString(
             clientRq,
             BX_ADDRESS_TYPE.PRIMARY,
             RQ_TYPE.FIZ,
+            true,
         );
 
         addressResult = primaryAddress ? `Адрес: ${primaryAddress}` : address ? `Адрес: ${address}` : `${addressResult}`;
@@ -389,20 +398,25 @@ export class BxClientRqService {
         clientRq: EvsRqItem,
         type: BX_ADDRESS_TYPE.REGISTERED | BX_ADDRESS_TYPE.PRIMARY,
         clientType: RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION,
+        isClean: boolean = false,
     ): string {
         let address = '';
         clientRq.address.items.forEach(addresType => {
-            if (addresType.anchor_id === type) {
+
+            debugger;
+            if (addresType.type_id === type) {
                 addresType.fields.forEach((field, index) => {
-                    if (
-                        field.code === ADDRESS_RQ_ITEM_CODE.ADDRESS_POSTAL_CODE
-                    ) {
-                        address += field.value;
-                    } else {
-                        address += field.value;
-                    }
-                    if (index < addresType.fields.length - 1) {
-                        address += ', ';
+                    if (field.value) {
+                        if (
+                            field.code === ADDRESS_RQ_ITEM_CODE.ADDRESS_POSTAL_CODE
+                        ) {
+                            address += field.value;
+                        } else {
+                            address += field.value;
+                        }
+                        if (index < addresType.fields.length - 1) {
+                            address += ', ';
+                        }
                     }
                 });
             }
@@ -421,9 +435,17 @@ export class BxClientRqService {
                 addressType = 'Почтовый адрес';
             }
         }
-        return (
-            address || `${addressType} ________________________________________`
-        );
+
+        debugger;
+        if (isClean) {
+            return (
+                `${address}` || `________________________________________`
+            );
+        } else {
+            return (
+                `${addressType}: ${address}` || `${addressType}: ________________________________________`
+            );
+        }
     }
     private getBankRqs(bankRq: BankRqItem | null) {
         if (!bankRq) {

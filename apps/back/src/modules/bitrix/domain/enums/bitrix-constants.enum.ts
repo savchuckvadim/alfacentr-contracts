@@ -21,5 +21,5 @@ export enum BitrixOwnerType {
 export enum BitrixActivityTypeId {
     CALL = 1,
     MEETING = 2,
-    EMAIL = 3,
+    EMAIL = 4,
 }

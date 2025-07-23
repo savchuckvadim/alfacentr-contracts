@@ -7,6 +7,7 @@ import { DocumentGenerateQueueProcessor } from './processors/document.processor'
 import { PBXModule } from '../pbx';
 import { DocumentContractFieldsService } from './services/document-contract-fields.service';
 import { PpkApplicationGenerateService } from './services/ppk-application-generate.service';
+import { DocumentGenerateBatchService } from './services/document-generate-batch.service';
 
 @Module({
     imports: [PBXModule, QueueModule],
@@ -17,6 +18,7 @@ import { PpkApplicationGenerateService } from './services/ppk-application-genera
         DocumentGenerateQueueProcessor,
         DocumentContractFieldsService,
         PpkApplicationGenerateService,
+        DocumentGenerateBatchService,
     ],
 })
 export class DocumentGenerateModule {}

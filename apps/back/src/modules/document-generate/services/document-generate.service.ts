@@ -134,7 +134,7 @@ export class DocumentGenerateService {
             // contractPdf,
             // contractWithoutPtPdf: resultContract,
             updateDealDocumentsResponse,
-            
+
             updateDealPpkApplicationResponse
             // invoicesPdf,
             // invoicesWithoutPtPdf
@@ -255,4 +255,6 @@ export class DocumentGenerateService {
         );
         return response.result.document as IRequestDocumentGenerateResponse
     }
+
+    
 }

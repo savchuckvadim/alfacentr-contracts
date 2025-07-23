@@ -60,8 +60,11 @@ export interface IBXActivity {
     TYPE_ID: BitrixActivityTypeId;
     SUBJECT: string;
     RESPONSIBLE_ID: number | string;
-    START_TIME: string;
-    END_TIME: string;
+    DESCRIPTION_TYPE?: number;
+    // the text type. Possible values: 1— plain text, 2— HTML markup, 3— BB-code. We will set the value to 3.
+    DESCRIPTION?: string;
+    START_TIME?: string;
+    END_TIME?: string;
     COMMUNICATIONS: BXActivityCommunication[];
     FILES?: BXActivityFile[];
 }

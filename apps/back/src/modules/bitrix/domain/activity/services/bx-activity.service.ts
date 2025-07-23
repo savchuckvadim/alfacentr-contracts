@@ -16,14 +16,14 @@ export class ActivityService {
     }
 
     async createActivity(activity: IBXActivity) {
-        return this.repo.create(activity);
+        return await this.repo.create(activity);
     }
 
     async updateActivity(id: number | string, activity: IBXActivity) {
-        return this.repo.update(id, activity);
+        return await this.repo.update(id, activity);
     }
 
     async deleteActivity(id: number | string) {
-        return this.repo.delete(id);
+        return await this.repo.delete(id);
     }
 }

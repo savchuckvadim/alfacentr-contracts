@@ -28,10 +28,13 @@ import { BxSmartTypeService } from './domain/crm/smart-type/services/bx-smart-ty
 import { BxRpaItemService } from './domain/rpa/item/services/bx-rpa-item.service';
 import { BxRpaItemBatchService } from './domain/rpa/item/services/bx-rpa-item.batch.service';
 import { BxFileService } from './domain/file/bx-file.service';
+import { ActivityService } from './domain/activity/services/bx-activity.service';
+import { BxActivityBatchService } from './domain/activity/services/bx-activity.batch.service';
 
 // @Injectable()
 export class BitrixService {
     public api: BitrixBaseApi;
+    public activity: ActivityService;
     public deal: BxDealService;
     public company: BxCompanyService;
     public productRow: BxProductRowService;
@@ -48,6 +51,7 @@ export class BitrixService {
     public file: BxFileService;
 
     public batch = {
+        activity: null as unknown as BxActivityBatchService,
         deal: null as unknown as BxDealBatchService,
         company: null as unknown as BxCompanyBatchService,
         productRow: null as unknown as BxProductRowBatchService,
@@ -79,6 +83,7 @@ export class BitrixService {
         this.initSmartType();
         this.initRpaItem();
         this.initFile();
+        this.initActivity();
     }
 
     private initDeal() {
@@ -145,5 +150,9 @@ export class BitrixService {
     }
     private initFile() {
         this.file = this.cloner.clone(BxFileService, this.api);
+    }
+    private initActivity() {
+        this.activity = this.cloner.clone(ActivityService, this.api);
+        this.batch.activity = this.cloner.clone(BxActivityBatchService, this.api);
     }
 }

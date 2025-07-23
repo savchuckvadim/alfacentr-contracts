@@ -157,7 +157,7 @@ export class BxActivityRepository {
     // }
 
     async create(data: Partial<IBXActivity>) {
-        return this.bitrixService.callType(
+        return await this.bitrixService.callType(
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.ADD,
@@ -165,7 +165,7 @@ export class BxActivityRepository {
         );
     }
     async createBtch(cmdCode: string, data: Partial<IBXActivity>) {
-        return this.bitrixService.addCmdBatchType(
+        return await this.bitrixService.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
@@ -174,7 +174,7 @@ export class BxActivityRepository {
         );
     }
     async update(id: number | string, data: Partial<IBXActivity>) {
-        return this.bitrixService.callType(
+        return await this.bitrixService.callType(
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,
             EBxMethod.UPDATE,
