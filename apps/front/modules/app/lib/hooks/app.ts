@@ -7,7 +7,7 @@ export const useApp = () => {
     const dispatch = useAppDispatch();
     const app = useAppSelector(state => state.app);
     const [isClient, setIsClient] = useState(false);
-
+    const hasCompany = app.bitrix.company && app.bitrix.company.ID
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -20,6 +20,7 @@ export const useApp = () => {
 
     return {
         isClient,
+        hasCompany,
         app,
         initialized: app.initialized,
         isLoading: app.isLoading,

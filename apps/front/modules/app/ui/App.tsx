@@ -8,7 +8,7 @@ import { useApp } from '../lib/hooks/app';
 // import { useState } from 'react';
 
 export const App = ({ children }: { children: React.ReactNode }) => {
-    const { initialized, isLoading, isClient } = useApp();
+    const { initialized, isLoading, isClient, hasCompany } = useApp();
 
     // const [isMounted, setIsMounted] = useState(false);
 
@@ -33,11 +33,13 @@ export const App = ({ children }: { children: React.ReactNode }) => {
     // }, [isMounted]);
     return (
         <div className="h-calc(100vh - 300px)">
-            {isClient && initialized && !isLoading ? (
+            {isClient && initialized && !isLoading && hasCompany ? (
                 children
             ) : (
                 <LoadingScreen />
             )}
+
+            
         </div>
     );
 };

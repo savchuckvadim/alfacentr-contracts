@@ -3,21 +3,17 @@ import { BitrixService } from '@bitrix/bitrix.service';
 import { TESTING_PLACEMENT } from '../../consts/app-global';
 import { Placement } from '@workspace/bx';
 import {
-    BitrixOwnerType,
+
     IBXCompany,
     IBXDeal,
     IBXItem,
-    IBXProduct,
-    IBXProductRowRow,
+
 } from '@bitrix/index';
-import {
-    AlfaBxProductService,
-    BxProductRowWithProduct,
-} from '@/modules/entities/product';
+
 import { BxDealCompanyService } from './bx-deal-compny.service';
 import { BxParticipantService } from '@/modules/entities/participant/lib/service/bx-participant.service';
 import { IParticipant } from '@alfa/entities';
-export const IS_PROD = true;
+export const IS_PROD = false;
 // export interface IDealProductRowWithProduct extends IBXProductRowRow {
 //     ownerType: BitrixOwnerType;
 //     ownerId: string | number;
@@ -62,7 +58,7 @@ export class BxInitService {
         }
     }
 
-    public async init(): Promise<IBitrixinitResult> {
+    public async init(): Promise<IBitrixinitResult | null> {
         const dealId = await this.getDealId();
 
         this.dealCompanyService.getDealAndCompanyComand(Number(dealId));
@@ -74,6 +70,12 @@ export class BxInitService {
         // console.log("ROWS WITH PRODUCTS")
         // console.log(rows)
         const { company, deal, items } = this.prepare(totalBxResponse);
+        debugger
+        if (!deal || !company) {
+           
+            return null;
+        }
+
         const participants =
             this.participantService.getParticipantsFrommItems(items);
         return { deal, company, participants } as IBitrixinitResult;
@@ -91,8 +93,8 @@ export class BxInitService {
             'ID' in placement.options
                 ? placement.options.ID
                 : 'dealId' in placement.options
-                  ? placement.options.dealId
-                  : null;
+                    ? placement.options.dealId
+                    : null;
         if (!dealId) {
             throw new Error('Deal ID not found in placement options');
         }

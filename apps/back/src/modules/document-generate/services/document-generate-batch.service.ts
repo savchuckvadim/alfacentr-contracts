@@ -222,6 +222,10 @@ export class DocumentGenerateBatchService {
             TYPE_ID: BitrixActivityTypeId.EMAIL,
             DIRECTION: 2, // 1 - incoming, 2 - outgoing
             RESPONSIBLE_ID: '502',
+
+            SETTINGS: {
+                'MESSAGE_FROM': `Иванов Иван <laravelsamvel@gmail.com>`
+            },
             SUBJECT: '✅ Документы сгенерированы',
             DESCRIPTION: '<h2>Документы сгенерированы</h2>',
             COMPLETED: "Y",

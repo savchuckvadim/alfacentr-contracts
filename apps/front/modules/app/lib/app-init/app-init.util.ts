@@ -41,8 +41,16 @@ export const appInit = async (
     console.log('user');
 
     console.log(user);
+    const bxResult = await bitrixInit();
+    if (!bxResult) {
+        window &&
+            window?.location
+            ? window.location.href = '/no-company'
+            : null;
 
-    const { deal, company, participants } = (await bitrixInit()) || {};
+        return;
+    }
+    const { deal, company, participants } = bxResult;
 
     if (deal && company) {
         Promise.all([

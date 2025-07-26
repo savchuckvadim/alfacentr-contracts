@@ -1,21 +1,21 @@
 version: '3.8'
 
 services:
-  
+
 
   front-alfacentr:
     build:
       context: .
       dockerfile: docker/Dockerfile.front
       args:
-        APP: front 
+        APP: front
     container_name: front-alfacentr-prod
     ports:
       - "${PORT_ALFA}:3000"         # API доступен снаружи
     environment:
       - IN_BITRIX=true
       - LOG_FILE_PATH=/app/logs/server.log
- 
+
     volumes:
       - ./logs:/app/logs
     restart: unless-stopped
@@ -28,7 +28,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile.back
       args:
-        APP: back 
+        APP: back
 
     container_name: nest-api-alfacentr
     ports:
@@ -37,16 +37,16 @@ services:
       - NODE_ENV=production
       - REDIS_HOST=redis-alfacentr
       - REDIS_PORT=6379
-      - PORT=3000   
-      
+      - PORT=3000
+
                # для app.listen
     depends_on:
       - redis-alfacentr
     restart: unless-stopped
 
     volumes:
-      - ./keys:/app/keys
-      - ./storage:/app/storage
+      - ./apps/back/keys:/app/keys
+      - ./apps/back/storage:/app/storage
       - ./logs:/app/logs
     networks:
       - app-network-alfacentr

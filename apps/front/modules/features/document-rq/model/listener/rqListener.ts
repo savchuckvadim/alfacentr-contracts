@@ -2,6 +2,9 @@ import { isAnyOf, ListenerMiddlewareInstance } from '@reduxjs/toolkit';
 import { setClient } from '../slice/DocumentRqSlice';
 import {
     RQ_TYPE,
+    saveAddressCreating,
+    saveBankCreating,
+    saveBaseCreating,
     setCurrentItem,
     setCurrentRqItems,
     setFetched,
@@ -22,11 +25,13 @@ export function setupRqListener(
             setCurrentItem,
             setCurrentRqItems,
             setDealData,
+            saveBaseCreating,
+            saveAddressCreating,
+            saveBankCreating,
         ),
 
         effect: async (action, listenerApi) => {
             const { getState } = listenerApi;
-
 
 
             const state = getState() as RootState;
@@ -50,7 +55,8 @@ export function setupRqListener(
                     currentItem,
                 );
 
-                debugger;
+
+             
                 listenerApi.dispatch(
                     setClient({
                         client: clientRqs.client,

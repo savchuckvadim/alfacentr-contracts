@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import './loading.css';
 import Image from 'next/image';
 import { usePace } from '../hooks/usePace';
-import Script from 'next/script';
+
 
 const LoadingScreen = () => {
     const [isVisible, setIsVisible] = useState(true);
