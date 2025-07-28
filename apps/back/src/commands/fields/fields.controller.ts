@@ -5,6 +5,8 @@ import { FieldsFactoryService } from './factory/fields-factory.service';
 import { PBXService } from '@/modules/pbx';
 import { UpdateDealDto } from './dto/update-deal.dto';
 import { EBXEntity } from '@/modules/bitrix';
+import { UserFieldConfigListDto } from '@/modules/bitrix/domain/userfieldconfig/dto/userfieldconfig.dto';
+import { EntityTypeIdEnum } from '@alfa/entities';
 
 @ApiTags('Bitrix Fields')
 @Controller('bitrix-fields')
@@ -123,5 +125,38 @@ export class FieldsController {
         const service = await this.factory.getService(domain);
         const result = await service.getFieldById(id, entity);
         return { id, entity, result };
+    }
+
+    @ApiOperation({
+        summary: 'Получить конфигурацию пользовательских полей Bitrix',
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Возвращает конфигурацию пользовательских полей Bitrix',
+    })
+    @Get('user-field-config')
+    async getUserFieldConfig() {
+        const domain = 'alfacentr.bitrix24.ru';
+        const { bitrix } = await this.pbx.init(domain);
+        const dto = {
+            moduleId: 'crm',
+            filter: {
+                fieldName: 'UF_CRM_12_FORMAT',
+            },
+            // select: ['ID','FIELD_NAME', 'LIST'],
+            select: {
+                '0': '*',
+            },
+            order: {
+                id: 'DESC',
+            },
+            start: -1,
+        } as UserFieldConfigListDto;
+        const userFieldConfig = await bitrix.userFieldConfig.list(dto);
+        const fields = userFieldConfig.result.fields;
+        const filtredFields = fields.filter((field) =>
+            field.fieldName.includes('Участниик'),
+        );
+        return userFieldConfig;
     }
 }

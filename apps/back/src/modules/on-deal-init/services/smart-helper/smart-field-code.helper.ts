@@ -12,8 +12,8 @@ export const TSmartFieldCode = {
         AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Phone,
     [BxParticipantsDataKeys.comment]:
         AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Comment,
-    [BxParticipantsDataKeys.format]:
-        AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Format,
+    // [BxParticipantsDataKeys.format]:
+    //     AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Format,
     [BxParticipantsDataKeys.format_v2]:
         AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Format,
     [BxParticipantsDataKeys.is_ppk]:

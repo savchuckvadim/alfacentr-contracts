@@ -13,7 +13,7 @@ import {
 import { BxDealCompanyService } from './bx-deal-compny.service';
 import { BxParticipantService } from '@/modules/entities/participant/lib/service/bx-participant.service';
 import { IParticipant } from '@alfa/entities';
-export const IS_PROD = true;            
+export const IS_PROD = true;
 // export interface IDealProductRowWithProduct extends IBXProductRowRow {
 //     ownerType: BitrixOwnerType;
 //     ownerId: string | number;

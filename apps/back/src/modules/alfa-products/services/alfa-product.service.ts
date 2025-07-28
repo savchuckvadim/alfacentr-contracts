@@ -28,6 +28,9 @@ export class AlfaProductService {
                 value.code === BxParticipantsDataKeys.kadry ||
                 value.code === BxParticipantsDataKeys.corruption
             ) {
+                console.log('value', value);
+                console.log('value.value', value.value);
+                console.log('prefix', prefix);
                 if (value.value) {
                     const response = await this.bitrix.product.getList(
                         {
@@ -67,15 +70,15 @@ export class AlfaProductService {
                     response.result.products.map((product) => {
                         productsWithoutPrefix.push(product);
 
-                        if (
-                            product.property172 &&
-                            typeof product.property172 === 'object' &&
-                            !Array.isArray(product.property172) &&
-                            'value' in product.property172 &&
-                            product.property172.value === prefix
-                        ) {
-                            products.push(product);
-                        }
+                        // if (
+                        //     product.property172 &&
+                        //     typeof product.property172 === 'object' &&
+                        //     !Array.isArray(product.property172) &&
+                        //     'value' in product.property172 &&
+                        //     product.property172.value === prefix
+                        // ) {
+                        products.push(product);
+                        // }
                     });
                 }
             }
@@ -117,7 +120,13 @@ export class AlfaProductService {
         const currentProductRows = responseGetProductRows.result.productRows;
         console.log('responseGetProductRows', responseGetProductRows);
 
-        const productsWithPrice = await this.getProductPrice(products);
+        // const productsWithPrice = await this.getProductPrice(products);
+
+        // ✅ Сначала группируем по id с quantity
+        const groupedProducts = this.groupProductsById(products); // возвращает IBXProduct & { quantity }
+
+        // ✅ Передаём уже сгруппированные продукты в getProductPrice
+        const productsWithPrice = await this.getProductPrice(groupedProducts);
 
         const newProductRows = productsWithPrice.map((product, index) => {
             console.log('product', product.name.toUpperCase());
@@ -127,8 +136,9 @@ export class AlfaProductService {
             console.log(product);
             return {
                 // id: Number(product.id),
-                quantity: productsWithPrice.filter((p) => p.id === product.id)
-                    .length,
+                // quantity: productsWithPrice.filter((p) => p.id === product.id)
+                //     .length,
+                quantity: product.quantity,
                 price: Number(product.price),
 
                 productId: Number(product.id),
@@ -153,6 +163,22 @@ export class AlfaProductService {
         };
         const response = await this.bitrix.productRow.set(data);
         // console.log('response', response)
+    }
+    private groupProductsById(
+        products: IBXProduct[],
+    ): (IBXProduct & { quantity: number })[] {
+        const productMap = new Map<number, IBXProduct & { quantity: number }>();
+
+        for (const product of products) {
+            const existing = productMap.get(Number(product.id));
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                productMap.set(Number(product.id), { ...product, quantity: 1 });
+            }
+        }
+
+        return Array.from(productMap.values());
     }
 
     private async getProductPrice(products: IBXProduct[]) {

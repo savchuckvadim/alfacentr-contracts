@@ -18,7 +18,8 @@ import {
 } from '@alfa/entities';
 
 class DocumentGenerateFieldValueDto
-    implements IRequestDocumentGenerateFieldValueType {
+    implements IRequestDocumentGenerateFieldValueType
+{
     @ApiProperty({
         description: 'Код поля',
         example: 'Client',
@@ -128,7 +129,6 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @IsArray()
     @IsString({ each: true })
     client: string[];
-
 
     @ApiProperty({
         description: 'Клиенты',

@@ -53,7 +53,6 @@ export class OnDealInitUseCase {
         const { fieldData, bxFieldsIds } =
             await alfaFieldService.getDealFieldsDataWithIds();
         const testInn = fieldData[BxDealDataKeys.inn];
-     
 
         const deal = await bxDealService.getDeal(data.dealId, bxFieldsIds);
         const dealValues = DealFieldValuesHelperService.getDealValues(

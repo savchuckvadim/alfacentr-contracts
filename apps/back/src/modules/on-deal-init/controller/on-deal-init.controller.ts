@@ -5,7 +5,6 @@ import {
     Logger,
     Param,
     ValidationPipe,
-
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OnDealInitUseCase } from '../use-cases/on-deal-init.use-case';
@@ -23,7 +22,10 @@ export class OnDealInitController {
         @Body(ValidationPipe) body: BitrixHookDto,
         @Param('dealId') dealId: string,
     ) {
-        const fullDto = { ...body, dealId: Number(dealId) } as OnDealInitRequestDto;
+        const fullDto = {
+            ...body,
+            dealId: Number(dealId),
+        } as OnDealInitRequestDto;
 
         return this.alfaUseCase.onDealCreate(fullDto);
     }

@@ -10,16 +10,13 @@ export enum EnumPpkApplicationFieldCode {
     signature_director = 'signature_director',
 }
 
-
 export enum EnumPpkApplicationParticipantFieldCode {
     index = 'index',
     fio = 'fio',
     topic = 'topic',
     date_start = 'date_start',
     date_end = 'date_end',
-
 }
-
 
 export interface IPpkApplicationParticipant {
     [EnumPpkApplicationParticipantFieldCode.index]: string;
@@ -28,7 +25,6 @@ export interface IPpkApplicationParticipant {
     [EnumPpkApplicationParticipantFieldCode.date_start]: string;
     [EnumPpkApplicationParticipantFieldCode.date_end]: string;
 }
-
 
 export interface IPpkDocumentApplicationData {
     [EnumPpkApplicationFieldCode.prefix]: string;

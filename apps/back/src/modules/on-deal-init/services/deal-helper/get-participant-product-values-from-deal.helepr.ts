@@ -2,7 +2,9 @@ import {
     BxParticipantsDataKeys,
     CategoryIdEnum,
     EntityTypeIdEnum,
+    formatSelect,
     IAlfaParticipantSmartItem,
+    isPpkSelect,
     SmartStageEnum,
 } from '@alfa/entities';
 import { BxDealDataKeys, TDealData } from '@alfa/entities';
@@ -56,23 +58,38 @@ export const getParticipantValuesFromDeal = (
             //     || value.code === BxParticipantsDataKeys.corruption
 
             // ) {
-            if (value.name.includes(`Участник ${i}`)) {
-                console.log('value', value);
-            }
-            if (value && value.value && value.code !== 'is_ppk') {
-                if (
-                    value.name.includes(`Участник ${i}`) &&
-                    ((i === 1 && !value.name.includes(`Участник 10`)) ||
-                        (i === 10 && !value.name.includes(`Участник 1`)) ||
-                        (i !== 1 && i !== 10))
-                ) {
-                    needPushParticipant = true;
-                    const participantField = {
-                        name: value.name,
-                        code: value.code as BxParticipantsDataKeys,
-                        value: value.value,
-                    };
-                    participant[participantField.code] = participantField;
+            needPushParticipant = getIsNotEmptyParticipant(dealValues, i);
+            if (needPushParticipant) {
+                if (value.name.includes(`Участник ${i}`)) {
+                    console.log('value', value);
+                }
+                if (value && value.value) {
+                    if (
+                        value.name.includes(`Участник ${i}`) &&
+                        ((i === 1 && !value.name.includes(`Участник 10`)) ||
+                            (i === 10 && !value.name.includes(`Участник 1`)) ||
+                            (i !== 1 && i !== 10))
+                    ) {
+                        let formatValue = value.value;
+                        if (value.code === BxParticipantsDataKeys.format_v2) {
+                            formatValue = formatSelect.find(
+                                (item) => item.label === value.value,
+                            )?.bitrixId as string;
+                        } else if (
+                            value.code === BxParticipantsDataKeys.is_ppk
+                        ) {
+                            formatValue = isPpkSelect.find(
+                                (item) => item.label === value.value,
+                            )?.bitrixId as string;
+                        }
+
+                        const participantField = {
+                            name: value.name,
+                            code: value.code as BxParticipantsDataKeys,
+                            value: formatValue,
+                        };
+                        participant[participantField.code] = participantField;
+                    }
                 }
             }
             // }
@@ -84,6 +101,34 @@ export const getParticipantValuesFromDeal = (
     }
 
     return participants;
+};
+
+export const getIsNotEmptyParticipant = (
+    dealValues: DealValue[],
+    participantIndex: number,
+) => {
+    let needPushParticipant = false;
+    for (const value of dealValues) {
+        if (
+            value &&
+            value.value &&
+            value.code !== 'is_ppk' &&
+            value.code !== 'format_v2' &&
+            value.code !== 'format'
+        ) {
+            if (
+                value.name.includes(`Участник ${participantIndex}`) &&
+                ((participantIndex === 1 &&
+                    !value.name.includes(`Участник 10`)) ||
+                    (participantIndex === 10 &&
+                        !value.name.includes(`Участник 1`)) ||
+                    (participantIndex !== 1 && participantIndex !== 10))
+            ) {
+                needPushParticipant = true;
+            }
+        }
+    }
+    return needPushParticipant;
 };
 
 const getSmartAddData = (

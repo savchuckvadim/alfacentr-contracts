@@ -11,8 +11,8 @@ import { DocumentBitrixGenerateUseCase } from '../use-cases/document-bitrix-gene
 export class DocumentGenerateController {
     constructor(
         private readonly job: QueueDispatcherService,
-        private readonly useCase: DocumentBitrixGenerateUseCase
-    ) { }
+        private readonly useCase: DocumentBitrixGenerateUseCase,
+    ) {}
     @Post('')
     async generateDocument(@Body() dto: DocumentGenerateDto) {
         await this.job.dispatch(
@@ -22,8 +22,6 @@ export class DocumentGenerateController {
         );
         return dto;
     }
-
-
 
     //for dev without queue
     // @Post('')

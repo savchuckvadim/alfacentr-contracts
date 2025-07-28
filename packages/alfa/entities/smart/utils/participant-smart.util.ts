@@ -56,7 +56,7 @@ const getNameBySmartFieldBxId = (
     return item?.name;
 };
 
-const formatSelect: IParticipantSelectItem[] = [
+export const formatSelect: IParticipantSelectItem[] = [
     {
         bitrixId: 19908,
         value: '19908',
@@ -78,7 +78,7 @@ const formatSelect: IParticipantSelectItem[] = [
     },
 ] as const;
 
-const isPpkSelect: IParticipantSelectItem[] = [
+export const isPpkSelect: IParticipantSelectItem[] = [
     {
         bitrixId: 'Y',
         value: 'Y',

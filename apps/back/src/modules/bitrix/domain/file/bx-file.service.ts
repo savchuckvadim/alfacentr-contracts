@@ -21,7 +21,6 @@ export class BxFileService {
         name?: string,
     ): Promise<[string, string]> {
         try {
-
             const response = await axios.get(url, {
                 responseType: 'arraybuffer', // 👈 обязательно!
             });
@@ -35,7 +34,6 @@ export class BxFileService {
             const base64 = fileBuffer.toString('base64');
 
             return [filename, base64];
-
         } catch (error) {
             console.log('error');
             console.log(error);

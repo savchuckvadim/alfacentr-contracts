@@ -1,10 +1,11 @@
 import { BitrixService } from 'src/modules/bitrix';
 import { DealValue } from './deal-helper/deal-values-helper.service';
 import { BitrixEntityType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
+import { getIsNotEmptyParticipant } from './deal-helper/get-participant-product-values-from-deal.helepr';
 
 export class BxDealService {
     private bitrix: BitrixService;
-    constructor() {}
+    constructor() { }
 
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;
@@ -34,7 +35,9 @@ export class BxDealService {
     }
     getParticipants(dealValues: DealValue[]) {
         let participants = {} as Record<string, string>;
-        dealValues.forEach((value) => {
+        dealValues.forEach((value, index) => {
+
+
             if (
                 value.name.includes('Участник') &&
                 value.value &&
@@ -42,35 +45,40 @@ export class BxDealService {
             ) {
                 for (let i = 1; i <= 11; i++) {
                     const key = `Участник ${i}`;
-                    if (i === 1) {
-                        if (
-                            value.name.includes(key) &&
-                            !value.name.includes('10') &&
-                            value.value
-                        ) {
-                            if (!participants[i])
-                                participants[i] = '👤[B]' + key + '[/B] \n';
-                            participants[i] +=
-                                '[B]' +
-                                value.name +
-                                ':[/B] ' +
-                                value.value +
-                                ' \n';
+                    if (getIsNotEmptyParticipant(dealValues, i)) {
+                        if (i === 1) {
+                            if (
+                                value.name.includes(key) &&
+                                !value.name.includes('10') &&
+                                value.value
+                            ) {
+                                if (!participants[i])
+                                    participants[i] = '👤[B]' + key + '[/B] \n';
+                                participants[i] +=
+                                    '[B]' +
+                                    value.name +
+                                    ':[/B] ' +
+                                    value.value +
+                                    ' \n';
+                            }
+                        } else {
+                            if (value.name.includes(key) && value.value) {
+                                if (!participants[i])
+                                    participants[i] = '👤[B]' + key + '[/B] \n';
+                                participants[i] +=
+                                    '[B]' +
+                                    value.name +
+                                    ':[/B] ' +
+                                    value.value +
+                                    ' \n';
+                            }
                         }
-                    } else {
-                        if (value.name.includes(key) && value.value) {
-                            if (!participants[i])
-                                participants[i] = '👤[B]' + key + '[/B] \n';
-                            participants[i] +=
-                                '[B]' +
-                                value.name +
-                                ':[/B] ' +
-                                value.value +
-                                ' \n';
-                        }
+
                     }
                 }
             }
+
+
         });
         return participants;
     }

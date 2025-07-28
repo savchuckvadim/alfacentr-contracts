@@ -153,6 +153,9 @@ export class BitrixService {
     }
     private initActivity() {
         this.activity = this.cloner.clone(ActivityService, this.api);
-        this.batch.activity = this.cloner.clone(BxActivityBatchService, this.api);
+        this.batch.activity = this.cloner.clone(
+            BxActivityBatchService,
+            this.api,
+        );
     }
 }

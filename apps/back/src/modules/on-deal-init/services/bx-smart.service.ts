@@ -20,6 +20,7 @@ export class BxSmartService {
     ) {
         const participants = getParticipantValuesFromDeal(dealValues, dealId);
         for (const participant of participants) {
+            console.log('participant ufCrm12Format', participant.ufCrm12Format);
             await this.add(this.entityTypeId, participant);
         }
     }
