@@ -30,22 +30,23 @@ export class ContractRqService {
         );
         const roles = this.getRoles();
         const clientShortRq = this.getClientShortRq(clientRq, clientType);
-        debugger;
+
         return {
             client: clientRqData,
             clientShortRq,
             roles,
-
         };
     }
 
     private getClientShortRq(clientRq: EvsRqItem, clientType: RQ_TYPE): string {
         if (clientType === RQ_TYPE.FIZ) {
-            const shortRq = this.clientRqService.prepareClientFizShortRq(clientRq);
+            const shortRq =
+                this.clientRqService.prepareClientFizShortRq(clientRq);
 
             return shortRq;
         } else {
-            const shortRq = this.clientRqService.prepareClientOrgShortRq(clientRq);
+            const shortRq =
+                this.clientRqService.prepareClientOrgShortRq(clientRq);
 
             return shortRq;
         }
@@ -59,8 +60,6 @@ export class ContractRqService {
     } {
         let clientRole = 'ЗАКАЗЧИК';
         let providerRole = 'ИСПОЛНИТЕЛЬ';
-
-
 
         const providerCase = 'от Исполнителя';
         const clientCase = 'от Заказчика';

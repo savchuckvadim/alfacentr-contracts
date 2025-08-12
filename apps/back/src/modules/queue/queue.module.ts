@@ -34,9 +34,26 @@ import { SilentJobHandlersModule } from 'src/core/silence/silent-job-handlers.mo
             },
             inject: [ConfigService],
         }),
+        // BullModule.registerQueue(
+        //     ...Object.values(QueueNames).map((name) => ({ name })),
+        // ),
         BullModule.registerQueue(
-            ...Object.values(QueueNames).map((name) => ({ name })),
+            {
+                name: QueueNames.DOCUMENT_NUMBER_BY_PREFIX,
+                defaultJobOptions: {
+                    removeOnComplete: true,
+                    removeOnFail: false,
+                },
+                // limiter: {
+                //     max: 1,        // максимум 1 задача
+                //     duration: 0,   // интервал не нужен — просто строго по одной
+                // },
+            },
+            ...Object.values(QueueNames)
+                .filter((name) => name !== QueueNames.DOCUMENT_NUMBER_BY_PREFIX)
+                .map((name) => ({ name })),
         ),
+
         // BitrixModule,
         RedisModule,
         SilentJobHandlersModule,

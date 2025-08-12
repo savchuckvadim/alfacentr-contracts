@@ -12,7 +12,13 @@ export interface DealValue {
     code: string;
     bitrixId: string;
     name: string;
-    value: string | number | boolean | DealValueListItem | DealValueListItem[];
+    value:
+        | string
+        | number
+        | boolean
+        | DealValueListItem
+        | DealValueListItem[]
+        | string[];
     listItem?: DealValueListItem | DealValueListItem[];
 }
 
@@ -249,7 +255,7 @@ export class DealFieldValuesHelperService {
             );
 
             if (listItems.length > 0) {
-                result.value = listItems.map((item) => item.name).join(', ');
+                result.value = listItems.map((item) => item.name);
                 result.listItem = listItems.map((item) => ({
                     name: item.name,
                     bitrixId: item.bitrixId,

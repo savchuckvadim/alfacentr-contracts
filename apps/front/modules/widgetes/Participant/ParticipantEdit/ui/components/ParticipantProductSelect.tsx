@@ -10,7 +10,6 @@ import {
 import { Button } from '@workspace/ui/components/button';
 import { Edit2Icon, Trash2Icon, PackageIcon } from 'lucide-react';
 import { Textarea } from '@workspace/ui/components/textarea';
-import { Badge } from '@workspace/ui/components/badge';
 import { Card, CardContent } from '@workspace/ui/components/card';
 
 export const ParticipantProductPpkSelect = ({
@@ -26,10 +25,10 @@ export const ParticipantProductPpkSelect = ({
         product =>
             ({
                 value:
-                    `${getProductFieldByCodeValue(product, 'SEMINAR_TOPIC')?.value}` ||
+                    `${getProductFieldByCodeValue(product, 'NAME_BID')?.value}` ||
                     '',
                 code: product.id?.toString() || '',
-                label: `${product.id} ${getProductFieldByCodeValue(product, 'SEMINAR_TOPIC')?.value} ${product.productName}`,
+                label: `${product.id} ${getProductFieldByCodeValue(product, 'NAME_BID')?.value} ${product.productName}`,
                 bitrixId: product.id,
             }) as ISelectItem,
     );
@@ -54,7 +53,7 @@ export const ParticipantProductPpkSelect = ({
                         </span>
                     </div>
                     <Select
-                        currentValue={field.value || ''}
+                        currentValue={(field.value as string) || ''}
                         onValueChange={value => setSelect(value)}
                         options={ppkProductItems}
                     />

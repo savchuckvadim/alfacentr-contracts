@@ -1,4 +1,4 @@
-import { IAlfaProduct } from '@/modules/entities';
+import { getProductTypeByProductName, IAlfaProduct } from '@/modules/entities';
 import { ProductType } from '@/modules/entities/product/type/product-field-code.enum';
 import { bxProductData } from '@alfa/entities';
 
@@ -6,30 +6,44 @@ export const getProductsByType = (
     products: IAlfaProduct[],
     type: ProductType,
 ): IAlfaProduct[] | null => {
-    let searchedType = 'семинар';
+    // let searchedType = 'семинар';
+    // if (type === 'ppk' || type === 'seminar_ppk') {
+    //     searchedType = 'ппк';
+    // } else if (type === 'seminar') {
+    //     searchedType = 'семинар';
+    // } else {
+    //     throw new Error('Неизвестный тип продукта УП');
+    // }
+
+    let searchedType = 'СР';
     if (type === 'ppk' || type === 'seminar_ppk') {
-        searchedType = 'ппк';
+        searchedType = 'ППК';
     } else if (type === 'seminar') {
-        searchedType = 'семинар';
+        searchedType = 'СР';
     } else {
         throw new Error('Неизвестный тип продукта УП');
     }
 
     const keyData = bxProductData.TYPE;
 
-    const filtredProducts = products.filter(product =>
-        product.fields.find(field => {
-            if (field.bitrixId === keyData.bitrixId && field.value) {
-                const fieldValue = field.value as { valueEnum: string };
+    // const filtredProducts = products.filter(product =>
+    //     product.fields.find(field => {
+    //         if (field.bitrixId === keyData.bitrixId && field.value) {
+    //             const fieldValue = field.value as { valueEnum: string };
 
-                if (fieldValue.valueEnum) {
-                    const searchedValue = fieldValue.valueEnum.toLowerCase();
-                    return searchedValue === searchedType;
-                }
-                return false;
-            }
-            return false;
-        }),
+    //             if (fieldValue.valueEnum) {
+    //                 const searchedValue = fieldValue.valueEnum.toLowerCase();
+    //                 return searchedValue === searchedType;
+    //             }
+    //             return false;
+    //         }
+    //         return false;
+    //     }),
+    // );
+
+    const filtredProducts = products.filter(
+        product =>
+            getProductTypeByProductName(product.productName || '') === type,
     );
 
     return filtredProducts;

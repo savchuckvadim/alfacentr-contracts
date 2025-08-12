@@ -79,6 +79,7 @@ export class AlfaBxProductService {
             'property220',
             'property221',
             bxProductData.SEMINAR_TOPIC.bitrixId.toString(),
+            bxProductData.NAME_BID.bitrixId.toString(),
         ];
 
         this.bitrix.batch.product.get(batchKey, productId, select);

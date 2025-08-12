@@ -16,7 +16,7 @@ export const DocumentRqsPreview = () => {
 
     return (
         <div className="flex flex-row justify-between gap-4">
-              <div className="w-1/2">
+            <div className="w-1/2">
                 <h2>Организация</h2>
                 {provider.map((item, index) => {
                     return <p key={index}>{item}</p>;
@@ -28,7 +28,6 @@ export const DocumentRqsPreview = () => {
                     return <p key={index}>{item}</p>;
                 })}
             </div>
-
         </div>
     );
 };

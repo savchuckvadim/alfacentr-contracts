@@ -1,13 +1,18 @@
 import { useEditParticipant } from '../../ParticipantEdit/hook/useParticipantEdit';
 import { useParticipantInfo } from '../../ParticipantInfoCard/hook/useParticipantInfo';
+import { useParticipantSeminar } from '@/modules/features';
 
 export const useParticipantRowData = (participantId: number) => {
-    const { name, email, phone, format, isPpk, programs } =
+    const { name, email, phone, format, isPpk, programs, days } =
         useEditParticipant(participantId);
 
-    const { participantPpkTopicsStats } = useParticipantInfo(participantId);
+    const {
+        participantPpkTopicsStats,
+        seminarsPpkTopicsStats,
+        assignedSeminars,
+    } = useParticipantInfo(participantId);
     const { assignedProducts } = useParticipantInfo(participantId);
-
+    debugger;
     return {
         name,
         email,
@@ -15,7 +20,10 @@ export const useParticipantRowData = (participantId: number) => {
         format,
         isPpk,
         programs,
+        days,
         participantPpkTopicsStats,
+        seminarsPpkTopicsStats,
         assignedProducts,
+        assignedSeminars,
     };
 };

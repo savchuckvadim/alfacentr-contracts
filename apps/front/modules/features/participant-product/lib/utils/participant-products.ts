@@ -30,7 +30,7 @@ export const getParticipantWithProducts = (
 
     ppkProducts?.map(product => {
         const searchedField = product.fields.find(
-            field => field.bitrixId === bxProductData.SEMINAR_TOPIC.bitrixId,
+            field => field.bitrixId === bxProductData.NAME_BID.bitrixId,
         );
 
         if (searchedField) {
@@ -64,16 +64,10 @@ export const getMissingProductsByParticipantPpkThemes = (
 ): string[] => {
     const missingProducts = [] as string[];
 
-    // products.forEach((product) => {
-    //     const productTopicName = getProductFieldByCodeValue(product, 'SEMINAR_TOPIC')?.value
-    //     if (!productTopicName) return
-    //     const searchedProduct = programsThemes.find((program) => program.includes(productTopicName))
-    //     if (!searchedProduct) missingProducts.push(product)
-    // })
     programsThemes.forEach(program => {
         const searchedProduct = products.find(
             product =>
-                getProductFieldByCodeValue(product, 'SEMINAR_TOPIC')?.value ==
+                getProductFieldByCodeValue(product, 'NAME_BID')?.value ==
                 program,
         );
         if (!searchedProduct) missingProducts.push(program);
@@ -189,92 +183,112 @@ export const getParicipantPpkTopicsStats = (
 
     return participantPpkThemesStats;
 };
-// type TopicMap = Record<string, IAlfaProduct[]>;
 
-// function buildTopicToProductMap(products: IAlfaProduct[]): TopicMap {
-//     const topicMap: TopicMap = {};
+export const getParicipantSeminarTopicsStats = (
+    participant: IParticipant,
+    topicStats: ITopicStat[],
+    participantToProducts: Map<number, IAlfaProduct[]>,
+): IParicipantPpkThemesStats[] | null => {
+    const hasParticipantPpkTopic = topicStats.some(topic =>
+        topic.participants.find(prtcpnt => prtcpnt.id === participant.id),
+    );
+    const productsOfParticipant =
+        participantToProducts.get(Number(participant.id)) ?? undefined;
+    if (!hasParticipantPpkTopic) {
+        return null;
+    }
+    const participantPpkThemesStats: IParicipantPpkThemesStats[] = [];
 
-//     for (const product of products) {
-//         const topicField = product.fields.find(f => f.bitrixId === bxProductData.SEMINAR_TOPIC.bitrixId);
-//         const topic = (topicField?.value as { value: string })?.value;
+    topicStats.forEach(topic => {
+        const isTargetTopic = topic.participants.some(
+            prtcpnt => prtcpnt.id === participant.id,
+        );
+        if (!isTargetTopic) {
+            return;
+        }
 
-//         if (!topic) continue;
+        const participantField = participant.fields.find(field =>
+            field.value.includes(topic.topic),
+        ) as ParticipantPpkField | undefined;
 
-//         if (!topicMap[topic]) {
-//             topicMap[topic] = [];
-//         }
+        if (!topic.products || topic.products.length === 0) {
+            //у топика нет ни одного продукта
+            participantPpkThemesStats.push({
+                participantField: participantField,
+                topic: topic.topic,
+                participantId: participant.id,
+                status: 'missing_ppk',
+                message:
+                    'У Темы семинара нет ни одного Товара - добавьте товар семинара',
+                product: null,
+                potintialProduct: null,
+            });
+            return;
+        }
 
-//         topicMap[topic].push(product);
-//     }
+        let currentProductInTopicInParticipant = false as false | IAlfaProduct;
+        topic.products.forEach(product => {
+            if (productsOfParticipant) {
+                //у участника есть продукты
+                for (const pProduct of productsOfParticipant) {
+                    //пербираем все продукты участника
+                    if (product.id === pProduct.id) {
+                        //одна из товарных позиций Топика равна одной из товарных позиций участника
+                        currentProductInTopicInParticipant = product;
+                    } else {
+                        //одна из товарных позиций Топика не равна одной из товарных позиций участника
+                    }
+                }
+            } else {
+            }
+        });
 
-//     return topicMap;
-// }
+        if (productsOfParticipant) {
+            //у участника есть продукты
+            if (currentProductInTopicInParticipant) {
+                //у участника есть товар ППК и он есть в топике
+                participantPpkThemesStats.push({
+                    participantField,
+                    topic: topic.topic,
+                    participantId: participant.id,
+                    status: 'ok',
+                    message: 'По данной теме участник имеет товар семинара',
+                    product: currentProductInTopicInParticipant,
+                    potintialProduct: null,
+                });
+            } else {
+                //у участника есть товар ППК но в топике почему то он отсутствует
+                participantPpkThemesStats.push({
+                    participantField,
+                    topic: topic.topic,
+                    participantId: participant.id,
+                    status: 'missing_ppk_quantity',
+                    message:
+                        'По данной теме участник не имеет товара семинара. Данный товар есть в спике Товаров, но в недостаточном количестве',
+                    product: null,
+                    potintialProduct: topic.products[0] ?? null,
+                });
+            }
+        } else {
+            // у участника не ни одного продукта
+            participantPpkThemesStats.push({
+                participantField,
+                topic: topic.topic,
+                participantId: participant.id,
+                status: 'missing_ppk_quantity',
+                message:
+                    'По данной теме участник не имеет товара семинара. Данный товар есть в спике Товаров, но в недостаточном количестве',
+                product: null,
+                potintialProduct: topic.products[0] ?? null,
+            });
+            console.log(
+                'у участника нет ни одного товара семинара',
+                participant.id,
+                topic.topic,
+            );
+            console.log(participantPpkThemesStats);
+        }
+    });
 
-// type ParticipantMatch = {
-//     participant: IParticipant;
-//     topic: string;
-// };
-
-// function matchParticipantsToTopics(participants: IParticipant[]): ParticipantMatch[] {
-//     const matches: ParticipantMatch[] = [];
-
-//     for (const p of participants) {
-//         for (const field of p.fields) {
-//             if (!participantPpkFieldCodes.includes(field.code as BxParticipantsDataKeys)) continue;
-
-//             const values = Array.isArray(field.value) ? field.value : [field.value];
-
-//             for (const topic of values) {
-//                 if (topic) {
-//                     matches.push({ participant: p, topic });
-//                 }
-//             }
-//         }
-//     }
-
-//     return matches;
-// }
-
-// type TopicStats = {
-//     topic: string;
-//     participants: IParticipant[];
-//     products: IAlfaProduct[];
-//     quantityTotal: number; // общее количество по всем продуктам
-//     quantityNeeded: number; // участников
-//     quantityDiff: number;   // разница (можно - нужно)
-// };
-
-// function buildTopicStats(
-//     topicMap: TopicMap,
-//     matches: ParticipantMatch[]
-// ): TopicStats[] {
-//     const topicToParticipants: Record<string, IParticipant[]> = {};
-
-//     for (const match of matches) {
-//         if (!topicToParticipants[match.topic]) {
-//             topicToParticipants[match.topic] = [];
-//         }
-
-//         topicToParticipants[match.topic]?.push(match.participant);
-//     }
-
-//     const allTopics = new Set([...Object.keys(topicMap), ...Object.keys(topicToParticipants)]);
-
-//     return Array.from(allTopics).map(topic => {
-//         const products = topicMap[topic] || [];
-//         const participants = topicToParticipants[topic] || [];
-
-//         const quantityTotal = products.reduce((sum, p) => sum + (p.quantity ?? 0), 0);
-//         const quantityNeeded = participants.length;
-//         const quantityDiff = quantityTotal - quantityNeeded;
-
-//         return {
-//             topic,
-//             products,
-//             participants,
-//             quantityTotal,
-//             quantityNeeded,
-//             quantityDiff
-//         };
-//     });
-// }
+    return participantPpkThemesStats;
+};

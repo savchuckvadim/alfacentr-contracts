@@ -27,7 +27,6 @@ export const appInit = async (
         return;
     }
 
-
     const wsService = new WSClient(Number(user.ID), domain); // создаём сокет
     wsService.init(); // <- здесь создаёшь сокет
 
@@ -43,9 +42,8 @@ export const appInit = async (
     console.log(user);
     const bxResult = await bitrixInit();
     if (!bxResult) {
-        window &&
-            window?.location
-            ? window.location.href = '/no-company'
+        window && window?.location
+            ? (window.location.href = '/no-company')
             : null;
 
         return;

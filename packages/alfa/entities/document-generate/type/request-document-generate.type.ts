@@ -11,7 +11,7 @@ export interface IRequestDocumentGenerateType {
     totalSum: string;
     client: string[];
     fields: IRequestDocumentGenerateFieldsType;
-    clientShortRq:string
+    clientShortRq: string;
 }
 
 export interface IRequestDocumentGenerateFieldsType {

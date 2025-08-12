@@ -52,6 +52,7 @@ interface IProductCardProps {
 export const ProductCard = ({ product }: IProductCardProps) => {
     const productType = getProductTypeName(product);
     const isPpk = getIsPpkProduct(product);
+
     const isSeminar = getIsSeminarProduct(product);
     const isUp = getIsUpProduct(product);
     const {

@@ -33,7 +33,6 @@ export function setupRqListener(
         effect: async (action, listenerApi) => {
             const { getState } = listenerApi;
 
-
             const state = getState() as RootState;
             const currentItem = state.bxrq?.current?.item;
 
@@ -55,8 +54,6 @@ export function setupRqListener(
                     currentItem,
                 );
 
-
-             
                 listenerApi.dispatch(
                     setClient({
                         client: clientRqs.client,

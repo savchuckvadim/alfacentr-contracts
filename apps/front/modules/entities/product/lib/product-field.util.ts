@@ -43,6 +43,8 @@ export const getProductFieldValue = (field: IProductField) => {
         value = rawValue.valueEnum as string;
     } else if (typeof rawValue === 'object' && 'value' in rawValue) {
         value = rawValue.value as string;
+    } else if (typeof rawValue === 'string') {
+        value = rawValue as string;
     }
     if (value) {
         if (field.userType === 'DateTime') {
@@ -65,11 +67,15 @@ export const filterProductFieldsForDetails = (fields: IProductField[]) => {
         bxProductData.SEMINAR_START_AND_END_DATE.bitrixId,
         bxProductData.TYPE.bitrixId,
         bxProductData.SEMINAR_PLACE.bitrixId,
+        bxProductData.DOCUMENT_SET.bitrixId,
+
         bxProductData.SEMINAR_TOPIC.bitrixId,
+        bxProductData.NAME_BID.bitrixId,
+        bxProductData.DETAIL_TEXT.bitrixId,
+
+        bxProductData.SERVICE_NAME_FOR_BILL.bitrixId,
         bxProductData.SEMINAR_SERVICE_END_DATE.bitrixId,
         bxProductData.SEMINAR_SERVICE_GARANT_DATE.bitrixId,
-        bxProductData.SERVICE_NAME_FOR_BILL.bitrixId,
-        bxProductData.DOCUMENT_SET.bitrixId,
     ] as string[];
 
     const fieldsFilter = [

@@ -12,14 +12,14 @@ export const updateBxDeal = async (
     const bitrix = Bitrix.getService();
     const dynamicPrefixField = getDynamicPrefixFieldData();
     const currentDocumentNumberField = getCurrentDocumentNumberFieldData();
-    debugger;
+
     const prefixBitrixId = dynamicPrefixField.bitrixId;
     const currentDocumentNumberBitrixId = currentDocumentNumberField.bitrixId;
     const fields = {
         [prefixBitrixId]: prefix,
         [currentDocumentNumberBitrixId]: number,
     };
-    debugger;
+
     const result = await bitrix.deal.update(dealId, fields);
 
     return result;

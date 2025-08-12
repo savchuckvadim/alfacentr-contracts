@@ -73,6 +73,18 @@ export const bxProductData = {
         userType: '',
         isMultiple: false,
     },
+    NAME_BID: {
+        bitrixId: 'property402',
+        name: 'Название в заявке',
+        userType: '',
+        isMultiple: false,
+    },
 
+    DETAIL_TEXT: {
+        bitrixId: 'detailText',
+        name: 'Детальное описание',
+        userType: '',
+        isMultiple: false,
+    },
     //up
 } as const;

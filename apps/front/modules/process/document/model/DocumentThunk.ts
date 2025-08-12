@@ -132,17 +132,13 @@ export const documentGenerate = createAsyncThunk<
         totalSum: totalSum,
         client: client || [],
         fields,
-        clientShortRq
+        clientShortRq,
     } as IRequestDocumentGenerateType);
 
-    debugger
     await delay(2000);
 
     const redirectLink = `https://alfacentr.bitrix24.ru/crm/deal/details/${dealId}/`;
-    window &&
-        window.top &&
-        window.top.location.replace(redirectLink)
-
+    window && window.top && window.top.location.replace(redirectLink);
 
     // // Редирект на страницу с документом
     // if (typeof window !== 'undefined') {
@@ -250,7 +246,7 @@ export const documentGenerateDone = createAsyncThunk<
         const state = getState();
         const { getWSClient } = extra;
         const data = payload;
-        debugger;
+
         // Получаем данные из состояния
         const appState = state.app;
 

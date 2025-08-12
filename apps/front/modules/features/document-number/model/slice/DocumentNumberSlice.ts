@@ -59,7 +59,6 @@ export const documentNumberSlice = createSlice({
                 state.isLoading = false;
                 state.prefix = action.payload.prefix;
                 state.counter = action.payload.counter;
-
             },
         );
         builder.addCase(

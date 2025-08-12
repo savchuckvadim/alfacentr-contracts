@@ -10,7 +10,34 @@ import { bxProductData } from '@alfa/entities';
 import { BitrixOwnerType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 import { ListProductRowDto } from '@/modules/bitrix/domain/crm/product-row/dto/list-product-row.sto';
 import { BxParticipantsDataKeys } from '@alfa/entities';
+import { delay } from '@/lib';
 
+const select = [
+    'iblockId',
+    'active',
+    'name',
+    'price',
+    'currencyId',
+    'id',
+    'property172',
+    'property174',
+    'property158',
+    'property168',
+    'property154',
+    'property155',
+    'property156',
+    'property164',
+    'property166',
+    'property216',
+    'property217',
+    'property218',
+    'property219',
+    'property220',
+    'property221',
+    'detailText',
+    bxProductData.SEMINAR_TOPIC.bitrixId,
+    bxProductData.NAME_BID.bitrixId,
+];
 export class AlfaProductService {
     constructor(private readonly bitrix: BitrixService) {}
     async addPpkProducts(dealId: number, dealValues: DealValue[]) {
@@ -28,44 +55,27 @@ export class AlfaProductService {
                 value.code === BxParticipantsDataKeys.kadry ||
                 value.code === BxParticipantsDataKeys.corruption
             ) {
-                console.log('value', value);
-                console.log('value.value', value.value);
-                console.log('prefix', prefix);
+                // console.log('value', value);
+                // console.log('value.value', value.value);
+                // console.log('prefix', prefix);
                 if (value.value) {
+                    const filter = {
+                        // "=active": "Y",
+                        iblockId: 24,
+                        '%name': prefix as string,
+                        // [`=${bxProductData.SEMINAR_TOPIC.bitrixId}`]:
+                        //     value.value as string,
+                        [`%${bxProductData.NAME_BID.bitrixId}`]:
+                            value.value as string,
+                        // '%detailText': value.value as string
+                        // '%detailText': value.value as string
+                        // [`=${bxProductData.PREFIX.bitrixId}`]: (prefix as string)
+                        // 'property172': prefix
+                    };
+                    console.log('filter', filter);
                     const response = await this.bitrix.product.getList(
-                        {
-                            // "=active": "Y",
-                            iblockId: 24,
-                            '%name': prefix as string,
-                            [`=${bxProductData.SEMINAR_TOPIC.bitrixId}`]:
-                                value.value as string,
-                            // [`=${bxProductData.PREFIX.bitrixId}`]: (prefix as string)
-                            // 'property172': prefix
-                        },
-                        [
-                            'iblockId',
-                            'active',
-                            'name',
-                            'price',
-                            'currencyId',
-                            'id',
-                            'property172',
-                            'property174',
-                            'property158',
-                            'property168',
-                            'property154',
-                            'property155',
-                            'property156',
-                            'property164',
-                            'property166',
-                            'property216',
-                            'property217',
-                            'property218',
-                            'property219',
-                            'property220',
-                            'property221',
-                            bxProductData.SEMINAR_TOPIC.bitrixId,
-                        ],
+                        filter,
+                        select,
                     );
                     response.result.products.map((product) => {
                         productsWithoutPrefix.push(product);
@@ -80,6 +90,50 @@ export class AlfaProductService {
                         products.push(product);
                         // }
                     });
+                }
+            } else if (value.code === BxParticipantsDataKeys.days) {
+                console.log('value', value);
+                console.log('value.value', value.value);
+                console.log('prefix', prefix);
+                if (
+                    value.value &&
+                    Array.isArray(value.value) &&
+                    value.value.length > 0
+                ) {
+                    for (const item of value.value) {
+                        const filter = {
+                            // "=active": "Y",
+                            iblockId: 24,
+                            // '%name': prefix as string,
+                            // [`=${bxProductData.SEMINAR_TOPIC.bitrixId}`]:
+                            //     value.value as string,
+                            // '%detailText': item as string
+                            [`%${bxProductData.NAME_BID.bitrixId}`]:
+                                item as string,
+                            // [`=${bxProductData.PREFIX.bitrixId}`]: (prefix as string)
+                            // 'property172': prefix
+                        };
+                        console.log('filter', filter);
+
+                        const response = await this.bitrix.product.getList(
+                            filter,
+                            select,
+                        );
+                        await delay(1000);
+                        response.result.products.map((product) => {
+                            productsWithoutPrefix.push(product);
+
+                            // if (
+                            //     product.property172 &&
+                            //     typeof product.property172 === 'object' &&
+                            //     !Array.isArray(product.property172) &&
+                            //     'value' in product.property172 &&
+                            //     product.property172.value === prefix
+                            // ) {
+                            products.push(product);
+                            // }
+                        });
+                    }
                 }
             }
         }

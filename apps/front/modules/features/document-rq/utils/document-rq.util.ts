@@ -66,7 +66,7 @@ export const getForDocumentItems = (
             return null;
         })
         .filter(value => value !== null);
-    debugger;
+
     const providerValues = sortedProviderKeys
         .map(key => {
             if (
@@ -82,7 +82,7 @@ export const getForDocumentItems = (
             return null;
         })
         .filter(value => value !== null);
-        debugger;
+
     return {
         client: clientValues,
         provider: providerValues,

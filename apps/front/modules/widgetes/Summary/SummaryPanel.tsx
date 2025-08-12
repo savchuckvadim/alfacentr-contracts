@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React from 'react';
 import { cn } from '@workspace/ui/lib/utils';
 import { Button } from '@workspace/ui/components/button';
@@ -12,7 +12,6 @@ import { SendIcon } from 'lucide-react';
 import useDocument from '@/modules/process/document/hook/useDocument';
 import { useParticipant } from '@/modules/entities/participant';
 import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts';
-
 
 interface SummaryPanelProps {
     className?: string;

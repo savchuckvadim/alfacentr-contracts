@@ -114,7 +114,7 @@ export const getParticipantSelectItemByValue = (
     switch (fieldCode) {
         case BxParticipantsDataKeys.format:
             const searchedInfo = formatSelect.find(
-                item => item.value === value,
+                item => Number(item.value) === Number(value),
             );
             return searchedInfo;
 

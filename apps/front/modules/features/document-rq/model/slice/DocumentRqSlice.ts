@@ -54,7 +54,7 @@ export const documentRqSlice = createSlice({
         ) => {
             state.client = action.payload.client;
             state.general.header = action.payload.header;
-            debugger;
+
             state.clientShortRq = action.payload.clientShortRq;
         },
         setProvider: (

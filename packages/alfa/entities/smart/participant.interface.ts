@@ -51,7 +51,7 @@ export enum BxParticipantsFieldNameEnum {
 }
 
 export class IParticipantBaseField {
-    value!: string;
+    value!: string | string[];
 }
 
 export class IParticipantNameField extends IParticipantBaseField {

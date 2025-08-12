@@ -278,6 +278,24 @@ export const documentFields = {
         multiple: false,
         mandatory: false,
     },
+    [EnumDealDocumentFieldCode.POTENTIAL_COMPANIES]: {
+        id: '10266',
+        bitrixId: 'UF_CRM_1754126878',
+        type: 'string',
+        name: 'Потенциальные компании',
+        code: EnumDealDocumentFieldCode.POTENTIAL_COMPANIES,
+        multiple: true,
+        mandatory: false,
+    },
+    [EnumDealDocumentFieldCode.CURRENT_RQ]: {
+        id: '10268',
+        bitrixId: 'UF_CRM_1754126955',
+        type: 'string',
+        name: 'Текущий РК',
+        code: EnumDealDocumentFieldCode.CURRENT_RQ,
+        multiple: false,
+        mandatory: false,
+    },
 } as const;
 
 export const currentDocumentFields = {

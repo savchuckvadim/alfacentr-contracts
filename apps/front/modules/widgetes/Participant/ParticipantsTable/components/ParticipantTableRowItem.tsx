@@ -32,8 +32,11 @@ export function ParticipantTableRowItem({
         format,
         isPpk,
         programs,
+        days,
         participantPpkTopicsStats,
+        seminarsPpkTopicsStats,
         assignedProducts,
+        assignedSeminars,
     } = useParticipantRowData(participant.id);
 
     const handleEdit = (participantId: number) => {
@@ -56,12 +59,20 @@ export function ParticipantTableRowItem({
                 programs={programs}
                 participantPpkTopicsStats={participantPpkTopicsStats}
             />
+            <ProgramsCell
+                programs={days}
+                participantPpkTopicsStats={seminarsPpkTopicsStats}
+            />
 
             <ProductsCell
                 assignedProducts={assignedProducts}
                 participantPpkTopicsStats={participantPpkTopicsStats}
             />
 
+            <ProductsCell
+                assignedProducts={assignedSeminars}
+                participantPpkTopicsStats={seminarsPpkTopicsStats}
+            />
             <PpkStatusCell isPpk={isPpk} />
 
             <ActionsCell

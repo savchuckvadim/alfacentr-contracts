@@ -17,7 +17,30 @@ export interface BxProductRowWithProduct extends IBXProductRowRow {
     measureId?: number | string;
     product: IBXProduct;
 }
-
+const select = [
+    'iblockId',
+    'active',
+    'name',
+    'price',
+    'currencyId',
+    'id',
+    'property172',
+    'property174',
+    'property158',
+    'property168',
+    'property154',
+    'property155',
+    'property156',
+    'property164',
+    'property166',
+    'property216',
+    'property217',
+    'property218',
+    'property219',
+    'property220',
+    'property221',
+    bxProductData.SEMINAR_TOPIC.bitrixId,
+];
 export class BxProductRowService {
     constructor(private readonly bitrix: BitrixService) {}
 
@@ -61,31 +84,6 @@ export class BxProductRowService {
         productId: number,
         batchKey: string,
     ): Promise<IBXProduct> {
-        const select = [
-            'iblockId',
-            'active',
-            'name',
-            'price',
-            'currencyId',
-            'id',
-            'property172',
-            'property174',
-            'property158',
-            'property168',
-            'property154',
-            'property155',
-            'property156',
-            'property164',
-            'property166',
-            'property216',
-            'property217',
-            'property218',
-            'property219',
-            'property220',
-            'property221',
-            bxProductData.SEMINAR_TOPIC.bitrixId,
-        ];
-
         const product = await this.bitrix.product.get(productId, select);
         if (product.result.product) {
             const currentProduct = product.result.product;

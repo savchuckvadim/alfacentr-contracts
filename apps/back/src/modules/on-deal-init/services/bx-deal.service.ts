@@ -5,7 +5,7 @@ import { getIsNotEmptyParticipant } from './deal-helper/get-participant-product-
 
 export class BxDealService {
     private bitrix: BitrixService;
-    constructor() { }
+    constructor() {}
 
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;
@@ -36,8 +36,6 @@ export class BxDealService {
     getParticipants(dealValues: DealValue[]) {
         let participants = {} as Record<string, string>;
         dealValues.forEach((value, index) => {
-
-
             if (
                 value.name.includes('Участник') &&
                 value.value &&
@@ -73,12 +71,9 @@ export class BxDealService {
                                     ' \n';
                             }
                         }
-
                     }
                 }
             }
-
-
         });
         return participants;
     }

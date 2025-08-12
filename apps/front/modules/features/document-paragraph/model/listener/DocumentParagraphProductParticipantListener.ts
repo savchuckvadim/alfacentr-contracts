@@ -59,7 +59,7 @@ export function setupDocumentParagraphProductParticipantListener(
                 ) {
                     const seminarNameVallue = getProductFieldByCodeValue(
                         searchedSeminarProducts[0] as IAlfaProduct,
-                        'SEMINAR_TOPIC',
+                        'NAME_BID',
                     );
                     result += seminarNameVallue?.value + '\n';
 

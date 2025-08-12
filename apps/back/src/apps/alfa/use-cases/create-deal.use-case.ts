@@ -72,33 +72,6 @@ export class CreateDealUseCase {
             );
         }
 
-        // const testSerachingProductName = (fieldData as DealFieldsTemplate).participants[1].seminar.ppk_program.accountant_gos.list[0].name as string
-        // console.log('testSerachingProductName', testSerachingProductName)
-        // const test = '«Бухгалтер бюджетной сферы (код А). Нефинансовые активы. Расчёты. Обязательства», 120 часов'
-        // const productsResponse = await bitrix.product.getList({
-        //     "=active": "Y",
-        //     "iblockId": 24,
-        //     // '%name': test
-        //     // [`%${bxProductData.SEMINAR_TOPIC.bitrixId}`]: testSerachingProductName
-        // },
-        //     [
-        //         "iblockId",
-        //         'active',
-        //         'name',
-        //         'price',
-        //         'currencyId',
-        //         'id',
-
-        //     ]
-
-        // )
-        // const products = productsResponse.result
-        // const productsTotal = productsResponse.total
-
-        // console.log('products', products)
-        // console.log('productsTotal', productsTotal)
-
-        // await bxSmartService.setParticipantsSmarts(dealValues);
         const inn = dealValues.find(
             (value) => value.code === BxDealDataKeys.inn,
         )?.value as string;

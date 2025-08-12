@@ -159,7 +159,7 @@ export class PpkDistributorService {
 
     private getProductTopic(product: IAlfaProduct): string | null {
         const field = product.fields.find(
-            f => f.bitrixId === bxProductData.SEMINAR_TOPIC.bitrixId,
+            f => f.bitrixId === bxProductData.NAME_BID.bitrixId,
         );
         return (field?.value as { value: string })?.value || null;
     }

@@ -44,7 +44,8 @@ export default function NoCompanyPage() {
                         {/* Описание */}
                         <p className="text-muted-foreground text-center mb-6 leading-relaxed">
                             В данной сделке отсутствует информация о компании.
-                            Для продолжения работы необходимо добавить компанию в сделку.
+                            Для продолжения работы необходимо добавить компанию
+                            в сделку.
                         </p>
 
                         {/* Дополнительная информация */}
@@ -91,7 +92,8 @@ export default function NoCompanyPage() {
                     {/* Дополнительная информация внизу */}
                     <div className="mt-6 text-center">
                         <p className="text-xs text-muted-foreground">
-                            Если проблема повторяется, обратитесь в техническую поддержку
+                            Если проблема повторяется, обратитесь в техническую
+                            поддержку
                         </p>
                     </div>
                 </div>

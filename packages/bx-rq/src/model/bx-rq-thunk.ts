@@ -35,10 +35,10 @@ import {
 import { BX_ADDRESS_TYPE } from '../type/evs-address-type';
 
 export const fetchBXRQ =
-    (domain: string, companyId: number) =>
+    (domain: string, companyId: number, currentRqId?: string) =>
     async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
         const state = getState();
-
+        console.log('currentRqId', currentRqId);
         const isLoading = state.bxrq.isLoading;
         if (!isLoading) {
             dispatch(setLoading(true));
@@ -59,6 +59,7 @@ export const fetchBXRQ =
             if (rqData) {
                 if (rqData.rqs) {
                     dispatch(setFetched({ bxrq: rqData.rqs }));
+
                     return;
                 }
             }

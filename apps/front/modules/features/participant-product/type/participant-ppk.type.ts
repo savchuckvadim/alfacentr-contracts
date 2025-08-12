@@ -14,6 +14,9 @@ export const ParticipantPpkFieldCodes: BxParticipantsDataKeys[] = [
     BxParticipantsDataKeys.corruption,
 ];
 
+export const ParticipantSeminarFieldCodes: BxParticipantsDataKeys[] = [
+    BxParticipantsDataKeys.days,
+];
 export interface IParticipantPpkTopicsStats {
     [participantId: number]: IParicipantPpkThemesStats[];
 }

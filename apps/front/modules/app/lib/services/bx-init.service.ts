@@ -2,18 +2,12 @@ import { Bitrix } from '@bitrix/bitrix';
 import { BitrixService } from '@bitrix/bitrix.service';
 import { TESTING_PLACEMENT } from '../../consts/app-global';
 import { Placement } from '@workspace/bx';
-import {
-
-    IBXCompany,
-    IBXDeal,
-    IBXItem,
-
-} from '@bitrix/index';
+import { IBXCompany, IBXDeal, IBXItem } from '@bitrix/index';
 
 import { BxDealCompanyService } from './bx-deal-compny.service';
 import { BxParticipantService } from '@/modules/entities/participant/lib/service/bx-participant.service';
 import { IParticipant } from '@alfa/entities';
-export const IS_PROD = true;
+export const IS_PROD = false;
 // export interface IDealProductRowWithProduct extends IBXProductRowRow {
 //     ownerType: BitrixOwnerType;
 //     ownerId: string | number;
@@ -47,7 +41,6 @@ export class BxInitService {
     constructor() {
         this.bitrix = Bitrix.getService();
 
-
         // this.productService = new AlfaBxProductService()
         this.dealCompanyService = new BxDealCompanyService();
         this.participantService = new BxParticipantService();
@@ -70,9 +63,8 @@ export class BxInitService {
         // console.log("ROWS WITH PRODUCTS")
         // console.log(rows)
         const { company, deal, items } = this.prepare(totalBxResponse);
-        debugger
-        if (!deal || !company) {
 
+        if (!deal || !company) {
             return null;
         }
 
@@ -93,8 +85,8 @@ export class BxInitService {
             'ID' in placement.options
                 ? placement.options.ID
                 : 'dealId' in placement.options
-                    ? placement.options.dealId
-                    : null;
+                  ? placement.options.dealId
+                  : null;
         if (!dealId) {
             throw new Error('Deal ID not found in placement options');
         }

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TDealData, BxDealDataKeys } from '@alfa/entities';
+import { BxDealDataKeys } from '@alfa/entities';
 import { IDealFieldsData } from '../type/deal-field.type';
 
 import { handleSliceError } from '@/modules/app/lib/thunk-error-handler';

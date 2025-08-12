@@ -25,4 +25,6 @@ export enum EnumDealDocumentFieldCode {
     PAYMENT_POIT_DOC = 'payment_poit_doc',
     SUBJECT_FOR_SEND_MESSAGE = 'subject_for_send_message',
     CONTRACT_TYPE = 'contract_type',
+    POTENTIAL_COMPANIES = 'potential_companies',
+    CURRENT_RQ = 'current_rq',
 }

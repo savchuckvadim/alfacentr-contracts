@@ -1,7 +1,6 @@
 import { ParticipantsTable } from './ParticipantsTable';
 import { Badge } from '@workspace/ui/components/badge';
-import { Eye } from 'lucide-react';
-import Link from 'next/link';
+
 import { useParticipantsInfo } from '../ParticipantInfoCard/hook/useParticipantsInfo';
 import { LinkBadge, Tooltip } from '@/modules/shared';
 import { ParticipantsProblems } from '../ParticipantReport/ParticipantsProblems';

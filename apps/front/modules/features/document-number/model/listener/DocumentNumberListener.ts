@@ -36,7 +36,6 @@ export function setupDocumentNumberListener(
         matcher: isAnyOf(wsInit.fulfilled),
 
         effect: async (action, listenerApi) => {
-
             console.log('🔧 Setting up document-number:done handler');
             registerWSHandler('document-number:done', (data, dispatch) => {
                 console.log(

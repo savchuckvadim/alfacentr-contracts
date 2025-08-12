@@ -13,7 +13,7 @@ export const createProgramsTooltip = (participantPpkTopicsStats: any[]) => (
 export const createAssignedProductsTooltip = (assignedProducts: any[]) => (
     <div className="flex flex-col gap-2 w-[200px] text-foreground">
         {assignedProducts.map(product => {
-            const topic = getProductFieldByCodeValue(product, 'SEMINAR_TOPIC');
+            const topic = getProductFieldByCodeValue(product, 'NAME_BID');
             return (
                 <div
                     key={product.id}

@@ -45,11 +45,11 @@ export const ParticipantPpkListInfo = () => {
 
     return (
         <>
-            <ParticipantsTable />
+            {/* <ParticipantsTable /> */}
 
             <div className="space-y-6">
                 {/* Заголовок и статистика */}
-                <Card>
+                {/* <Card>
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -73,10 +73,10 @@ export const ParticipantPpkListInfo = () => {
                     <CardContent>
                         <PartisipantProductSimpleStatistics />
                     </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* Список участников */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-4">
                     {participants.map(participant => {
                         return (
                             <ParticipantInfoCard

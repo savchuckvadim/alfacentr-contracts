@@ -16,9 +16,9 @@ export const useAlfaProducts = () => {
     const seminarProducts = items.filter(product =>
         getIsSeminarProduct(product),
     ) as IAlfaProduct[];
-    const seminarPpkProducts = items.filter(product =>
-        getIsSeminarPpkProduct(product),
-    ) as IAlfaProduct[];
+    // const seminarPpkProducts = items.filter(product =>
+    //     getIsSeminarPpkProduct(product),
+    // ) as IAlfaProduct[];
     const upProducts = items.filter(product =>
         getIsUpProduct(product),
     ) as IAlfaProduct[];
@@ -31,7 +31,7 @@ export const useAlfaProducts = () => {
         error,
         ppkProducts,
         seminarProducts,
-        seminarPpkProducts,
+        // seminarPpkProducts,
         upProducts,
         totalSum,
         totalProductsCount,

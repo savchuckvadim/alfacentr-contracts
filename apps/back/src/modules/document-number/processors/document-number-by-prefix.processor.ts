@@ -18,7 +18,10 @@ export class DocumentNumberByPrefixQueueProcessor {
         this.logger.log('DocumentNumberByPrefixQueueProcessor initialized');
     }
 
-    @Process(JobNames.DOCUMENT_NUMBER_BY_PREFIX)
+    @Process({
+        name: JobNames.DOCUMENT_NUMBER_BY_PREFIX,
+        concurrency: 1,
+    })
     async handle(job: Job<DocumentNumberByPrefixDto>) {
         const dto = job.data;
         const { socketId, dealId } = dto;

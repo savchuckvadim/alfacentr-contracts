@@ -16,7 +16,7 @@ export const useEditParticipant = (participantId: number) => {
         format,
         isPpk,
         programs,
-
+        days,
         activateEditable,
         cancelEditable,
         changeEditable,
@@ -43,6 +43,7 @@ export const useEditParticipant = (participantId: number) => {
         format,
         isPpk,
         programs,
+        days,
         activateEditable,
         cancelEditable,
         changeEditable,

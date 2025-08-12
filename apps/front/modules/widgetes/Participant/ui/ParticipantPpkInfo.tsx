@@ -461,7 +461,7 @@ export const ParticipantPpkInfo = ({
                                         const productTopicName =
                                             getProductFieldByCodeValue(
                                                 product,
-                                                'SEMINAR_TOPIC',
+                                                'NAME_BID',
                                             )?.value;
                                         if (!productTopicName) return null;
 

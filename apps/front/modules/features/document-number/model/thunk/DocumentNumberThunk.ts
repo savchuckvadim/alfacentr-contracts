@@ -46,13 +46,10 @@ export const updateDocumentNumber = createAsyncThunk<
             const newDinamyc = getCurrentDinamycPrefix(state.product.items);
             const newDinamycPrefix = 'ТЕСТ123';
 
-
             //если динамический префикс изменился или номер не установлен
             // отправляем запрашиваем у бэка новый номер
             // надо обновить в битрикс и в текущей сделке
             if (newDinamycPrefix !== prefix || !number || number === '0') {
-
-
                 const dto = {
                     dealId: deal.ID,
                     prefix: newDinamycPrefix,
@@ -95,7 +92,6 @@ export const documentNumberDone = createAsyncThunk<
         response: IDocumentNumberUpdateDoneResponse,
         { rejectWithValue, getState },
     ) => {
-
         const data = response.data;
         try {
             console.log('🔧 documentNumberDone thunk called with data:', data);
@@ -106,7 +102,6 @@ export const documentNumberDone = createAsyncThunk<
                 return rejectWithValue('Deal not found');
             }
             await updateBxDeal(dealId, data.prefix, data.counter);
-
 
             return {
                 prefix: data.prefix,

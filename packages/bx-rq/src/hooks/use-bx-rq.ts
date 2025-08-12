@@ -89,8 +89,8 @@ export const useBxRq = () => {
     return {
         ...state,
         ...actions,
-        fetchBXRQ: (domain: string, companyId: number) =>
-            dispatch(fetchBXRQ(domain, companyId)),
+        fetchBXRQ: (domain: string, companyId: number, currentRqId?: string) =>
+            dispatch(fetchBXRQ(domain, companyId, currentRqId)),
         initBaseCreating: (currentClientType: RQ_TYPE) =>
             dispatch(initBaseCreating({ currentClientType })),
         setCurrent: (item: EvsRqItem) => dispatch(setCurrentItem({ item })),

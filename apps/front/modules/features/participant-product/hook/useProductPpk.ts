@@ -6,6 +6,7 @@ import {
 } from '@/modules/entities/product/lib/get-product-type.util';
 import { useParticipantPpk } from './useParticipantPpk';
 import { IAlfaProduct } from '@/modules/entities';
+import { BxParticipantsDataKeys } from '@alfa/entities';
 
 export const useProductPpk = (product: IAlfaProduct) => {
     const productType = getProductTypeName(product);
@@ -23,6 +24,14 @@ export const useProductPpk = (product: IAlfaProduct) => {
         productToParticipants[product.id?.toString() || ''] || [];
     const assignedCount = assignedParticipants.length;
 
+    const participantsNamesString = assignedParticipants
+        .map(
+            participant =>
+                participant.fields.find(
+                    fld => fld.code === BxParticipantsDataKeys.name,
+                )?.value || '',
+        )
+        .join(', ');
     // Определяем цвет бейджа для типа продукта
 
     const getTypeBadgeColor = () => {
@@ -70,6 +79,7 @@ export const useProductPpk = (product: IAlfaProduct) => {
     });
 
     return {
+        participantsNamesString,
         productType,
         isPpk,
         isSeminar,

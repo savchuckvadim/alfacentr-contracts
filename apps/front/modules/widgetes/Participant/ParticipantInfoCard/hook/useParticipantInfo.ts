@@ -1,6 +1,6 @@
-import { getParticipantIsPpk, useParticipant } from '@/modules/entities';
+import { useParticipant } from '@/modules/entities';
+import { useParticipantSeminar } from '@/modules/features';
 import { useParticipantPpk } from '@/modules/features/participant-product/hook/useParticipantPpk';
-import { useEffect } from 'react';
 
 export const useParticipantInfo = (participantId: number) => {
     const { loading: isPartisipantsLoading, participant } =
@@ -11,11 +11,29 @@ export const useParticipantInfo = (participantId: number) => {
         isParticipantPpk,
         getParticipantProblems,
     } = useParticipantPpk();
+
+    const {
+        getParticipantProblems: getParticipantSeminarsProblems,
+        participantToProducts: participantToSeminars,
+        isLoading: isParticipantSeminarsLoading,
+        isParticipantSeminar,
+        getParticipantProblems: getParticipantsSeminarsProblems,
+    } = useParticipantSeminar();
+
     const { hasProblems, participantPpkTopicsStats, problems } =
         getParticipantProblems(participantId);
+
+    const {
+        hasProblems: hasSeminarsProblems,
+        participantPpkTopicsStats: seminarsPpkTopicsStats,
+        problems: seminarsProblems,
+    } = getParticipantSeminarsProblems(participantId);
+
     const programsThemes = participantPpkTopicsStats.map(stat => stat.topic);
     const assignedProducts = participantToProducts[participantId] ?? [];
     const isPpk = isParticipantPpk(participantId);
+
+    const assignedSeminars = participantToSeminars[participantId] ?? [];
 
     return {
         isPartisipantsLoading,
@@ -27,5 +45,15 @@ export const useParticipantInfo = (participantId: number) => {
         programsThemes,
         assignedProducts,
         isPpk,
+
+        //seminars
+        seminarsProblems,
+        hasSeminarsProblems,
+        seminarsPpkTopicsStats,
+        isParticipantSeminarsLoading,
+        isParticipantSeminar,
+        participantToSeminars,
+        getParticipantSeminarsProblems,
+        assignedSeminars,
     };
 };

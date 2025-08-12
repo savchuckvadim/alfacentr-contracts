@@ -7,6 +7,6 @@ export const getDocumentFields = (state: RootState) => {
         client,
         header,
         provider,
-        clientShortRq
+        clientShortRq,
     };
 };

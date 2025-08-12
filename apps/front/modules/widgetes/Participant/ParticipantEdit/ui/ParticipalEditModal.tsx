@@ -1,42 +1,14 @@
 'use client';
-import { ComponentPreloader, ModalMenu, Select } from '@/modules/shared';
+import { ComponentPreloader } from '@/modules/shared';
 import { useEditParticipant } from '../hook/useParticipantEdit';
 import {
-    BxParticipantsData,
     BxParticipantsDataKeys,
-    getParticipantSelect,
     getParticipantSelectItemByValue,
     IParticipant,
 } from '@alfa/entities';
-import { Input } from '@workspace/ui/components/input';
-import { Label } from '@workspace/ui/components/label';
 import { Button } from '@workspace/ui/components/button';
-import { Textarea } from '@workspace/ui/components/textarea';
 import { useEffect, useState } from 'react';
-import {
-    Edit2Icon,
-    Trash2Icon,
-    XIcon,
-    UserIcon,
-    GraduationCapIcon,
-    BookOpenIcon,
-} from 'lucide-react';
-import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts';
-import { getProductFieldByCodeValue } from '@/modules/entities';
-import { ISelectItem } from '@/modules/shared/Select/Select';
-import { ParticipantProductPpkSelect } from './components/ParticipantProductSelect';
-import {
-    DialogDescription,
-    DialogHeader,
-} from '@workspace/ui/components/dialog';
-import { DialogTitle } from '@workspace/ui/components/dialog';
 import { ModalScreen } from '@/modules/shared';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@workspace/ui/components/card';
 import { ParticipantEditContent } from './components/ParticipantEditContent';
 
 interface ParticipalEditModalProps {
@@ -44,15 +16,15 @@ interface ParticipalEditModalProps {
     editable: IParticipant;
 }
 
-const generalCodes = [
-    BxParticipantsDataKeys.name,
-    BxParticipantsDataKeys.email,
-    BxParticipantsDataKeys.phone,
-    BxParticipantsDataKeys.format,
-    BxParticipantsDataKeys.address_for_udost,
-];
+// const generalCodes = [
+//     BxParticipantsDataKeys.name,
+//     BxParticipantsDataKeys.email,
+//     BxParticipantsDataKeys.phone,
+//     BxParticipantsDataKeys.format,
+//     BxParticipantsDataKeys.address_for_udost,
+// ];
 
-const ppkCodes = [BxParticipantsDataKeys.is_ppk, BxParticipantsDataKeys.days];
+// const ppkCodes = [BxParticipantsDataKeys.is_ppk, BxParticipantsDataKeys.days];
 
 export const ppkProgramCodes = [
     BxParticipantsDataKeys.accountant_gos,
@@ -75,7 +47,7 @@ export const ParticipalEditModal = ({
             if (field.code === BxParticipantsDataKeys.is_ppk) {
                 const value = getParticipantSelectItemByValue(
                     field.code,
-                    field.value,
+                    field.value as string,
                 );
                 if (value?.code === 'yes') {
                     setIsPpk(true);

@@ -11,6 +11,7 @@ import {
     getParticipantIsPpk,
     getParticipantName,
     getParticipantPhone,
+    getParticipantDays,
 } from '../../ui';
 import { formatParticipantPrograms } from '../../ui/utils/participant.utils';
 import {
@@ -22,7 +23,7 @@ import {
     activateEditable,
     cancelEditable,
     changeEditable,
-} from '../../model/PerticipantSlice';
+} from '../../model/ParticipantSlice';
 
 export const useParticipant = (id?: number) => {
     const dispatch = useAppDispatch();
@@ -56,7 +57,7 @@ export const useParticipant = (id?: number) => {
     const format = participant ? getParticipantFormat(participant) : '';
     const isPpk = participant ? getParticipantIsPpk(participant) : false;
     const programs = participant ? formatParticipantPrograms(participant) : '';
-
+    const days = participant ? getParticipantDays(participant) : '';
     return {
         participants,
         participant,
@@ -66,7 +67,7 @@ export const useParticipant = (id?: number) => {
         format,
         isPpk,
         programs,
-
+        days,
         loading,
         editLoading,
         error,

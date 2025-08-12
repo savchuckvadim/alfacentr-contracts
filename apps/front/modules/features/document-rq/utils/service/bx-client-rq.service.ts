@@ -19,13 +19,9 @@ export class BxClientRqService {
         clientRq: EvsRqItem,
         clientType: RQ_TYPE,
     ): DocumentRqAgent<RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION> {
-
         if (clientType === RQ_TYPE.FIZ) {
-
             return this.prepareClientFizRq(clientRq);
         } else {
-
-
             return this.prepareClientOrgRq(clientRq);
         }
     }
@@ -118,7 +114,7 @@ export class BxClientRqService {
             BX_ADDRESS_TYPE.PRIMARY,
             RQ_TYPE.FIZ,
         );
-        debugger;
+
         result.primaryAddress = primaryAddress;
         result.address = address;
         return result;
@@ -240,46 +236,47 @@ export class BxClientRqService {
         return withBankResult;
     }
 
-    public prepareClientOrgShortRq(
-        clientRq: EvsRqItem,
-    ): string {
-        const shortRqCodes: EnumOrganizationRqFields[] =
-            [
-                EnumOrganizationRqFields.NAME,
-                EnumOrganizationRqFields.FULLNAME,
-                EnumOrganizationRqFields.INN,
-                EnumOrganizationRqFields.KPP,
-                EnumOrganizationRqFields.PRIMARY_ADDRESS,
-                EnumOrganizationRqFields.DIRECTOR_NAME,
-                EnumOrganizationRqFields.DIRECTOR_FIO,
-                EnumOrganizationRqFields.DIRECTOR_POSITION,
-            ];
+    public prepareClientOrgShortRq(clientRq: EvsRqItem): string {
+        const shortRqCodes: EnumOrganizationRqFields[] = [
+            EnumOrganizationRqFields.NAME,
+            EnumOrganizationRqFields.FULLNAME,
+            EnumOrganizationRqFields.INN,
+            EnumOrganizationRqFields.KPP,
+            EnumOrganizationRqFields.PRIMARY_ADDRESS,
+            EnumOrganizationRqFields.DIRECTOR_NAME,
+            EnumOrganizationRqFields.DIRECTOR_FIO,
+            EnumOrganizationRqFields.DIRECTOR_POSITION,
+        ];
 
         let result: string = '';
 
-        let fullnameResult = 'Наименование: _________________________________________';
+        let fullnameResult =
+            'Наименование: _________________________________________';
         let innResult = 'ИНН: ________________________________________';
         let kppResult = 'КПП: ________________________________________';
 
-        const fullnameValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.FULLNAME);
+        const fullnameValue = this.findFieldByCode(
+            clientRq,
+            RQ_ITEM_CODE.FULLNAME,
+        );
         if (fullnameValue) {
             fullnameResult = fullnameValue;
         } else {
-            const nameValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.SHORTNAME);
+            const nameValue = this.findFieldByCode(
+                clientRq,
+                RQ_ITEM_CODE.SHORTNAME,
+            );
             if (nameValue) {
                 fullnameResult = nameValue;
             }
         }
 
-
         const innValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.INN);
 
         innResult = innValue ? `ИНН: ${innValue}` : `${innResult}`;
 
-
         const kppValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.KPP);
         kppResult = kppValue ? `КПП: ${kppValue}` : `${kppResult}`;
-
 
         let addressResult = 'Адрес: ________________________________________';
         let address = this.getAddressString(
@@ -295,13 +292,15 @@ export class BxClientRqService {
             true,
         );
 
-        addressResult = primaryAddress ? `Адрес: ${primaryAddress}` : address ? `Адрес: ${address}` : `${addressResult}`;
+        addressResult = primaryAddress
+            ? `Адрес: ${primaryAddress}`
+            : address
+              ? `Адрес: ${address}`
+              : `${addressResult}`;
         result = `${fullnameResult} ${innResult} ${kppResult} ${addressResult}`;
         return result;
     }
-    public prepareClientFizShortRq(
-        clientRq: EvsRqItem,
-    ): string {
+    public prepareClientFizShortRq(clientRq: EvsRqItem): string {
         const result: EnumFizRqFields[] = [
             EnumFizRqFields.NAME,
 
@@ -316,7 +315,6 @@ export class BxClientRqService {
             EnumFizRqFields.OTHER,
             EnumFizRqFields.ADDRESS,
             EnumFizRqFields.PRIMARY_ADDRESS,
-
         ];
         let fullname = '________________________________________';
         let inn = '';
@@ -338,8 +336,6 @@ export class BxClientRqService {
         documentType = documentTypeValue
             ? documentTypeValue
             : `Документ: ${documentType}`;
-
-
 
         let docSeries = '_____________________________';
         const docSeriesValue = clientRq.fields.find(
@@ -387,7 +383,11 @@ export class BxClientRqService {
             true,
         );
 
-        addressResult = primaryAddress ? `Адрес: ${primaryAddress}` : address ? `Адрес: ${address}` : `${addressResult}`;
+        addressResult = primaryAddress
+            ? `Адрес: ${primaryAddress}`
+            : address
+              ? `Адрес: ${address}`
+              : `${addressResult}`;
         return `${fullname} ${documentType} ${docSeries} ${docNumber} ${docDate} ${depCode} ${inn} ${addressResult}`;
     }
     private findFieldByCode(clientRq: EvsRqItem, code: RQ_ITEM_CODE) {
@@ -402,13 +402,12 @@ export class BxClientRqService {
     ): string {
         let address = '';
         clientRq.address.items.forEach(addresType => {
-
-            debugger;
             if (addresType.type_id === type) {
                 addresType.fields.forEach((field, index) => {
                     if (field.value) {
                         if (
-                            field.code === ADDRESS_RQ_ITEM_CODE.ADDRESS_POSTAL_CODE
+                            field.code ===
+                            ADDRESS_RQ_ITEM_CODE.ADDRESS_POSTAL_CODE
                         ) {
                             address += field.value;
                         } else {
@@ -436,14 +435,12 @@ export class BxClientRqService {
             }
         }
 
-        debugger;
         if (isClean) {
-            return (
-                `${address}` || `________________________________________`
-            );
+            return `${address}` || `________________________________________`;
         } else {
             return (
-                `${addressType}: ${address}` || `${addressType}: ________________________________________`
+                `${addressType}: ${address}` ||
+                `${addressType}: ________________________________________`
             );
         }
     }

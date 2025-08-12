@@ -6,7 +6,6 @@ import './loading.css';
 import Image from 'next/image';
 import { usePace } from '../hooks/usePace';
 
-
 const LoadingScreen = () => {
     const [isVisible, setIsVisible] = useState(true);
 

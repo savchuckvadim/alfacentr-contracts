@@ -3,7 +3,7 @@ import { io, Socket } from 'socket.io-client';
 export type { Socket };
 // const NEXT_PUBLIC_WS_HOST = 'ws://localhost:8334'
 
-const NEXT_PUBLIC_WS_HOST ='https://alfacentr.back.april-app.ru/'
+const NEXT_PUBLIC_WS_HOST = 'https://alfacentr.back.april-app.ru/';
 
 // const NEXT_PUBLIC_WS_HOST = 'http://localhost:3000';
 

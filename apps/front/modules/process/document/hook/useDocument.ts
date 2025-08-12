@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
 import { documentGenerate } from '../model/DocumentThunk';
 import { useEffect, useState } from 'react';
@@ -12,7 +12,6 @@ export const useDocument = () => {
     useEffect(() => {
         setIsLoading(document.isGenerating || email.isSending);
     }, [document.isGenerating, email.isSending]);
-
 
     const generateDocument = () => {
         dispatch(documentGenerate());
