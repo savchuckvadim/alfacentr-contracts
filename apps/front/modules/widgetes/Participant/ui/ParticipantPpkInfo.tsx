@@ -3,6 +3,7 @@
 import {
     getParticipantAddress,
     getParticipantDays,
+    getParticipantDaysArray,
     getParticipantEmail,
     getParticipantFormat,
     getParticipantIsPpk,
@@ -13,7 +14,10 @@ import {
     getProductFieldValue,
     useParticipant,
 } from '@/modules/entities';
-import { useParticipantPpk } from '@/modules/features/participant-product';
+import {
+    useParticipantPpk,
+    useParticipantSeminar,
+} from '@/modules/features/participant-product';
 import { getMissingProductsByParticipantPpkThemes } from '@/modules/features/participant-product/lib/utils/participant-products';
 
 import { Badge } from '@workspace/ui/components/badge';
@@ -44,6 +48,9 @@ import {
     AlertCircle,
     Link2,
     Edit,
+    PointerIcon,
+    Check,
+    Dot,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts';
@@ -56,6 +63,10 @@ import { useApp } from '@/modules/app';
 import { useParticipantInfo } from '../ParticipantInfoCard/hook/useParticipantInfo';
 import { useEditParticipant } from '../ParticipantEdit/hook/useParticipantEdit';
 import { ParticipalEditModal } from '../ParticipantEdit/ui/ParticipalEditModal';
+import { Programs } from './components/Programs/Programs';
+import { Products } from './components/Products/Products';
+import { ParticipantPpkProducts } from './components/Products/ParticipantPpkProducts';
+import { ParticipantSeminarProducts } from './components/Products/ParticipantSeminarProducts';
 
 export const ParticipantPpkInfo = ({
     participantId,
@@ -68,6 +79,9 @@ export const ParticipantPpkInfo = ({
     const { participant, loading, error } = useParticipant(id);
     const { loading: loadingProducts } = useAlfaProducts();
     const { participantToProducts } = useParticipantPpk();
+    const { participantToProducts: participantToSeminars } =
+        useParticipantSeminar();
+
     let missingProducts: string[] = [];
     // const [hasProblems, setHasProblems] = useState(false)
     const { hasProblems, problems, isParticipantPpkLoading } =
@@ -78,6 +92,7 @@ export const ParticipantPpkInfo = ({
     };
     useEffect(() => {
         const products = participantToProducts[id];
+        const seminars = participantToSeminars[id];
         const programs = getParticipantPrograms(participant as IParticipant);
         const programsThemes = programs?.map(program => program.value);
         missingProducts = products
@@ -86,7 +101,7 @@ export const ParticipantPpkInfo = ({
         // if (missingProducts && missingProducts.length > 0) {
         //     setHasProblems(true)
         // }
-    }, [participant, participantToProducts]);
+    }, [participant, participantToProducts, participantToSeminars]);
 
     const [expandedSections, setExpandedSections] = useState<{
         programs: boolean;
@@ -101,6 +116,7 @@ export const ParticipantPpkInfo = ({
     });
 
     const products = participantToProducts[id];
+    const seminars = participantToSeminars[id];
 
     if (loading || !isClient) {
         return (
@@ -205,8 +221,8 @@ export const ParticipantPpkInfo = ({
                                 {/* Контактная информация */}
                                 {expandedSections.participantInfo && (
                                     <>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
-                                            <div className="flex items-center gap-2">
+                                        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                                            <div className="w-screen flex items-center gap-2">
                                                 <div className="p-1.5 bg-blue-100 rounded">
                                                     <Phone className="h-3 w-3 text-blue-600" />
                                                 </div>
@@ -222,7 +238,7 @@ export const ParticipantPpkInfo = ({
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-2">
+                                            <div className="min-w-fit flex items-center gap-2">
                                                 <div className="p-1.5 bg-green-100 rounded">
                                                     <Mail className="h-3 w-3 text-green-600" />
                                                 </div>
@@ -238,7 +254,7 @@ export const ParticipantPpkInfo = ({
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-2">
+                                            <div className="min-w-fit flex items-center gap-2">
                                                 <div className="p-1.5 bg-purple-100 rounded">
                                                     <MapPin className="h-3 w-3 text-purple-600" />
                                                 </div>
@@ -254,7 +270,7 @@ export const ParticipantPpkInfo = ({
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-2">
+                                            <div className="min-w-fit flex items-center gap-2">
                                                 <div className="p-1.5 bg-orange-100 rounded">
                                                     <Calendar className="h-3 w-3 text-orange-600" />
                                                 </div>
@@ -262,11 +278,26 @@ export const ParticipantPpkInfo = ({
                                                     <p className="text-xs text-muted-foreground">
                                                         Дни участия
                                                     </p>
-                                                    <p className="text-sm font-medium">
-                                                        {getParticipantDays(
-                                                            participant,
-                                                        ) || 'Не указаны'}
-                                                    </p>
+                                                    {getParticipantDaysArray(
+                                                        participant,
+                                                    ).map(day => (
+                                                        <div
+                                                            key={day}
+                                                            className="text-sm font-medium flex items-center gap-2 mb-2 mt-1"
+                                                        >
+                                                            <div className="w-5 h-5">
+                                                                <Dot
+                                                                    size={16}
+                                                                    className=" text-primary"
+                                                                />
+                                                            </div>
+
+                                                            <p className="text-xs font-medium flex items-center gap-2">
+                                                                {' '}
+                                                                {day}
+                                                            </p>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
                                         </div>
@@ -348,239 +379,42 @@ export const ParticipantPpkInfo = ({
                 </CardHeader>
             </Card>
 
-            {/* ППК программы из заявки */}
-            <Card>
-                <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <BookOpen className="h-4 w-4 text-muted-foreground" />
-                            <CardTitle className="text-lg">
-                                ППК программы из заявки
-                            </CardTitle>
-                            <Badge variant="secondary" className="text-xs">
-                                {programs?.length || 0}
-                            </Badge>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleSection('programs')}
-                        >
-                            {expandedSections.programs ? 'Скрыть' : 'Показать'}
-                        </Button>
-                    </div>
-                </CardHeader>
+            <Programs
+                isPpk={false}
+                programs={getParticipantDaysArray(participant).map(day => ({
+                    // type: 'семинар',
+                    value: day,
+                }))}
+                id={id}
+                handleRemoveProgram={handleRemoveProgram}
+                expandedSections={expandedSections}
+                toggleSection={toggleSection}
+            />
 
-                {expandedSections.programs && (
-                    <CardContent className="space-y-3">
-                        {programs && programs.length > 0 ? (
-                            <div className="grid gap-3">
-                                {programs.map((program, index) => (
-                                    <div
-                                        key={`participant-${id}-program-${index}`}
-                                        className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border"
-                                    >
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <Badge
-                                                    variant="outline"
-                                                    className="text-xs"
-                                                >
-                                                    {program.type}
-                                                </Badge>
-                                            </div>
-                                            <p className="text-sm font-medium">
-                                                {program.value}
-                                            </p>
-                                        </div>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() =>
-                                                handleRemoveProgram(index)
-                                            }
-                                            className="text-destructive hover:text-destructive"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-6">
-                                <BookOpen className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                                <p className="text-muted-foreground">
-                                    Нет ППК программ
-                                </p>
-                            </div>
-                        )}
-                    </CardContent>
-                )}
-            </Card>
+            <ParticipantSeminarProducts
+                loading={
+                    loadingProducts || !participant || !isClient || loading
+                }
+                participant={participant}
+                participantId={id}
+            />
 
-            {/* Назначенные продукты */}
-            {loadingProducts ? (
-                <div className="flex items-center justify-center h-64">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                        <p className="text-muted-foreground">
-                            Загрузка продуктов...
-                        </p>
-                    </div>
-                </div>
-            ) : (
-                <Card>
-                    <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Package className="h-4 w-4 text-muted-foreground" />
-                                <CardTitle className="text-lg">
-                                    Назначенные продукты
-                                </CardTitle>
-                                <Badge variant="default" className="text-xs">
-                                    {products?.length || 0}
-                                </Badge>
-                            </div>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleSection('products')}
-                            >
-                                {expandedSections.products
-                                    ? 'Скрыть'
-                                    : 'Показать'}
-                            </Button>
-                        </div>
-                    </CardHeader>
+            <Programs
+                isPpk={true}
+                programs={programs}
+                id={id}
+                handleRemoveProgram={handleRemoveProgram}
+                expandedSections={expandedSections}
+                toggleSection={toggleSection}
+            />
 
-                    {expandedSections.products && (
-                        <CardContent className="space-y-3">
-                            {products && products.length > 0 ? (
-                                <div className="grid gap-3">
-                                    {products.map((product, index) => {
-                                        const productTopicName =
-                                            getProductFieldByCodeValue(
-                                                product,
-                                                'NAME_BID',
-                                            )?.value;
-                                        if (!productTopicName) return null;
-
-                                        return (
-                                            <div
-                                                key={`participant-${id}-product-${index}`}
-                                                className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border"
-                                            >
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <CheckCircle className="h-4 w-4 text-green-600" />
-                                                        <Badge
-                                                            variant="default"
-                                                            className="text-xs"
-                                                        >
-                                                            Назначен
-                                                        </Badge>
-                                                    </div>
-                                                    <p className="text-sm font-medium">
-                                                        {productTopicName}
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        ID: {product.id} • Цена:{' '}
-                                                        {product.price || 0} ₽
-                                                    </p>
-                                                </div>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        handleRemoveProduct(
-                                                            index,
-                                                        )
-                                                    }
-                                                    className="text-destructive hover:text-destructive"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            ) : (
-                                <div className="text-center py-6">
-                                    <Package className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                                    <p className="text-muted-foreground">
-                                        Нет назначенных продуктов
-                                    </p>
-                                </div>
-                            )}
-                        </CardContent>
-                    )}
-                </Card>
-            )}
-
-            {/* Отсутствующие продукты */}
-            {missingProducts && missingProducts.length > 0 && (
-                <Card className="border-destructive/50 bg-destructive/5">
-                    <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <AlertTriangle className="h-4 w-4 text-destructive" />
-                                <CardTitle className="text-lg text-destructive">
-                                    Отсутствующие продукты
-                                </CardTitle>
-                                <Badge
-                                    variant="destructive"
-                                    className="text-xs"
-                                >
-                                    {missingProducts.length}
-                                </Badge>
-                            </div>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleSection('missing')}
-                            >
-                                {expandedSections.missing
-                                    ? 'Скрыть'
-                                    : 'Показать'}
-                            </Button>
-                        </div>
-                    </CardHeader>
-
-                    {expandedSections.missing && (
-                        <CardContent className="space-y-3">
-                            <p className="text-sm text-destructive mb-3">
-                                Следующие продукты отсутствуют в списке товаров
-                                или их количество ограничено:
-                            </p>
-                            <div className="grid gap-2">
-                                {missingProducts.map((productName, index) => (
-                                    <Tooltip
-                                        key={`participant-${id}-missing-${index}`}
-                                        content={
-                                            <p className="text-sm max-w-[300px]">
-                                                {productName}
-                                            </p>
-                                        }
-                                    >
-                                        <div
-                                            key={`participant-${id}-missing-${index}`}
-                                            className="flex items-center gap-2 p-2 bg-destructive/10 rounded border border-destructive/20"
-                                        >
-                                            <XCircle
-                                                size={16}
-                                                className=" text-destructive"
-                                            />
-                                            <span className="text-sm font-medium">
-                                                {cutString(productName, 150)}
-                                            </span>
-                                        </div>
-                                    </Tooltip>
-                                ))}
-                            </div>
-                        </CardContent>
-                    )}
-                </Card>
-            )}
+            <ParticipantPpkProducts
+                loading={
+                    loadingProducts || !participant || !isClient || loading
+                }
+                participant={participant}
+                participantId={id}
+            />
 
             {/* Действия */}
             <Card>

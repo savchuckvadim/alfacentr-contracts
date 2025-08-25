@@ -164,8 +164,8 @@ export class BxActivityRepository {
             { fields: data },
         );
     }
-    async createBtch(cmdCode: string, data: Partial<IBXActivity>) {
-        return await this.bitrixService.addCmdBatchType(
+    createBtch(cmdCode: string, data: Partial<IBXActivity>) {
+        return this.bitrixService.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.ACTIVITY,

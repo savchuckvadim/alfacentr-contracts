@@ -8,9 +8,10 @@ import { PBXModule } from '../pbx';
 import { DocumentContractFieldsService } from './services/document-contract-fields.service';
 import { PpkApplicationGenerateService } from './services/ppk-application-generate.service';
 import { DocumentGenerateBatchService } from './services/document-generate-batch.service';
+import { TelegramModule } from '@/modules/telegram';
 
 @Module({
-    imports: [PBXModule, QueueModule],
+    imports: [PBXModule, QueueModule, TelegramModule],
     controllers: [DocumentGenerateController],
     providers: [
         DocumentBitrixGenerateUseCase,

@@ -21,6 +21,7 @@ import { bxrqReducer } from '@workspace/bx-rq';
 import {
     contractTypeReducer,
     documentParagraphReducer,
+    seminarDaysSelectReducer,
 } from '@/modules/features';
 import { participantProductReducer } from '@/modules/features/';
 import { documentRqReducer } from '@/modules/features/document-rq';
@@ -29,6 +30,7 @@ import { WSClient as WSClientWorkspace } from '@workspace/ws';
 
 import { documentNumberReducer } from '@/modules/features';
 import { documentReducer } from '@/modules/process/document/model/DocumentSlice';
+import { communicationsReducer } from '@/modules/features/';
 
 export const listenerMiddleware = createListenerMiddleware();
 
@@ -42,10 +44,11 @@ const rootReducer = combineReducers({
     // features
     contractType: contractTypeReducer,
     participantProduct: participantProductReducer,
+    seminarDaysSelect: seminarDaysSelectReducer,
     documentRq: documentRqReducer,
     documentParagraph: documentParagraphReducer,
     documentNumber: documentNumberReducer,
-
+    communications: communicationsReducer,
     //process
     document: documentReducer,
 });
@@ -73,19 +76,7 @@ export const setupStore = () => {
             })
                 .concat(errorMiddleware)
                 .concat(listenerMiddleware.middleware),
-        // .concat(contractTypeListener.middleware)
-        // .concat(clientTypeListener.middleware)
-        // // .concat(participantProductListener.middleware)
-        // .concat(documentParagraphProductParticipantListener.middleware)
 
-        // .concat(rqListener.middleware)
-        // .concat(appListener.middleware)
-        // .concat(wsDocumentListener.middleware)
-
-        // .concat(portalAPI.middleware)
-        // .concat(infoblockAPI.middleware)
-
-        // .concat(reportMiddleware)
     });
 };
 

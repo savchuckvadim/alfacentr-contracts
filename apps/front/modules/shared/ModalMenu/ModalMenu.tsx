@@ -18,6 +18,8 @@ import {
 
 export const ModalMenu: FC<{
     title?: string;
+    submitName?: string;
+    cancelName?: string;
     description?: string;
     children: React.ReactNode;
     footer?: React.ReactNode;
@@ -26,6 +28,8 @@ export const ModalMenu: FC<{
     onSubmit?: () => void;
 }> = ({
     title,
+    submitName,
+    cancelName,
     description,
     children,
     footer,
@@ -47,8 +51,14 @@ export const ModalMenu: FC<{
                 {footer && <DialogFooter>{footer}</DialogFooter>}
 
                 <DialogFooter>
-                    <Button onClick={() => onOpenChange(false)}>Отмена</Button>
-                    {onSubmit && <Button onClick={onSubmit}>Отправить</Button>}
+                    <Button onClick={() => onOpenChange(false)}>
+                        {cancelName ? cancelName : 'Отмена'}
+                    </Button>
+                    {onSubmit && (
+                        <Button onClick={onSubmit}>
+                            {submitName ? submitName : 'Отправить'}
+                        </Button>
+                    )}
                 </DialogFooter>
             </DialogContent>
         </Dialog>

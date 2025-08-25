@@ -20,9 +20,10 @@ import {
     CardHeader,
     CardTitle,
 } from '@workspace/ui/components/card';
-import { ParticipantProductPpkSelect } from './ParticipantProductSelect';
+import { ParticipantProductPpkSelect } from './ParticipantProductPpkSelect';
+import { ParticipantDaysSelect } from './ParticipantDaysSelect';
 
-interface ParticipantEditContentProps {
+export interface ParticipantEditContentProps {
     editable: IParticipant;
 }
 
@@ -34,8 +35,8 @@ const generalCodes = [
     BxParticipantsDataKeys.address_for_udost,
 ];
 
-const ppkCodes = [BxParticipantsDataKeys.is_ppk, BxParticipantsDataKeys.days];
-
+const seminarCodes = [BxParticipantsDataKeys.days];
+const ppkCodes = [BxParticipantsDataKeys.is_ppk];
 export const ppkProgramCodes = [
     BxParticipantsDataKeys.accountant_gos,
     BxParticipantsDataKeys.accountant_medical,
@@ -173,12 +174,33 @@ export const ParticipantEditContent = ({
                 </CardContent>
             </Card>
 
-            {/* ППК */}
+            {/* Семинары */}
             <Card className="h-fit">
                 <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-lg">
                         <GraduationCapIcon className="w-5 h-5 text-primary" />
-                        ППК
+                        Семинары
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {/* {editable.fields
+                        .filter(field => seminarCodes.includes(field.code))
+                        .sort(
+                            (a, b) =>
+                                seminarCodes.indexOf(a.code) -
+                                seminarCodes.indexOf(b.code),
+                        )
+                        .map(renderPpkField)} */}
+                    <ParticipantDaysSelect editable={editable} />
+                </CardContent>
+            </Card>
+
+            {/* ППК программы */}
+            <Card className={`h-fit transition-all duration-300 ease-in-out `}>
+                <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                        <BookOpenIcon className="w-5 h-5 text-primary" />
+                        ППК программы
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -190,41 +212,33 @@ export const ParticipantEditContent = ({
                                 ppkCodes.indexOf(b.code),
                         )
                         .map(renderPpkField)}
-                </CardContent>
-            </Card>
-
-            {/* ППК программы */}
-            <Card
-                className={`h-fit transition-all duration-300 ease-in-out ${
-                    isPpk
-                        ? 'opacity-100 scale-100 translate-x-0'
-                        : 'opacity-0 scale-95 translate-x-4 pointer-events-none'
-                }`}
-            >
-                <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <BookOpenIcon className="w-5 h-5 text-primary" />
-                        ППК программы
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {editable.fields
-                        .filter(field => ppkProgramCodes.includes(field.code))
-                        .map(field => (
-                            <div key={field.bitrixId} className="space-y-2">
-                                <p className="text-sm  text-foreground">
-                                    {
-                                        field.name.split(
-                                            'Программы повышения квалификации',
-                                        )[1]
-                                    }
-                                </p>
-                                <ParticipantProductPpkSelect
-                                    field={field}
-                                    changeEditable={editParticipantTopic}
-                                />
-                            </div>
-                        ))}
+                    <div
+                        className={`${
+                            isPpk
+                                ? 'opacity-100 scale-100 translate-x-0'
+                                : 'opacity-0 scale-95 translate-x-4 pointer-events-none'
+                        }`}
+                    >
+                        {editable.fields
+                            .filter(field =>
+                                ppkProgramCodes.includes(field.code),
+                            )
+                            .map(field => (
+                                <div key={field.bitrixId} className="space-y-2">
+                                    <p className="text-sm  text-foreground">
+                                        {
+                                            field.name.split(
+                                                'Программы повышения квалификации',
+                                            )[1]
+                                        }
+                                    </p>
+                                    <ParticipantProductPpkSelect
+                                        field={field}
+                                        changeEditable={editParticipantTopic}
+                                    />
+                                </div>
+                            ))}
+                    </div>
                 </CardContent>
             </Card>
         </>

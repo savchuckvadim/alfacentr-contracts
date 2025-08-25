@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { documentGenerate } from './DocumentThunk';
+import {  documentGenerate } from './DocumentThunk';
 
 export interface IDocumentState {
     document: {
@@ -8,12 +8,14 @@ export interface IDocumentState {
         isGeneratedError: boolean;
         isGeneratedSuccess: boolean;
     };
-    email: {
-        isSending: boolean;
-        isSent: boolean;
-        isSentError: boolean;
-        isSentSuccess: boolean;
-    };
+    // emailConfirm: {
+    //     isActive: boolean;
+    //     isConfirmed: boolean;
+    //     needEmail: boolean;
+    //     emailError: string;
+    //     phoneError: string;
+    // };
+    // validateLoading: boolean;
 }
 const initialState = {
     document: {
@@ -22,12 +24,14 @@ const initialState = {
         isGeneratedError: false,
         isGeneratedSuccess: false,
     },
-    email: {
-        isSending: false,
-        isSent: false,
-        isSentError: false,
-        isSentSuccess: false,
-    },
+    // emailConfirm: {
+    //     isActive: false,
+    //     isConfirmed: false,
+    //     needEmail: false,
+    //     emailError: '',
+    //     phoneError: '',
+    // },
+    // validateLoading: false,
 };
 
 export const documentSlice = createSlice({
@@ -58,6 +62,7 @@ export const documentSlice = createSlice({
         ) => {
             state.document.isGeneratedSuccess = action.payload;
         },
+
     },
     extraReducers: builder => {
         builder.addCase(
@@ -85,6 +90,8 @@ export const documentSlice = createSlice({
                 state.document.isGeneratedSuccess = false;
             },
         );
+
+
     },
 });
 

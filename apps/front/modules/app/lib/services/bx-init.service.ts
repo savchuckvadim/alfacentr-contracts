@@ -1,13 +1,13 @@
 import { Bitrix } from '@bitrix/bitrix';
 import { BitrixService } from '@bitrix/bitrix.service';
-import { TESTING_PLACEMENT } from '../../consts/app-global';
+import { IS_PROD, TESTING_PLACEMENT } from '../../consts/app-global';
 import { Placement } from '@workspace/bx';
 import { IBXCompany, IBXDeal, IBXItem } from '@bitrix/index';
 
 import { BxDealCompanyService } from './bx-deal-compny.service';
 import { BxParticipantService } from '@/modules/entities/participant/lib/service/bx-participant.service';
 import { IParticipant } from '@alfa/entities';
-export const IS_PROD = false;
+
 // export interface IDealProductRowWithProduct extends IBXProductRowRow {
 //     ownerType: BitrixOwnerType;
 //     ownerId: string | number;

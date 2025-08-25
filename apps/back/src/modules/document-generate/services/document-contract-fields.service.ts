@@ -1,4 +1,13 @@
-import { DocumentGenerateTemplatesType, EContractType } from '@alfa/entities';
+import {
+    DocumentContractInvoiceWithStampsFieldsType,
+    DocumentContractPpkDealFieldsType,
+    DocumentContractSeminarDealFieldsType,
+    DocumentContractSeminarPpkFieldsType,
+    DocumentGenerateFieldTemplateCode,
+    DocumentGenerateTemplatesType,
+    DocumentGenerateTemplateType,
+    EContractType,
+} from '@alfa/entities';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -8,14 +17,20 @@ export class DocumentContractFieldsService {
     getContractFields(
         contractType: EContractType,
         header: string,
-        paragraph: string,
+        // paragraph: string,
+        paragraphItems: string[],
         totalSum: string,
         client: string[],
+        documentPrefixNumber: string,
     ) {
         const templateType =
             contractType === EContractType.seminar_ppk
-                ? DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL
-                : DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS;
+                ? (DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL as typeof DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL)
+                : contractType === EContractType.seminar
+                  ? (DocumentGenerateTemplatesType.SEMINAR_DEAL as typeof DocumentGenerateTemplatesType.SEMINAR_DEAL)
+                  : contractType === EContractType.ppk
+                    ? (DocumentGenerateTemplatesType.PPK_DEAL as typeof DocumentGenerateTemplatesType.PPK_DEAL)
+                    : (DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS as typeof DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS);
         const templateId = templateType.id;
 
         const fields = {} as { [key: string]: string | string[] };
@@ -24,25 +39,64 @@ export class DocumentContractFieldsService {
         endDate.setDate(endDate.getDate() + 365);
         const lastDayOfYearString = endDate.toISOString().split('T')[0];
         const paragraph3 = `Оплата производится на основании счета, либо акта ИСПОЛНИТЕЛЯ не позднее 7 (семи) рабочих дней с момента подписания акта оказанных услуг. В соответствии с условиями настоящего ДОГОВОРА, ЗАКАЗЧИК перечисляет денежные средства на расчетный счет ИСПОЛНИТЕЛЯ.`;
+        const paragraph = this.getParagraphByItems(paragraphItems);
 
-        templateType.fields.forEach((field) => {
-            if (field.code === 'Header') {
+        const templateFields =
+            contractType === EContractType.seminar_ppk
+                ? (DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL
+                      .fields as DocumentContractSeminarPpkFieldsType)
+                : contractType === EContractType.seminar
+                  ? (DocumentGenerateTemplatesType.SEMINAR_DEAL
+                        .fields as DocumentContractSeminarDealFieldsType)
+                  : contractType === EContractType.ppk
+                    ? (DocumentGenerateTemplatesType.PPK_DEAL
+                          .fields as DocumentContractPpkDealFieldsType)
+                    : (DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS
+                          .fields as DocumentContractInvoiceWithStampsFieldsType);
+
+        templateFields.forEach((field) => {
+            if (field.code === DocumentGenerateFieldTemplateCode.Header) {
                 fields[field.templateCode] = header;
-            } else if (field.code === 'Paragraph12') {
+            } else if (
+                field.code === DocumentGenerateFieldTemplateCode.Paragraph12
+            ) {
                 fields[field.templateCode] = paragraph;
-            } else if (field.code === 'TotalSum') {
-                fields[field.templateCode] = totalSum;
-            } else if (field.code === 'client') {
+            } else if (
+                field.code === DocumentGenerateFieldTemplateCode.ClientRq
+            ) {
                 fields[field.templateCode] = client;
-            } else if (field.code === 'endDate') {
+            } else if (
+                field.code === DocumentGenerateFieldTemplateCode.EndActionDate
+            ) {
                 fields[field.templateCode] = lastDayOfYearString;
-            } else if (field.code === 'paragraph3') {
+            } else if (
+                field.code === DocumentGenerateFieldTemplateCode.Paragraph3
+            ) {
                 fields[field.templateCode] = paragraph3;
+            } else if (
+                field.code ===
+                DocumentGenerateFieldTemplateCode.DocumentPrefixNumber
+            ) {
+                fields[field.templateCode] = documentPrefixNumber;
             }
         });
+
         return {
             templateId,
             fields,
         };
+    }
+    private getParagraphByItems(paragraphItems: string[]) {
+        if (paragraphItems.length === 0) {
+            return '___________________________________________________________________________________________________________________\n';
+        }
+        const paragraphTitle =
+            paragraphItems.length > 1
+                ? 'Консультационных семинарах :  ' + paragraphItems[0]
+                : 'Консультационном семинаре :  ' + paragraphItems[0];
+
+        return paragraphItems.length < 2
+            ? [paragraphTitle + paragraphItems.slice(1).join('')]
+            : [paragraphTitle, ...paragraphItems.slice(1)];
     }
 }

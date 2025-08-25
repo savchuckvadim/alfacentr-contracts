@@ -18,7 +18,7 @@ export enum BitrixEntityType {
 }
 @Injectable()
 export class OnDealInitUseCase {
-    constructor(private readonly pbx: PBXService) {}
+    constructor(private readonly pbx: PBXService) { }
     async init(domain: string) {
         const { bitrix } = await this.pbx.init(domain);
         const bxDealService = new BxDealService();
@@ -72,10 +72,14 @@ export class OnDealInitUseCase {
         const inn = dealValues.find(
             (value) => value.code === BxDealDataKeys.inn,
         )?.value as string;
-        console.log('inn', inn);
+
+
+
         deal &&
             deal.ID &&
             (await bxDealService.setTimeline(deal.ID, dealValues));
+
+      
         deal &&
             deal.ID &&
             inn &&

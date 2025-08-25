@@ -77,7 +77,7 @@ export const getIsUpProduct = (product: IAlfaProduct): boolean => {
     return getProductType(product) === 'up';
 };
 
-function getPrefixByProductName(productName: string): string {
+export function getPrefixByProductName(productName: string): string {
     const match = productName.match(/\[\]\s*(.*)/);
     return match ? (match[1] as string) : '';
 }

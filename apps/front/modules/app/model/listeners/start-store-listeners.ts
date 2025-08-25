@@ -5,20 +5,26 @@ import { setupDocumentParagraphProductParticipantListener } from '@/modules/feat
 import { setupRqListener } from '@/modules/features/document-rq/model/listener/rqListener';
 import { setupParticipantProductListener } from '@/modules/features/participant-product/model/listener/ParticipantProductListener';
 import { setupWsDocumentListener } from '@/modules/process/document/model/listeners/WsListener';
-import { setupRqAppListener } from '@/modules/entities/bx-rq/model/listener/AppListener';
 import { setupDocumentNumberListener } from '@/modules/features/document-number/model/listener/DocumentNumberListener';
 import { setupWsInitListener } from '@/modules/app/model/queue-ws-ping-test/QueueWsPingListener';
+import { setupCommunicationsDealListener, setupParticipantSeminarDaysListener } from '@/modules/features';
+import { setupDocumentDealListener } from '@/modules/process/document/model/listeners/DealListener';
+import { setupCurrentRqListener, setupRqAppListener } from '@/modules/entities/bx-rq';
 
 export function startStoreListeners(
     listenerMiddleware: ListenerMiddlewareInstance,
 ) {
     setupRqAppListener(listenerMiddleware);
+    setupCurrentRqListener(listenerMiddleware);
     setupContractTypeListener(listenerMiddleware);
     setupClientTypeListener(listenerMiddleware);
     setupDocumentParagraphProductParticipantListener(listenerMiddleware);
     setupRqListener(listenerMiddleware);
     setupParticipantProductListener(listenerMiddleware);
+    setupParticipantSeminarDaysListener(listenerMiddleware);
     setupWsDocumentListener(listenerMiddleware);
     setupDocumentNumberListener(listenerMiddleware);
     setupWsInitListener(listenerMiddleware);
+    setupDocumentDealListener(listenerMiddleware);
+    setupCommunicationsDealListener(listenerMiddleware);
 }

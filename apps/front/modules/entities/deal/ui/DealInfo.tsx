@@ -19,6 +19,7 @@ export const DealInfo = () => {
                     value =
                         field.list.find(item => item.bitrixId === field.value)
                             ?.name || 'Не установлено';
+
                 }
                 return (
                     <div key={field.bitrixId}>

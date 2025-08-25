@@ -32,9 +32,11 @@ export class DocumentGenerateService {
             this.documentContractFieldsService.getContractFields(
                 dto.contractType,
                 dto.header,
-                dto.paragraph,
+                // dto.paragraph,
+                dto.paragraphItems || [],
                 dto.totalSum,
                 dto.client,
+                dto.documentPrefixNumber,
             );
         // const generateDocumentData = {
         //     templateId: contractTemplateContentData.templateId,
@@ -244,7 +246,7 @@ export class DocumentGenerateService {
             console.log(document);
 
             count++;
-            await delay(10000);
+            await delay(5000);
             if (document.pdfUrlMachine) {
                 result = document;
             }

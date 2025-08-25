@@ -1,4 +1,5 @@
 import { IAlfaProduct } from '../model/ProductSlice';
+import { getPrefixByProductName } from './get-product-type.util';
 import { getProductFieldByCode } from './product-field.util';
 
 export const getProductFormat = (product: IAlfaProduct): string => {
@@ -51,8 +52,8 @@ const formatPlaceValue = (value: string): string => {
 export const getProductPrefix = (product: IAlfaProduct): string => {
     // Можно добавить логику для получения префикса продукта
     // Пока возвращаем ID как префикс
-    const prifixField = getProductFieldByCode(product, 'PREFIX');
-    const value = prifixField?.value as { value: string; valueId: string };
-
-    return value?.value || 'N/A';
+    // const prifixField = getProductFieldByCode(product, 'PREFIX');
+    // const value = prifixField?.value as { value: string; valueId: string };
+    const prefix = getPrefixByProductName(product.productName || '');
+    return prefix || 'N/A';
 };

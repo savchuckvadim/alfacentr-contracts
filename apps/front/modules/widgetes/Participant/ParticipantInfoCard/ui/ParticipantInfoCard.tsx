@@ -13,6 +13,7 @@ import { ParticipantCardHeader } from './components/CardHeader/ParticipantCardHe
 import { ParticipantContactInfo } from './components/CardContent/ParticipantContactInfo';
 import { ParticipantProductInfo } from './components/CardContent/ParticipantProductInfo';
 import { ParticipantPpkTopics } from './components/CardContent/ParticipantPpkTopics';
+import { ParticipantSeminarDaysTopics } from './components/CardContent/ParticipantSeminarDaysTopics';
 
 export const ParticipantInfoCard = ({
     participant,
@@ -24,14 +25,14 @@ export const ParticipantInfoCard = ({
     // const { participantToProducts } = useParticipantPpk()
     const {
         isPartisipantsLoading,
-        isParticipantPpkLoading,
+        // isParticipantPpkLoading,
         hasProblems,
-        problems,
-        participantPpkTopicsStats,
-        participantToProducts,
-        programsThemes,
-        assignedProducts,
-        isPpk,
+        // problems,
+        // participantPpkTopicsStats,
+        // participantToProducts,
+        // programsThemes,
+        // assignedProducts,
+        // isPpk,
     } = useParticipantInfo(participant.id);
 
     if (isPartisipantsLoading) {
@@ -60,12 +61,12 @@ export const ParticipantInfoCard = ({
                 {/* Назначенные продукты */}
 
                 <ParticipantProductInfo participantId={participant.id} />
-
+                <ParticipantSeminarDaysTopics participant={participant} />
                 <ParticipantPpkTopics participantId={participant.id} />
 
                 {/* Кнопка подробностей */}
                 <div className="pt-2 mt-auto ">
-                    <Link href={`/participants/${participant.id}`}>
+                    <Link href={`/bitrix/participants/${participant.id}`}>
                         <Button variant="outline" size="sm" className="w-full">
                             <ExternalLink className="h-3 w-3 mr-1" />
                             Подробности

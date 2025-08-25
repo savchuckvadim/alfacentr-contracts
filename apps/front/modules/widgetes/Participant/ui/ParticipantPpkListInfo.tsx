@@ -1,24 +1,10 @@
 'use client';
-
 import { useParticipant } from '@/modules/entities';
-
-import { Badge } from '@workspace/ui/components/badge';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@workspace/ui/components/card';
+import { Card, CardContent } from '@workspace/ui/components/card';
 import { XCircle, Users } from 'lucide-react';
-
 import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts';
-
 import { PagePreloader } from '@/modules/shared';
-
-import { PartisipantProductSimpleStatistics } from '../PartisipantProductSimpleStatistics/PartisipantProductSimpleStatistics';
 import { ParticipantInfoCard } from '../ParticipantInfoCard/ui/ParticipantInfoCard';
-import { ParticipantsTable } from '../ParticipantsTable/ParticipantsTable';
 
 export const ParticipantPpkListInfo = () => {
     const { participants, loading, error } = useParticipant();

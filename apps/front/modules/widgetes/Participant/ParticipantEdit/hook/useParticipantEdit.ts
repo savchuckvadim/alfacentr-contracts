@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from '@/modules/app/';
+import { useAppSelector } from '@/modules/app/';
 
 import { useParticipantInfo } from '../../ParticipantInfoCard/hook/useParticipantInfo';
 import { useParticipant } from '@/modules/entities';
@@ -9,6 +9,7 @@ export const useEditParticipant = (participantId: number) => {
     const isEditLoading = useAppSelector(
         state => state.participant.editLoading,
     );
+    const daysSelect = useAppSelector(state => state.seminarDaysSelect.days);
     const {
         name,
         email,
@@ -20,6 +21,7 @@ export const useEditParticipant = (participantId: number) => {
         activateEditable,
         cancelEditable,
         changeEditable,
+        changeMultipleField,
         deleteParticipant,
         updateParticipant,
         formatParticipantPrograms,
@@ -44,9 +46,11 @@ export const useEditParticipant = (participantId: number) => {
         isPpk,
         programs,
         days,
+        daysSelect,
         activateEditable,
         cancelEditable,
         changeEditable,
+        changeMultipleField,
         deleteParticipant,
         updateParticipant,
         editParticipantTopic,

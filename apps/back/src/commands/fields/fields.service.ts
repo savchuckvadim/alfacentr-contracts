@@ -31,7 +31,7 @@ export class FieldsService {
         ) as IBXField[];
         const fields = this.prepareFields(rowResults);
         const filtredFields = fields.filter((field) =>
-            field.name.includes('Участниик'),
+            field.name.includes('Пользуетесь ли вы'),
         );
         return { count: filtredFields.length, filtredFields, fields };
     }

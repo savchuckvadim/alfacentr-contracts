@@ -46,9 +46,10 @@ export function setupDocumentParagraphProductParticipantListener(
 
             let result = '';
             let totalSum = '';
+            const paragraphItems: string[] = [];
             if (products.length > 0) {
                 // Обработка обновленных продуктов
-                result = 'Пункт 1.1.2 \n Консультационном семинаре ';
+
                 const searchedSeminarProducts = getProductsByType(
                     products,
                     'seminar',
@@ -57,38 +58,75 @@ export function setupDocumentParagraphProductParticipantListener(
                     searchedSeminarProducts &&
                     searchedSeminarProducts.length > 0
                 ) {
-                    const seminarNameVallue = getProductFieldByCodeValue(
-                        searchedSeminarProducts[0] as IAlfaProduct,
-                        'NAME_BID',
-                    );
-                    result += seminarNameVallue?.value + '\n';
+                    result =
+                        searchedSeminarProducts.length > 1
+                            ? 'Пункты 1.1.2 Консультационных семинарах  \n '
+                            : 'Пункт 1.1.2 Консультационном семинаре  \n  ';
 
-                    const seminarDateVallue = getProductFieldByCodeValue(
-                        searchedSeminarProducts[0] as IAlfaProduct,
-                        'SEMINAR_START_AND_END_DATE',
-                    );
-                    result += seminarDateVallue?.value + '\n';
-                    const seminarPlaceVallue = getProductFieldByCodeValue(
-                        searchedSeminarProducts[0] as IAlfaProduct,
-                        'SEMINAR_PLACE',
-                    );
-                    result += seminarPlaceVallue?.value + '\n';
-                    let participantsQuantity = 1;
+                    searchedSeminarProducts.forEach(product => {
+                        let itemResult = '';
 
-                    if (participants && participants.length > 0) {
-                        participantsQuantity =
-                            searchedSeminarProducts[0]?.quantity || 1;
-                    }
-                    result += `Количество участников: ${participantsQuantity} \n`;
-                    const productsSum = getProductSum(products);
+                        const seminarNameVallue = getProductFieldByCodeValue(
+                            product as IAlfaProduct,
+                            'SEMINAR_TOPIC',
+                        );
+                        if (seminarNameVallue && seminarNameVallue.value) {
+                            result += seminarNameVallue?.value + '\n';
+                            itemResult += seminarNameVallue?.value;
+                        } else {
+                            result += 'Тема семинара: __________________________________\n';
+                            itemResult += ',  Тема семинара: __________________________________';
+                        }
 
-                    totalSum = `Общая стоимость услуг по Договору составляет ${formatRuble(productsSum)} рублей. \n`;
+                        const seminarDateVallue = getProductFieldByCodeValue(
+                            product as IAlfaProduct,
+                            'SEMINAR_START_AND_END_DATE',
+                        );
+                        if (seminarDateVallue && seminarDateVallue.value) {
+                            result += seminarDateVallue?.value + '\n';
+                            itemResult += ',  ' + seminarDateVallue?.value;
+                        } else {
+                            result += 'Дата проведения: __________________________________\n';
+                            itemResult += ',  Дата проведения: __________________________________';
+                        }
+
+                        const seminarPlaceVallue = getProductFieldByCodeValue(
+                            product as IAlfaProduct,
+                            'SEMINAR_PLACE',
+                        );
+                        if (seminarPlaceVallue && seminarPlaceVallue.value) {
+                            result += seminarPlaceVallue?.value + '\n';
+                            itemResult += ',  ' + seminarPlaceVallue?.value;
+                        } else {
+                            result += 'Место проведения: __________________________________\n';
+                            itemResult += ',  Место проведения: __________________________________';
+                        }
+
+                        let participantsQuantity = 1;
+
+                        if (participants && participants.length > 0) {
+                            participantsQuantity = product.quantity || 1;
+                        }
+                        result += `Количество участников: ${participantsQuantity} \n`;
+                        itemResult +=
+                            ',  Количество участников: ' + participantsQuantity;
+                        paragraphItems.push(itemResult);
+                    });
                 }
+                const productsSum = getProductSum(products);
+
+                totalSum = `Общая стоимость услуг по Договору составляет ${formatRuble(productsSum)} рублей. \n`;
 
                 // Можно диспатчить дополнительные действия
                 // listenerApi.dispatch(setParticipantPpk(serializedResult));
             }
-            listenerApi.dispatch(setParagraph(result));
+
+            listenerApi.dispatch(
+                setParagraph({
+                    paragraph: result,
+                    paragraphItems,
+                }),
+            );
             listenerApi.dispatch(setTotalSum(totalSum));
         },
     });

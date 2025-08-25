@@ -68,6 +68,20 @@ const participantSlice = createSlice({
                 }
             });
         },
+        changeMultipleField: (
+            state,
+            action: PayloadAction<{
+                fieldCode: BxParticipantsDataKeys;
+                value: string[];
+            }>,
+        ) => {
+            const pay = action.payload;
+            state.editable?.fields.map(fld => {
+                if (fld.code === pay.fieldCode) {
+                    fld.value = pay.value;
+                }
+            });
+        },
         changeParticipant: (
             state,
             action: PayloadAction<{
@@ -211,6 +225,7 @@ export const {
     activateEditable,
     cancelEditable,
     changeEditable,
+    changeMultipleField,
 
     clearError,
 } = participantSlice.actions;

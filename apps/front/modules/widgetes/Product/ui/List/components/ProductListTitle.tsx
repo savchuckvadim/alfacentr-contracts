@@ -7,9 +7,9 @@ export const ProductListTitle = () => {
     return (
         <div className="flex items-center justify-between">
             <div>
-                <h1 className="text-3xl font-bold">Продукты</h1>
+                {/* <h1 className="text-3xl font-bold">Продукты</h1> */}
                 <p className="text-muted-foreground">
-                    Управление продуктами и статистика ППК
+                    Управление товарами и статистика
                 </p>
             </div>
             <Badge variant="outline" className="text-sm">

@@ -1,3 +1,4 @@
+import { BxDealDataKeys } from 'entities/deal/bx-data';
 import { EContractType } from './document-generate.type';
 //todo вынести в пакет переиспользуемый и для фронта и для бэка
 export interface IRequestDocumentGenerateType {
@@ -12,7 +13,23 @@ export interface IRequestDocumentGenerateType {
     client: string[];
     fields: IRequestDocumentGenerateFieldsType;
     clientShortRq: string;
+    paragraphItems?: string[];
+    documentPrefixNumber: string;
+    documentPrefix: string;
+    documentCounter: string;
+    email: IRequestDocumentGenerateEmail;
 }
+
+export interface IRequestDocumentGenerateEmail {
+
+    email?: string;
+    needEmail?: boolean;
+    name?: string;
+    phone?: string;
+
+}
+
+
 
 export interface IRequestDocumentGenerateFieldsType {
     [key: string]: IRequestDocumentGenerateFieldValueType;

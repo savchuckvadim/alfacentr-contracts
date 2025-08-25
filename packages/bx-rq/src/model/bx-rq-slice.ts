@@ -7,14 +7,13 @@ import {
     ResolvedRQType,
 } from '../type/evs-rq-type';
 import {
-    CONTRACT_LTYPE,
     RQ_TYPE,
-    SupplyTypesType,
     StringInput,
 } from '../type/input-type';
 import { getResolvedType } from '../lib/rq-util';
 import { filterFieldItems } from '../lib/field-items-util';
 import { addressMap, AddressTypeId } from '../type/evs-address-type';
+import { getCurrentRq, getCurrentRqByType } from '../lib/current-rq-util';
 
 // Типы состояния
 export type BXRQState = typeof initialState;
@@ -55,18 +54,24 @@ export const bxrqSlice = createSlice({
             state: BXRQState,
             action: PayloadAction<{
                 bxrq: EVSBXRQ;
+                currentRqId?: number | undefined;
             }>,
         ) => {
             const pay = action.payload;
 
-            state.rqs = {
+            const current = pay.currentRqId
+                ? getCurrentRq(pay.bxrq, pay.currentRqId)
+                : pay.bxrq.current;
+            const rqResult = {
                 ...state.rqs,
                 [RQ_TYPE.ORGANIZATION]:
                     pay.bxrq?.[RQ_TYPE.ORGANIZATION] || null,
                 [RQ_TYPE.IP]: pay.bxrq[RQ_TYPE.IP] || null,
                 [RQ_TYPE.FIZ]: pay.bxrq[RQ_TYPE.FIZ] || null,
-                current: pay.bxrq.current,
-            };
+                current: current || pay.bxrq.current,
+            }
+            debugger;
+            state.rqs = rqResult;
             state.isFetched = true;
             state.isLoading = false;
             state.errors = null;
@@ -86,7 +91,7 @@ export const bxrqSlice = createSlice({
         },
         setCurrentRqItems: (
             state: BXRQState,
-            action: PayloadAction<{ clientType: RQ_TYPE }>,
+            action: PayloadAction<{ clientType: RQ_TYPE, currentRqId?: number }>,
         ) => {
             if (!state.rqs) return;
 
@@ -103,8 +108,13 @@ export const bxrqSlice = createSlice({
                 ? rqData.items
                 : [rqData.default];
 
-            const item: EvsRqItem =
-                items.length > 0 ? items[0]! : rqData.default!;
+            const current = action.payload.currentRqId
+                ? getCurrentRqByType(items, action.payload.currentRqId)
+                : undefined;
+
+            const item: EvsRqItem = current
+                ? current
+                : items.length > 0 ? items[0]! : rqData.default!;
 
             state.current.items = items;
             state.current.item = item;
@@ -145,11 +155,11 @@ export const bxrqSlice = createSlice({
                 const base = { ...state.current.item };
                 base.fields = base.fields
                     ? filterFieldItems(
-                          base.fields,
-                          action.payload.currentClientType,
-                          // action.payload.contractType,
-                          // action.payload.supplyType,
-                      )
+                        base.fields,
+                        action.payload.currentClientType,
+                        // action.payload.contractType,
+                        // action.payload.supplyType,
+                    )
                     : base.fields;
 
                 state.creating.base = base;

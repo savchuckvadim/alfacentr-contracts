@@ -8,7 +8,7 @@ import {
 import { DocumentContractFieldsService } from './document-contract-fields.service';
 import {
     currentDocumentFields,
-    documentFields,
+    DocumentGenerateFieldTemplateCode,
     DocumentGenerateTemplatesType,
     EnumDealCurrentDocumentFieldCode,
 } from '@alfa/entities';
@@ -20,11 +20,12 @@ import { PpkApplicationGenerateService } from './ppk-application-generate.servic
 @Injectable()
 export class DocumentGenerateBatchService {
     private bitrix: BitrixService;
+    private filesForSend: [string, string][] = [];
     constructor(
         private readonly pbxService: PBXService,
         private readonly documentContractFieldsService: DocumentContractFieldsService,
         private readonly ppkApplicationGenerateService: PpkApplicationGenerateService,
-    ) {}
+    ) { }
 
     async generateDocument(dto: DocumentGenerateDto) {
         const { bitrix } = await this.pbxService.init('alfacentr.bitrix24.ru');
@@ -35,9 +36,11 @@ export class DocumentGenerateBatchService {
             this.documentContractFieldsService.getContractFields(
                 dto.contractType,
                 dto.header,
-                dto.paragraph,
+                // dto.paragraph,
+                dto.paragraphItems || [],
                 dto.totalSum,
                 dto.client,
+                dto.documentPrefixNumber,
             );
         // const generateDocumentData = {
         //     templateId: contractTemplateContentData.templateId,
@@ -101,7 +104,7 @@ export class DocumentGenerateBatchService {
         const actDocWithoutPtFileData = await this.getActFile(entityId, {
             fields: {
                 UfCrm8ShotReqClient: dto.clientShortRq,
-                DocumentFullNumber: '123',
+                // DocumentFullNumber: '123',
             } as Record<string, string>,
         });
 
@@ -178,6 +181,7 @@ export class DocumentGenerateBatchService {
                             );
                         dealFields[`${currentActBitrixId}`].fileData =
                             actDocumentFileData;
+                        this.filesForSend.push(actDocumentFileData);
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITH_PT:
                         console.log(
@@ -191,6 +195,7 @@ export class DocumentGenerateBatchService {
                             await this.getPdfFileData(invoicePdf);
                         dealFields[`${currentInvoicesBitrixId}`].fileData =
                             pdfInvoiceFileData;
+                        this.filesForSend.push(pdfInvoiceFileData);
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITHOUT_PT:
                         console.log(
@@ -205,6 +210,7 @@ export class DocumentGenerateBatchService {
                         dealFields[
                             `${currentInvoicesWithoutPtBitrixId}`
                         ].fileData = invoiceDocWithoutPtFileData;
+                        this.filesForSend.push(invoiceDocWithoutPtFileData);
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITHOUT_PT:
                         console.log(
@@ -218,6 +224,7 @@ export class DocumentGenerateBatchService {
                         dealFields[
                             `${currentContractWithoutPtBitrixId}`
                         ].fileData = contractDocWithoutPtFileData;
+                        this.filesForSend.push(contractDocWithoutPtFileData);
                     case EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITH_PT:
                         console.log(
                             'CURRENT_CONTRACT_WITH_PT',
@@ -231,6 +238,7 @@ export class DocumentGenerateBatchService {
                             await this.getPdfFileData(contractPdf);
                         dealFields[`${currentContractBitrixId}`].fileData =
                             contractPdfFileData;
+                        this.filesForSend.push(contractPdfFileData);
                         break;
                 }
             }
@@ -256,6 +264,9 @@ export class DocumentGenerateBatchService {
                 },
             },
         );
+        this.filesForSend.push(ppkApplicationFileData);
+
+
         const timelieneData: IBXTimelineComment = {
             AUTHOR_ID: '502',
             COMMENT: '✅ Документы сгенерированы',
@@ -275,20 +286,23 @@ export class DocumentGenerateBatchService {
             SETTINGS: {
                 MESSAGE_FROM: `Иванов Иван <laravelsamvel@gmail.com>`,
             },
-            SUBJECT: '✅ Документы сгенерированы',
-            DESCRIPTION: '<h2>Документы сгенерированы</h2>',
+            SUBJECT: 'Документы сгенерированы',
+            DESCRIPTION: this.getEmailHtmlBody(''),
             COMPLETED: 'Y',
-            DESCRIPTION_TYPE: 2,
+            DESCRIPTION_TYPE: 3,
             START_TIME: new Date().toISOString(),
             END_TIME: new Date(Date.now() + 3600 * 1000).toISOString(),
             COMMUNICATIONS: [
                 {
                     ENTITY_ID: entityId,
                     ENTITY_TYPE_ID: BitrixOwnerTypeId.DEAL,
-                    TYPE_ID: 1,
+                    // TYPE_ID: 1,
                     VALUE: 'laravelsamvel@gmail.com',
                 },
             ],
+            FILES: this.filesForSend.map(file => ({
+                fileData: file
+            })),
         });
         console.log('activityResponse', activityResponse);
         return result;
@@ -430,7 +444,7 @@ export class DocumentGenerateBatchService {
             console.log(document);
 
             count++;
-            await delay(10000);
+            await delay(5000);
             if (document.pdfUrlMachine) {
                 result = document;
             }
@@ -454,6 +468,18 @@ export class DocumentGenerateBatchService {
             value: 1,
             stampsEnabled,
             values,
+            fields: {
+                [DocumentGenerateFieldTemplateCode.Paragraph12]: {
+                    TYPE: 'string',
+                    MULTIPLE: 'Y',
+                    SEPARATOR: 3,
+                },
+                DocumentNumber: {
+                    TYPE: 'string',
+
+                    VALUE: '123',
+                },
+            },
         };
 
         this.bitrix.api.addCmdBatch(
@@ -492,5 +518,43 @@ export class DocumentGenerateBatchService {
             generateDocumentData,
         );
         return response.result.document as IRequestDocumentGenerateResponse;
+    }
+
+    private getEmailHtmlBody(text: string): string {
+        return `<html><body>
+        <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
+ <i>Письмо сформировано автоматически. При ответе, просто нажмите&nbsp;<b>“ОТВЕТИТЬ”</b>&nbsp;или введите </i><a href="mailto:ppk@alfasibir.ru" title="mailto:ppk@alfasibir.ru"><b><i><span style="color: blue;">ppk@alfasibir.ru</span></i></b></a><b><i> </i></b><i>в строке «Адрес получателя/Кому».</i>
+</p>
+<p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
+ Добрый день, <span style="color: #151515;"> {{Имя Отчество контактного лица по документам}}</span>!<br>
+	 Во вложении -&nbsp;<b>Договор</b>,&nbsp;<b>Счет </b>и <b>Акт </b>на согласование.
+</p>
+<p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
+ Пожалуйста, проверьте <b>реквизиты, </b>а также<b> текст документов</b>.
+</p>
+<ul style="margin-top:0cm" type="disc">
+	<li class="MsoNormal" style="margin-bottom:0cm;line-height:normal;mso-list:l0 level1 lfo1"><b>Если документы соответствуют требованиям Вашего учреждения</b> - подпишите, пожалуйста, его в системе ЭДО. Если Ваше учреждение не использует систему ЭДО, то направьте нам ответным e-mail скан Договора, заверенного с Вашей стороны печатью и подписью руководителя.<br>Наш<b>&nbsp;СБИС&nbsp;ID: 2BEbe3508291e7a494ca4d051e2230821b1 </b>(Оператор&nbsp;ООО "Компания "Тензор")</li><li class="MsoNormal" style="margin-bottom:0cm;line-height:normal;mso-list:l0 level1 lfo1"><b>Если документы требуют корректировки</b> - откорректированный текст договора, вышлите, пожалуйста, ответным e-mail в текстовом формате (например Word).</li></ul><p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
+ В течение 1 рабочего дня с момента направления данного письма на номер телефона {{Телефон контактного лица по документам}} Вам позвонит робот Ирина для подтверждения получения документов. Просим Вас подтвердить получение простым ответом "ДА".
+</p>
+<p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
+ С уважением,<br>
+	 Чехуркина Наталья,<br>
+	 Специалист по документообороту,<br>
+	 Центр правовой поддержки ООО "АЛЬФАЦЕНТР",<br>
+	 Почтовый адрес: 630073, г. Новосибирск, а/я 202<br>
+	 тел. многоканальный:&nbsp;8 (383) 383-24-15 доб.106<br>
+ <a href="http://e.mail.ru/compose/?mailto=mailto%3appk@alfasibir.ru"><span style="color: blue;">ppk@alfasibir.ru</span></a><br>
+	 Сайт компании:&nbsp;<a href="https://alfacentr.org/"><span style="color: blue;">https://alfacentr.org</span></a><br>
+	 Социальные сети:<br>
+ <a href="https://vk.com/alfacentr_nsk"><span style="color: blue;">https://vk.com/alfacentr_nsk</span></a><br>
+ <a href="https://ok.ru/group/68876292653111"><span style="color: blue;">https://ok.ru/group/68876292653111</span></a><br>
+<img width="386" alt="logo" src="https://i.imgur.com/DucbqTv.png" height="47">
+</p>
+<div class="MsoNormal" align="center" style="margin-bottom:0cm;text-align:center; line-height:normal">
+	<hr size="2" width="100%" align="center">
+</div>
+<p class="MsoNormal" align="center" style="margin-bottom:0cm;text-align:center; line-height:normal">
+ <b>Исходная заявка клиента:</b></p><p class="MsoNormal" align="center" style="margin-bottom: 0cm; text-align: left; line-height: normal;">{{Исходная заявка клиента}}<br></p>
+        </body></html>`;
     }
 }

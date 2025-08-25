@@ -6,6 +6,7 @@ import { WsService } from '@/core/ws';
 import { Logger } from '@nestjs/common';
 import { DocumentBitrixGenerateUseCase } from '../use-cases/document-bitrix-generate.use-case';
 import { DocumentGenerateDto } from '../dto/document-generate.dto';
+import { TelegramService } from '@/modules/telegram/telegram.service';
 
 @Processor(QueueNames.DOCUMENT)
 export class DocumentGenerateQueueProcessor {
@@ -14,6 +15,7 @@ export class DocumentGenerateQueueProcessor {
     constructor(
         private readonly useCase: DocumentBitrixGenerateUseCase,
         private readonly ws: WsService, // WebSocket шлюз
+        private readonly telegramService: TelegramService,
 
         /// NO!! scope: REQUEST
     ) {
@@ -30,18 +32,30 @@ export class DocumentGenerateQueueProcessor {
 
         this.logger.log(dto.socketId);
         const result = await this.useCase.generateDocumentAndPushToBx(dto);
-
-        if (socketId) {
-            this.ws.sendToClient(socketId, {
-                event: 'document-generate:done',
-                data: {
-                    ...result,
-                    result: {
-                        success: true,
-                        message: 'Document generated successfully',
+        try {
+            if (socketId) {
+                this.ws.sendToClient(socketId, {
+                    event: 'document-generate:done',
+                    data: {
+                        ...result,
+                        result: {
+                            success: true,
+                            message: 'Document generated successfully',
+                        },
                     },
-                },
-            });
+                });
+            }
+            await this.telegramService.sendMessage(
+                'ALFA DOCUMENT GENERATE Queue: Document generated and sent to ws client successfully',
+            );
+        } catch (error) {
+            this.logger.error(error);
+            await this.telegramService.sendMessage(
+                "ALFA DOCUMENT GENERATE Queue: Can't send message to ws client" +
+                    dto.domain +
+                    '' +
+                    dto.dealId,
+            );
         }
     }
 }

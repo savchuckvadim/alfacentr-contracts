@@ -76,6 +76,23 @@ export const getMissingProductsByParticipantPpkThemes = (
     return missingProducts;
 };
 
+export const getMissingProductsByParticipantSeminarDays = (
+    days: string[],
+    products: IAlfaProduct[],
+): string[] => {
+    const missingProducts = [] as string[];
+
+    days.forEach(day => {
+        const searchedProduct = products.find(
+            product =>
+                getProductFieldByCodeValue(product, 'NAME_BID')?.value == day,
+        );
+        if (!searchedProduct) missingProducts.push(day);
+    });
+
+    return missingProducts;
+};
+
 export const getParicipantPpkTopicsStats = (
     participant: IParticipant,
     topicStats: ITopicStat[],

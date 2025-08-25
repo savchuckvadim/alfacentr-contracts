@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Button } from '@workspace/ui/components/button';
+
 import {
     Table,
     TableBody,
@@ -9,16 +9,21 @@ import {
     TableHeader,
     TableRow,
 } from '@workspace/ui/components/table';
-import { Badge } from '@workspace/ui/components/badge';
+
 import { IParticipant } from '@alfa/entities';
 import { useParticipant } from '@/modules/entities';
 import { DeleteConfirmModal } from '@/modules/entities/participant/ui/components/DeleteConfirmModal';
-import Link from 'next/link';
 import { ParticipantTableRowItem } from './components/ParticipantTableRowItem';
 import { ParticipalEditModal } from '../ParticipantEdit/ui/ParticipalEditModal';
 import { useEditParticipant } from '../ParticipantEdit/hook/useParticipantEdit';
+import { useAppSelector } from '@/modules/app';
+import { withPpkContractTypeSelector } from '@/modules/features/contract-type';
+import { withSeminarContractTypeSelector } from '@/modules/features/contract-type';
 
 export function ParticipantsTable() {
+    const withSeminarType = useAppSelector(withSeminarContractTypeSelector);
+    const withPpkType = useAppSelector(withPpkContractTypeSelector);
+
     const { participants, loading } = useParticipant();
 
     const [deleteModal, setDeleteModal] = useState<{
@@ -108,14 +113,18 @@ export function ParticipantsTable() {
                         <TableRow>
                             <TableHead className="w-12">#</TableHead>
                             <TableHead>ФИО</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Телефон</TableHead>
+                            {/* <TableHead>Email</TableHead>
+                            <TableHead>Телефон</TableHead> */}
                             <TableHead>Формат</TableHead>
-                            <TableHead>Программы</TableHead>
-                            <TableHead>Дни участия</TableHead>
-                            <TableHead>ППК</TableHead>
-                            <TableHead>Семинары</TableHead>
+
+                            {withSeminarType && (
+                                <TableHead>Дни участия</TableHead>
+                            )}
+
+                            {withSeminarType && <TableHead>Семинары</TableHead>}
                             <TableHead className="w-20">ППК</TableHead>
+                            {withPpkType && <TableHead>Программы</TableHead>}
+                            {withPpkType && <TableHead>ППК</TableHead>}
                             <TableHead className="w-32">Действия</TableHead>
                         </TableRow>
                     </TableHeader>

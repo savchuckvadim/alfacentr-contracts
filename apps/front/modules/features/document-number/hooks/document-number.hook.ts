@@ -1,8 +1,8 @@
 import { useAppSelector } from '@/modules/app/lib/hooks/redux';
 
 export const useDocumentNumber = () => {
-    const { prefix, counter, isLoading, error } = useAppSelector(
+    const { prefix, counter, isLoading, error, fetched } = useAppSelector(
         state => state.documentNumber,
     );
-    return { prefix, counter, isLoading, error };
+    return { prefix, counter, isLoading, error, fetched };
 };

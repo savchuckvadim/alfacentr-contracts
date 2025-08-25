@@ -26,7 +26,7 @@ export const ParticipantStatistics = () => {
                 p => p.stage === SmartStageEnum.PREPARATION,
             ).length,
             icon: 'clock',
-            color: 'yellow',
+            color: 'orange',
         },
         {
             title: 'Завершенные',

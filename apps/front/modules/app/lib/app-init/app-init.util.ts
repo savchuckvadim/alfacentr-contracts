@@ -1,5 +1,5 @@
 import { Bitrix } from '@bitrix/bitrix';
-import { TESTING_DOMAIN, TESTING_USER } from '../../consts/app-global';
+import { IS_PROD, TESTING_DOMAIN, TESTING_USER } from '../../consts/app-global';
 import { AppDispatch, AppGetState } from '../../model/store';
 import { WSClient as WSClientWorkspace } from '@workspace/ws';
 import { fetchProducts, setParticipants } from '@/modules/entities';
@@ -9,7 +9,6 @@ import { wsInit } from '../../model/queue-ws-ping-test/QueueWsPingListener';
 import { appActions } from '../../model/AppSlice';
 import { bitrixInit } from '../bitrix-init/bitrix-init.util';
 import { WSClient } from '@/modules/shared/Websocket/ws-client';
-import { IS_PROD } from '../services/bx-init.service';
 
 export const appInit = async (
     dispatch: AppDispatch,
@@ -54,7 +53,7 @@ export const appInit = async (
         Promise.all([
             dispatch(setParticipants(participants)),
             dispatch(fetchProducts(deal.ID.toString()) as any),
-            dispatch(setDealData(getDealFieldsData(deal))),
+            dispatch(setDealData(await getDealFieldsData(deal))),
             // dispatch(setFetchedProducts(rows))
         ]);
     }

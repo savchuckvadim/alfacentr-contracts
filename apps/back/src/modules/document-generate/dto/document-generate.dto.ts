@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EContractType } from '@alfa/entities';
+import { EContractType, IRequestDocumentGenerateEmail } from '@alfa/entities';
 import { IsStringOrArrayString } from '@/core/decorators/dto/string-or-array-string.decorator';
 import {
     IsArray,
@@ -9,6 +9,7 @@ import {
     IsObject,
     IsString,
     IsOptional,
+    IsBoolean,
 } from 'class-validator';
 import {
     IRequestDocumentGenerateFieldsType,
@@ -137,4 +138,81 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @IsOptional()
     @IsString()
     clientShortRq: string;
+
+    @ApiProperty({
+        description: 'Массив элементов Пункт договора 1.1.2',
+        example: ['123', '456'],
+    })
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    paragraphItems?: string[];
+
+    @ApiProperty({
+        description: 'Номер документа',
+        example: '123',
+    })
+    @IsOptional()
+    @IsString()
+    documentPrefixNumber: string;
+
+    @ApiProperty({
+        description: 'Префикс документа',
+        example: '123',
+    })
+    @IsOptional()
+    @IsString()
+    documentPrefix: string;
+
+    @ApiProperty({
+        description: 'Счетчик документа',
+        example: '123',
+    })
+    @IsOptional()
+    @IsString()
+    documentCounter: string;
+
+    @ApiProperty({
+        description: 'Email',
+        example: 'test@test.com',
+    })
+    @IsOptional()
+
+    email: IRequestDocumentGenerateEmail;
+
+}
+
+
+export class DocumentGenerateEmailDto implements IRequestDocumentGenerateEmail {
+    @ApiProperty({
+        description: 'Нужно ли отправлять email',
+        example: true,
+    })
+    @IsOptional()
+    @IsBoolean()
+    needEmail?: boolean;
+
+    @ApiProperty({
+        description: 'Email',
+        example: 'test@test.com',
+    })
+    @IsOptional()
+    @IsString()
+    email: string;
+
+    @ApiProperty({
+        description: 'Телефон',
+        example: '+79999999999',
+    })
+    @IsOptional()
+    @IsString()
+    phone?: string;
+
+    @ApiProperty({
+        description: 'Имя',
+        example: 'test',
+    })
+    @IsOptional()
+    @IsString()
+    name?: string;
 }

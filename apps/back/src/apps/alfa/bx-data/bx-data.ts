@@ -9,8 +9,8 @@ export enum BxDealDataKeys {
     directorBased = 'directorBased',
     directorPhone = 'directorPhone',
     contact_up_doc = 'contact_up_doc',
-    contact_exchange_doc_email = 'contact_exchange_doc_email',
-    contact_exchange_doc_phone = 'contact_exchange_doc_phone',
+    exchange_doc_email = 'exchange_doc_email',
+    exchange_doc_phone = 'exchange_doc_phone',
     organization_type = 'organization_type',
     organizationfiz_fio = 'organizationfiz_fio',
     seminar_format = 'seminar_format',
@@ -106,7 +106,7 @@ export const BxDealData: TDealData = {
         group: 'contacts' as const,
         value: '' as string,
     },
-    [BxDealDataKeys.contact_exchange_doc_email]: {
+    [BxDealDataKeys.exchange_doc_email]: {
         multiple: false as const,
         mandatory: false as const,
         bitrixId: 'UF_CRM_1744112127' as const,
@@ -116,7 +116,7 @@ export const BxDealData: TDealData = {
         group: 'contacts' as const,
         value: '' as string,
     },
-    [BxDealDataKeys.contact_exchange_doc_phone]: {
+    [BxDealDataKeys.exchange_doc_phone]: {
         multiple: false as const,
         mandatory: false as const,
         bitrixId: 'UF_CRM_1744112153' as const,
@@ -251,8 +251,8 @@ export interface TDealData {
     [BxDealDataKeys.directorBased]: TField;
     [BxDealDataKeys.directorPhone]: TField;
     [BxDealDataKeys.contact_up_doc]: TField;
-    [BxDealDataKeys.contact_exchange_doc_email]: TField;
-    [BxDealDataKeys.contact_exchange_doc_phone]: TField;
+    [BxDealDataKeys.exchange_doc_email]: TField;
+    [BxDealDataKeys.exchange_doc_phone]: TField;
     [BxDealDataKeys.organization_type]: TFieldSelect;
     [BxDealDataKeys.organizationfiz_fio]: TField;
     [BxDealDataKeys.seminar_format]: TFieldSelect;

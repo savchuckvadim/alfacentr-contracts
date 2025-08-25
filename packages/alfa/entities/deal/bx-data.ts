@@ -9,9 +9,11 @@ export enum BxDealDataKeys {
     directorName = 'directorName',
     directorBased = 'directorBased',
     directorPhone = 'directorPhone',
+    use_edo = 'use_edo',
     contact_up_doc = 'contact_up_doc',
-    contact_exchange_doc_email = 'contact_exchange_doc_email',
-    contact_exchange_doc_phone = 'contact_exchange_doc_phone',
+    exchange_doc_name = 'exchange_doc_name',
+    exchange_doc_email = 'exchange_doc_email',
+    exchange_doc_phone = 'exchange_doc_phone',
     organization_type = 'organization_type',
     organizationfiz_fio = 'organizationfiz_fio',
     seminar_format = 'seminar_format',
@@ -107,23 +109,34 @@ export const BxDealData: TDealData = {
         group: 'contacts' as const,
         value: '' as string,
     },
-    [BxDealDataKeys.contact_exchange_doc_email]: {
+    [BxDealDataKeys.exchange_doc_name]: {
         multiple: false as const,
         mandatory: false as const,
-        bitrixId: 'UF_CRM_1744112127' as const,
-        name: 'Контактное лицо для обмена документами (E-mail))' as const,
+        bitrixId: 'UF_CRM_1743414485' as const,
+        name: 'Контактное лицо для обмена документами (ФИО)' as const,
         type: 'string' as const,
-        code: 'exchange_doc_email' as const,
+        code: BxDealDataKeys.exchange_doc_name as const,
         group: 'contacts' as const,
         value: '' as string,
     },
-    [BxDealDataKeys.contact_exchange_doc_phone]: {
+
+    [BxDealDataKeys.exchange_doc_email]: {
+        multiple: false as const,
+        mandatory: false as const,
+        bitrixId: 'UF_CRM_1744112127' as const,
+        name: 'Контактное лицо для обмена документами (E-mail)' as const,
+        type: 'string' as const,
+        code: BxDealDataKeys.exchange_doc_email as const,
+        group: 'contacts' as const,
+        value: '' as string,
+    },
+    [BxDealDataKeys.exchange_doc_phone]: {
         multiple: false as const,
         mandatory: false as const,
         bitrixId: 'UF_CRM_1744112153' as const,
         name: 'Контактное лицо для обмена документами (Телефон)' as const,
         type: 'string' as const,
-        code: 'exchange_doc_phone' as const,
+        code: BxDealDataKeys.exchange_doc_phone as const,
         group: 'contacts' as const,
         value: '' as string,
     },
@@ -219,6 +232,40 @@ export const BxDealData: TDealData = {
         group: 'seminar',
         value: '' as string,
     },
+    [BxDealDataKeys.use_edo]: {
+        id: '1074',
+        bitrixId: 'UF_CRM_1688709423',
+        type: 'enumeration',
+        code: BxDealDataKeys.use_edo,
+        list: [
+            {
+                bitrixId: '2700',
+                name: 'Да, СБИС',
+                sort: '10',
+            },
+            {
+                bitrixId: '2702',
+                name: 'Да, Диадок',
+                sort: '20',
+            },
+            {
+                bitrixId: '18024',
+                name: 'Да, Другое',
+                sort: '30',
+            },
+            {
+                bitrixId: '2704',
+                name: 'Нет',
+                sort: '40',
+            },
+        ],
+        name: 'Пользуетесь ли вы эдо',
+        multiple: false,
+        mandatory: false,
+        group: 'seminar',
+        value: '' as string,
+    },
+    //Пользуетесь ли вы эдо
 
     [BxDealDataKeys.participants]: BxParticipantsData,
 };
@@ -251,9 +298,11 @@ export interface TDealData {
     [BxDealDataKeys.directorName]: TField;
     [BxDealDataKeys.directorBased]: TField;
     [BxDealDataKeys.directorPhone]: TField;
+    [BxDealDataKeys.use_edo]: TFieldSelect;
     [BxDealDataKeys.contact_up_doc]: TField;
-    [BxDealDataKeys.contact_exchange_doc_email]: TField;
-    [BxDealDataKeys.contact_exchange_doc_phone]: TField;
+    [BxDealDataKeys.exchange_doc_name]: TField;
+    [BxDealDataKeys.exchange_doc_email]: TField;
+    [BxDealDataKeys.exchange_doc_phone]: TField;
     [BxDealDataKeys.organization_type]: TFieldSelect;
     [BxDealDataKeys.organizationfiz_fio]: TField;
     [BxDealDataKeys.seminar_format]: TFieldSelect;

@@ -9,6 +9,7 @@ export interface IDealState {
     dealData: IDealFieldsData[] | null;
     dealId: number | null;
     loading: boolean;
+    fetched: boolean;
     error: string | null;
     isUpdating: boolean;
 }
@@ -17,6 +18,7 @@ const initialState: IDealState = {
     dealData: null,
     dealId: null,
     loading: false,
+    fetched: false,
     error: null,
     isUpdating: false,
 };
@@ -28,6 +30,8 @@ const dealSlice = createSlice({
         setDealData: (state, action: PayloadAction<IDealFieldsData[]>) => {
             state.dealData = action.payload;
             state.error = null;
+            state.fetched = true;
+
         },
         setDealId: (state, action: PayloadAction<number>) => {
             state.dealId = action.payload;
@@ -64,6 +68,7 @@ const dealSlice = createSlice({
         },
         setError: (state, action: PayloadAction<string>) => {
             state.error = action.payload;
+            state.fetched = true;
         },
         clearError: state => {
             state.error = null;
@@ -78,6 +83,7 @@ const dealSlice = createSlice({
         builder.addCase(updateDealField.fulfilled, state => {
             state.isUpdating = false;
             state.error = null;
+            state.fetched = true;
         });
         builder.addCase(updateDealField.rejected, (state, action) => {
             state.isUpdating = false;
@@ -85,6 +91,7 @@ const dealSlice = createSlice({
                 action,
                 'Ошибка обновления поля сделки',
             );
+            state.fetched = true;
         });
     },
 });

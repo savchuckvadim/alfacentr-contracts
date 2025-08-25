@@ -66,14 +66,14 @@ export interface IBXActivity {
     START_TIME?: string;
     END_TIME?: string;
     COMMUNICATIONS: BXActivityCommunication[];
-    FILES?: BXActivityFile[];
+    FILES?: BXActivityFile[] | BXActivityUploadFile[];
 }
 
 export type BXActivityCommunication = {
     VALUE: string;
     ENTITY_ID: number | string;
     ENTITY_TYPE_ID: BitrixOwnerTypeId;
-    TYPE_ID: BitrixActivityTypeId;
+    TYPE_ID?: BitrixActivityTypeId;
 };
 
 export type BXActivityFile = {
@@ -85,3 +85,8 @@ export type BXActivityFile = {
     // duration: string
     // isPlaying: string
 };
+
+
+export type BXActivityUploadFile = {
+    fileData: [string, string];
+}

@@ -12,7 +12,7 @@ export const useParticipantRowData = (participantId: number) => {
         assignedSeminars,
     } = useParticipantInfo(participantId);
     const { assignedProducts } = useParticipantInfo(participantId);
-    debugger;
+
     return {
         name,
         email,

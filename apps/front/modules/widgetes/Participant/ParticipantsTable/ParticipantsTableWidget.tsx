@@ -1,13 +1,17 @@
 import { ParticipantsTable } from './ParticipantsTable';
-import { Badge } from '@workspace/ui/components/badge';
 
-import { useParticipantsInfo } from '../ParticipantInfoCard/hook/useParticipantsInfo';
-import { LinkBadge, Tooltip } from '@/modules/shared';
-import { ParticipantsProblems } from '../ParticipantReport/ParticipantsProblems';
+import { LinkBadge } from '@/modules/shared';
+import { ParticipantsProblemsPpkBadge } from './components/badges/ParticipantsProblemsPpkBadge';
+import { ParticipantsProblemsSeminarBadge } from './components/badges/ParticipantsProblemsSeminarBadge';
+import {
+    withPpkContractTypeSelector,
+    withSeminarContractTypeSelector,
+} from '@/modules/features/contract-type';
+import { useAppSelector } from '@/modules/app';
 
 export const ParticipantsTableWidget = () => {
-    const { hasProblems, participantsProblems, problemsCount } =
-        useParticipantsInfo();
+    const withSeminarType = useAppSelector(withSeminarContractTypeSelector);
+    const withPpkType = useAppSelector(withPpkContractTypeSelector);
 
     return (
         <div>
@@ -16,28 +20,8 @@ export const ParticipantsTableWidget = () => {
                     <h3 className="text-lg font-bold">Участники</h3>
                 </div>
                 <div className="flex flex-row gap-2">
-                    {hasProblems ? (
-                        <Tooltip
-                            content={
-                                <div className="p-0 m-0 flex flex-col gap-2 w-[1000px] h-[400px] bg-background overflow-y-auto">
-                                    <ParticipantsProblems />
-                                </div>
-                            }
-                        >
-                            <Badge
-                                className="cursor-help"
-                                variant={
-                                    hasProblems ? 'destructive' : 'default'
-                                }
-                            >
-                                {hasProblems
-                                    ? 'Проблемы ' + problemsCount
-                                    : '+'}
-                            </Badge>
-                        </Tooltip>
-                    ) : (
-                        <Badge variant={'secondary'}>ОК</Badge>
-                    )}
+                    <ParticipantsProblemsPpkBadge />
+                    <ParticipantsProblemsSeminarBadge />
                     <LinkBadge
                         href="/bitrix/participants"
                         text="К участникам"

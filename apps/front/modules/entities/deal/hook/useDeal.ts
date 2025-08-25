@@ -17,7 +17,7 @@ export const useDeal = () => {
     const dispatch = useAppDispatch();
     const dealState = useSelector((state: RootState) => state.deal);
     const dealId = useAppSelector(state => state.app.bitrix.deal?.ID);
-
+    const { fetched, loading } = useAppSelector(state => state.deal);
     const getFieldByCode = (code: BxDealDataKeys) => {
         return dealState.dealData?.find(field => field.code === code);
     };
@@ -71,7 +71,8 @@ export const useDeal = () => {
         // State
         dealData: dealState.dealData,
 
-        loading: dealState.loading,
+        loading,
+        fetched,
         error: dealState.error,
         isUpdating: dealState.isUpdating,
 

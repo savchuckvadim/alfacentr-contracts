@@ -14,7 +14,7 @@ export interface EVSBXRQ {
     current: EvsRqItem;
 }
 
-interface EvsRq {
+export interface EvsRq {
     items: EvsRqItem[];
     default: EvsRqItem;
 }

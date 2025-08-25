@@ -1,8 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-    documentNumberDone,
-    updateDocumentNumber,
-} from '../thunk/DocumentNumberThunk';
+import { documentNumberDone } from '../thunk/DocumentNumberThunk';
 import { IDocumentNumberUpdateDoneResult } from '../../type/document-number.type';
 
 export interface IDocumentNumberState {
@@ -10,6 +7,7 @@ export interface IDocumentNumberState {
     counter: number;
     isLoading: boolean;
     error: string | null;
+    fetched: boolean;
 }
 
 const initialState: IDocumentNumberState = {
@@ -17,6 +15,7 @@ const initialState: IDocumentNumberState = {
     counter: 0,
     isLoading: false,
     error: null,
+    fetched: false,
 };
 
 export const documentNumberSlice = createSlice({
@@ -29,6 +28,7 @@ export const documentNumberSlice = createSlice({
         ) => {
             state.prefix = action.payload.prefix;
             state.counter = action.payload.counter;
+            state.fetched = true;
         },
         setLoading: (
             state: IDocumentNumberState,
@@ -41,6 +41,7 @@ export const documentNumberSlice = createSlice({
             action: PayloadAction<string | null>,
         ) => {
             state.error = action.payload;
+            state.fetched = true;
         },
     },
     extraReducers: builder => {
@@ -59,6 +60,7 @@ export const documentNumberSlice = createSlice({
                 state.isLoading = false;
                 state.prefix = action.payload.prefix;
                 state.counter = action.payload.counter;
+                state.fetched = true;
             },
         );
         builder.addCase(
@@ -66,6 +68,7 @@ export const documentNumberSlice = createSlice({
             (state: IDocumentNumberState, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
+                state.fetched = true;
             },
         );
     },

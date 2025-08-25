@@ -10,7 +10,6 @@ import { RootState, AppDispatch } from '@/modules/app/model/store';
 
 import { ParticipantPpkListInfo } from '@/modules/widgetes/Participant';
 import { ParticipantStatistics } from './components/ParticipantStatistics';
-import { useParticipant } from '../lib/hook/useParticipant';
 
 export function ParticipantsPage() {
     const dispatch = useDispatch<AppDispatch>();
@@ -33,10 +32,10 @@ export function ParticipantsPage() {
             {/* Заголовок */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
+                    <h1 className="text-2xl font-bold text-foreground">
                         Участники
                     </h1>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-muted-foreground mt-1">
                         Управление участниками проекта
                     </p>
                 </div>

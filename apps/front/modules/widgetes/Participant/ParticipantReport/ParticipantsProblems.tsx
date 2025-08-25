@@ -9,7 +9,6 @@ export const ParticipantsProblems = ({
 }) => {
     const { unassignedParticipants, getParticipantsProblems, isLoading } =
         useParticipantPpk();
-
     let topicsInfo: React.ReactNode[] = [];
     const participants = participantId
         ? unassignedParticipants.filter(p => p.id === participantId)

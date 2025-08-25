@@ -33,6 +33,7 @@ import { FieldsModule } from './commands/fields/fields.module';
 import { AlfaActivityCommandsModule } from './commands/alfa/alfa-activity.module';
 import { DocumentGenerateModule } from './modules/document-generate/document-generate.module';
 import { DocumentNumberModule } from './modules/document-number/document-number.module';
+import { ValidateCheckModule } from './modules/validate-check/validate-check.module';
 
 @Module({
     imports: [
@@ -89,6 +90,7 @@ import { DocumentNumberModule } from './modules/document-number/document-number.
         // BxDepartmentModule,
         DocumentGenerateModule,
         DocumentNumberModule,
+        ValidateCheckModule,
 
         HelperModule,
     ],

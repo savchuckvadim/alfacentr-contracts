@@ -23,6 +23,7 @@ import {
     activateEditable,
     cancelEditable,
     changeEditable,
+    changeMultipleField,
 } from '../../model/ParticipantSlice';
 
 export const useParticipant = (id?: number) => {
@@ -84,6 +85,10 @@ export const useParticipant = (id?: number) => {
         cancelEditable: () => dispatch(cancelEditable()),
         changeEditable: (fieldCode: BxParticipantsDataKeys, value: string) =>
             dispatch(changeEditable({ fieldCode, value })),
+        changeMultipleField: (
+            fieldCode: BxParticipantsDataKeys,
+            value: string[],
+        ) => dispatch(changeMultipleField({ fieldCode, value })),
 
         updateParticipant,
         deleteParticipant,

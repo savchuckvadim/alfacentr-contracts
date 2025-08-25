@@ -39,39 +39,39 @@ const participant_1 = {
         group: 'general',
     },
 
-    [BxParticipantsDataKeys.format]: {
-        id: '8270',
-        bitrixId: 'UF_CRM_1743993344' as const,
-        type: 'enumeration',
-        multiple: false,
-        name: 'Участник 1 Формат участия',
-        code: BxParticipantsDataKeys.format,
-        list: [
-            {
-                bitrixId: '17746',
-                name: 'Очно',
-                sort: '10',
-            },
-            {
-                bitrixId: '17748',
-                name: 'Онлайн',
-                sort: '20',
-            },
-            {
-                bitrixId: '17914',
-                name: 'Пойду только на ППК',
-                sort: '30',
-            },
-        ],
-        group: 'seminar',
-    },
+    // [BxParticipantsDataKeys.format]: {
+    //     id: '8270',
+    //     bitrixId: 'UF_CRM_1743993344' as const,
+    //     type: 'enumeration',
+    //     multiple: false,
+    //     name: 'Участник 1 Формат участия',
+    //     code: BxParticipantsDataKeys.format,
+    //     list: [
+    //         {
+    //             bitrixId: '17746',
+    //             name: 'Очно',
+    //             sort: '10',
+    //         },
+    //         {
+    //             bitrixId: '17748',
+    //             name: 'Онлайн',
+    //             sort: '20',
+    //         },
+    //         {
+    //             bitrixId: '17914',
+    //             name: 'Пойду только на ППК',
+    //             sort: '30',
+    //         },
+    //     ],
+    //     group: 'seminar',
+    // },
     [BxParticipantsDataKeys.format_v2]: {
         id: '8380',
         bitrixId: 'UF_CRM_1744005060' as const,
         type: 'enumeration',
         code: BxParticipantsDataKeys.format_v2,
         multiple: false,
-        name: 'Участник 1 Формат участия v2',
+        name: 'Участник 1 Формат участия ',
         list: [
             {
                 bitrixId: '17932',

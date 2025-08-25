@@ -11,6 +11,7 @@ interface ModalConfirmProps {
     type: 'delete' | 'error' | 'warning' | 'info';
     message: string;
     isLoading?: boolean;
+    children?: React.ReactNode;
 }
 
 export function ModalConfirm({
@@ -22,6 +23,7 @@ export function ModalConfirm({
     type,
     message,
     isLoading = false,
+    children,
 }: ModalConfirmProps) {
     if (!isOpen) return null;
 

@@ -53,7 +53,7 @@ export class ContractRqHeaderService {
                             rqItem.value as string;
                     } else if (rqItem.code === 'director_case') {
                         clientCompanyDirectorNameCase = rqItem.value as string;
-                    } else if (rqItem.code === 'based') {
+                    } else if (rqItem.code === 'based_case') {
                         clientCompanyBased = rqItem.value as string;
                     }
                 }

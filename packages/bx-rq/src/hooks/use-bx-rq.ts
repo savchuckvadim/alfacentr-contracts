@@ -89,7 +89,7 @@ export const useBxRq = () => {
     return {
         ...state,
         ...actions,
-        fetchBXRQ: (domain: string, companyId: number, currentRqId?: string) =>
+        fetchBXRQ: (domain: string, companyId: number, currentRqId?: number) =>
             dispatch(fetchBXRQ(domain, companyId, currentRqId)),
         initBaseCreating: (currentClientType: RQ_TYPE) =>
             dispatch(initBaseCreating({ currentClientType })),

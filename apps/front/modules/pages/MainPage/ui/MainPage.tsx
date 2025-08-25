@@ -1,5 +1,6 @@
 'use client';
 
+import { CommunicationsConfirmMenu } from '@/modules/features';
 import { SummaryPanel } from '../../../widgetes';
 import { MainPageContent } from './components/MainPageContent';
 import { useEffect, useState } from 'react';
@@ -18,6 +19,7 @@ export const MainPage = () => {
 
     return (
         <div className="flex flex-col  rounded-full">
+            <CommunicationsConfirmMenu />
             <div className="flex ">
                 {/* Левая часть - основная область */}
                 <div className="flex-1 p-2">

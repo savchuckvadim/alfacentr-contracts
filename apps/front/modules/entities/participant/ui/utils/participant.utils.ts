@@ -29,6 +29,22 @@ export const getParticipantName = (participant: IParticipant): string => {
     );
 };
 
+export const getParticipantFieldArrayValue = (
+    participant: IParticipant,
+    fieldId: AlfaParticipantSmartItemUserFieldsEnum,
+): string[] => {
+    const field = participant.fields.find(f => f.bitrixId === fieldId);
+    if (!field || field.value == null) {
+        return [];
+    }
+
+    if (Array.isArray(field.value)) {
+        return field.value;
+    }
+
+    return [];
+};
+
 export const getParticipantEmail = (participant: IParticipant): string => {
     return getParticipantFieldValue(
         participant,
@@ -105,6 +121,15 @@ export const getParticipantIsPpk = (participant: IParticipant): boolean => {
 
 export const getParticipantDays = (participant: IParticipant): string => {
     return getParticipantFieldValue(
+        participant,
+        AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Days,
+    );
+};
+
+export const getParticipantDaysArray = (
+    participant: IParticipant,
+): string[] => {
+    return getParticipantFieldArrayValue(
         participant,
         AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Days,
     );
