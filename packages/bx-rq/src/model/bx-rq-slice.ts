@@ -70,7 +70,7 @@ export const bxrqSlice = createSlice({
                 [RQ_TYPE.FIZ]: pay.bxrq[RQ_TYPE.FIZ] || null,
                 current: current || pay.bxrq.current,
             }
-            debugger;
+
             state.rqs = rqResult;
             state.isFetched = true;
             state.isLoading = false;

@@ -15,6 +15,6 @@ export const setCurrentRq = async (dealId: number, rqId: number) => {
     const response = await bitrix.deal.update(dealId, {
         [documentFields[EnumDealDocumentFieldCode.CURRENT_RQ].bitrixId]: rqId,
     });
-    debugger;
+
     return rqId;
 };

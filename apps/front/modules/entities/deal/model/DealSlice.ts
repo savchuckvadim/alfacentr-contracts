@@ -29,6 +29,7 @@ const dealSlice = createSlice({
     reducers: {
         setDealData: (state, action: PayloadAction<IDealFieldsData[]>) => {
             state.dealData = action.payload;
+
             state.error = null;
             state.fetched = true;
 

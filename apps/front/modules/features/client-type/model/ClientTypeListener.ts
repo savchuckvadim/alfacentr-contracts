@@ -33,7 +33,7 @@ export function setupClientTypeListener(
                 const currentRqId = getCurrentRq(deal as IBXDeal) || (undefined as undefined);
 
                 const clientType = getDealClientType(dealData);
-                debugger;
+
                 dispatch(setCurrentRqItems({ clientType, currentRqId }));
                 //TODO передать текущий rq_id
             }

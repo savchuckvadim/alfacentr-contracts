@@ -16,8 +16,9 @@ import { IRequestDocumentGenerateResponse } from '../type/request-document-gener
 import { delay } from '@/lib';
 import { BitrixService, IBXTimelineComment } from '@/modules/bitrix/';
 import { PpkApplicationGenerateService } from './ppk-application-generate.service';
+import { EmailService } from './email.service';
 
-@Injectable()
+
 export class DocumentGenerateBatchService {
     private bitrix: BitrixService;
     private filesForSend: [string, string][] = [];
@@ -122,7 +123,7 @@ export class DocumentGenerateBatchService {
                 DocumentFullNumber: 'dto.contractNumber',
             } as Record<string, string>,
         });
-        const result = await this.bitrix.api.callBatchWithConcurrency();
+        const result = await this.bitrix.api.callBatchWithConcurrency(1);
         // console.log(result)
 
         result.forEach(async (item) => {
@@ -276,36 +277,48 @@ export class DocumentGenerateBatchService {
         await this.bitrix.timeline.addTimelineComment(timelieneData);
         await delay(500);
 
-        const activityResponse = await this.bitrix.activity.createActivity({
-            OWNER_TYPE_ID: BitrixOwnerTypeId.DEAL,
-            OWNER_ID: entityId,
-            TYPE_ID: BitrixActivityTypeId.EMAIL,
-            DIRECTION: 2, // 1 - incoming, 2 - outgoing
-            RESPONSIBLE_ID: '502',
+        const emailService = new EmailService(
+            this.bitrix,
+            this.filesForSend,
+            'laravelsamvel@gmail.com',
+            'Документы сгенерированы',
+            this.getEmailHtmlBody(''),
+            dto.dealId
+        );
+        const mailResult = await emailService.send();
+        // const activityResponse = await this.bitrix.activity.createActivity({
+        //     OWNER_TYPE_ID: BitrixOwnerTypeId.DEAL,
+        //     OWNER_ID: entityId,
+        //     TYPE_ID: BitrixActivityTypeId.EMAIL,
+        //     DIRECTION: 2, // 1 - incoming, 2 - outgoing
+        //     RESPONSIBLE_ID: '502',
 
-            SETTINGS: {
-                MESSAGE_FROM: `Иванов Иван <laravelsamvel@gmail.com>`,
-            },
-            SUBJECT: 'Документы сгенерированы',
-            DESCRIPTION: this.getEmailHtmlBody(''),
-            COMPLETED: 'Y',
-            DESCRIPTION_TYPE: 3,
-            START_TIME: new Date().toISOString(),
-            END_TIME: new Date(Date.now() + 3600 * 1000).toISOString(),
-            COMMUNICATIONS: [
-                {
-                    ENTITY_ID: entityId,
-                    ENTITY_TYPE_ID: BitrixOwnerTypeId.DEAL,
-                    // TYPE_ID: 1,
-                    VALUE: 'laravelsamvel@gmail.com',
-                },
-            ],
-            FILES: this.filesForSend.map(file => ({
-                fileData: file
-            })),
-        });
-        console.log('activityResponse', activityResponse);
-        return result;
+        //     SETTINGS: {
+        //         MESSAGE_FROM: `Иванов Иван <laravelsamvel@gmail.com>`,
+        //     },
+        //     SUBJECT: 'Документы сгенерированы',
+        //     DESCRIPTION: this.getEmailHtmlBody(''),
+        //     COMPLETED: 'Y',
+        //     DESCRIPTION_TYPE: 3,
+        //     START_TIME: new Date().toISOString(),
+        //     END_TIME: new Date(Date.now() + 3600 * 1000).toISOString(),
+        //     COMMUNICATIONS: [
+        //         {
+        //             ENTITY_ID: entityId,
+        //             ENTITY_TYPE_ID: BitrixOwnerTypeId.DEAL,
+        //             // TYPE_ID: 1,
+        //             VALUE: 'laravelsamvel@gmail.com',
+        //         },
+        //     ],
+        //     FILES: this.filesForSend.map(file => ({
+        //         fileData: file
+        //     })),
+        // });
+        // console.log('activityResponse', activityResponse);
+
+
+
+        return {result, filesCount: this.filesForSend.length, mailResult};
         // const updateDealDocumentsResponse = await bitrix.deal.update(
         //     entityId,
         //     {

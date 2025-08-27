@@ -19,7 +19,7 @@ export const setCurrentRqThunk = createAsyncThunk(
             }
 
             await setCurrentRq(dealId, rqId)
-            debugger;
+
             //TODO: update deal in app reducer
 
         } catch (error) {

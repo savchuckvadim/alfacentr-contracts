@@ -9,6 +9,7 @@ import { DocumentContractFieldsService } from './services/document-contract-fiel
 import { PpkApplicationGenerateService } from './services/ppk-application-generate.service';
 import { DocumentGenerateBatchService } from './services/document-generate-batch.service';
 import { TelegramModule } from '@/modules/telegram';
+import { GetDealBidItemsUseCase } from '../on-deal-init/use-cases/get-deal-bid-items.use-case';
 
 @Module({
     imports: [PBXModule, QueueModule, TelegramModule],
@@ -19,7 +20,8 @@ import { TelegramModule } from '@/modules/telegram';
         DocumentGenerateQueueProcessor,
         DocumentContractFieldsService,
         PpkApplicationGenerateService,
-        DocumentGenerateBatchService,
+        // DocumentGenerateBatchService,
+        GetDealBidItemsUseCase
     ],
 })
 export class DocumentGenerateModule {}
