@@ -1,4 +1,4 @@
-import { BxDealDataKeys } from 'entities/deal/bx-data';
+
 import { EContractType } from './document-generate.type';
 //todo вынести в пакет переиспользуемый и для фронта и для бэка
 export interface IRequestDocumentGenerateType {
