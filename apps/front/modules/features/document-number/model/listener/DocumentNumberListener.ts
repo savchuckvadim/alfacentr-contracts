@@ -18,13 +18,16 @@ export function setupDocumentNumberListener(
     listenerMiddleware: ListenerMiddlewareInstance,
 ) {
     listenerMiddleware.startListening({
-        matcher: isAnyOf(setFetchedProducts, fetchProducts.fulfilled),
+        matcher: isAnyOf(
+            setFetchedProducts,
+            fetchProducts.fulfilled,
+            appActions.setAppData
+        ),
         effect: async (action, listenerApi) => {
             const state = listenerApi.getState() as RootState;
             const app = state.app;
             const products = state.product.items;
-         
-
+     
             if (app.bitrix.deal && products?.length > 0) {
                 const dispatch = listenerApi.dispatch as AppDispatch;
                 dispatch(updateDocumentNumber());

@@ -34,7 +34,7 @@ export const appInit = async (
             domain,
         }),
     );
- 
+
     const bxResult = await bitrixInit();
     if (!bxResult) {
         window && window?.location
