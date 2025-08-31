@@ -1,40 +1,43 @@
-import { IBXProduct } from '@bitrix/index';
 import { IAlfaProduct } from '../model/ProductSlice';
 import { getProductFieldByCodeValue } from './product-field.util';
-import { getProductType } from './get-product-type.util';
+import { getHasPpk, getHasSeminar, getHasUp, getIsPpkProduct, getIsSeminarProduct, getIsUpProduct } from './get-product-type.util';
+import { getPrefixByProductName } from '@alfa/entities';
 
 export const getCurrentDinamycPrefix = (products: IAlfaProduct[]) => {
     let prefix = '';
-    products.forEach(product => {
-        if (prefix) return;
+    const hasSeminar = getHasSeminar(products);
+    const hasPpk = getHasPpk(products);
+    const hasUp = getHasUp(products);
 
-        const productType = getProductType(product);
-
-        if (productType === 'ppk') {
-            const productField = getProductFieldByCodeValue(product, 'PREFIX');
-
-            if (
-                productField &&
-                productField.value &&
-                productField.value !== 'Не указано'
-            ) {
-                prefix = productField.value as string;
-            }
+    if (hasSeminar) {
+        const firstSeminarProduct = products.find(product => getIsSeminarProduct(product));
+        if (firstSeminarProduct) {
+            prefix = getPrefixByProductName(firstSeminarProduct.productName || '');
+            return prefix;
         }
-    });
-
-    if (!prefix) {
-        products.forEach(product => {
-            if (prefix) return;
-            const productField = getProductFieldByCodeValue(product, 'PREFIX');
-            if (
-                productField &&
-                productField.value &&
-                productField.value !== 'Не указано'
-            ) {
-                prefix = productField.value as string;
-            }
-        });
+        return 'СР';
+    } else if (!hasSeminar && hasPpk) {
+        const firstPpkProduct = products.find(product => getIsPpkProduct(product));
+        if (firstPpkProduct) {
+            prefix = getPrefixByProductName(firstPpkProduct.productName || '');
+            return prefix;
+        }
+        return 'ППК';
+    } else if (!hasSeminar && !hasPpk && hasUp) {
+        const firstUpProduct = products.find(product => getIsUpProduct(product));
+        if (firstUpProduct) {
+            prefix = getPrefixByProductName(firstUpProduct.productName || '');
+            return prefix;
+        }
+        return 'УП';
+    }else{
+        const firstProduct = products[0];
+        if (firstProduct) {
+            prefix = getPrefixByProductName(firstProduct.productName || '');
+            return prefix;
+        }
+        return 'СР';
     }
-    return prefix;
+
+
 };

@@ -3,8 +3,7 @@ import {
     Post,
     Body,
     Param,
-    ValidationPipe,
-    Get,
+    ValidationPipe
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OnDealInitUseCase } from '../use-cases/on-deal-init.use-case';
@@ -12,7 +11,7 @@ import { BitrixHookDto } from '@/lib/dto';
 import { OnDealInitRequestDto } from '../dto/on-deal-init-request.dto';
 import { FrontDealUseCase } from '../use-cases/front-deal.use-case';
 
-@ApiTags('Alfa')
+@ApiTags('Alfa on deal init')
 @Controller('seminar')
 export class OnDealInitController {
     constructor(

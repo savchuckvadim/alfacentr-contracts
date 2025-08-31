@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { BitrixService, IBXCompany } from '@/modules/bitrix';
 import { BxCompanyData } from '@alfa/entities';
 import { BitrixEntityType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';

@@ -1,4 +1,6 @@
 'use client';
+import { Badge } from '@workspace/ui/components/badge';
+import { Button } from '@workspace/ui/components/button';
 import { cn } from '@workspace/ui/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -18,18 +20,21 @@ export const NavMenu = ({ withMobile = true }: { withMobile?: boolean }) => {
         <div className="flex items-center justify-between">
             <nav className="hidden md:flex items-center space-x-6">
                 {navItems.map(({ href, label }) => (
-                    <Link
-                        key={href}
-                        href={href}
-                        className={cn(
-                            'transition-colors',
-                            pathname.startsWith(href)
-                                ? 'text-primary font-medium'
-                                : 'text-gray-600 hover:text-primary',
-                        )}
-                    >
-                        {label}
-                    </Link>
+                    <Badge key={`nav-badge-${href}`} variant={pathname.startsWith(href) ? "default" : "outline"}
+                    className="text-xs">
+                        <Link
+                            key={href}
+                            href={href}
+                            className={cn(
+                                'transition-colors',
+                                // pathname.startsWith(href)
+                                //     ? 'text-primary font-medium'
+                                //     : 'text-gray-600 hover:text-primary',
+                            )}
+                        >
+                            {label}
+                        </Link>
+                    </Badge>
                 ))}
             </nav>
 

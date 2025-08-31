@@ -3,18 +3,13 @@ import {
     DialogTitle,
     DialogContent,
     DialogHeader,
-    DialogTrigger,
+
     DialogDescription,
     DialogFooter,
 } from '@workspace/ui/components/dialog';
 import { Button } from '@workspace/ui/components/button';
 import { FC } from 'react';
-import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuTrigger,
-} from '@workspace/ui/components/context-menu';
+
 
 export const ModalMenu: FC<{
     title?: string;
@@ -51,7 +46,9 @@ export const ModalMenu: FC<{
                 {footer && <DialogFooter>{footer}</DialogFooter>}
 
                 <DialogFooter>
-                    <Button onClick={() => onOpenChange(false)}>
+                    <Button variant="destructive"
+                    className='bg-rose-600'
+                    onClick={() => onOpenChange(false)}>
                         {cancelName ? cancelName : 'Отмена'}
                     </Button>
                     {onSubmit && (

@@ -19,7 +19,7 @@ const initialState: ICommunicationsState = {
     confirm: {
         isActive: false,
         isConfirmed: false,
-        needEmail: false,
+        needEmail: true,
     },
     errors: {
         email: '',
@@ -63,6 +63,12 @@ export const communicationsSlice = createSlice({
             action: PayloadAction<string>,
         ) => {
             state.errors.name = action.payload;
+        },
+        setNeedEmail: (
+            state: ICommunicationsState,
+            action: PayloadAction<boolean>,
+        ) => {
+            state.confirm.needEmail = action.payload;
         },
     },
     extraReducers: builder => {

@@ -44,8 +44,8 @@ export const updateDocumentNumber = createAsyncThunk<
 
             const { number, prefix } = getCurrentDocumentNumber(deal);
             const newDinamyc = getCurrentDinamycPrefix(state.product.items);
-            const newDinamycPrefix = 'ТЕСТ123';
-
+            const newDinamycPrefix = `ТЕСТ PREFIX ${newDinamyc}`;
+            debugger;
             //если динамический префикс изменился или номер не установлен
             // отправляем запрашиваем у бэка новый номер
             // надо обновить в битрикс и в текущей сделке

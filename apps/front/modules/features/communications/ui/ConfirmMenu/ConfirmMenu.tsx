@@ -5,11 +5,13 @@ import { BxDealDataKeys } from '@alfa/entities';
 import { Input } from '@workspace/ui/components/input';
 import { Label } from '@workspace/ui/components/label';
 import useCommunications from '../../hook/useCommunications';
+import { Checkbox } from '@workspace/ui/components/checkbox';
 
 
 export const CommunicationsConfirmMenu = () => {
 
     const {
+        needEmail,
         email,
         phone,
         name,
@@ -18,6 +20,7 @@ export const CommunicationsConfirmMenu = () => {
         cancelEmailConfirm,
         generateDocument,
         setEmailConfirmConfirmed,
+        setNeedEmail,
         updateField,
         updateFieldWithAPI,
     } = useCommunications();
@@ -31,12 +34,12 @@ export const CommunicationsConfirmMenu = () => {
                 setEmailConfirmConfirmed();
                 generateDocument();
             }}
-            cancelName="Не отправлять"
-            submitName="Сделать и отправить"
-            title="Подтверждение email"
-            description="Подтвердите email для получения документов"
+            // cancelName="Не отправлять"
+            submitName={needEmail ? "Сделать и отправить" : "Сделать документы"}
+            title={needEmail ? "Подтверждение email" : "Сделать документы"}
+            description={needEmail ? "Подтвердите email для получения документов" : "Сделать документы и НЕ отправлять email"}
         >
-            <div className="flex flex-col gap-4">
+            {needEmail && <div className="flex flex-col gap-4">
 
                 <div className="flex flex-row gap-2 items-center">
                     <Label>Контактное лицо для обмена документами</Label>
@@ -112,6 +115,16 @@ export const CommunicationsConfirmMenu = () => {
                         )
                     }
                 />
+            </div>}
+            <div className="flex flex-row gap-2 items-center">
+
+
+                <Checkbox id="needEmail" checked={!needEmail} onCheckedChange={() => {
+                    setNeedEmail(!needEmail);
+                }}>
+
+                </Checkbox>
+                <Label htmlFor="needEmail">Не отправлять email</Label>
             </div>
         </ModalMenu >
     );

@@ -23,7 +23,7 @@ export function setupDocumentNumberListener(
             const state = listenerApi.getState() as RootState;
             const app = state.app;
             const products = state.product.items;
-            console.log(app);
+         
 
             if (app.bitrix.deal && products?.length > 0) {
                 const dispatch = listenerApi.dispatch as AppDispatch;

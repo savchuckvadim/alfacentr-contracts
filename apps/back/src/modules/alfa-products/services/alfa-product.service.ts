@@ -5,7 +5,7 @@ import {
     IBXProductRowRow,
 } from '@/modules/bitrix';
 import { DealValue } from '../../on-deal-init/services/deal-helper/deal-values-helper.service';
-import { BxDealDataKeys } from '@alfa/entities';
+import { BxDealDataKeys, getProductTypeByProductName } from '@alfa/entities';
 import { bxProductData } from '@alfa/entities';
 import { BitrixOwnerType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 import { ListProductRowDto } from '@/modules/bitrix/domain/crm/product-row/dto/list-product-row.sto';
@@ -39,14 +39,14 @@ const select = [
     bxProductData.NAME_BID.bitrixId,
 ];
 export class AlfaProductService {
-    constructor(private readonly bitrix: BitrixService) {}
+    constructor(private readonly bitrix: BitrixService) { }
     async addPpkProducts(dealId: number, dealValues: DealValue[]) {
         const products: IBXProduct[] = [];
         const productsWithoutPrefix: IBXProduct[] = [];
         const prefix = dealValues.find(
             (value) => value.code === BxDealDataKeys.prefix,
         )?.value as string;
-        console.log('prefix', prefix);
+
         for (const value of dealValues) {
             if (
                 value.code === BxParticipantsDataKeys.accountant_gos ||
@@ -55,9 +55,7 @@ export class AlfaProductService {
                 value.code === BxParticipantsDataKeys.kadry ||
                 value.code === BxParticipantsDataKeys.corruption
             ) {
-                // console.log('value', value);
-                // console.log('value.value', value.value);
-                // console.log('prefix', prefix);
+
                 if (value.value) {
                     const filter = {
                         // "=active": "Y",
@@ -72,7 +70,7 @@ export class AlfaProductService {
                         // [`=${bxProductData.PREFIX.bitrixId}`]: (prefix as string)
                         // 'property172': prefix
                     };
-                    console.log('filter', filter);
+
                     const response = await this.bitrix.product.getList(
                         filter,
                         select,
@@ -80,21 +78,12 @@ export class AlfaProductService {
                     response.result.products.map((product) => {
                         productsWithoutPrefix.push(product);
 
-                        // if (
-                        //     product.property172 &&
-                        //     typeof product.property172 === 'object' &&
-                        //     !Array.isArray(product.property172) &&
-                        //     'value' in product.property172 &&
-                        //     product.property172.value === prefix
-                        // ) {
                         products.push(product);
-                        // }
+
                     });
                 }
             } else if (value.code === BxParticipantsDataKeys.days) {
-                console.log('value', value);
-                console.log('value.value', value.value);
-                console.log('prefix', prefix);
+
                 if (
                     value.value &&
                     Array.isArray(value.value) &&
@@ -113,7 +102,6 @@ export class AlfaProductService {
                             // [`=${bxProductData.PREFIX.bitrixId}`]: (prefix as string)
                             // 'property172': prefix
                         };
-                        console.log('filter', filter);
 
                         const response = await this.bitrix.product.getList(
                             filter,
@@ -123,56 +111,39 @@ export class AlfaProductService {
                         response.result.products.map((product) => {
                             productsWithoutPrefix.push(product);
 
-                            // if (
-                            //     product.property172 &&
-                            //     typeof product.property172 === 'object' &&
-                            //     !Array.isArray(product.property172) &&
-                            //     'value' in product.property172 &&
-                            //     product.property172.value === prefix
-                            // ) {
                             products.push(product);
-                            // }
+
                         });
                     }
                 }
             }
         }
-        // if (products.length > 0) {
-        //     console.log('products')
-        //     for (const product of products) {
-        //         console.log('name', product.name)
-        //         console.log('property172', product.property172)
-        //         console.log('property174', product.property174)
-        //         console.log('property158', product.property158)
-        //         console.log('property168', product.property168)
-        //         console.log('property154', product.property154)
-        //         console.log('property155', product.property155)
-        //         console.log('property156', product.property156)
-        //         console.log('property164', product.property164)
-        //     }
-        // }
-        if (productsWithoutPrefix.length > 0) {
-            // console.log('productsWithoutPrefix')
-            // for (const product of productsWithoutPrefix) {
-            //     console.log('productsWithoutPrefix', product.name)
-            // }
-        }
-        console.log('prefix', prefix);
+
+
+
         if (products.length > 0) {
-            await this.setProductsInDeal(dealId, products);
+            const ordredBySeminarFurstProducts = products.sort((a, b) => {
+                const isSeminarProductA = getProductTypeByProductName(a.name) === 'seminar';
+        
+                return isSeminarProductA ? -1 : 1;
+            });
+
+
+
+            void await this.setProductsInDeal(dealId, ordredBySeminarFurstProducts);
         }
         return products;
     }
 
     private async setProductsInDeal(dealId: number, products: IBXProduct[]) {
-        const getProductRowsData: ListProductRowDto = {
-            '=ownerType': BitrixOwnerType.DEAL,
-            '=ownerId': dealId,
-        };
-        const responseGetProductRows =
-            await this.bitrix.productRow.list(getProductRowsData);
-        const currentProductRows = responseGetProductRows.result.productRows;
-        console.log('responseGetProductRows', responseGetProductRows);
+        // const getProductRowsData: ListProductRowDto = {
+        //     '=ownerType': BitrixOwnerType.DEAL,
+        //     '=ownerId': dealId,
+        // };
+        // const responseGetProductRows =
+        //     await this.bitrix.productRow.list(getProductRowsData);
+        // const currentProductRows = responseGetProductRows.result.productRows;
+        // console.log('responseGetProductRows', responseGetProductRows);
 
         // const productsWithPrice = await this.getProductPrice(products);
 
@@ -183,11 +154,7 @@ export class AlfaProductService {
         const productsWithPrice = await this.getProductPrice(groupedProducts);
 
         const newProductRows = productsWithPrice.map((product, index) => {
-            console.log('product', product.name.toUpperCase());
-            console.log('product', product.name.toUpperCase());
-            console.log('product', product.name.toUpperCase());
-            console.log('product', product.name.toUpperCase());
-            console.log(product);
+
             return {
                 // id: Number(product.id),
                 // quantity: productsWithPrice.filter((p) => p.id === product.id)
@@ -200,22 +167,22 @@ export class AlfaProductService {
                 measureId: 10,
                 measureCode: 792,
                 measureName: 'чел.',
-                sort: (index + 1) * 10 + currentProductRows.length * 10,
+                sort: (index + 1) * 10,
             } as IBXProductRowRow;
         });
         const uniqueProductRows = newProductRows.filter(
             (row, index, array) =>
                 array.findIndex((r) => r.productId === row.productId) === index,
         );
-        const productRows = [...currentProductRows, ...uniqueProductRows];
-        console.log('productRows', productRows);
+        const productRows = uniqueProductRows;
+
 
         const data: IBXProductRow = {
             ownerType: BitrixOwnerType.DEAL,
             ownerId: dealId,
             productRows,
         };
-        const response = await this.bitrix.productRow.set(data);
+        void await this.bitrix.productRow.set(data);
         // console.log('response', response)
     }
     private groupProductsById(

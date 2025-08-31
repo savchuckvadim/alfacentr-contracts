@@ -12,7 +12,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DocumentContractFieldsService {
-    constructor() {}
+    constructor() { }
 
     getContractFields(
         contractType: EContractType,
@@ -21,16 +21,19 @@ export class DocumentContractFieldsService {
         paragraphItems: string[],
         totalSum: string,
         client: string[],
+        clientSignature: string,
         documentPrefixNumber: string,
+        documentNumberCounter: string,
+
     ) {
         const templateType =
             contractType === EContractType.seminar_ppk
                 ? (DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL as typeof DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL)
                 : contractType === EContractType.seminar
-                  ? (DocumentGenerateTemplatesType.SEMINAR_DEAL as typeof DocumentGenerateTemplatesType.SEMINAR_DEAL)
-                  : contractType === EContractType.ppk
-                    ? (DocumentGenerateTemplatesType.PPK_DEAL as typeof DocumentGenerateTemplatesType.PPK_DEAL)
-                    : (DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS as typeof DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS);
+                    ? (DocumentGenerateTemplatesType.SEMINAR_DEAL as typeof DocumentGenerateTemplatesType.SEMINAR_DEAL)
+                    : contractType === EContractType.ppk
+                        ? (DocumentGenerateTemplatesType.PPK_DEAL as typeof DocumentGenerateTemplatesType.PPK_DEAL)
+                        : (DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS as typeof DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS);
         const templateId = templateType.id;
 
         const fields = {} as { [key: string]: string | string[] };
@@ -44,15 +47,15 @@ export class DocumentContractFieldsService {
         const templateFields =
             contractType === EContractType.seminar_ppk
                 ? (DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL
-                      .fields as DocumentContractSeminarPpkFieldsType)
+                    .fields as DocumentContractSeminarPpkFieldsType)
                 : contractType === EContractType.seminar
-                  ? (DocumentGenerateTemplatesType.SEMINAR_DEAL
+                    ? (DocumentGenerateTemplatesType.SEMINAR_DEAL
                         .fields as DocumentContractSeminarDealFieldsType)
-                  : contractType === EContractType.ppk
-                    ? (DocumentGenerateTemplatesType.PPK_DEAL
-                          .fields as DocumentContractPpkDealFieldsType)
-                    : (DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS
-                          .fields as DocumentContractInvoiceWithStampsFieldsType);
+                    : contractType === EContractType.ppk
+                        ? (DocumentGenerateTemplatesType.PPK_DEAL
+                            .fields as DocumentContractPpkDealFieldsType)
+                        : (DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS
+                            .fields as DocumentContractInvoiceWithStampsFieldsType);
 
         templateFields.forEach((field) => {
             if (field.code === DocumentGenerateFieldTemplateCode.Header) {
@@ -78,8 +81,22 @@ export class DocumentContractFieldsService {
                 DocumentGenerateFieldTemplateCode.DocumentPrefixNumber
             ) {
                 fields[field.templateCode] = documentPrefixNumber;
+            } else if (
+                field.code ===
+                DocumentGenerateFieldTemplateCode.DocumentNumberCounter
+            ) {
+                fields[field.templateCode] = documentPrefixNumber;
+            }else if (
+                field.code ===
+                DocumentGenerateFieldTemplateCode.ClientSignature
+            ) {
+                fields[field.templateCode] = clientSignature;
             }
         });
+        // fields['DocumentNumber'] = documentPrefixNumber;
+        // fields['TITLE'] = documentPrefixNumber;
+        // fields['Title'] = documentPrefixNumber;
+        fields['DocumentTitle'] = `Договор №${documentPrefixNumber}`;
 
         return {
             templateId,

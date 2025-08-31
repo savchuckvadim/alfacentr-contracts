@@ -13,6 +13,7 @@ export interface IRequestDocumentGenerateType {
     client: string[];
     fields: IRequestDocumentGenerateFieldsType;
     clientShortRq: string;
+    clientSignature: string;
     paragraphItems?: string[];
     documentPrefixNumber: string;
     documentPrefix: string;

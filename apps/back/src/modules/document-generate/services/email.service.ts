@@ -20,6 +20,7 @@ import { BitrixOwnerTypeId } from "@/modules/bitrix/domain/enums/bitrix-constant
 export class EmailServiceInitDto {
     filesForSend: [string, string][] = [];
     email: string;
+    name: string;
     subject: string;
     body: string;
     bid: string;
@@ -30,6 +31,7 @@ export class EmailService {
         private readonly bitrix: BitrixService,
         private readonly filesForSend: [string, string][] = [],
         private readonly email: string,
+        private readonly name: string,
         private readonly subject: string,
         private readonly body: string,
         private readonly dealId: number,
@@ -42,7 +44,7 @@ export class EmailService {
     async send() {
 
         const entityId = this.dealId;
-        const body = await this.getEmailHtmlBody('');
+        const body = await this.getEmailHtmlBody();
         const activityResponse = await this.bitrix.activity.createActivity({
             OWNER_TYPE_ID: BitrixOwnerTypeId.DEAL,
             OWNER_ID: entityId,
@@ -53,7 +55,7 @@ export class EmailService {
             SETTINGS: {
                 MESSAGE_FROM: `Иванов Иван <laravelsamvel@gmail.com>`,
             },
-            SUBJECT: 'Документы сгенерированы',
+            SUBJECT: `Документы на согласование Договор №${this.subject} от ООО "Альфацентр"`,
             DESCRIPTION: body,
             COMPLETED: 'Y',
             DESCRIPTION_TYPE: 3,
@@ -64,7 +66,7 @@ export class EmailService {
                     ENTITY_ID: entityId,
                     ENTITY_TYPE_ID: BitrixOwnerTypeId.DEAL,
                     // TYPE_ID: 1,
-                    VALUE: 'laravelsamvel@gmail.com',
+                    VALUE: this.email,
                 },
             ],
             FILES: this.filesForSend.map(file => ({
@@ -74,7 +76,7 @@ export class EmailService {
         console.log('activityResponse', activityResponse);
     }
 
-    async getEmailHtmlBody(text: string): Promise<string> {
+    async getEmailHtmlBody(): Promise<string> {
 
         const bid = await this.getBidHtml();
         return `<html><body>
@@ -82,7 +84,7 @@ export class EmailService {
  <i>Письмо сформировано автоматически. При ответе, просто нажмите&nbsp;<b>“ОТВЕТИТЬ”</b>&nbsp;или введите </i><a href="mailto:ppk@alfasibir.ru" title="mailto:ppk@alfasibir.ru"><b><i><span style="color: blue;">ppk@alfasibir.ru</span></i></b></a><b><i> </i></b><i>в строке «Адрес получателя/Кому».</i>
 </p>
 <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
- Добрый день, <span style="color: #151515;"> {{Имя Отчество контактного лица по документам}}</span>!<br>
+ Добрый день ${this.name ? `, <span style="color: #151515;"> ${this.name}</span>` : ''}!<br>
 	 Во вложении -&nbsp;<b>Договор</b>,&nbsp;<b>Счет </b>и <b>Акт </b>на согласование.
 </p>
 <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">

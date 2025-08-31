@@ -37,6 +37,7 @@
         "prom-client": "^15.1.3",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
+        "react-hook-form": "^7.59.0",
         "react-redux": "^9.2.0",
         "russian-nouns-js": "^2.3.0"
     },

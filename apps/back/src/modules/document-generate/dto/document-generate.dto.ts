@@ -140,6 +140,31 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     clientShortRq: string;
 
     @ApiProperty({
+        description: 'Подпись клиента',
+        example: 'Директор _____________________/ИВАНОВ И. И.',
+    })
+    @IsOptional()
+    @IsString()
+    clientSignature: string;
+
+
+    @ApiProperty({
+        description: 'Наименование компании или физ лица из реквизитов для акта',
+        example: 'ООО Пирожок или Иванов Иван Иванович',
+    })
+    @IsOptional()
+    @IsString()
+    clientCompanyTitle: string;
+    @ApiProperty({
+        description: 'Инициалы директора или физ лица из реквизитов для акта',
+        example: 'ИВАНОВ И. И. или Иванов И. И.',
+    })
+    @IsOptional()
+    @IsString()
+    clientDirectorInitials: string;
+
+
+    @ApiProperty({
         description: 'Массив элементов Пункт договора 1.1.2',
         example: ['123', '456'],
     })

@@ -28,6 +28,9 @@ export interface DocumentRqState {
     client: DocumentOrganizationRqAgent | DocumentFizRqAgent | null;
     provider: DocumentOrganizationRqAgent | DocumentFizRqAgent | null;
     clientShortRq: string;
+    clientSignature: string;
+    clientCompanyTitle: string;
+    clientDirectorInitials: string;
 }
 
 const initialState: DocumentRqState = {
@@ -38,6 +41,9 @@ const initialState: DocumentRqState = {
     client: null,
     provider: Provider,
     clientShortRq: '',
+    clientSignature: '',
+    clientCompanyTitle: '',
+    clientDirectorInitials: '',
 };
 
 export const documentRqSlice = createSlice({
@@ -50,12 +56,18 @@ export const documentRqSlice = createSlice({
                 client: DocumentRqAgent<T>;
                 header: string;
                 clientShortRq: string;
+                clientSignature: string;
+                clientCompanyTitle: string;
+                clientDirectorInitials: string;
             }>,
         ) => {
             state.client = action.payload.client;
             state.general.header = action.payload.header;
-
+            state.clientSignature = action.payload.clientSignature;
             state.clientShortRq = action.payload.clientShortRq;
+            state.clientCompanyTitle = action.payload.clientCompanyTitle;
+            state.clientDirectorInitials = action.payload.clientDirectorInitials;
+
         },
         setProvider: (
             state: DocumentRqState,

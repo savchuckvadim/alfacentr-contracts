@@ -50,7 +50,7 @@ export const ProductParticipantStatusBadge = ({
                 className={`m-0 p-0 text-xs w-18 h-5 ${
                     (isPpk || isSeminar) &&
                     availabilityStatus?.status === 'balanced'
-                        ? 'bg-indigo-700 text-zinc-50'
+                        ? 'bg-primary text-primary-foreground'
                         : (isPpk || isSeminar) &&
                             availabilityStatus?.status !== 'balanced'
                           ? 'bg-red-500 text-zinc-50'

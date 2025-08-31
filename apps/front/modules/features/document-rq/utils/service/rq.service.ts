@@ -16,6 +16,9 @@ export class ContractRqService {
     ): {
         client: DocumentRqAgent<RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION>;
         clientShortRq: string;
+        clientSignature: string;
+        clientCompanyTitle: string;
+        clientDirectorInitials: string;
         roles: {
             provider: string;
             client: string;
@@ -30,10 +33,17 @@ export class ContractRqService {
         );
         const roles = this.getRoles();
         const clientShortRq = this.getClientShortRq(clientRq, clientType);
+        const clientSignature = this.getClientSignature(clientRq, clientType);
+        const clientCompanyTitle = this.getClientCompanyTitle(clientRq, clientType);
+        const clientDirectorInitials = this.getClientDirectorInitials(clientRq, clientType);
+
 
         return {
             client: clientRqData,
             clientShortRq,
+            clientSignature,
+            clientCompanyTitle,
+            clientDirectorInitials,
             roles,
         };
     }
@@ -51,6 +61,8 @@ export class ContractRqService {
             return shortRq;
         }
     }
+
+
 
     public getRoles(): {
         provider: string;
@@ -70,4 +82,27 @@ export class ContractRqService {
             clientCase,
         };
     }
+
+    private getClientSignature(clientRq: EvsRqItem, clientType: RQ_TYPE): string {
+        if (clientType === RQ_TYPE.FIZ) {
+            return this.clientRqService.prepareClientFizSignature(clientRq);
+        } else {
+            return this.clientRqService.prepareClientOrgSignature(clientRq);
+        }
+    }
+
+    private getClientCompanyTitle(clientRq: EvsRqItem, clientType: RQ_TYPE): string {
+        return this.clientRqService.prepareClientCompanyTitle(clientType, clientRq);
+
+    }
+
+    private getClientDirectorInitials(clientRq: EvsRqItem, clientType: RQ_TYPE): string {
+        if (clientType === RQ_TYPE.FIZ) {
+            return this.clientRqService.prepareClientFizDirectorInitials(clientRq);
+        } else {
+            return this.clientRqService.prepareClientOrgDirectorInitials(clientRq);
+        }
+    }
+
+
 }

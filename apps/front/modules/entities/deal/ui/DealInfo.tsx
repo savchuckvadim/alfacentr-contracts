@@ -19,7 +19,7 @@ export const DealInfo = () => {
                     field.list.length > 0
                 ) {
                     if (field.code === BxParticipantsDataKeys.format || field.code === BxParticipantsDataKeys.format_v2) {
-                        debugger
+
                     }
                     value =
                         field.list.find(item => item.bitrixId === field.value)
@@ -32,7 +32,7 @@ export const DealInfo = () => {
                     field.list &&
                     field.list.length > 0
                 ) {
-                    debugger
+
                     value = 'Не установлено'
                     if (field.value && Array.isArray(field.value)) {
                         const values = field.value as number[];

@@ -64,24 +64,26 @@ export const documentGenerate = createAsyncThunk<
     const header = getDocumentHeader(state);
     const { paragraph, totalSum, paragraphItems } = state.documentParagraph;
     const clientShortRq = state.documentRq.clientShortRq;
-
-    const generateDocumentData = {
-        templateId: 118,
-        entityId: dealId,
-        entityTypeId: BitrixOwnerTypeId.DEAL,
-        // providerClassName: 'Bitrix\\DocumentGenerator\\DataProvider\\Rest',
-        value: 1,
-        stampsEnabled: 1,
-        values: {
-            UfCrm81700582664: 'TEST',
-            AlfaDocumentNumber: 'TEST',
-            Header: header,
-            ClientRq: client,
-            ProviderRq: provider,
-            Paragraph12: paragraph,
-            TotalSum: totalSum,
-        },
-    };
+    const clientSignature = state.documentRq.clientSignature;
+    const clientCompanyTitle = state.documentRq.clientCompanyTitle;
+    const clientDirectorInitials = state.documentRq.clientDirectorInitials;
+    // const generateDocumentData = {
+    //     templateId: 118,
+    //     entityId: dealId,
+    //     entityTypeId: BitrixOwnerTypeId.DEAL,
+    //     // providerClassName: 'Bitrix\\DocumentGenerator\\DataProvider\\Rest',
+    //     value: 1,
+    //     stampsEnabled: 1,
+    //     values: {
+    //         UfCrm81700582664: 'TEST',
+    //         AlfaDocumentNumber: 'TEST',
+    //         Header: header,
+    //         ClientRq: client,
+    //         ProviderRq: provider,
+    //         Paragraph12: paragraph,
+    //         TotalSum: totalSum,
+    //     },
+    // };
 
     const phone = state.deal.dealData?.find(
         field => field.code === BxDealDataKeys.exchange_doc_phone,
@@ -146,7 +148,7 @@ export const documentGenerate = createAsyncThunk<
     } as IRequestDocumentGenerateFieldsType;
     const service = new DocumentGenerateOwnService();
 
-    const response = await service.push({
+    void await service.push({
         domain,
         socketId: socketId || '',
         clientType: clientType,
@@ -158,6 +160,9 @@ export const documentGenerate = createAsyncThunk<
         client: client || [],
         fields,
         clientShortRq,
+        clientSignature,
+        clientCompanyTitle,
+        clientDirectorInitials,
         paragraphItems,
         documentPrefixNumber:
             documentNumber.prefix + '-' + documentNumber.counter,
@@ -192,83 +197,55 @@ export const documentGenerate = createAsyncThunk<
     return true;
 });
 
-export const documentBxGenerate = createAsyncThunk<
-    number, // ReturnType
-    void, // Arg
-    {
-        dispatch: AppDispatch;
-        state: RootState;
-        extra: ThunkExtraArgument;
-    }
->('document/bxGenerate', async (_, { dispatch, getState, extra }) => {
-    // Получаем dispatch и state из деструктуризации
-    const state = getState();
-    const { getWSClient } = extra;
+// export const documentBxGenerate = createAsyncThunk<
+//     number, // ReturnType
+//     void, // Arg
+//     {
+//         dispatch: AppDispatch;
+//         state: RootState;
+//         extra: ThunkExtraArgument;
+//     }
+// >('document/bxGenerate', async (_, { dispatch, getState, extra }) => {
+//     // Получаем dispatch и state из деструктуризации
+//     const state = getState();
+//     const { getWSClient } = extra;
 
-    const dealId = state.app.bitrix.deal?.ID;
+//     const dealId = state.app.bitrix.deal?.ID;
 
-    const bitrix = Bitrix.getService();
-    const { client, provider } = getDocumentRqs(state);
-    const header = getDocumentHeader(state);
-    const { paragraph, totalSum } = state.documentParagraph;
+//     const bitrix = Bitrix.getService();
+//     const { client, provider } = getDocumentRqs(state);
+//     const header = getDocumentHeader(state);
+//     const { paragraph, totalSum } = state.documentParagraph;
 
-    const generateDocumentData = {
-        templateId: 118,
-        entityId: dealId,
-        entityTypeId: BitrixOwnerTypeId.DEAL,
-        // providerClassName: 'Bitrix\\DocumentGenerator\\DataProvider\\Rest',
-        value: 1,
-        stampsEnabled: 1,
-        values: {
-            UfCrm81700582664: 'TEST',
-            AlfaDocumentNumber: 'TEST',
-            Header: header,
-            ClientRq: client,
-            ProviderRq: provider,
-            Paragraph12: paragraph,
-            TotalSum: totalSum,
-        },
-    };
+//     const generateDocumentData = {
+//         templateId: 118,
+//         entityId: dealId,
+//         entityTypeId: BitrixOwnerTypeId.DEAL,
+//         // providerClassName: 'Bitrix\\DocumentGenerator\\DataProvider\\Rest',
+//         value: 1,
+//         stampsEnabled: 1,
+//         values: {
+//             UfCrm81700582664: 'TEST',
+//             AlfaDocumentNumber: 'TEST',
+//             Header: header,
+//             ClientRq: client,
+//             ProviderRq: provider,
+//             Paragraph12: paragraph,
+//             TotalSum: totalSum,
+//         },
+//     };
 
-    const response = await bitrix.api.call<number>(
-        'crm.documentgenerator.document.add',
-        generateDocumentData,
-    );
-    console.log('response');
-    console.log(response);
-    alert('documentGenerateDone');
-    return response.result;
-});
+//     const response = await bitrix.api.call<number>(
+//         'crm.documentgenerator.document.add',
+//         generateDocumentData,
+//     );
+//     console.log('response');
+//     console.log(response);
+//     alert('documentGenerateDone');
+//     return response.result;
+// });
 
-// Пример использования dispatch и state
-export const documentGenerateWithState = createAsyncThunk<
-    { success: boolean }, // ReturnType
-    any, // Arg
-    {
-        dispatch: AppDispatch;
-        state: RootState;
-        extra: ThunkExtraArgument;
-    }
->(
-    'document/generateWithState',
-    async (payload: any, { dispatch, getState, extra }) => {
-        const state = getState();
-        const { getWSClient } = extra;
 
-        // Получаем данные из состояния
-        const appState = state.app;
-        const participantState = state.participant;
-
-        // Можем диспатчить другие действия
-        // dispatch(someOtherAction())
-
-        // Используем WebSocket клиент
-        const wsClient = getWSClient();
-
-        // Ваша логика здесь
-        return { success: true };
-    },
-);
 
 export const documentGenerateDone = createAsyncThunk<
     { success: boolean }, // ReturnType
@@ -284,7 +261,7 @@ export const documentGenerateDone = createAsyncThunk<
         const state = getState();
         const { getWSClient } = extra;
         const data = payload;
-
+        debugger;
         // Получаем данные из состояния
         const appState = state.app;
 

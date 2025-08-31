@@ -6,12 +6,12 @@ import {
     fetchParticipants,
     fetchProducts,
     getProductFieldByCodeValue,
-    getProductTypeByProductName,
+
     setFetchedProducts,
     setParticipants,
     updateParticipant,
 } from '@/modules/entities';
-import { BxParticipantsDataKeys } from '@alfa/entities';
+import { BxParticipantsDataKeys, getProductTypeByProductName } from '@alfa/entities';
 import { isAnyOf, ListenerMiddlewareInstance } from '@reduxjs/toolkit';
 import { setSeminarDays } from '../slice/SeminarDaysSelectSlice';
 

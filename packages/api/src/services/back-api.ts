@@ -1,8 +1,8 @@
 import { API_METHOD } from '../type/type';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
-// const prod = 'https://alfacentr.back.april-app.ru/api/';
-const prod = `http://localhost:3000/api/`;
+const prod = 'https://alfacentr.back.april-app.ru/api/';
+// const prod = `http://localhost:3000/api/`;
 // const prod = `http://localhost:8200/api/`;
 const url = prod;
 

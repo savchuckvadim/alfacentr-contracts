@@ -17,7 +17,13 @@ export enum DocumentGenerateFieldTemplateCode {
     EndActionDate = 'EndActionDate',
     DocumentPrefixNumber = 'DocumentPrefixNumber',
     DocumentNumberCounter = 'DocumentNumberCounter',
+    DocumentNumber = 'DocumentNumber',
     Paragraph3 = 'Paragraph3',
+    ClientSignature = 'ClientSignature',
+    UfCrm8EmailContactForDor = 'UfCrm8EmailContactForDor',
+    DocumentCompanyTitle = 'DocumentCompanyTitle',
+    DocumentDirectorInitials = 'DocumentDirectorInitials',
+
 }
 export type DocumentGenerateFieldTemplateType = {
     id: number;
@@ -96,6 +102,20 @@ export const DocumentGenerateTemplatesType = {
                     DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
                 type: 'string',
             },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+
+            {
+                name: 'Email контакта для договора (электронном виде на адрес электронной почты )',
+                code: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
+                templateCode: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
+                type: 'string',
+            },
+
         ] as const,
         forContract: [EContractType.seminar_ppk] as EContractType[],
     } as const,
@@ -127,6 +147,12 @@ export const DocumentGenerateTemplatesType = {
                 code: 'endDate',
                 templateCode: 'EndActionDate',
                 type: 'date',
+            },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
             },
         ],
         forContract: [EContractType.seminar] as EContractType[],
@@ -165,6 +191,12 @@ export const DocumentGenerateTemplatesType = {
                 name: 'Текст договора',
                 code: 'paragraph3',
                 templateCode: 'Paragraph3',
+                type: 'string',
+            },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
                 type: 'string',
             },
         ],
@@ -208,8 +240,49 @@ export const DocumentGenerateTemplatesType = {
             EContractType.up,
         ] as EContractType[],
     } as const,
+
+    INVOISE_QR_WITH_STAMPS: {
+        id: 148,
+        name: 'Счет QR с печатью СЕМИНАРЫ СДЕЛКА',
+        code: 'InvoiceWithStamps',
+        fields: [
+            {
+                name: 'Реквизиты для счета',
+                code: 'InvoiceRq',
+                templateCode: 'InvoiceRq',
+                type: 'string',
+            },
+        ],
+        forContract: [
+            EContractType.seminar,
+            EContractType.seminar_ppk,
+            EContractType.ppk,
+            EContractType.up,
+        ] as EContractType[],
+    } as const,
+    INVOISE_QR_WITHOUT_STAMPS: {
+        id: 146,
+        name: 'Счет QR без печати СЕМИНАРЫ СДЕЛКА',
+        code: 'InvoiceWithoutStamps',
+        fields: [
+            {
+                name: 'Реквизиты для счета',
+                code: 'InvoiceRq',
+                templateCode: 'InvoiceRq',
+                type: 'string',
+            },
+        ],
+        forContract: [
+            EContractType.seminar,
+            EContractType.seminar_ppk,
+            EContractType.ppk,
+            EContractType.up,
+        ] as EContractType[],
+    } as const,
+
+
     ACT: {
-        id: 132,
+        id:140,
         name: 'Акт оказанных услуг',
         code: 'Act',
         fields: [
@@ -219,6 +292,26 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: 'InvoiceRq',
                 type: 'string',
             },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+            {
+                name: 'Наименование компании из реквизитов для акта',
+                code: DocumentGenerateFieldTemplateCode.DocumentCompanyTitle,
+                templateCode: DocumentGenerateFieldTemplateCode.DocumentCompanyTitle,
+                type: 'string',
+            },
+            {
+                name: 'Инициалы директора из реквизитов для акта',
+                code: DocumentGenerateFieldTemplateCode.DocumentDirectorInitials,
+                templateCode: DocumentGenerateFieldTemplateCode.DocumentDirectorInitials,
+                type: 'string',
+            },
+
+
         ],
         forContract: [
             EContractType.seminar,

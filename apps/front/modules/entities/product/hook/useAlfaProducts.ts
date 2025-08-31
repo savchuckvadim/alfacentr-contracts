@@ -25,6 +25,12 @@ export const useAlfaProducts = () => {
     const totalSum = getProductSum(items);
     const totalProductsCount = getProductQuantity(items);
 
+    const getProductColor = (product: IAlfaProduct) => {
+        if (getIsPpkProduct(product)) {
+            return 'primary';
+        }
+
+    };
     return {
         items,
         loading,

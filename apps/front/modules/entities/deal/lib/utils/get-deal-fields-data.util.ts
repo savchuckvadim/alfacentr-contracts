@@ -100,12 +100,12 @@ export const getDealFieldsData = async (deal: IBXDeal): Promise<IDealFieldsData[
 
 
                 if (field.code === BxParticipantsDataKeys.format || field.code === BxParticipantsDataKeys.format_v2) {
-                    debugger
+
                 }
 
                 if (field.type === 'enumeration' && fieldsData) {
                     const fldWithValue = dealValues?.find(item => item.bitrixId === field.bitrixId);
-                    debugger
+
                     if (fldWithValue) {
                         if (fldWithValue.code === BxParticipantsDataKeys.days) {
                             (field as TFieldSelect).list = (fldWithValue as DealValue)?.listItem && Array.isArray((fldWithValue as DealValue)?.listItem)
@@ -115,7 +115,7 @@ export const getDealFieldsData = async (deal: IBXDeal): Promise<IDealFieldsData[
                                     : (field as TFieldSelect).list as TFieldItem[];
 
                         } else {
-                            debugger
+
                             (field as TFieldSelect).list = (fldWithValue as DealValue)?.listItem
                                 ? [(fldWithValue as DealValue)?.listItem] as TFieldItem[]
                                 : (field as TFieldSelect).list;

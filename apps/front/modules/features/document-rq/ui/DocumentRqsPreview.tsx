@@ -1,11 +1,6 @@
-import { RQ_TYPE } from '@workspace/bx-rq';
+
 import { useDocumentRq } from '../hooks/use-document-rq.hook';
-import {
-    DocumentFizRqAgent,
-    DocumentOrganizationRqAgent,
-    DocumentRqAgent,
-} from '../model/slice/DocumentRqSlice';
-import { getForDocumentItems } from '../utils/document-rq.util';
+
 
 export const DocumentRqsPreview = () => {
     const { client, provider } = useDocumentRq();
@@ -13,7 +8,7 @@ export const DocumentRqsPreview = () => {
     if (!client || !provider) {
         return null;
     }
-
+    debugger;
     return (
         <div className="flex flex-row justify-between gap-4">
             <div className="w-1/2">

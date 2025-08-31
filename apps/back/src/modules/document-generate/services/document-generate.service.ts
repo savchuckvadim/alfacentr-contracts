@@ -36,7 +36,9 @@ export class DocumentGenerateService {
                 dto.paragraphItems || [],
                 dto.totalSum,
                 dto.client,
+                dto.clientSignature,
                 dto.documentPrefixNumber,
+                dto.documentCounter,
             );
         // const generateDocumentData = {
         //     templateId: contractTemplateContentData.templateId,

@@ -42,7 +42,7 @@ export class OnDealInitUseCase {
     }
     async onDealCreate(data: OnDealInitRequestDto) {
         const {
-            bitrix,
+
             bxDealService,
             alfaFieldService,
             bxSmartService,
@@ -62,7 +62,7 @@ export class OnDealInitUseCase {
 
         if (deal && deal.ID) {
             const dealId = deal.ID;
-            const products = await bxProductService.addPpkProducts(
+            void await bxProductService.addPpkProducts(
                 dealId,
                 dealValues,
             );
@@ -79,7 +79,7 @@ export class OnDealInitUseCase {
             deal.ID &&
             (await bxDealService.setTimeline(deal.ID, dealValues));
 
-      
+
         deal &&
             deal.ID &&
             inn &&

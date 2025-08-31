@@ -59,6 +59,10 @@ export function setupRqListener(
                         client: clientRqs.client,
                         header: header,
                         clientShortRq: clientRqs.clientShortRq,
+                        clientSignature: clientRqs.clientSignature,
+                        clientCompanyTitle: clientRqs.clientCompanyTitle,
+                        clientDirectorInitials: clientRqs.clientDirectorInitials,
+
                     }),
                 );
             }

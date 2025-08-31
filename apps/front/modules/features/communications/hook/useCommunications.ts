@@ -31,6 +31,7 @@ export const useCommunications = () => {
         phone,
         name,
         confirm,
+        needEmail: confirm.needEmail,
         errors,
         generateDocument,
         isLoading,
@@ -40,6 +41,9 @@ export const useCommunications = () => {
         cancelEmailConfirm: () => {
             dispatch(communicationsActions.setConfirmCommunicationsActive(false));
             dispatch(communicationsActions.setEmailConfirmConfirmed(false));
+        },
+        setNeedEmail: (needEmail: boolean) => {
+            dispatch(communicationsActions.setNeedEmail(needEmail));
         },
         updateField,
         updateFieldWithAPI,

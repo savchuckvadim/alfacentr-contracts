@@ -1,6 +1,6 @@
+import { getPrefixByProductName } from '@alfa/entities';
 import { IAlfaProduct } from '../model/ProductSlice';
-import { getPrefixByProductName } from './get-product-type.util';
-import { getProductFieldByCode } from './product-field.util';
+
 
 export const getProductFormat = (product: IAlfaProduct): string => {
     const seminarPlaceField = product.fields.find(

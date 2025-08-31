@@ -55,6 +55,7 @@ export enum EnumOrganizationRqFields {
 }
 
 export enum EnumDocumentFizRqFields {
+    NAME = 'name',
     INN = 'inn',
 
     ADDRESS = 'address',
@@ -62,7 +63,7 @@ export enum EnumDocumentFizRqFields {
     PHONE = 'phone',
     EMAIL = 'email',
     BANK = 'bank',
-    NAME = 'name',
+
     BASED = 'based',
     DOCUMENT_TYPE = 'documentType',
     DOC_SERIES = 'docSeries',

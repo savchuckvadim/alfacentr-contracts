@@ -1,5 +1,5 @@
-import { getProductTypeByProductName, IAlfaProduct } from '@/modules/entities';
-import { ProductType } from '@/modules/entities/product/type/product-field-code.enum';
+import {IAlfaProduct } from '@/modules/entities';
+import { ProductType, getProductTypeByProductName } from '@alfa/entities';
 import { bxProductData } from '@alfa/entities';
 
 export const getProductsByType = (
@@ -15,16 +15,16 @@ export const getProductsByType = (
     //     throw new Error('Неизвестный тип продукта УП');
     // }
 
-    let searchedType = 'СР';
-    if (type === 'ppk' || type === 'seminar_ppk') {
-        searchedType = 'ППК';
-    } else if (type === 'seminar') {
-        searchedType = 'СР';
-    } else {
-        throw new Error('Неизвестный тип продукта УП');
-    }
+    // let searchedType = 'СР';
+    // if (type === 'ppk' || type === 'seminar_ppk') {
+    //     searchedType = 'ППК';
+    // } else if (type === 'seminar') {
+    //     searchedType = 'СР';
+    // } else {
+    //     throw new Error('Неизвестный тип продукта УП');
+    // }
 
-    const keyData = bxProductData.TYPE;
+    // const keyData = bxProductData.TYPE;
 
     // const filtredProducts = products.filter(product =>
     //     product.fields.find(field => {

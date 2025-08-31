@@ -10,3 +10,5 @@ export * from './entities/company/bx-company-data';
 export * from './entities/product/bx-product-data';
 export * from './entities/document-generate/type/document-generate.type';
 export * from './entities/document-generate/type/request-document-generate.type';
+export type * from './entities/product/product.type';
+export * from './entities/product/product.util';

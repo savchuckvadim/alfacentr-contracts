@@ -15,7 +15,7 @@ export const DocumentGlobalConfig = () => {
 
     return (
         <div className="flex  h-14 items-center justify-between p-2 ">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 gap-1">
                 <div className="flex items-center justify-between">
                     <BackButton
                         variant="ghost"
@@ -26,10 +26,10 @@ export const DocumentGlobalConfig = () => {
                 <div className="w-[200px]">
                     <ClientTypeSelect />
                 </div>
-                <div className="w-[200px]">
+                <div >
                     <ContractType />
                 </div>
-                <div className="w-[100px]">
+                <div >
                     <DocumentNumber />
                 </div>
             </div>
