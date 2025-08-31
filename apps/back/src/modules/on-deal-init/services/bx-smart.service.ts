@@ -20,14 +20,14 @@ export class BxSmartService {
     ) {
         const participants = getParticipantValuesFromDeal(dealValues, dealId);
         for (const participant of participants) {
-            console.log('participant ufCrm12Format', participant.ufCrm12Format);
+
             await this.add(this.entityTypeId, participant);
         }
     }
 
     public async getList(entityTypeId: string) {
         const smarts = await this.bitrix.item.list(entityTypeId);
-        console.log(smarts);
+
         return smarts;
     }
 
@@ -39,8 +39,8 @@ export class BxSmartService {
             entityTypeId as unknown as string,
             item,
         );
-        console.log(smarts);
-        await delay(1000);
+
+
         return smarts;
     }
 }

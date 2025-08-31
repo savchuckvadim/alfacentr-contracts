@@ -16,8 +16,6 @@ export function ProductsTableWidget() {
         handleDeleteCancel,
     } = useDeleteEditMode();
 
-    console.log('deletingProduct');
-    console.log(deletingProduct);
     if (loading) {
         return (
             <div className="flex items-center justify-center py-8 h-[300px]">

@@ -124,7 +124,7 @@ export class AlfaProductService {
         if (products.length > 0) {
             const ordredBySeminarFurstProducts = products.sort((a, b) => {
                 const isSeminarProductA = getProductTypeByProductName(a.name) === 'seminar';
-        
+
                 return isSeminarProductA ? -1 : 1;
             });
 
@@ -136,16 +136,6 @@ export class AlfaProductService {
     }
 
     private async setProductsInDeal(dealId: number, products: IBXProduct[]) {
-        // const getProductRowsData: ListProductRowDto = {
-        //     '=ownerType': BitrixOwnerType.DEAL,
-        //     '=ownerId': dealId,
-        // };
-        // const responseGetProductRows =
-        //     await this.bitrix.productRow.list(getProductRowsData);
-        // const currentProductRows = responseGetProductRows.result.productRows;
-        // console.log('responseGetProductRows', responseGetProductRows);
-
-        // const productsWithPrice = await this.getProductPrice(products);
 
         // ✅ Сначала группируем по id с quantity
         const groupedProducts = this.groupProductsById(products); // возвращает IBXProduct & { quantity }
@@ -183,7 +173,7 @@ export class AlfaProductService {
             productRows,
         };
         void await this.bitrix.productRow.set(data);
-        // console.log('response', response)
+
     }
     private groupProductsById(
         products: IBXProduct[],
@@ -218,11 +208,11 @@ export class AlfaProductService {
             );
             if (foundPrice) {
                 product.price = foundPrice.price;
-                console.log('foundPrice', foundPrice);
+
             } else {
                 console.log('not foundPrice', product.id);
             }
-            // console.log('response', response.result.prices[0])
+
         }
         return products;
     }

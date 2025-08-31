@@ -30,15 +30,14 @@ export const participantProductSlice = createSlice({
             state: IParticipantProductState,
             action: PayloadAction<IParticipantPpk>,
         ) => {
-            console.log('setParticipantPpk', action.payload);
-            console.log('topicStats', action.payload.topicStats);
+
             state.ppkDistribution = action.payload;
         },
         setParticipantSeminar: (
             state: IParticipantProductState,
             action: PayloadAction<IParticipantPpk>,
         ) => {
-            console.log('setParticipantSeminar', action.payload);
+          
             state.seminarDistribution = action.payload;
         },
     },

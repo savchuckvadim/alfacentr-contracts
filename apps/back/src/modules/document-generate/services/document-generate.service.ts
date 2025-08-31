@@ -230,8 +230,7 @@ export class DocumentGenerateService {
         return file;
     }
     private async expectPdfFile(fileId: number) {
-        console.log('expectPdfFile');
-        console.log(fileId);
+
 
         let count = 0;
         let result: IRequestDocumentGenerateResponse | null = null;
@@ -244,9 +243,7 @@ export class DocumentGenerateService {
             );
             const document = readonly.result
                 .document as IRequestDocumentGenerateResponse;
-            console.log('document');
-            console.log(document);
-
+      
             count++;
             await delay(5000);
             if (document.pdfUrlMachine) {

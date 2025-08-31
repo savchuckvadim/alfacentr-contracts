@@ -11,8 +11,8 @@ import { Dot } from 'lucide-react';
 export const ContractPreview = () => {
     const { header } = useDocumentRq();
 
-    console.log(header);
-    const { paragraph, totalSum, paragraphItems } = useDocumentParagraph();
+
+    const { totalSum, paragraphItems } = useDocumentParagraph();
     const paragraphTitle =
         paragraphItems.length > 1
             ? 'Пункты 1.1.2 Консультационных семинарах : \n '

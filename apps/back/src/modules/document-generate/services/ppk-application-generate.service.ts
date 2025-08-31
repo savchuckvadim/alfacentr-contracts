@@ -11,7 +11,7 @@ import {
 
 @Injectable()
 export class PpkApplicationGenerateService {
-    constructor(private readonly storage: StorageService) {}
+    constructor(private readonly storage: StorageService) { }
 
     async generateDocxBase64(
         data: Record<string, any>,
@@ -23,7 +23,7 @@ export class PpkApplicationGenerateService {
         );
         const content = await this.storage.readFile(templatePath);
 
-        console.log(templatePath);
+
 
         const participants: IPpkApplicationParticipant[] = [
             {
@@ -74,7 +74,7 @@ export class PpkApplicationGenerateService {
         const fileName = `Приложение №1.docx`;
         const file = buffer.toString('base64');
 
-        console.log(fileName, file);
+  
         return [fileName, file];
     }
 }

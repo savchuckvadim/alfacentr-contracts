@@ -12,13 +12,13 @@ export class BxSmartService {
 
     public async setParticipantsSmarts(participants: DealValue[]) {
         const smarts = await this.bitrix.item.list('1036');
-        console.log(smarts);
+
         return smarts;
     }
 
     public async getList(entityTypeId: string) {
         const smarts = await this.bitrix.item.list(entityTypeId);
-        console.log(smarts);
+
         return smarts;
     }
 
@@ -30,7 +30,7 @@ export class BxSmartService {
             entityTypeId as unknown as string,
             item,
         );
-        console.log(smarts);
+       
         return smarts;
     }
 }

@@ -5,12 +5,14 @@ import { Tooltip } from '@/modules/shared';
 
 export const DocumentNumber = () => {
     const { prefix, counter, isLoading, error, fetched } = useDocumentNumber();
+
     if (isLoading || !fetched) {
         return <MicroPreloader />;
     }
     if (error) {
         return <div>Error: {error}</div>;
     }
+
     return (
         <Tooltip content="Текущий номер договора">
             <div>

@@ -261,7 +261,7 @@ export const documentGenerateDone = createAsyncThunk<
         const state = getState();
         const { getWSClient } = extra;
         const data = payload;
-        debugger;
+
         // Получаем данные из состояния
         const appState = state.app;
 

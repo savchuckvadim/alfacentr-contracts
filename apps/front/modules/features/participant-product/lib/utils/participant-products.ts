@@ -189,12 +189,12 @@ export const getParicipantPpkTopicsStats = (
                 product: null,
                 potintialProduct: topic.products[0] ?? null,
             });
-            console.log(
-                'у участника не ни одного продукта',
-                participant.id,
-                topic.topic,
-            );
-            console.log(participantPpkThemesStats);
+            // console.log(
+            //     'у участника не ни одного продукта',
+            //     participant.id,
+            //     topic.topic,
+            // );
+            // console.log(participantPpkThemesStats);
         }
     });
 

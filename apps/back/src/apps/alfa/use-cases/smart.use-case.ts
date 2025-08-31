@@ -36,7 +36,7 @@ export class SmartUseCase {
                 `DT${body.entityTypeId}_${categoryId}:${stageId}` as SmartStageEnum,
         } as IAlfaParticipantSmartItem;
         const smart = new SmartEntity(item);
-        console.log(smart);
+     
         const smarts = await smartsService.add(body.entityTypeId, item);
         return smarts;
     }

@@ -12,7 +12,7 @@ export class BxProductService {
         const prefix = dealValues.find(
             (value) => value.code === BxDealDataKeys.prefix,
         )?.value as string;
-        console.log('prefix', prefix);
+
         for (const value of dealValues) {
             if (
                 value.code === BxParticipantsDataKeys.accountant_gos ||
@@ -73,19 +73,8 @@ export class BxProductService {
                 }
             }
         }
-        if (products.length > 0) {
-            console.log('products');
-            for (const product of products) {
-                console.log('product', product);
-            }
-        }
-        if (productsWithoutPrefix.length > 0) {
-            console.log('productsWithoutPrefix');
-            for (const product of productsWithoutPrefix) {
-                console.log('productsWithoutPrefix', product);
-            }
-        }
-        console.log('prefix', prefix);
+
+      
         return products;
     }
 }

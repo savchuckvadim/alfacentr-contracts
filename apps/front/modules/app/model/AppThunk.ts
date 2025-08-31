@@ -23,57 +23,7 @@ export const initial =
             appInit(dispatch, getState, getWSClient, () => {
                 dispatch(appActions.loading({ status: false }));
             });
-            // const bitrix = await Bitrix.start(TESTING_DOMAIN, TESTING_USER)
-            // console.log('bitrix', bitrix.api)
-            // console.log('bitrix initialized', bitrix.api.getInitializedData())
-            // const { domain, user } = bitrix.api.getInitializedData();
-
-            // console.log("user");
-
-            // console.log(user);
-
-            // const { deal, company, participants } = await bitrixInit() || {}
-
-            // if (deal && company) {
-            //   Promise.all([
-            //     dispatch(setParticipants(participants)),
-            //     dispatch(fetchProducts(deal.ID.toString()) as any),
-            //     dispatch(
-            //       setDealData(
-            //         getDealFieldsData(deal)
-            //       )
-            //     )
-            //     // dispatch(setFetchedProducts(rows))
-            //   ])
-            // }
-
-            // initWSClient(Number(user.ID), domain); // <- здесь создаёшь сокет
-            // // const socket = getWSClient()
-            // dispatch(
-            //   socketThunk(
-            //     Number(user.ID),
-            //     domain
-            //   )
-            // )
-
-            // if (deal && company) {
-            //   dispatch(
-            //     appActions.
-            //       setAppData(
-            //         {
-            //           domain,
-            //           user,
-            //           deal,
-            //           company
-
-            //         }
-            //       ))
-            // }
-
-            // dispatch(
-            //   appActions.loading({ status: false })
-            // )
-            // dispatch(departmentAPI.endpoints.getDepartment.initiate({ domain }));
+           
         }
     };
 

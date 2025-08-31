@@ -73,7 +73,7 @@ export class EmailService {
                 fileData: file
             })),
         });
-        console.log('activityResponse', activityResponse);
+
     }
 
     async getEmailHtmlBody(): Promise<string> {

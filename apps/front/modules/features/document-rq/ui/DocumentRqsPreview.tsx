@@ -8,7 +8,7 @@ export const DocumentRqsPreview = () => {
     if (!client || !provider) {
         return null;
     }
-    debugger;
+
     return (
         <div className="flex flex-row justify-between gap-4">
             <div className="w-1/2">

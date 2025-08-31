@@ -11,40 +11,40 @@ import { BxDealDataKeys, TDealData } from '@alfa/entities';
 import { DealValue } from './deal-values-helper.service';
 import { TSmartFieldCode } from '../smart-helper/smart-field-code.helper';
 
-export const getParticipantProductValuesFromDeal = (
-    dealValues: DealValue[],
-) => {
-    const prefix = dealValues.find(
-        (value) => value.code === BxDealDataKeys.prefix,
-    )?.value as string;
-    console.log('prefix', prefix);
-    for (const value of dealValues) {
-        if (
-            value.code === BxParticipantsDataKeys.accountant_gos ||
-            value.code === BxParticipantsDataKeys.accountant_medical ||
-            value.code === BxParticipantsDataKeys.zakupki ||
-            value.code === BxParticipantsDataKeys.kadry ||
-            value.code === BxParticipantsDataKeys.corruption
-        ) {
-            if (value) {
-                console.log(
-                    'getParticipantProductValuesFromDeal'.toUpperCase(),
-                );
-                console.log(value);
-            }
-        }
-    }
-};
+// export const getParticipantProductValuesFromDeal = (
+//     dealValues: DealValue[],
+// ) => {
+//     const prefix = dealValues.find(
+//         (value) => value.code === BxDealDataKeys.prefix,
+//     )?.value as string;
+
+//     for (const value of dealValues) {
+//         if (
+//             value.code === BxParticipantsDataKeys.accountant_gos ||
+//             value.code === BxParticipantsDataKeys.accountant_medical ||
+//             value.code === BxParticipantsDataKeys.zakupki ||
+//             value.code === BxParticipantsDataKeys.kadry ||
+//             value.code === BxParticipantsDataKeys.corruption
+//         ) {
+//             if (value) {
+//                 console.log(
+//                     'getParticipantProductValuesFromDeal'.toUpperCase(),
+//                 );
+//                 console.log(value);
+//             }
+//         }
+//     }
+// };
 
 export const getParticipantValuesFromDeal = (
     dealValues: DealValue[],
     dealId: number,
 ): IAlfaParticipantSmartItem[] => {
-    console.log('dealValues', dealValues);
+
     const prefix = dealValues.find(
         (value) => value.code === BxDealDataKeys.prefix,
     )?.value as string;
-    console.log('prefix', prefix);
+
     const participants: IAlfaParticipantSmartItem[] = [];
     for (let i = 1; i <= 10; i++) {
         const participant = {} as TDealData;
@@ -60,9 +60,7 @@ export const getParticipantValuesFromDeal = (
             // ) {
             needPushParticipant = getIsNotEmptyParticipant(dealValues, i);
             if (needPushParticipant) {
-                if (value.name.includes(`Участник ${i}`)) {
-                    console.log('value', value);
-                }
+
                 if (value && value.value) {
                     if (
                         value.name.includes(`Участник ${i}`) &&
@@ -95,7 +93,7 @@ export const getParticipantValuesFromDeal = (
             // }
         }
         if (needPushParticipant) {
-            console.log(`PARTCIPANT ${i} VALUES FROM DEAL`, participant);
+        
             participants.push(getSmartAddData(participant, dealId, i));
         }
     }

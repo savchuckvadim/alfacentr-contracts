@@ -79,7 +79,7 @@ export class DocumentGenerateBatchService {
             BitrixOwnerTypeId.DEAL,
             EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITHOUT_PT,
         );
-        console.log('resultContractWithoutPt', resultContractWithoutPt);
+
         // const resultContractWithPt = await this.addDocumentToDeal(
         //     entityId,
         //     1,
@@ -149,7 +149,7 @@ export class DocumentGenerateBatchService {
                 } as Record<string, string>,
             });
         const result = await this.bitrix.api.callBatchWithConcurrency(1);
-        // console.log(result)
+
 
 
         const timelieneDataPdfWaiting: IBXTimelineComment = {
@@ -461,8 +461,6 @@ export class DocumentGenerateBatchService {
         return file;
     }
     private async expectPdfFile(fileId: number) {
-        console.log('expectPdfFile');
-        console.log(fileId);
 
         let count = 0;
         let result: IRequestDocumentGenerateResponse | null = null;
@@ -477,8 +475,7 @@ export class DocumentGenerateBatchService {
                 );
                 const document = readonly.result
                     .document as IRequestDocumentGenerateResponse;
-                console.log('document');
-                console.log(document);
+              
 
                 count++;
 

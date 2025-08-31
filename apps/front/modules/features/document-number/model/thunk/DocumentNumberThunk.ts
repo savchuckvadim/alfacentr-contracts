@@ -32,6 +32,7 @@ export const updateDocumentNumber = createAsyncThunk<
             const state = getState() as RootState;
             const deal = state.app.bitrix.deal;
             const isLoading = state.documentNumber.isLoading;
+
             if (isLoading) {
                 return;
             }
@@ -45,7 +46,7 @@ export const updateDocumentNumber = createAsyncThunk<
             const { number, prefix } = getCurrentDocumentNumber(deal);
             const newDinamyc = getCurrentDinamycPrefix(state.product.items);
             const newDinamycPrefix = `ТЕСТ PREFIX ${newDinamyc}`;
-            debugger;
+
             //если динамический префикс изменился или номер не установлен
             // отправляем запрашиваем у бэка новый номер
             // надо обновить в битрикс и в текущей сделке
@@ -98,9 +99,11 @@ export const documentNumberDone = createAsyncThunk<
             // надо обновить в битрикс и в текущей сделке
             const state = getState() as RootState;
             const dealId = state.app.bitrix.deal?.ID;
+
             if (!dealId) {
                 return rejectWithValue('Deal not found');
             }
+
             await updateBxDeal(dealId, data.prefix, data.counter);
 
             return {

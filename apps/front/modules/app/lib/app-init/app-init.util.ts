@@ -17,8 +17,7 @@ export const appInit = async (
     loadingCallBack: () => void,
 ) => {
     const bitrix = await Bitrix.start(TESTING_DOMAIN, TESTING_USER);
-    console.log('bitrix', bitrix.api);
-    console.log('bitrix initialized', bitrix.api.getInitializedData());
+
     const { domain, user, inFrame } = bitrix.api.getInitializedData();
 
     if (!inFrame && IS_PROD) {
@@ -35,10 +34,7 @@ export const appInit = async (
             domain,
         }),
     );
-    // подписываем все события
-    console.log('user');
-
-    console.log(user);
+ 
     const bxResult = await bitrixInit();
     if (!bxResult) {
         window && window?.location

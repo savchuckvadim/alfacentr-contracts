@@ -29,6 +29,7 @@ export const documentNumberSlice = createSlice({
             state.prefix = action.payload.prefix;
             state.counter = action.payload.counter;
             state.fetched = true;
+
         },
         setLoading: (
             state: IDocumentNumberState,

@@ -6,7 +6,7 @@ import { MainPageContent } from './components/MainPageContent';
 import { useEffect, useState } from 'react';
 
 export const MainPage = () => {
-    console.log('MainPage');
+
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {

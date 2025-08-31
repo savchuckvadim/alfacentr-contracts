@@ -44,17 +44,13 @@ export const getParticipant = (
     };
 };
 
-const getNameBySmartFieldBxId = (
-    fieldId: AlfaParticipantSmartItemUserFieldsEnum,
-) => {
-    console.log('fieldTypes[fieldId]', fieldTypes[fieldId]);
-    console.log('fieldTypes[fieldId]?.name', fieldTypes[fieldId]?.name);
-    console.log('fieldTypes[fieldId]?.code', fieldTypes[fieldId]?.code);
-    console.log('fieldTypes[fieldId]?.bitrixId', fieldTypes[fieldId]?.bitrixId);
+// const getNameBySmartFieldBxId = (
+//     fieldId: AlfaParticipantSmartItemUserFieldsEnum,
+// ) => {
 
-    const item = fieldTypes[fieldId];
-    return item?.name;
-};
+//     const item = fieldTypes[fieldId];
+//     return item?.name;
+// };
 
 export const formatSelect: IParticipantSelectItem[] = [
     {

@@ -57,7 +57,7 @@ export class BxClientRqService {
                 ?.value as string) || fullname;
         result.name = fullname;
 
-        debugger;
+
         const innValue = clientRq.fields.find(
             fld => fld.code === RQ_ITEM_CODE.INN,
         )?.value;
@@ -609,7 +609,7 @@ export class BxClientRqService {
         return directorNameResult;
     }
 
- 
+
     public prepareClientCompanyTitle(
         clientType: RQ_TYPE,
         clientRq: EvsRqItem | null,
@@ -624,28 +624,28 @@ export class BxClientRqService {
                 clientType === RQ_TYPE.IP
             ) {
 
+                for (const rqItem of clientRq.fields) {
+                    if (rqItem.value) {
+                        if (
+                            rqItem.code === RQ_ITEM_CODE.SHORTNAME
+
+                        ) {
+                            clientCompanyName = rqItem.value as string;
+                        }
+                    }
+                }
+                if (!clientCompanyName) {
                     for (const rqItem of clientRq.fields) {
                         if (rqItem.value) {
                             if (
-                                rqItem.code === RQ_ITEM_CODE.SHORTNAME
+                                rqItem.code === RQ_ITEM_CODE.FULLNAME
 
                             ) {
                                 clientCompanyName = rqItem.value as string;
                             }
                         }
                     }
-                    if (!clientCompanyName) {
-                        for (const rqItem of clientRq.fields) {
-                            if (rqItem.value) {
-                                if (
-                                    rqItem.code === RQ_ITEM_CODE.FULLNAME
-
-                                ) {
-                                    clientCompanyName = rqItem.value as string;
-                                }
-                            }
-                        }
-                    }
+                }
 
 
             } else if (

@@ -5,7 +5,7 @@ import { BxParticipantsDataKeys } from '@alfa/entities';
 
 export const DealInfo = () => {
     const { dealData } = useAppSelector(state => state.deal);
-    console.log(dealData);
+
 
     return (
         <div>

@@ -58,7 +58,7 @@ export class AlfaBxProductsController {
             // [`=${bxProductData.PREFIX.bitrixId}`]: (prefix as string)
             // 'property172': prefix
         };
-        console.log('filter', filter);
+  
 
         const response = await bitrix.product.getList(filter, select);
         const products = response.result.products;
