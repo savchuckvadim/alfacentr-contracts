@@ -93,6 +93,7 @@ import { ValidateCheckModule } from './modules/validate-check/validate-check.mod
         ValidateCheckModule,
 
         HelperModule,
+        AlfaActivityCommandsModule
     ],
     controllers: [AppController, HealthController],
     providers: [AppService, GlobalExceptionFilter],

@@ -8,7 +8,7 @@ export default async function Participants({
     const param = await params;
     const id = param.id;
     return (
-        <div className="container mx-auto px-4 py-6">
+        <div className="max-w-[1600px]  mx-auto px-4 py-6">
             <div>
                 <ParticipantPpkInfo participantId={Number(id)} />
             </div>

@@ -1,11 +1,8 @@
 import { Global, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-    createWriteStream,
-    createReadStream,
     existsSync,
     mkdirSync,
-    unlinkSync,
 } from 'fs';
 import { join } from 'path';
 import { promisify } from 'util';

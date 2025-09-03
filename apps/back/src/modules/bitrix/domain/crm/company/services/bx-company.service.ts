@@ -21,8 +21,8 @@ export class BxCompanyService {
         return await this.repo.get(companyId);
     }
 
-    async getList(filter: Partial<IBXCompany>, select?: string[]) {
-        return await this.repo.getList(filter, select);
+    async getList(filter: Partial<IBXCompany>, select?: string[], order?: { [key: string]: 'asc' | 'desc' | 'ASC' | 'DESC' }) {
+        return await this.repo.getList(filter, select, order);
     }
 
     async set(data: Partial<IBXCompany>) {

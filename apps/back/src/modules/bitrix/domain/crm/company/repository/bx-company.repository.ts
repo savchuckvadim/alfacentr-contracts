@@ -29,12 +29,12 @@ export class BxCompanyRepository {
         );
     }
 
-    async getList(filter: Partial<IBXCompany>, select?: string[]) {
+    async getList(filter: Partial<IBXCompany>, select?: string[], order?: { [key: string]: 'asc' | 'desc' | 'ASC' | 'DESC' }) {
         return this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.COMPANY,
             EBxMethod.LIST,
-            { select, filter, start: -1 },
+            { select, filter, order, start: -1 },
         );
     }
 
@@ -164,7 +164,7 @@ export class BxCompanyRepository {
     }
 
     async setField(fields: Partial<IBXField>) {
-        return this.bxApi.callType(
+        return await this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.COMPANY,
             EBxMethod.USER_FIELD_ADD,

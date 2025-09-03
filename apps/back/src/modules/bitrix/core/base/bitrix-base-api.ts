@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -258,7 +258,7 @@ export class BitrixBaseApi {
                 await this.telegramBot.sendMessageAdminError(`Batch error:
           callBatch
           ${this.domain}
-        
+
           ${JSON.stringify(error?.message)}`);
                 results.push(error);
             }
@@ -313,7 +313,7 @@ export class BitrixBaseApi {
                     this.logger.warn(`Skipping failed batch at index ${start}`);
                 }
                 // 💤 Задержка между вызовами
-                await this.sleep(100);
+                await this.sleep(1000);
             }
         };
 
@@ -378,18 +378,30 @@ export class BitrixBaseApi {
         if (!result?.result_error) return;
         this.logger.log(`
       success
-      Domain: 
+      Domain:
       ${this.domain}
       `);
 
         const errorEntries = Object.entries(result.result_error);
         for (const [key, error] of errorEntries) {
             const message = `[${context}] Ошибка в ${key}: ${JSON.stringify(error)}
-      
-      Domain: ${this.domain}
-      `;
+            Domain: ${this.domain} `;
             this.logger.log(`result_error: ${message}`);
             await this.telegramBot.sendMessageAdminError(message);
+
+            /**
+             *
+             *
+             *
+             *    //TODO убрать
+             *
+             *
+             *
+             *
+             */
+            await this.telegramBot.sendMessageAdminError(JSON.stringify(error));
+            
+            throw new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

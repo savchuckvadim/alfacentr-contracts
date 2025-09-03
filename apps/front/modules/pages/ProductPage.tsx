@@ -7,7 +7,7 @@ export const ProductPage = () => {
     //     return null
     // }
     return (
-        <div className="container mx-auto">
+        <div className="max-w-[1600px]  mx-auto">
             <ProductList />
         </div>
     );
