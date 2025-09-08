@@ -1,3 +1,4 @@
+'use client';
 import { ParticipantPpkInfo } from "@/modules/widgetes";
 import { useApp } from "@/modules/app";
 import { useParticipant } from "@/modules/entities/participant";
