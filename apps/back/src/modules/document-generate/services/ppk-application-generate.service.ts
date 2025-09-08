@@ -2,19 +2,20 @@ import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import { StorageService, StorageType } from '@/core/storage';
 import { Injectable } from '@nestjs/common';
-import {
-    EnumPpkApplicationFieldCode,
-    EnumPpkApplicationParticipantFieldCode,
-    IPpkApplicationParticipant,
-    IPpkDocumentApplicationData,
-} from '../type/ppk-application.type';
+import { IPpkDocumentApplicationData } from '@alfa/entities';
+// import {
+//     EnumPpkApplicationFieldCode,
+//     EnumPpkApplicationParticipantFieldCode,
+//     IPpkApplicationParticipant,
+//     IPpkDocumentApplicationData,
+// } from '../type/ppk-application.type';
 
 @Injectable()
 export class PpkApplicationGenerateService {
     constructor(private readonly storage: StorageService) { }
 
     async generateDocxBase64(
-        data: Record<string, any>,
+        documentData: IPpkDocumentApplicationData
     ): Promise<[string, string]> {
         const templatePath = this.storage.getFilePath(
             StorageType.APP,
@@ -25,36 +26,36 @@ export class PpkApplicationGenerateService {
 
 
 
-        const participants: IPpkApplicationParticipant[] = [
-            {
-                [EnumPpkApplicationParticipantFieldCode.index]: '1',
-                [EnumPpkApplicationParticipantFieldCode.fio]: '123',
-                [EnumPpkApplicationParticipantFieldCode.topic]: '123',
-                [EnumPpkApplicationParticipantFieldCode.date_start]: '123',
-                [EnumPpkApplicationParticipantFieldCode.date_end]: '123',
-            },
+        // const participants: IPpkApplicationParticipant[] = [
+        //     {
+        //         [EnumPpkApplicationParticipantFieldCode.index]: '1',
+        //         [EnumPpkApplicationParticipantFieldCode.fio]: '123',
+        //         [EnumPpkApplicationParticipantFieldCode.topic]: '123',
+        //         [EnumPpkApplicationParticipantFieldCode.date_start]: '123',
+        //         [EnumPpkApplicationParticipantFieldCode.date_end]: '123',
+        //     },
 
-            {
-                [EnumPpkApplicationParticipantFieldCode.index]: '2',
-                [EnumPpkApplicationParticipantFieldCode.fio]: '12sdfsdfsdf3',
-                [EnumPpkApplicationParticipantFieldCode.topic]: '1sdfsdfsdf23',
-                [EnumPpkApplicationParticipantFieldCode.date_start]:
-                    '12sdfsdfsdf3',
-                [EnumPpkApplicationParticipantFieldCode.date_end]:
-                    '12sdfsdfsdf3',
-            },
-        ];
-        const documentData: IPpkDocumentApplicationData = {
-            [EnumPpkApplicationFieldCode.prefix]: '123',
-            [EnumPpkApplicationFieldCode.document_number]: '123',
-            [EnumPpkApplicationFieldCode.day]: '123',
-            [EnumPpkApplicationFieldCode.month]: '123',
-            [EnumPpkApplicationFieldCode.year]: '123',
-            [EnumPpkApplicationFieldCode.participants]: participants,
-            [EnumPpkApplicationFieldCode.name_organization]: '123',
-            [EnumPpkApplicationFieldCode.position_director]: '123',
-            [EnumPpkApplicationFieldCode.signature_director]: '123',
-        } as IPpkDocumentApplicationData;
+        //     {
+        //         [EnumPpkApplicationParticipantFieldCode.index]: '2',
+        //         [EnumPpkApplicationParticipantFieldCode.fio]: '12sdfsdfsdf3',
+        //         [EnumPpkApplicationParticipantFieldCode.topic]: '1sdfsdfsdf23',
+        //         [EnumPpkApplicationParticipantFieldCode.date_start]:
+        //             '12sdfsdfsdf3',
+        //         [EnumPpkApplicationParticipantFieldCode.date_end]:
+        //             '12sdfsdfsdf3',
+        //     },
+        // ];
+        // const documentData: IPpkDocumentApplicationData = {
+        //     [EnumPpkApplicationFieldCode.prefix]: '123',
+        //     [EnumPpkApplicationFieldCode.document_number]: '123',
+        //     [EnumPpkApplicationFieldCode.day]: '123',
+        //     [EnumPpkApplicationFieldCode.month]: '123',
+        //     [EnumPpkApplicationFieldCode.year]: '123',
+        //     [EnumPpkApplicationFieldCode.participants]: participants,
+        //     [EnumPpkApplicationFieldCode.name_organization]: '123',
+        //     [EnumPpkApplicationFieldCode.position_director]: '123',
+        //     [EnumPpkApplicationFieldCode.signature_director]: '123',
+        // } as IPpkDocumentApplicationData;
 
         const zip = new PizZip(content);
         const doc = new Docxtemplater(zip, {
@@ -74,7 +75,7 @@ export class PpkApplicationGenerateService {
         const fileName = `Приложение №1.docx`;
         const file = buffer.toString('base64');
 
-  
+
         return [fileName, file];
     }
 }

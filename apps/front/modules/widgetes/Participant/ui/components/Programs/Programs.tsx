@@ -93,7 +93,7 @@ export const Programs = ({
                         <div className="text-center py-6">
                             <BookOpen className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                             <p className="text-muted-foreground">
-                                Нет ППК программ
+                                {isPpk ? 'Нет ППК программ' : 'Нет дней участия из заявки'}
                             </p>
                         </div>
                     )}

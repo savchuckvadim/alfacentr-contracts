@@ -24,6 +24,9 @@ export enum DocumentGenerateFieldTemplateCode {
     DocumentCompanyTitle = 'DocumentCompanyTitle',
     DocumentDirectorInitials = 'DocumentDirectorInitials',
 
+    //seminars
+    DocumentParticipantsCount = 'DocumentParticipantsCount',
+    DocumentContractEndDate = 'DocumentContractEndDate',
 }
 export type DocumentGenerateFieldTemplateType = {
     id: number;
@@ -126,32 +129,47 @@ export const DocumentGenerateTemplatesType = {
         fields: [
             {
                 name: 'Клиент',
-                code: 'client',
-                templateCode: 'ClientRq',
+
+                code: DocumentGenerateFieldTemplateCode.ClientRq,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientRq,
                 type: 'string',
             },
             {
                 name: 'Шапка договора',
-                code: 'Header',
-                templateCode: 'Header',
+                code: DocumentGenerateFieldTemplateCode.Header,
+                templateCode: DocumentGenerateFieldTemplateCode.Header,
                 type: 'string',
-            },
-            {
-                name: 'Текст договора',
-                code: 'paragraph',
-                templateCode: 'Paragraph12',
-                type: 'string',
-            },
-            {
-                name: 'Конец действия договора',
-                code: 'endDate',
-                templateCode: 'EndActionDate',
-                type: 'date',
             },
             {
                 name: 'Подпись клиента',
                 code: DocumentGenerateFieldTemplateCode.ClientSignature,
                 templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+            {
+                name: 'Количество участников(слушателей) семинара',
+                code: DocumentGenerateFieldTemplateCode.DocumentParticipantsCount,
+                templateCode: DocumentGenerateFieldTemplateCode.DocumentParticipantsCount,
+                type: 'string',
+            },
+            {
+                name: 'В случае участия в семинаре онлайн адрес электронной почты',
+                code: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
+                templateCode: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
+                type: 'string',
+            },
+
+            {
+                name: 'Договор действует до',
+                code: DocumentGenerateFieldTemplateCode.DocumentContractEndDate,
+                templateCode: DocumentGenerateFieldTemplateCode.DocumentContractEndDate,
+                type: 'string',
+            },
+
+            {
+                name: 'Если в течение 5-ти дней с момента направления документов ЗАКАЗЧИК не подписал акт и не направил мотивированный отказ от подписания акта, услуга считается оказанной, принятой в полном объеме и подлежит оплате. 3.3. {UfCrm8PaymentPoitDoc}',
+                code: DocumentGenerateFieldTemplateCode.Paragraph3,
+                templateCode: DocumentGenerateFieldTemplateCode.Paragraph3,
                 type: 'string',
             },
         ],
@@ -165,38 +183,26 @@ export const DocumentGenerateTemplatesType = {
             {
                 name: 'Клиент',
 
-                code: 'client',
-                templateCode: 'ClientRq',
+                code: DocumentGenerateFieldTemplateCode.ClientRq,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientRq,
                 type: 'string',
             },
             {
                 name: 'Шапка договора',
-                code: 'Header',
-                templateCode: 'Header',
-                type: 'string',
-            },
-            {
-                name: 'Текст договора',
-                code: 'paragraph',
-                templateCode: 'Paragraph12',
-                type: 'string',
-            },
-            {
-                name: 'Конец действия договора',
-                code: 'endDate',
-                templateCode: 'EndActionDate',
-                type: 'date',
-            },
-            {
-                name: 'Текст договора',
-                code: 'paragraph3',
-                templateCode: 'Paragraph3',
+                code: DocumentGenerateFieldTemplateCode.Header,
+                templateCode: DocumentGenerateFieldTemplateCode.Header,
                 type: 'string',
             },
             {
                 name: 'Подпись клиента',
                 code: DocumentGenerateFieldTemplateCode.ClientSignature,
                 templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+    {
+                name: 'Если в течение 5-ти дней с момента направления документов ЗАКАЗЧИК не подписал акт и не направил мотивированный отказ от подписания акта, услуга считается оказанной, принятой в полном объеме и подлежит оплате. 3.3. {UfCrm8PaymentPoitDoc}',
+                code: DocumentGenerateFieldTemplateCode.Paragraph3,
+                templateCode: DocumentGenerateFieldTemplateCode.Paragraph3,
                 type: 'string',
             },
         ],

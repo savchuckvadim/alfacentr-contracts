@@ -16,6 +16,9 @@ const schemeList = [
     { value: 'orange', color: '#F97316' },
     { value: 'yellow', color: '#FACC15' },
     { value: 'green', color: '#22C55E' },
+    { value: 'bx', color: '#34c3f1' },
+    { value: 'beige', color: '#ffeacf' },
+    { value: 'explosive-pink', color: '#ff69b4' },
 ];
 
 export const ColorSchemePicker = () => {

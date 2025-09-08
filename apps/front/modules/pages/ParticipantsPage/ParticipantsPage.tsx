@@ -1,15 +1,16 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@workspace/ui/components/button';
 import {
     fetchParticipants,
-    deleteParticipant,
-} from '../model/ParticipantThunk';
+
+} from '../../entities/participant/model/ParticipantThunk';
 import { RootState, AppDispatch } from '@/modules/app/model/store';
 
 import { ParticipantPpkListInfo } from '@/modules/widgetes/Participant';
-import { ParticipantStatistics } from './components/ParticipantStatistics';
+import { ParticipantStatistics } from '../../entities/participant/ui/components/ParticipantStatistics';
+import { useApp } from '@/modules/app';
 
 export function ParticipantsPage() {
     const dispatch = useDispatch<AppDispatch>();
@@ -19,8 +20,11 @@ export function ParticipantsPage() {
         error,
     } = useSelector((state: RootState) => state.participant);
     const { deal } = useSelector((state: RootState) => state.app.bitrix);
-    const [deletingModalActive, setDeletingModalActive] = useState(false);
-
+    // const [deletingModalActive, setDeletingModalActive] = useState(false);
+    const { isClient } = useApp();
+    if (!isClient) {
+        return null;
+    }
     const handleAddNew = () => {
         console.log('Добавление нового участника');
         // Здесь будет логика открытия модального окна добавления

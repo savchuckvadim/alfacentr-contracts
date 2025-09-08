@@ -16,29 +16,29 @@ export class BxDealService {
         this.repo = new BxDealRepository(api);
     }
 
-    get(dealId: number, select?: string[]) {
-        return this.repo.get(dealId, select);
+    async get(dealId: number, select?: string[]) {
+        return await this.repo.get(dealId, select);
     }
-    getList(
+    async getList(
         filter: Partial<IBXDeal>,
         select?: string[],
         order?: { [key in keyof IBXDeal]?: 'asc' | 'desc' | 'ASC' | 'DESC' },
     ) {
-        return this.repo.getList(filter, select, order);
+        return await this.repo.getList(filter, select, order);
     }
-    set(data: Partial<IBXDeal>) {
-        return this.repo.set(data);
+    async set(data: Partial<IBXDeal>) {
+        return await this.repo.set(data);
     }
-    update(dealId: number | string, data: Partial<IBXDeal>) {
-        return this.repo.update(dealId, data);
+    async update(dealId: number | string, data: Partial<IBXDeal>) {
+        return await this.repo.update(dealId, data);
     }
-    getFieldsList(filter: { [key: string]: any }, select?: string[]) {
-        return this.repo.getFieldList(filter, select);
+    async getFieldsList(filter: { [key: string]: any }, select?: string[]) {
+        return await this.repo.getFieldList(filter, select);
     }
-    getField(id: number | string) {
-        return this.repo.getField(id);
+    async getField(id: number | string) {
+        return await this.repo.getField(id);
     }
-    contactItemsSet(dealId: number | string, contactIds: number[] | string[]) {
-        return this.repo.contactItemsSet(dealId, contactIds);
+    async contactItemsSet(dealId: number | string, contactIds: number[] | string[]) {
+        return await this.repo.contactItemsSet(dealId, contactIds);
     }
 }

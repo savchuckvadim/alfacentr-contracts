@@ -1,6 +1,8 @@
 import { getProductFieldByCodeValue, IAlfaProduct } from '@/modules/entities';
 import { Badge } from '@workspace/ui/components/badge';
 import { Button } from '@workspace/ui/components/button';
+import { getIsSeminarProduct } from '@/modules/entities/product/lib/get-product-type.util';
+import { is } from 'date-fns/locale';
 import { CheckCircle, Trash2 } from 'lucide-react';
 
 export const Products = ({
@@ -10,10 +12,10 @@ export const Products = ({
     products: IAlfaProduct[] | undefined;
     id: number;
 }) => {
-    const handleRemoveProduct = (index: number) => {
-        // TODO: Добавить логику удаления продукта
-        console.log('Remove product at index:', index);
-    };
+    // const handleRemoveProduct = (index: number) => {
+    //     // TODO: Добавить логику удаления продукта
+    //     console.log('Remove product at index:', index);
+    // };
     return (
         <div className="grid gap-3">
             {products?.map((product, index) => {
@@ -21,7 +23,13 @@ export const Products = ({
                     product,
                     'NAME_BID',
                 )?.value;
+
                 if (!productTopicName) return null;
+                const isSeminar = getIsSeminarProduct(product);
+                const productSeminarName = getProductFieldByCodeValue(
+                    product,
+                    'SEMINAR_TOPIC',
+                )?.value;
 
                 return (
                     <div
@@ -35,22 +43,28 @@ export const Products = ({
                                     Назначен
                                 </Badge>
                             </div>
+                            {isSeminar && productSeminarName && <p>
+                                <span className="text-xs text-muted-foreground">
+                                    Тема: {productSeminarName}
+                                </span>
+                            </p>}
                             <p className="text-sm font-medium">
                                 {productTopicName}
                             </p>
                             <p className="text-xs text-muted-foreground">
+
                                 ID: {product.id} • {product.productName} • Цена:{' '}
                                 {product.price || 0} ₽
                             </p>
                         </div>
-                        <Button
+                        {/* <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleRemoveProduct(index)}
                             className="text-destructive hover:text-destructive"
                         >
                             <Trash2 className="h-4 w-4" />
-                        </Button>
+                        </Button> */}
                     </div>
                 );
             })}

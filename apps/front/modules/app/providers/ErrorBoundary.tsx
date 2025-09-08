@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { logClient } from '../lib/helper/logClient';
-import { ErrorPage } from '../../pages/ErrorPage';
+import { ErrorPage } from '@/modules/pages';
 import { errorHandler } from '../lib/error-handler';
 // логгер на клиенте
 

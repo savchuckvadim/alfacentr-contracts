@@ -48,6 +48,9 @@ export class DocumentGenerateBatchService {
                 dto.clientSignature,
                 dto.documentPrefixNumber,
                 dto.documentCounter,
+                dto.email.email,
+                dto.seminarParticipantsCount,
+
 
             );
         // const generateDocumentData = {
@@ -152,13 +155,13 @@ export class DocumentGenerateBatchService {
 
 
 
-        const timelieneDataPdfWaiting: IBXTimelineComment = {
-            AUTHOR_ID: '502',
-            COMMENT: '⌛ Ожидание генерации PDF ...',
-            ENTITY_TYPE: 'deal',
-            ENTITY_ID: entityId,
-        };
-        void await this.bitrix.timeline.addTimelineComment(timelieneDataPdfWaiting);
+        void await this.sendTimelineComment(entityId, '⌛ Ожидание генерации PDF ...', 'waiting');
+        //     AUTHOR_ID: '502',
+        // COMMENT: '⌛ Ожидание генерации  PDF ...',
+        //     ENTITY_TYPE: 'deal',
+        //     ENTITY_ID: entityId,
+        // };
+        // void await this.bitrix.timeline.addTimelineComment(timelieneDataPdfWaiting);
 
         for (const item of result) {
             const documentResults = item.result as {
@@ -285,81 +288,99 @@ export class DocumentGenerateBatchService {
                 dealFields,
             );
         }
-        const timelieneDataPdfDone: IBXTimelineComment = {
-            AUTHOR_ID: '502',
-            COMMENT: '📜 PDF сгенерирован',
-            ENTITY_TYPE: 'deal',
-            ENTITY_ID: entityId,
-        };
-        void await this.bitrix.timeline.addTimelineComment(timelieneDataPdfDone);
+        void await this.sendTimelineComment(entityId, '📜 PDF сгенерирован', 'document');
+        // const timelieneDataPdfDone: IBXTimelineComment = {
+        //     AUTHOR_ID: '502',
+        // //     COMMENT: '📜 PDF сгенерирован',
+        // //     ENTITY_TYPE: 'deal',
+        // //     ENTITY_ID: entityId,
+        // };
+        // void await this.bitrix.timeline.addTimelineComment(timelieneDataPdfDone);
 
-        if (dto.contractType === EContractType.seminar_ppk) {
-            const timelieneData: IBXTimelineComment = {
-                AUTHOR_ID: '502',
-                COMMENT: '⏳ Ожидание генерации приложения ППК...',
-                ENTITY_TYPE: 'deal',
-                ENTITY_ID: entityId,
-            };
-            void await this.bitrix.timeline.addTimelineComment(timelieneData);
+        if (dto.contractType === EContractType.seminar_ppk || dto.contractType === EContractType.ppk) {
+            void await this.getPpkApplicationFile(entityId, currentPpkApplicationBitrixId, dto);
+            // const timelieneData: IBXTimelineComment = {
+            //     AUTHOR_ID: '502',
+            //     COMMENT: '⏳ Ожидание генерации приложения ППК...',
+            //     ENTITY_TYPE: 'deal',
+            //     ENTITY_ID: entityId,
+            // };
+            // void await this.bitrix.timeline.addTimelineComment(timelieneData);
 
 
-            try {
-                const ppkApplicationFileData =
-                    await this.ppkApplicationGenerateService.generateDocxBase64({
-                        client: dto.client,
-                        contract: dto.contractType,
-                        deal: dto.dealId,
-                    });
-                const updateDealPpkApplicationResponse = await bitrix.deal.update(
-                    entityId,
-                    {
-                        [`${currentPpkApplicationBitrixId}`]: {
-                            // @ts-ignore
-                            fileData: ppkApplicationFileData,
-                        },
-                    },
-                );
-                this.filesForSend.push(ppkApplicationFileData);
+            // try {
 
-                const timelieneData: IBXTimelineComment = {
-                    AUTHOR_ID: '502',
-                    COMMENT: '📜 Приложение ППК сгенерировано',
-                    ENTITY_TYPE: 'deal',
-                    ENTITY_ID: entityId,
-                };
-                void await this.bitrix.timeline.addTimelineComment(timelieneData);
-            } catch (error) {
-                const timelieneData: IBXTimelineComment = {
-                    AUTHOR_ID: '502',
-                    COMMENT: '❌ Произошла ошибка: Приложение ППК не сгенерировано',
-                    ENTITY_TYPE: 'deal',
-                    ENTITY_ID: entityId,
-                };
-                void await this.bitrix.timeline.addTimelineComment(timelieneData);
+            //     if (dto.ppkApplicationData) {
+            //         const ppkApplicationFileData =
+            //             await this.ppkApplicationGenerateService.generateDocxBase64(
+            //                 dto.ppkApplicationData
+            //                 //     {
+            //                 //     client: dto.client,
+            //                 //     contract: dto.contractType,
+            //                 //     deal: dto.dealId,
+            //                 // }
+            //             );
+            //         const updateDealPpkApplicationResponse = await bitrix.deal.update(
+            //             entityId,
+            //             {
+            //                 [`${currentPpkApplicationBitrixId}`]: {
+            //                     // @ts-ignore
+            //                     fileData: ppkApplicationFileData,
+            //                 },
+            //             },
+            //         );
+            //         this.filesForSend.push(ppkApplicationFileData);
 
-            }
+            //         const timelieneData: IBXTimelineComment = {
+            //             AUTHOR_ID: '502',
+            //             COMMENT: '📜 Приложение ППК сгенерировано',
+            //             ENTITY_TYPE: 'deal',
+            //             ENTITY_ID: entityId,
+            //         };
+            //         void await this.bitrix.timeline.addTimelineComment(timelieneData);
+            //     } else {
+            //         const timelieneData: IBXTimelineComment = {
+            //             AUTHOR_ID: '502',
+            //             COMMENT: '❌ Произошла ошибка: Приложение ППК не сгенерировано',
+            //             ENTITY_TYPE: 'deal',
+            //             ENTITY_ID: entityId,
+            //         };
+            //         void await this.bitrix.timeline.addTimelineComment(timelieneData);
+            //     }
+
+            // } catch (error) {
+            //     const timelieneData: IBXTimelineComment = {
+            //         AUTHOR_ID: '502',
+            //         COMMENT: '❌ Произошла ошибка: Приложение ППК не сгенерировано',
+            //         ENTITY_TYPE: 'deal',
+            //         ENTITY_ID: entityId,
+            //     };
+            //     void await this.bitrix.timeline.addTimelineComment(timelieneData);
+
+            // }
         }
 
 
-
-        const timelieneData: IBXTimelineComment = {
-            AUTHOR_ID: '502',
-            COMMENT: '✅ Документы сгенерированы',
-            ENTITY_TYPE: 'deal',
-            ENTITY_ID: entityId,
-        };
-        void await this.bitrix.timeline.addTimelineComment(timelieneData);
+        void await this.sendTimelineComment(entityId, '✅ Документы сгенерированы', 'success');
+        // const timelieneData: IBXTimelineComment = {
+        //     AUTHOR_ID: '502',
+        //     COMMENT: '✅ Документы сгенерированы',
+        // //     ENTITY_TYPE: 'deal',
+        // //     ENTITY_ID: entityId,
+        // // };
+        // void await this.bitrix.timeline.addTimelineComment(timelieneData);
 
         let mailResult: any = null;
         if (dto.email.needEmail && dto.email.email) {
             await delay(500);
-            const timelieneDataEmail: IBXTimelineComment = {
-                AUTHOR_ID: '502',
-                COMMENT: '⌛ Отправка email...',
-                ENTITY_TYPE: 'deal',
-                ENTITY_ID: entityId,
-            };
-            void await this.bitrix.timeline.addTimelineComment(timelieneDataEmail);
+            void await this.sendTimelineComment(entityId, '⌛ Отправка email...', 'email');
+            // const timelieneDataEmail: IBXTimelineComment = {
+            //     AUTHOR_ID: '502',
+            //     COMMENT: '⌛ Отправка email...',
+            //     ENTITY_TYPE: 'deal',
+            //     ENTITY_ID: entityId,
+            // };
+            // void await this.bitrix.timeline.addTimelineComment(timelieneDataEmail);
 
             const emailService = new EmailService(
                 this.bitrix,
@@ -374,18 +395,65 @@ export class DocumentGenerateBatchService {
 
 
         } else {
-
-            const timelieneDataWithoutEmail: IBXTimelineComment = {
-                AUTHOR_ID: '502',
-                COMMENT: '📄 Email не будет отправлен. Только формирование документов',
-                ENTITY_TYPE: 'deal',
-                ENTITY_ID: entityId,
-            };
-            void await this.bitrix.timeline.addTimelineComment(timelieneDataWithoutEmail);
+            void await this.sendTimelineComment(entityId, '📄 Email не будет отправлен. Только формирование документов', 'email');
+            // const timelieneDataWithoutEmail: IBXTimelineComment = {
+            //     AUTHOR_ID: '502',
+            //     COMMENT: '📄 Email не будет отправлен. Только формирование документов',
+            //     ENTITY_TYPE: 'deal',
+            //     ENTITY_ID: entityId,
+            // };
+            // void await this.bitrix.timeline.addTimelineComment(timelieneDataWithoutEmail);
         }
 
         return { result, filesCount: this.filesForSend.length, files: this.filesForSend, mailResult };
 
+    }
+    private async getPpkApplicationFile(
+        entityId: number,
+        currentPpkApplicationBitrixId: string,
+        dto: DocumentGenerateDto,
+    ): Promise<void> {
+        void await this.sendTimelineComment(entityId, '⏳ Ожидание генерации приложения ППК...', 'waiting');
+
+
+        try {
+
+            if (dto.ppkApplicationData) {
+                const ppkApplicationFileData =
+                    await this.ppkApplicationGenerateService.generateDocxBase64(
+                        dto.ppkApplicationData
+
+                    );
+                void await this.bitrix.deal.update(
+                    entityId,
+                    {
+                        [`${currentPpkApplicationBitrixId}`]: {
+                            // @ts-ignore
+                            fileData: ppkApplicationFileData,
+                        },
+                    },
+                );
+                const updtdDeal = await this.bitrix.deal.get(entityId, [`${currentPpkApplicationBitrixId}`]);
+                this.filesForSend.push(ppkApplicationFileData);
+                console.log('updtdDeal', updtdDeal);
+                //@ts-ignore
+                const url = updtdDeal.result[currentPpkApplicationBitrixId]?.downloadUrl as string;
+
+                console.log('URL', url);
+                if (url) {
+                    void await this.sendTimelineComment(entityId, `📜<a href="${url}"> Приложение ППК сгенерировано №${dto.ppkApplicationData.document_number}</a>`, 'ppk');
+                }else{
+                    void await this.sendTimelineComment(entityId, '❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+                }
+
+            } else {
+                void await this.sendTimelineComment(entityId, '❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+            }
+
+        } catch (error) {
+            void await this.sendTimelineComment(entityId, '❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+
+        }
     }
 
     private async getActFile(
@@ -475,7 +543,7 @@ export class DocumentGenerateBatchService {
                 );
                 const document = readonly.result
                     .document as IRequestDocumentGenerateResponse;
-              
+
 
                 count++;
 
@@ -533,66 +601,35 @@ export class DocumentGenerateBatchService {
         // return response.result.document as IRequestDocumentGenerateResponse
     }
 
-    private async addDocumentToDealSimple(
-        entityId: number,
-        stampsEnabled: 1 | 0,
-        values: Record<string, string>,
-        templateId: number,
-        entityTypeId: BitrixOwnerTypeId,
-    ) {
-        const bitrix = this.bitrix;
-        const generateDocumentData = {
-            templateId: templateId,
-            entityId: entityId,
-            entityTypeId: entityTypeId,
-            // providerClassName: 'Bitrix\\DocumentGenerator\\DataProvider\\Rest',
-            value: 1,
-            stampsEnabled,
-            values,
-        };
 
-        const response = await bitrix.api.call<number>(
-            'crm.documentgenerator.document.add',
-            generateDocumentData,
-        );
-        return response.result.document as IRequestDocumentGenerateResponse;
+
+    private async sendTimelineComment(
+
+        entityId: number,
+        comment: string, type: 'error' | 'success' | 'document' | 'pdf' | 'ppk' | 'email' | 'clock' | 'waiting',
+        isWaiting: boolean = false
+    ): Promise<void> {
+
+        let icon = '❌';
+
+        if (type === 'success') {
+            icon = '✅';
+        } else if (type === 'document') {
+            icon = '📜';
+        } else if (type === 'pdf') {
+            icon = '📄';
+        } else if (type === 'ppk') {
+            icon = '📄';
+        }
+
+        const timelieneData: IBXTimelineComment = {
+            AUTHOR_ID: '502',
+            COMMENT: `${comment}`,
+            ENTITY_TYPE: 'deal',
+            ENTITY_ID: entityId,
+        };
+        void await this.bitrix.timeline.addTimelineComment(timelieneData);
+
     }
 
-    //     private getEmailHtmlBody(text: string): string {
-    //         return `<html><body>
-    //         <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
-    //  <i>Письмо сформировано автоматически. При ответе, просто нажмите&nbsp;<b>“ОТВЕТИТЬ”</b>&nbsp;или введите </i><a href="mailto:ppk@alfasibir.ru" title="mailto:ppk@alfasibir.ru"><b><i><span style="color: blue;">ppk@alfasibir.ru</span></i></b></a><b><i> </i></b><i>в строке «Адрес получателя/Кому».</i>
-    // </p>
-    // <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
-    //  Добрый день, <span style="color: #151515;"> {{Имя Отчество контактного лица по документам}}</span>!<br>
-    // 	 Во вложении -&nbsp;<b>Договор</b>,&nbsp;<b>Счет </b>и <b>Акт </b>на согласование.
-    // </p>
-    // <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
-    //  Пожалуйста, проверьте <b>реквизиты, </b>а также<b> текст документов</b>.
-    // </p>
-    // <ul style="margin-top:0cm" type="disc">
-    // 	<li class="MsoNormal" style="margin-bottom:0cm;line-height:normal;mso-list:l0 level1 lfo1"><b>Если документы соответствуют требованиям Вашего учреждения</b> - подпишите, пожалуйста, его в системе ЭДО. Если Ваше учреждение не использует систему ЭДО, то направьте нам ответным e-mail скан Договора, заверенного с Вашей стороны печатью и подписью руководителя.<br>Наш<b>&nbsp;СБИС&nbsp;ID: 2BEbe3508291e7a494ca4d051e2230821b1 </b>(Оператор&nbsp;ООО "Компания "Тензор")</li><li class="MsoNormal" style="margin-bottom:0cm;line-height:normal;mso-list:l0 level1 lfo1"><b>Если документы требуют корректировки</b> - откорректированный текст договора, вышлите, пожалуйста, ответным e-mail в текстовом формате (например Word).</li></ul><p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
-    //  В течение 1 рабочего дня с момента направления данного письма на номер телефона {{Телефон контактного лица по документам}} Вам позвонит робот Ирина для подтверждения получения документов. Просим Вас подтвердить получение простым ответом "ДА".
-    // </p>
-    // <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
-    //  С уважением,<br>
-    // 	 Чехуркина Наталья,<br>
-    // 	 Специалист по документообороту,<br>
-    // 	 Центр правовой поддержки ООО "АЛЬФАЦЕНТР",<br>
-    // 	 Почтовый адрес: 630073, г. Новосибирск, а/я 202<br>
-    // 	 тел. многоканальный:&nbsp;8 (383) 383-24-15 доб.106<br>
-    //  <a href="http://e.mail.ru/compose/?mailto=mailto%3appk@alfasibir.ru"><span style="color: blue;">ppk@alfasibir.ru</span></a><br>
-    // 	 Сайт компании:&nbsp;<a href="https://alfacentr.org/"><span style="color: blue;">https://alfacentr.org</span></a><br>
-    // 	 Социальные сети:<br>
-    //  <a href="https://vk.com/alfacentr_nsk"><span style="color: blue;">https://vk.com/alfacentr_nsk</span></a><br>
-    //  <a href="https://ok.ru/group/68876292653111"><span style="color: blue;">https://ok.ru/group/68876292653111</span></a><br>
-    // <img width="386" alt="logo" src="https://i.imgur.com/DucbqTv.png" height="47">
-    // </p>
-    // <div class="MsoNormal" align="center" style="margin-bottom:0cm;text-align:center; line-height:normal">
-    // 	<hr size="2" width="100%" align="center">
-    // </div>
-    // <p class="MsoNormal" align="center" style="margin-bottom:0cm;text-align:center; line-height:normal">
-    //  <b>Исходная заявка клиента:</b></p><p class="MsoNormal" align="center" style="margin-bottom: 0cm; text-align: left; line-height: normal;">{{Исходная заявка клиента}}<br></p>
-    //         </body></html>`;
-    //     }
 }

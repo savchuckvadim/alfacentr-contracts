@@ -36,7 +36,7 @@ export const NavMenu = ({ withMobile = true }: { withMobile?: boolean }) => {
                         >
                             <Button
                                 variant={!pathname.startsWith(href) ? "ghost" : "default"}
-                                className="h-8"
+                                className="h-7"
                             >
                                 <Link
                                     href={href}

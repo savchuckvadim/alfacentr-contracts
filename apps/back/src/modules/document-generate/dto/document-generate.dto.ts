@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EContractType, IRequestDocumentGenerateEmail } from '@alfa/entities';
+import { EContractType, IPpkApplicationParticipant, IPpkDocumentApplicationData, IRequestDocumentGenerateEmail } from '@alfa/entities';
 import { IsStringOrArrayString } from '@/core/decorators/dto/string-or-array-string.decorator';
 import {
     IsArray,
@@ -19,8 +19,7 @@ import {
 } from '@alfa/entities';
 
 class DocumentGenerateFieldValueDto
-    implements IRequestDocumentGenerateFieldValueType
-{
+    implements IRequestDocumentGenerateFieldValueType {
     @ApiProperty({
         description: 'Код поля',
         example: 'Client',
@@ -205,7 +204,28 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
 
     email: IRequestDocumentGenerateEmail;
 
+    @ApiProperty({
+        description: 'Количество участников(слушателей) семинара',
+        example: '123',
+    })
+    @IsOptional()
+    @IsString()
+    seminarParticipantsCount: string;
+
+    @ApiProperty({
+        description: 'Данные для генерации ППК',
+        example: {
+            prefix: '123',
+        },
+    })
+    @IsOptional()
+    @IsObject()
+    ppkApplicationData?: IPpkDocumentApplicationData;
 }
+
+
+
+
 
 
 export class DocumentGenerateEmailDto implements IRequestDocumentGenerateEmail {

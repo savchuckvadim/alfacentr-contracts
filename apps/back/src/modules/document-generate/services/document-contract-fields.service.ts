@@ -10,6 +10,7 @@ import {
 } from '@alfa/entities';
 import { Injectable } from '@nestjs/common';
 
+
 @Injectable()
 export class DocumentContractFieldsService {
     constructor() { }
@@ -17,15 +18,20 @@ export class DocumentContractFieldsService {
     getContractFields(
         contractType: EContractType,
         header: string,
-        // paragraph: string,
+        // paragraph3: string,
         paragraphItems: string[],
         totalSum: string,
         client: string[],
         clientSignature: string,
         documentPrefixNumber: string,
         documentNumberCounter: string,
+        emailForDoc: string = '____________________________________________',
+        seminarParticipantsCount: string = '____________________________________________',
 
     ) {
+
+
+
         const templateType =
             contractType === EContractType.seminar_ppk
                 ? (DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL as typeof DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL)
@@ -86,11 +92,26 @@ export class DocumentContractFieldsService {
                 DocumentGenerateFieldTemplateCode.DocumentNumberCounter
             ) {
                 fields[field.templateCode] = documentPrefixNumber;
-            }else if (
+            } else if (
                 field.code ===
                 DocumentGenerateFieldTemplateCode.ClientSignature
             ) {
                 fields[field.templateCode] = clientSignature;
+            } else if (
+                field.code ===
+                DocumentGenerateFieldTemplateCode.DocumentParticipantsCount
+            ) {
+                fields[field.templateCode] = seminarParticipantsCount;
+            } else if (
+                field.code ===
+                DocumentGenerateFieldTemplateCode.DocumentContractEndDate
+            ) {
+                fields[field.templateCode] = lastDayOfYearString;
+            } else if (
+                field.code ===
+                DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor
+            ) {
+                fields[field.templateCode] = emailForDoc;
             }
         });
         // fields['DocumentNumber'] = documentPrefixNumber;

@@ -10,7 +10,10 @@ export type ColorScheme =
     | 'green'
     | 'yellow'
     | 'orange'
-    | 'red';
+    | 'red'
+    | 'bx'
+    | 'beige'
+    | 'explosive-pink';
 export const ColorSchemes = [
     'default',
     'blue',
@@ -20,6 +23,9 @@ export const ColorSchemes = [
     'yellow',
     'orange',
     'red',
+    'bx',
+    'beige',
+    'explosive-pink',
 ] as const;
 
 interface ColorContextValue {

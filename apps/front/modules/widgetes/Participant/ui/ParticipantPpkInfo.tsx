@@ -2,7 +2,6 @@
 
 import {
     getParticipantAddress,
-    getParticipantDays,
     getParticipantDaysArray,
     getParticipantEmail,
     getParticipantFormat,
@@ -10,9 +9,7 @@ import {
     getParticipantName,
     getParticipantPhone,
     getParticipantPrograms,
-    getProductFieldByCodeValue,
-    getProductFieldValue,
-    useParticipant,
+
 } from '@/modules/entities';
 import {
     useParticipantPpk,
@@ -31,14 +28,11 @@ import {
 import { Button } from '@workspace/ui/components/button';
 import {
     User,
-    BookOpen,
+
     Package,
     AlertTriangle,
-    CheckCircle,
-    XCircle,
-    Trash2,
+
     Plus,
-    Users,
     Calendar,
     Phone,
     Mail,
@@ -53,11 +47,9 @@ import {
     Dot,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts';
 import Link from 'next/link';
 import { IParticipant } from '@alfa/entities/';
 import { cn } from '@workspace/ui/lib/utils';
-import { cutString } from '@/modules/lib';
 import { Tooltip } from '@/modules/shared';
 import { useApp } from '@/modules/app';
 import { useParticipantInfo } from '../ParticipantInfoCard/hook/useParticipantInfo';
@@ -69,15 +61,21 @@ import { ParticipantPpkProducts } from './components/Products/ParticipantPpkProd
 import { ParticipantSeminarProducts } from './components/Products/ParticipantSeminarProducts';
 
 export const ParticipantPpkInfo = ({
-    participantId,
+    participant,
+    loading,
+    loadingProducts
+
+
 }: {
-    participantId: number;
+    participant: IParticipant;
+    loading: boolean;
+    loadingProducts: boolean;
 }) => {
     const { isClient } = useApp();
 
-    const id = participantId;
-    const { participant, loading, error } = useParticipant(id);
-    const { loading: loadingProducts } = useAlfaProducts();
+    const id = participant.id;
+
+    // const { loading: loadingProducts } = useAlfaProducts();
     const { participantToProducts } = useParticipantPpk();
     const { participantToProducts: participantToSeminars } =
         useParticipantSeminar();
@@ -85,8 +83,8 @@ export const ParticipantPpkInfo = ({
     let missingProducts: string[] = [];
     // const [hasProblems, setHasProblems] = useState(false)
     const { hasProblems, problems, isParticipantPpkLoading } =
-        useParticipantInfo(participantId);
-    const { activateEditable, editable } = useEditParticipant(participantId);
+        useParticipantInfo(participant.id);
+    const { activateEditable, editable } = useEditParticipant(participant.id);
     const onEdit = (participantId: number) => {
         activateEditable(participantId);
     };
@@ -118,42 +116,42 @@ export const ParticipantPpkInfo = ({
     const products = participantToProducts[id];
     const seminars = participantToSeminars[id];
 
-    if (loading || !isClient) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="text-muted-foreground">
-                        Загрузка участника...
-                    </p>
-                </div>
-            </div>
-        );
-    }
+    // if (loading || !isClient) {
+    //     return (
+    //         <div className="flex items-center justify-center h-64">
+    //             <div className="text-center">
+    //                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+    //                 <p className="text-muted-foreground">
+    //                     Загрузка участника...
+    //                 </p>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
-    if (error) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                    <XCircle className="h-8 w-8 text-destructive mx-auto mb-4" />
-                    <p className="text-destructive">
-                        Ошибка загрузки участника
-                    </p>
-                </div>
-            </div>
-        );
-    }
+    // if (error) {
+    //     return (
+    //         <div className="flex items-center justify-center h-64">
+    //             <div className="text-center">
+    //                 <XCircle className="h-8 w-8 text-destructive mx-auto mb-4" />
+    //                 <p className="text-destructive">
+    //                     Ошибка загрузки участника
+    //                 </p>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
-    if (!participant) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                    <User className="h-8 w-8 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">Участник не найден</p>
-                </div>
-            </div>
-        );
-    }
+    // if (!participant) {
+    //     return (
+    //         <div className="flex items-center justify-center h-64">
+    //             <div className="text-center">
+    //                 <User className="h-8 w-8 text-muted-foreground mx-auto mb-4" />
+    //                 <p className="text-muted-foreground">Участник не найден</p>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
     const programs = getParticipantPrograms(participant);
     const programsThemes = programs?.map(program => program.value);
@@ -356,7 +354,7 @@ export const ParticipantPpkInfo = ({
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => onEdit(participantId)}
+                                    onClick={() => onEdit(participant.id)}
                                     className="h-8 w-8 p-0 hover:bg-primary/10"
                                 >
                                     <Edit className="w-4 h-4" />
@@ -393,7 +391,7 @@ export const ParticipantPpkInfo = ({
 
             <ParticipantSeminarProducts
                 loading={
-                    loadingProducts || !participant || !isClient || loading
+                    loadingProducts || !participant || !isClient
                 }
                 participant={participant}
                 participantId={id}

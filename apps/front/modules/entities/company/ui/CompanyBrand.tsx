@@ -1,5 +1,6 @@
 'use client';
 import { useAppSelector } from '@/modules/app/lib/hooks/redux';
+import { Tooltip } from '@/modules/shared';
 import Link from 'next/link';
 
 export const CompanyBrand = () => {
@@ -10,16 +11,26 @@ export const CompanyBrand = () => {
         return null;
     }
     const innField = deal.find(field => field.code === 'inn');
-    const inn = innField?.value ? `ИНН: ${innField?.value}` : '';
+    const inn = innField?.value ? `, инн: ${innField?.value}` : '';
     const url = `https://${app.domain}/crm/company/details/${company?.ID}/`;
     return (
-        <Link
-            target="_blank"
-            href={url}
-            className="cursor-pointer text-xl font-semibold text-foreground hover:text-blue-600 transition-colors"
-        >
-            {company?.TITLE}{' '}
-            {inn && <span className="text-sm text-gray-500">{inn}</span>}
-        </Link>
+        <Tooltip content="Перейти в компанию в Битрикс">
+            <div className="cursor-pointer text-xl font-bold text-foreground hover:text-primary/90 transition-colors max-w-[500px] overflow-hidden text-ellipsis whitespace-nowrap"
+                style={{
+                    cursor: 'pointer',
+                }}
+            >
+
+
+                <Link
+                    target="_blank"
+                    href={url}
+
+                >
+                    {company?.TITLE}{' '}
+                    {inn && <span className="">{inn}</span>}
+                </Link>
+            </div>
+        </Tooltip>
     );
 };

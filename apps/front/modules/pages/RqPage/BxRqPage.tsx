@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import {
     filterFieldItems,
-    getFieldValuByCode,
+
     getRqShowName,
-    RQ_ITEM_CODE,
+
     useBxRq,
 } from '@workspace/bx-rq';
 
@@ -16,14 +16,9 @@ import {
     EvsRqItem,
     getClinetTypeNameByCode,
     isFieldsEmpty,
-    SupplyTypeEnum,
-    ResolvedRQType,
-    RqItem,
-    BX_ADDRESS_TYPE,
+
 } from '@workspace/bx-rq';
-import { BxRqBaseEdit } from './BxRqBaseEdit';
-import { BxRqAddressEdit } from './BxRqAddressEdit';
-import { BxRqBankEdit } from './BxRqBankEdit';
+
 import { Save, X } from 'lucide-react';
 import {
     Card,
@@ -50,6 +45,8 @@ import {
 import { useClientType } from '@/modules/features/client-type/hook/useClientType';
 import { useApp, useAppSelector } from '@/modules/app';
 import { PagePreloader } from '@/modules/shared';
+import { BxRqAddressEdit, BxRqBaseEdit, BxRqBankEdit } from '@/modules/entities/bx-rq';
+
 
 interface BxRqPageProps {
     currentClientType?: RQ_TYPE;
@@ -60,9 +57,7 @@ interface BxRqPageProps {
 }
 
 export const BxRqPage = ({
-    //   currentClientType = RQ_TYPE.FIZ,
-    //   contractType = CONTRACT_LTYPE.SERVICE,
-    //   supplyType = SupplyTypeEnum.INTERNET,
+
     onSave, //для сохранения текущих реквизитов в карточку сделки
     onCancel,
 }: BxRqPageProps) => {
@@ -79,21 +74,15 @@ export const BxRqPage = ({
 
     const domain = useAppSelector(state => state.app.domain);
     const companyId = useAppSelector(state => state.app.bitrix.company?.ID);
-    // const [selectedRq, setSelectedRq] = useState<EvsRqItem | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const { clientType } = useClientType();
-    const percent = getRqFillPercent(current.item, clientType as RQ_TYPE);
-    // useEffect(() => {
-    //     if (!isFetched && !isLoading && companyId) {
-    //         fetchBXRQ(domain, companyId);
-    //     }
-    // }, [isFetched, isLoading, companyId, fetchBXRQ, domain]);
+    const { isClient } = useApp();
+    if (!isClient) {
+        return null;
+    }
 
-    // useEffect(() => {
-    //     if (rqs && currentClientType && rqs[currentClientType as ResolvedRQType]) {
-    //         setSelectedRq(rqs[currentClientType as ResolvedRQType].default);
-    //     }
-    // }, [rqs, currentClientType]);
+    
+    const percent = getRqFillPercent(current.item, clientType as RQ_TYPE);
 
     const handleSaveBase = async () => {
         setIsSaving(true);
@@ -126,7 +115,7 @@ export const BxRqPage = ({
         );
     }
 
-    // const defRq = rqs[clientType as ResolvedRQType]?.default;
+
     const currentRqs = current.items;
     const currentRq = current.item;
 
@@ -145,8 +134,7 @@ export const BxRqPage = ({
     const fields = filterFieldItems(
         currentRq.fields,
         clientType || (RQ_TYPE.ORGANIZATION as RQ_TYPE),
-        // contractType,
-        // supplyType,
+
     );
 
     const isEmpty = fields ? isFieldsEmpty(fields) : false;
@@ -243,9 +231,7 @@ export const BxRqPage = ({
                                     fields={fields}
                                     isEmpty={isEmpty}
                                     percent={percent.base}
-                                    // currentClientType={clientType as RQ_TYPE}
-                                    // contractType={contractType}
-                                    // supplyType={supplyType}
+
                                     onSave={handleSaveBase}
                                     onCancel={handleCancel}
                                     isLoading={isSaving}
@@ -255,8 +241,8 @@ export const BxRqPage = ({
 
                         <TabsContent value="addresses" className="space-y-4">
                             {!isEmpty &&
-                            currentRq.address?.items &&
-                            currentRq.address.items.length > 0 ? (
+                                currentRq.address?.items &&
+                                currentRq.address.items.length > 0 ? (
                                 <BxRqAddressEdit />
                             ) : (
                                 <Card>
@@ -273,9 +259,7 @@ export const BxRqPage = ({
                             {!isEmpty && currentRq.bank ? (
                                 <BxRqBankEdit
                                     bank={currentRq.bank.current}
-                                    // onSave={handleSaveBank}
-                                    // onCancel={handleCancel}
-                                    // isLoading={isSaving}
+
                                 />
                             ) : (
                                 <Card>

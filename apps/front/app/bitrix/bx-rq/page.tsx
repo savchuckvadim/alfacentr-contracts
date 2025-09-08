@@ -1,12 +1,8 @@
 'use client';
-import { useApp } from '@/modules/app';
-import { BxRqPage } from '@/modules/entities/bx-rq/ui/BxRqPage';
+import { BxRqPage } from '@/modules/pages/';
 
 function Page() {
-    const { isClient } = useApp();
-    if (!isClient) {
-        return null;
-    }
+
     return (
         <div>
             <BxRqPage />

@@ -22,7 +22,7 @@ export class BxDealRepository {
         );
     }
 
-    async getBtch(cmdCode: string, dealId: number | string) {
+     getBtch(cmdCode: string, dealId: number | string) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
@@ -84,7 +84,7 @@ export class BxDealRepository {
     // Список до
 
     async set(data: Partial<IBXDeal>) {
-        return this.bxApi.callType(
+        return await this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.ADD,
@@ -92,7 +92,7 @@ export class BxDealRepository {
         );
     }
     async setBtch(cmdCode: string, data: Partial<IBXDeal>) {
-        return this.bxApi.addCmdBatchType(
+        return await this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.DEAL,
@@ -102,7 +102,7 @@ export class BxDealRepository {
     }
 
     async update(dealId: number | string, data: Partial<IBXDeal>) {
-        return this.bxApi.callType(
+        return await this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.UPDATE,
@@ -115,7 +115,7 @@ export class BxDealRepository {
         dealId: number | string,
         data: Partial<IBXDeal>,
     ) {
-        return this.bxApi.addCmdBatchType(
+        return await this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.DEAL,
@@ -124,7 +124,7 @@ export class BxDealRepository {
         );
     }
     async getFieldList(filter: { [key: string]: any }, select?: string[]) {
-        return this.bxApi.callType(
+        return await this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.USER_FIELD_LIST,
@@ -133,7 +133,7 @@ export class BxDealRepository {
     }
 
     async getField(id: number | string) {
-        return this.bxApi.callType(
+        return await this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.USER_FIELD_GET,
@@ -152,7 +152,7 @@ export class BxDealRepository {
     }
 
     async getFieldBtch(cmdCode: string, id: number | string) {
-        return this.bxApi.addCmdBatchType(
+        return await this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.DEAL,
@@ -175,7 +175,7 @@ export class BxDealRepository {
         dealId: number | string,
         contactIds: number[] | string[],
     ) {
-        return this.bxApi.callType(
+        return await this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.DEAL,
             EBxMethod.CONTACT_ITEMS_SET,
@@ -187,7 +187,7 @@ export class BxDealRepository {
         dealId: number | string,
         contactIds: number[] | string[],
     ) {
-        return this.bxApi.addCmdBatchType(
+        return await this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.DEAL,

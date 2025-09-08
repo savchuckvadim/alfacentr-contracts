@@ -27,6 +27,7 @@ import { reloadApp } from '@/modules/app/model/AppThunk';
 
 import { communicationsActions } from '@/modules/features/communications/model/slice/CommunicationsSlice';
 import { IS_PROD } from '@/modules/app/consts/app-global';
+import { getDocumentPpkApplicationData } from '../lib/utils/document-participant.util';
 
 // Новый стиль санков с extraArgument
 export const documentGenerate = createAsyncThunk<
@@ -67,23 +68,10 @@ export const documentGenerate = createAsyncThunk<
     const clientSignature = state.documentRq.clientSignature;
     const clientCompanyTitle = state.documentRq.clientCompanyTitle;
     const clientDirectorInitials = state.documentRq.clientDirectorInitials;
-    // const generateDocumentData = {
-    //     templateId: 118,
-    //     entityId: dealId,
-    //     entityTypeId: BitrixOwnerTypeId.DEAL,
-    //     // providerClassName: 'Bitrix\\DocumentGenerator\\DataProvider\\Rest',
-    //     value: 1,
-    //     stampsEnabled: 1,
-    //     values: {
-    //         UfCrm81700582664: 'TEST',
-    //         AlfaDocumentNumber: 'TEST',
-    //         Header: header,
-    //         ClientRq: client,
-    //         ProviderRq: provider,
-    //         Paragraph12: paragraph,
-    //         TotalSum: totalSum,
-    //     },
-    // };
+
+
+    const products = state.product.items;
+    const productsCount = products.length;
 
     const phone = state.deal.dealData?.find(
         field => field.code === BxDealDataKeys.exchange_doc_phone,
@@ -148,6 +136,22 @@ export const documentGenerate = createAsyncThunk<
     } as IRequestDocumentGenerateFieldsType;
     const service = new DocumentGenerateOwnService();
 
+    const ppkApplicationData = contractType === EContractType.seminar_ppk || contractType === EContractType.ppk
+        ? getDocumentPpkApplicationData({
+            documentPrefix: documentNumber.prefix,
+            documentCounter: documentNumber.counter.toString(),
+            day: new Date().getDate().toString(),
+            month: new Date().getMonth().toString(),
+            year: new Date().getFullYear().toString(),
+            participants: state.participantProduct.ppkDistribution,
+            name_organization: clientCompanyTitle,
+            position_director: clientDirectorInitials,
+            signature_director: clientSignature,
+        })
+        : undefined;
+    debugger;
+
+
     void await service.push({
         domain,
         socketId: socketId || '',
@@ -174,7 +178,9 @@ export const documentGenerate = createAsyncThunk<
             email,
             phone,
             name,
-        }
+        },
+        seminarParticipantsCount: `${productsCount}`,
+        ppkApplicationData
     } as IRequestDocumentGenerateType);
 
     await delay(3000);
@@ -183,68 +189,10 @@ export const documentGenerate = createAsyncThunk<
     IS_PROD
         ? window && window.top && window.top.location.replace(redirectLink)
         : dispatch(reloadApp());
-    // // Редирект на страницу с документом
-    // if (typeof window !== 'undefined') {
-    //     window.location.href = `https://alfacentr.bitrix24.ru/crm/deal/details/${dealId}/`;
-    // }
-    //for dev
-    //     window.open(
-    //         `https://alfacentr.bitrix24.ru/crm/deal/details/${dealId}/`,
-    //         '_blank',
-    //     );
-    // }
+
 
     return true;
 });
-
-// export const documentBxGenerate = createAsyncThunk<
-//     number, // ReturnType
-//     void, // Arg
-//     {
-//         dispatch: AppDispatch;
-//         state: RootState;
-//         extra: ThunkExtraArgument;
-//     }
-// >('document/bxGenerate', async (_, { dispatch, getState, extra }) => {
-//     // Получаем dispatch и state из деструктуризации
-//     const state = getState();
-//     const { getWSClient } = extra;
-
-//     const dealId = state.app.bitrix.deal?.ID;
-
-//     const bitrix = Bitrix.getService();
-//     const { client, provider } = getDocumentRqs(state);
-//     const header = getDocumentHeader(state);
-//     const { paragraph, totalSum } = state.documentParagraph;
-
-//     const generateDocumentData = {
-//         templateId: 118,
-//         entityId: dealId,
-//         entityTypeId: BitrixOwnerTypeId.DEAL,
-//         // providerClassName: 'Bitrix\\DocumentGenerator\\DataProvider\\Rest',
-//         value: 1,
-//         stampsEnabled: 1,
-//         values: {
-//             UfCrm81700582664: 'TEST',
-//             AlfaDocumentNumber: 'TEST',
-//             Header: header,
-//             ClientRq: client,
-//             ProviderRq: provider,
-//             Paragraph12: paragraph,
-//             TotalSum: totalSum,
-//         },
-//     };
-
-//     const response = await bitrix.api.call<number>(
-//         'crm.documentgenerator.document.add',
-//         generateDocumentData,
-//     );
-//     console.log('response');
-//     console.log(response);
-//     alert('documentGenerateDone');
-//     return response.result;
-// });
-
 
 
 export const documentGenerateDone = createAsyncThunk<

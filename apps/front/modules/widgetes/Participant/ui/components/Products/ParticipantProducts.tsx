@@ -167,7 +167,7 @@ export const ParticipantProducts = ({
                     {expandedSections.missing && (
                         <CardContent className="space-y-3">
                             <p className="text-sm text-destructive mb-3">
-                                Следующие продукты отсутствуют в списке товаров
+                                Следующие товары отсутствуют в списке товаров
                                 или их количество ограничено:
                             </p>
                             <div className="grid gap-2">

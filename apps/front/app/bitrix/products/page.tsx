@@ -1,11 +1,8 @@
 'use client';
-import { ProductPage } from '@/modules/pages/ProductPage';
-import { useApp } from '@/modules/app';
+import { ProductPage } from '@/modules/pages';
+
 
 export default function ProductsPage() {
-    const { isClient } = useApp();
-    if (!isClient) {
-        return null;
-    }
+
     return <ProductPage />;
 }

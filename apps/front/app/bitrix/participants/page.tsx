@@ -1,14 +1,11 @@
 'use client';
-import { useApp } from '@/modules/app';
-import { ParticipantsPage } from '@/modules/entities/participant/ui';
+
+import { ParticipantsPage } from '@/modules/pages';
 
 export default function Participants() {
-    const { isClient } = useApp();
-    if (!isClient) {
-        return null;
-    }
+
     return (
-        <div className="max-w-[1600px]  mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-6">
             <ParticipantsPage />
         </div>
     );

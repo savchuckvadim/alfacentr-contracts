@@ -9,7 +9,7 @@ import {
     CardTitle,
 } from '@workspace/ui/components/card';
 import { Badge } from '@workspace/ui/components/badge';
-import { Info } from '../shared';
+import { Info } from '@/modules/shared';
 
 interface ErrorPageProps {
     error?: Error;

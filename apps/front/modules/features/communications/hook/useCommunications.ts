@@ -8,6 +8,8 @@ import { BxDealDataKeys } from '@alfa/entities';
 import { useDeal } from '@/modules/entities';
 
 export const useCommunications = () => {
+    const [canSend, setCanSend] = useState(false);
+
     const dispatch = useAppDispatch();
     const { getFieldByCode, updateField, updateFieldWithAPI } = useDeal();
     const email = getFieldByCode(BxDealDataKeys.exchange_doc_email);
@@ -26,7 +28,14 @@ export const useCommunications = () => {
         dispatch(documentGenerate());
     };
 
+
+    useEffect(() => {
+
+        setCanSend(!!(email?.value && phone?.value && name?.value && !errors.email && !errors.phone && !errors.name));
+    }, [email, phone, name, errors]);
+
     return {
+        canSend,
         email,
         phone,
         name,

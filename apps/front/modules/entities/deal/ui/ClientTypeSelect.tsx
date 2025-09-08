@@ -47,7 +47,7 @@ export const ClientTypeSelect = () => {
 
                             cursor: 'pointer',
                         }}
-                        size="sm" className="h-5 border-none text-primary w-[200px]">
+                        size="sm" className="h-5 border-primary/30 text-primary w-[200px]">
                         <SelectValue placeholder="Выберите тип клиента" />
                     </SelectTrigger>
                     <SelectContent className="text-primary"

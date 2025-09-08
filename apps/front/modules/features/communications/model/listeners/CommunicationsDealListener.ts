@@ -13,22 +13,22 @@ export function setupCommunicationsDealListener(
         effect: async (action, listenerApi) => {
             const dispatch = listenerApi.dispatch as AppDispatch;
 
-            if (updateDealField.fulfilled.match(action)) {
-                // вот здесь у тебя результат санки
-                const payload = action.payload;
-                if (
-                    payload.fieldKey === BxDealDataKeys.exchange_doc_email ||
-                    payload.fieldKey === BxDealDataKeys.exchange_doc_phone
-                ) {
+            // if (updateDealField.fulfilled.match(action)) {
+            //     // вот здесь у тебя результат санки
+            //     const payload = action.payload;
+            //     if (
+            //         payload.fieldKey === BxDealDataKeys.exchange_doc_email ||
+            //         payload.fieldKey === BxDealDataKeys.exchange_doc_phone
+            //     ) {
 
-                    dispatch(validateEmailAndPhone());
-                }
-            }
+            //         dispatch(validateEmailAndPhone());
+            //     }
+            // }
 
-            if (setDealData.match(action)) {
+            // if (setDealData.match(action)) {
 
-                dispatch(validateEmailAndPhone());
-            }
+            //     dispatch(validateEmailAndPhone());
+            // }
         },
     });
 }
