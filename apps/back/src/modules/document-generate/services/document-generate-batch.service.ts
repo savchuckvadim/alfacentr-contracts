@@ -1,13 +1,13 @@
 import { DocumentGenerateDto } from '../dto/document-generate.dto';
 import { PBXService } from '@/modules/pbx/';
 import {
-    BitrixActivityTypeId,
+
     BitrixOwnerTypeId,
 } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 import { DocumentContractFieldsService } from './document-contract-fields.service';
 import {
     currentDocumentFields,
-    DocumentGenerateFieldTemplateCode,
+
     DocumentGenerateTemplatesType,
     EContractType,
     EnumDealCurrentDocumentFieldCode,
@@ -15,15 +15,20 @@ import {
 } from '@alfa/entities';
 import { IRequestDocumentGenerateResponse } from '../type/request-document-generate.type';
 import { delay } from '@/lib';
-import { BitrixService, IBXTimelineComment } from '@/modules/bitrix/';
+import { BitrixService, } from '@/modules/bitrix/';
 import { PpkApplicationGenerateService } from './ppk-application-generate.service';
 import { EmailService } from './email.service';
 import { TelegramService } from '@/modules/telegram/telegram.service';
+import { BxTimelineService } from './bx-timeline.service';
+import { BxBatchDocumentSendService } from './bx-document-send.service';
 
 
 export class DocumentGenerateBatchService {
     private bitrix: BitrixService;
     private filesForSend: [string, string][] = [];
+    private userId: number;
+    private bxTimelineService: BxTimelineService;
+    private bxDocumentSendService: BxBatchDocumentSendService;
     constructor(
         private readonly pbxService: PBXService,
         private readonly documentContractFieldsService: DocumentContractFieldsService,
@@ -35,7 +40,11 @@ export class DocumentGenerateBatchService {
     async generateDocument(dto: DocumentGenerateDto) {
         const { bitrix } = await this.pbxService.init('alfacentr.bitrix24.ru');
         this.bitrix = bitrix;
+        this.userId = dto.userId;
         const entityId = Number(dto.dealId);
+        this.bxTimelineService = new BxTimelineService(this.bitrix, this.userId, entityId);
+        this.bxDocumentSendService = new BxBatchDocumentSendService(this.bitrix, entityId, BitrixOwnerTypeId.DEAL);
+
 
         const contractTemplateContentData =
             this.documentContractFieldsService.getContractFields(
@@ -53,49 +62,15 @@ export class DocumentGenerateBatchService {
 
 
             );
-        // const generateDocumentData = {
-        //     templateId: contractTemplateContentData.templateId,
-        //     entityId: entityId,
-        //     entityTypeId: BitrixOwnerTypeId.DEAL,
-        //     // providerClassName: 'Bitrix\\DocumentGenerator\\DataProvider\\Rest',
-        //     value: 1,
-        //     stampsEnabled: 1,
-        //     values: contractTemplateContentData.fields,
-        // };
 
-        // const response = await bitrix.api.call<number>(
-        //     'crm.documentgenerator.document.add',
-        //     generateDocumentData,
-        // );
-        // const resultContract = await this.addDocumentToDeal(
-        //     entityId,
-        //     1,
-        //     contractTemplateContentData.fields as Record<string, string>,
-        //     Number(contractTemplateContentData.templateId),
-        //     BitrixOwnerTypeId.DEAL
-        // )
-        const resultContractWithoutPt = await this.addDocumentToDeal(
-            entityId,
+        void await this.bxDocumentSendService.add(
             0,
             contractTemplateContentData.fields as Record<string, string>,
             Number(contractTemplateContentData.templateId),
-            BitrixOwnerTypeId.DEAL,
             EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITHOUT_PT,
         );
 
-        // const resultContractWithPt = await this.addDocumentToDeal(
-        //     entityId,
-        //     1,
-        //     contractTemplateContentData.fields as Record<string, string>,
-        //     Number(contractTemplateContentData.templateId),
-        //     BitrixOwnerTypeId.DEAL,
-        //     EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITH_PT,
-        // );
 
-        // const currentContractBitrixId =
-        //     currentDocumentFields[
-        //         EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITH_PT
-        //     ].bitrixId;
         const currentContractWithoutPtBitrixId =
             currentDocumentFields[
                 EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITHOUT_PT
@@ -112,7 +87,7 @@ export class DocumentGenerateBatchService {
             currentDocumentFields[
                 EnumDealCurrentDocumentFieldCode.CURRENT_ACT_WITH_PT
             ].bitrixId;
-        const actDocWithoutPtFileData = await this.getActFile(entityId, {
+        void await this.getActFile({
             fields: {
                 UfCrm8ShotReqClient: dto.clientShortRq,
                 ShortClientRq: dto.clientShortRq,
@@ -133,18 +108,13 @@ export class DocumentGenerateBatchService {
                 EnumDealCurrentDocumentFieldCode.CURRENT_APPLICATION_DOC
             ].bitrixId;
 
-        // const contractPdf = await this.expectPdfFile(resultContract.id)
-        // const pdfContractFileData = await this.getPdfFileData(contractPdf)
-        // const { invoiceDocWithoutPtFileData, pdfInvoiceFileData } =
+
         await this.getInvoicesFiles(
-            entityId,
             dto.clientType,
             {
                 fields: {
                     ShortClientRq: dto.clientShortRq,
-                    // DocumentNumber: dto.documentCounter,
-                    // TITLE: dto.documentPrefixNumber,
-                    // title: `${dto.documentPrefixNumber}`,
+
                     DocumentPrefixNumber: dto.documentPrefixNumber,
                     DocumentNumberCounter: dto.documentCounter,
                     DocumentTitle: `Счет №${dto.documentCounter} к Договору №${dto.documentPrefixNumber}`,
@@ -155,13 +125,8 @@ export class DocumentGenerateBatchService {
 
 
 
-        void await this.sendTimelineComment(entityId, '⌛ Ожидание генерации PDF ...', 'waiting');
-        //     AUTHOR_ID: '502',
-        // COMMENT: '⌛ Ожидание генерации  PDF ...',
-        //     ENTITY_TYPE: 'deal',
-        //     ENTITY_ID: entityId,
-        // };
-        // void await this.bitrix.timeline.addTimelineComment(timelieneDataPdfWaiting);
+        void await this.bxTimelineService.send('⌛ Ожидание генерации PDF ...', 'waiting');
+
 
         for (const item of result) {
             const documentResults = item.result as {
@@ -181,7 +146,7 @@ export class DocumentGenerateBatchService {
                     document: IRequestDocumentGenerateResponse;
                 };
             };
-            console.log('documentResults', documentResults);
+
             const dealFields = {
                 // [`${currentContractBitrixId}`]: {
                 //     // @ts-ignore
@@ -212,10 +177,6 @@ export class DocumentGenerateBatchService {
                 const document = documentResults[key].document;
                 switch (key) {
                     case EnumDealCurrentDocumentFieldCode.CURRENT_ACT_WITH_PT:
-                        // console.log(
-                        //     'CURRENT_ACT_WITH_PT',
-                        //     document.downloadUrl,
-                        // );
 
                         const actDocumentFileData =
                             await this.bitrix.file.downloadBitrixFileAndConvertToBase64(
@@ -226,10 +187,7 @@ export class DocumentGenerateBatchService {
                         this.filesForSend.push(actDocumentFileData);
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITH_PT:
-                        // console.log(
-                        //     'CURRENT_INVOICES_WITH_PT',
-                        //     document.downloadUrl,
-                        // );
+
                         const invoicePdf = await this.expectPdfFile(
                             document.id,
                         );
@@ -240,10 +198,6 @@ export class DocumentGenerateBatchService {
                         this.filesForSend.push(pdfInvoiceFileData);
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITHOUT_PT:
-                        // console.log(
-                        //     'CURRENT_INVOICES_WITHOUT_PT',
-                        //     document.downloadUrl,
-                        // );
 
                         const invoiceDocWithoutPtFileData =
                             await this.bitrix.file.downloadBitrixFileAndConvertToBase64(
@@ -264,123 +218,33 @@ export class DocumentGenerateBatchService {
                             `${currentContractWithoutPtBitrixId}`
                         ].fileData = contractDocWithoutPtFileData;
                         this.filesForSend.push(contractDocWithoutPtFileData);
-                    // case EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITH_PT:
-                    //     console.log(
-                    //         'CURRENT_CONTRACT_WITH_PT',
-                    //         document.downloadUrl,
-                    //     );
 
-                    //     const contractPdf = await this.expectPdfFile(
-                    //         document.id,
-                    //     );
-                    //     const contractPdfFileData =
-                    //         await this.getPdfFileData(contractPdf);
-                    //     dealFields[`${currentContractBitrixId}`].fileData =
-                    //         contractPdfFileData;
-                    //     this.filesForSend.push(contractPdfFileData);
-                    //     break;
                 }
             }
 
-            const updateDealDocumentsResponse = await this.bitrix.deal.update(
+            void await this.bitrix.deal.update(
                 entityId,
                 // @ts-ignore
                 dealFields,
             );
         }
-        void await this.sendTimelineComment(entityId, '📜 PDF сгенерирован', 'document');
-        // const timelieneDataPdfDone: IBXTimelineComment = {
-        //     AUTHOR_ID: '502',
-        // //     COMMENT: '📜 PDF сгенерирован',
-        // //     ENTITY_TYPE: 'deal',
-        // //     ENTITY_ID: entityId,
-        // };
-        // void await this.bitrix.timeline.addTimelineComment(timelieneDataPdfDone);
+        void await this.bxTimelineService.send('📜 PDF сгенерирован', 'document');
+
 
         if (dto.contractType === EContractType.seminar_ppk || dto.contractType === EContractType.ppk) {
             void await this.getPpkApplicationFile(entityId, currentPpkApplicationBitrixId, dto);
-            // const timelieneData: IBXTimelineComment = {
-            //     AUTHOR_ID: '502',
-            //     COMMENT: '⏳ Ожидание генерации приложения ППК...',
-            //     ENTITY_TYPE: 'deal',
-            //     ENTITY_ID: entityId,
-            // };
-            // void await this.bitrix.timeline.addTimelineComment(timelieneData);
 
-
-            // try {
-
-            //     if (dto.ppkApplicationData) {
-            //         const ppkApplicationFileData =
-            //             await this.ppkApplicationGenerateService.generateDocxBase64(
-            //                 dto.ppkApplicationData
-            //                 //     {
-            //                 //     client: dto.client,
-            //                 //     contract: dto.contractType,
-            //                 //     deal: dto.dealId,
-            //                 // }
-            //             );
-            //         const updateDealPpkApplicationResponse = await bitrix.deal.update(
-            //             entityId,
-            //             {
-            //                 [`${currentPpkApplicationBitrixId}`]: {
-            //                     // @ts-ignore
-            //                     fileData: ppkApplicationFileData,
-            //                 },
-            //             },
-            //         );
-            //         this.filesForSend.push(ppkApplicationFileData);
-
-            //         const timelieneData: IBXTimelineComment = {
-            //             AUTHOR_ID: '502',
-            //             COMMENT: '📜 Приложение ППК сгенерировано',
-            //             ENTITY_TYPE: 'deal',
-            //             ENTITY_ID: entityId,
-            //         };
-            //         void await this.bitrix.timeline.addTimelineComment(timelieneData);
-            //     } else {
-            //         const timelieneData: IBXTimelineComment = {
-            //             AUTHOR_ID: '502',
-            //             COMMENT: '❌ Произошла ошибка: Приложение ППК не сгенерировано',
-            //             ENTITY_TYPE: 'deal',
-            //             ENTITY_ID: entityId,
-            //         };
-            //         void await this.bitrix.timeline.addTimelineComment(timelieneData);
-            //     }
-
-            // } catch (error) {
-            //     const timelieneData: IBXTimelineComment = {
-            //         AUTHOR_ID: '502',
-            //         COMMENT: '❌ Произошла ошибка: Приложение ППК не сгенерировано',
-            //         ENTITY_TYPE: 'deal',
-            //         ENTITY_ID: entityId,
-            //     };
-            //     void await this.bitrix.timeline.addTimelineComment(timelieneData);
-
-            // }
         }
 
 
-        void await this.sendTimelineComment(entityId, '✅ Документы сгенерированы', 'success');
-        // const timelieneData: IBXTimelineComment = {
-        //     AUTHOR_ID: '502',
-        //     COMMENT: '✅ Документы сгенерированы',
-        // //     ENTITY_TYPE: 'deal',
-        // //     ENTITY_ID: entityId,
-        // // };
-        // void await this.bitrix.timeline.addTimelineComment(timelieneData);
+        void await this.bxTimelineService.send('✅ Документы сгенерированы', 'success');
+
 
         let mailResult: any = null;
         if (dto.email.needEmail && dto.email.email) {
             await delay(500);
-            void await this.sendTimelineComment(entityId, '⌛ Отправка email...', 'email');
-            // const timelieneDataEmail: IBXTimelineComment = {
-            //     AUTHOR_ID: '502',
-            //     COMMENT: '⌛ Отправка email...',
-            //     ENTITY_TYPE: 'deal',
-            //     ENTITY_ID: entityId,
-            // };
-            // void await this.bitrix.timeline.addTimelineComment(timelieneDataEmail);
+            void await this.bxTimelineService.send('⌛ Отправка email...', 'email');
+
 
             const emailService = new EmailService(
                 this.bitrix,
@@ -395,14 +259,8 @@ export class DocumentGenerateBatchService {
 
 
         } else {
-            void await this.sendTimelineComment(entityId, '📄 Email не будет отправлен. Только формирование документов', 'email');
-            // const timelieneDataWithoutEmail: IBXTimelineComment = {
-            //     AUTHOR_ID: '502',
-            //     COMMENT: '📄 Email не будет отправлен. Только формирование документов',
-            //     ENTITY_TYPE: 'deal',
-            //     ENTITY_ID: entityId,
-            // };
-            // void await this.bitrix.timeline.addTimelineComment(timelieneDataWithoutEmail);
+            void await this.bxTimelineService.send('📄 Email не будет отправлен. Только формирование документов', 'email');
+
         }
 
         return { result, filesCount: this.filesForSend.length, files: this.filesForSend, mailResult };
@@ -413,7 +271,7 @@ export class DocumentGenerateBatchService {
         currentPpkApplicationBitrixId: string,
         dto: DocumentGenerateDto,
     ): Promise<void> {
-        void await this.sendTimelineComment(entityId, '⏳ Ожидание генерации приложения ППК...', 'waiting');
+        void await this.bxTimelineService.send('⏳ Ожидание генерации приложения ППК...', 'waiting');
 
 
         try {
@@ -435,49 +293,45 @@ export class DocumentGenerateBatchService {
                 );
                 const updtdDeal = await this.bitrix.deal.get(entityId, [`${currentPpkApplicationBitrixId}`]);
                 this.filesForSend.push(ppkApplicationFileData);
-                console.log('updtdDeal', updtdDeal);
+
                 //@ts-ignore
                 const url = updtdDeal.result[currentPpkApplicationBitrixId]?.downloadUrl as string;
 
-                console.log('URL', url);
+
                 if (url) {
-                    void await this.sendTimelineComment(entityId, `📜<a href="${url}"> Приложение ППК сгенерировано №${dto.ppkApplicationData.document_number}</a>`, 'ppk');
-                }else{
-                    void await this.sendTimelineComment(entityId, '❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+                    void await this.bxTimelineService.send(`📜<a href="${url}"> Приложение ППК сгенерировано №${dto.ppkApplicationData.document_number}</a>`, 'ppk');
+                } else {
+                    void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
                 }
 
             } else {
-                void await this.sendTimelineComment(entityId, '❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+                void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
             }
 
         } catch (error) {
-            void await this.sendTimelineComment(entityId, '❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+            void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
 
         }
     }
 
     private async getActFile(
-        entityId: number,
+
         contractTemplateContentData: { fields: Record<string, string> },
     ): Promise<void> {
         const templateWithoutStampsId = DocumentGenerateTemplatesType.ACT.id;
 
-        const resultAct = await this.addDocumentToDeal(
-            entityId,
+        void await this.bxDocumentSendService.add(
+
             0,
             contractTemplateContentData.fields as Record<string, string>,
             Number(templateWithoutStampsId),
-            BitrixOwnerTypeId.DEAL,
+
             EnumDealCurrentDocumentFieldCode.CURRENT_ACT_WITH_PT,
         );
 
-        // const actDocWithoutPtFileData = await this.bitrix.file.downloadBitrixFileAndConvertToBase64(resultAct.downloadUrlMachine)
-
-        // return actDocWithoutPtFileData
     }
 
     private async getInvoicesFiles(
-        entityId: number,
         clientType: RQ_TYPE,
         contractTemplateContentData: { fields: Record<string, string> },
     ) {
@@ -491,33 +345,24 @@ export class DocumentGenerateBatchService {
                 ? DocumentGenerateTemplatesType.INVOISE_QR_WITH_STAMPS.id
                 : DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS.id;
 
-        const resultInvoice = await this.addDocumentToDeal(
-            entityId,
+        void await this.bxDocumentSendService.add(
+
             1,
             contractTemplateContentData.fields as Record<string, string>,
             Number(templateWithStampsId),
-            BitrixOwnerTypeId.DEAL,
+
             EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITH_PT,
         );
 
-        const resultInvoiceWithoutPt = await this.addDocumentToDeal(
-            entityId,
+        void await this.bxDocumentSendService.add(
+
             0,
             contractTemplateContentData.fields as Record<string, string>,
             Number(templateWithoutStampsId),
-            BitrixOwnerTypeId.DEAL,
+
             EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITHOUT_PT,
         );
 
-        // const invoicePdf = await this.expectPdfFile(resultInvoice.id)
-        // const pdfInvoiceFileData = await this.getPdfFileData(invoicePdf)
-        // const invoiceDocWithoutPtFileData = await this.bitrix.file.downloadBitrixFileAndConvertToBase64(resultInvoiceWithoutPt.downloadUrlMachine)
-
-        // return {
-
-        //     invoiceDocWithoutPtFileData,
-        //     pdfInvoiceFileData,
-        // }
     }
     private async getPdfFileData(
         document: IRequestDocumentGenerateResponse,
@@ -557,79 +402,10 @@ export class DocumentGenerateBatchService {
         return result;
     }
 
-    private async addDocumentToDeal(
-        entityId: number,
-        stampsEnabled: 1 | 0,
-        values: Record<string, string>,
-        templateId: number,
-        entityTypeId: BitrixOwnerTypeId,
-        documentCode: EnumDealCurrentDocumentFieldCode,
-    ): Promise<void> {
-        const generateDocumentData = {
-            templateId: templateId,
-            entityId: entityId,
-            entityTypeId: entityTypeId,
-            // providerClassName: 'Bitrix\\DocumentGenerator\\DataProvider\\Rest',
-            value: 1,
-            stampsEnabled,
-            values,
-
-            fields: {
-                [DocumentGenerateFieldTemplateCode.Paragraph12]: {
-                    TYPE: 'string',
-                    MULTIPLE: 'Y',
-                    SEPARATOR: 3,
-                },
-                DocumentNumber: {
-                    TYPE: 'string',
-
-                    VALUE: '123',
-                },
-            },
-        };
-
-        this.bitrix.api.addCmdBatch(
-            documentCode,
-            'crm.documentgenerator.document.add',
-            generateDocumentData,
-        );
-
-        // const response = await bitrix.api.call<number>(
-        //     'crm.documentgenerator.document.add',
-        //     generateDocumentData,
-        // );
-        // return response.result.document as IRequestDocumentGenerateResponse
-    }
 
 
 
-    private async sendTimelineComment(
 
-        entityId: number,
-        comment: string, type: 'error' | 'success' | 'document' | 'pdf' | 'ppk' | 'email' | 'clock' | 'waiting',
-        isWaiting: boolean = false
-    ): Promise<void> {
 
-        let icon = '❌';
-
-        if (type === 'success') {
-            icon = '✅';
-        } else if (type === 'document') {
-            icon = '📜';
-        } else if (type === 'pdf') {
-            icon = '📄';
-        } else if (type === 'ppk') {
-            icon = '📄';
-        }
-
-        const timelieneData: IBXTimelineComment = {
-            AUTHOR_ID: '502',
-            COMMENT: `${comment}`,
-            ENTITY_TYPE: 'deal',
-            ENTITY_ID: entityId,
-        };
-        void await this.bitrix.timeline.addTimelineComment(timelieneData);
-
-    }
 
 }

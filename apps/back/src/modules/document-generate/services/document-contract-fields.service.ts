@@ -28,7 +28,10 @@ export class DocumentContractFieldsService {
         emailForDoc: string = '____________________________________________',
         seminarParticipantsCount: string = '____________________________________________',
 
-    ) {
+    ): {
+        templateId: number,
+        fields: Record<string, string | string[]>,
+    } {
 
 
 

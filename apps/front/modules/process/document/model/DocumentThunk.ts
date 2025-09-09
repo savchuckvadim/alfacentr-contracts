@@ -1,11 +1,9 @@
 import {
     AppDispatch,
-
     RootState,
     ThunkExtraArgument,
 } from '@/modules/app/model/store';
-import { Bitrix } from '@bitrix/bitrix';
-import { BitrixOwnerTypeId } from '@bitrix/domain';
+
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
     getDocumentHeader,
@@ -29,7 +27,8 @@ import { communicationsActions } from '@/modules/features/communications/model/s
 import { IS_PROD } from '@/modules/app/consts/app-global';
 import { getDocumentPpkApplicationData } from '../lib/utils/document-participant.util';
 
-// Новый стиль санков с extraArgument
+
+
 export const documentGenerate = createAsyncThunk<
     boolean, // ReturnType
     void, // Arg
@@ -54,6 +53,7 @@ export const documentGenerate = createAsyncThunk<
     const documentNumber = state.documentNumber;
 
     const dealId = state.app.bitrix.deal?.ID;
+    const userId = Number(state.app.bitrix.user?.ID) || 502;
     const domain = state.app.domain;
     const socketId = getWSClient().id;
     const dealData = state.deal.dealData;
@@ -89,10 +89,7 @@ export const documentGenerate = createAsyncThunk<
             code: 'UfCrm81700582664',
             value: 'TEST',
         },
-        // 'AlfaDocumentNumber': {
-        //     code: 'AlfaDocumentNumber',
-        //     value: 'TEST'
-        // },
+
         Header: {
             code: DocumentGenerateFieldTemplateCode.Header,
             value: header,
@@ -105,34 +102,12 @@ export const documentGenerate = createAsyncThunk<
             code: DocumentGenerateFieldTemplateCode.Paragraph12,
             value: paragraph,
         },
-        // TotalSum: {
-        //     code: DocumentGenerateFieldTemplateCode.TotalSum,
-        //     value: totalSum,
-        // },
-        // ProviderRq: {
-        //     code: DocumentGenerateFieldTemplateCode.ProviderRq,
-        //     value: provider,
-        // },
+
         DocumentNumber: {
             code: DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
             value: documentNumber.prefix + '-' + documentNumber.counter,
         },
-        // DocumentPrefix: {
-        //     code: DocumentGenerateFieldTemplateCode.DocumentPrefix,
-        //     value: documentNumber.prefix,
-        // },
-        // DocumentCounter: {
-        //     code: DocumentGenerateFieldTemplateCode.DocumentCounter,
-        //     value: `${documentNumber.counter}`,
-        // },
-        // ClientType: {
-        //     code: DocumentGenerateFieldTemplateCode.ClientType,
-        //     value: clientType,
-        // },
-        // ContractType: {
-        //     code: DocumentGenerateFieldTemplateCode.ContractType,
-        //     value: contractType,
-        // },
+
     } as IRequestDocumentGenerateFieldsType;
     const service = new DocumentGenerateOwnService();
 
@@ -140,9 +115,6 @@ export const documentGenerate = createAsyncThunk<
         ? getDocumentPpkApplicationData({
             documentPrefix: documentNumber.prefix,
             documentCounter: documentNumber.counter.toString(),
-            day: new Date().getDate().toString(),
-            month: new Date().getMonth().toString(),
-            year: new Date().getFullYear().toString(),
             participants: state.participantProduct.ppkDistribution,
             name_organization: clientCompanyTitle,
             position_director: clientDirectorInitials,
@@ -154,6 +126,7 @@ export const documentGenerate = createAsyncThunk<
 
     void await service.push({
         domain,
+        userId,
         socketId: socketId || '',
         clientType: clientType,
         contractType: contractType,

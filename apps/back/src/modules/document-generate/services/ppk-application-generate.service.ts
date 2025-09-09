@@ -1,19 +1,67 @@
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import { StorageService, StorageType } from '@/core/storage';
-import { Injectable } from '@nestjs/common';
 import { IPpkDocumentApplicationData } from '@alfa/entities';
-// import {
-//     EnumPpkApplicationFieldCode,
-//     EnumPpkApplicationParticipantFieldCode,
-//     IPpkApplicationParticipant,
-//     IPpkDocumentApplicationData,
-// } from '../type/ppk-application.type';
+import { BxTimelineService } from './bx-timeline.service';
+import { BitrixService } from '@/modules/bitrix/';
 
-@Injectable()
+
+
 export class PpkApplicationGenerateService {
-    constructor(private readonly storage: StorageService) { }
+    constructor(
+        private readonly storage: StorageService,
+        private readonly bxTimelineService: BxTimelineService,
+        private readonly bitrix: BitrixService,
+        private readonly filesForSend: [string, string][] = [],
+    ) { }
 
+    public async getPpkApplicationFile(
+        entityId: number,
+        currentPpkApplicationBitrixId: string,
+        ppkApplicationData: IPpkDocumentApplicationData,
+    ): Promise<void> {
+        void await this.bxTimelineService.send('⏳ Ожидание генерации приложения ППК...', 'waiting');
+
+
+        try {
+
+            if (ppkApplicationData) {
+                const ppkApplicationFileData =
+                    await this.generateDocxBase64(
+                        ppkApplicationData
+
+                    );
+                void await this.bitrix.deal.update(
+                    entityId,
+                    {
+                        [`${currentPpkApplicationBitrixId}`]: {
+                            // @ts-ignore
+                            fileData: ppkApplicationFileData,
+                        },
+                    },
+                );
+                const updtdDeal = await this.bitrix.deal.get(entityId, [`${currentPpkApplicationBitrixId}`]);
+                this.filesForSend.push(ppkApplicationFileData);
+
+                //@ts-ignore
+                const url = updtdDeal.result[currentPpkApplicationBitrixId]?.downloadUrl as string;
+
+
+                if (url) {
+                    void await this.bxTimelineService.send(`📜<a href="${url}"> Приложение ППК сгенерировано №${ppkApplicationData.document_number}</a>`, 'ppk');
+                } else {
+                    void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+                }
+
+            } else {
+                void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+            }
+
+        } catch (error) {
+            void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+
+        }
+    }
     async generateDocxBase64(
         documentData: IPpkDocumentApplicationData
     ): Promise<[string, string]> {
@@ -23,39 +71,6 @@ export class PpkApplicationGenerateService {
             'ppk-application.docx',
         );
         const content = await this.storage.readFile(templatePath);
-
-
-
-        // const participants: IPpkApplicationParticipant[] = [
-        //     {
-        //         [EnumPpkApplicationParticipantFieldCode.index]: '1',
-        //         [EnumPpkApplicationParticipantFieldCode.fio]: '123',
-        //         [EnumPpkApplicationParticipantFieldCode.topic]: '123',
-        //         [EnumPpkApplicationParticipantFieldCode.date_start]: '123',
-        //         [EnumPpkApplicationParticipantFieldCode.date_end]: '123',
-        //     },
-
-        //     {
-        //         [EnumPpkApplicationParticipantFieldCode.index]: '2',
-        //         [EnumPpkApplicationParticipantFieldCode.fio]: '12sdfsdfsdf3',
-        //         [EnumPpkApplicationParticipantFieldCode.topic]: '1sdfsdfsdf23',
-        //         [EnumPpkApplicationParticipantFieldCode.date_start]:
-        //             '12sdfsdfsdf3',
-        //         [EnumPpkApplicationParticipantFieldCode.date_end]:
-        //             '12sdfsdfsdf3',
-        //     },
-        // ];
-        // const documentData: IPpkDocumentApplicationData = {
-        //     [EnumPpkApplicationFieldCode.prefix]: '123',
-        //     [EnumPpkApplicationFieldCode.document_number]: '123',
-        //     [EnumPpkApplicationFieldCode.day]: '123',
-        //     [EnumPpkApplicationFieldCode.month]: '123',
-        //     [EnumPpkApplicationFieldCode.year]: '123',
-        //     [EnumPpkApplicationFieldCode.participants]: participants,
-        //     [EnumPpkApplicationFieldCode.name_organization]: '123',
-        //     [EnumPpkApplicationFieldCode.position_director]: '123',
-        //     [EnumPpkApplicationFieldCode.signature_director]: '123',
-        // } as IPpkDocumentApplicationData;
 
         const zip = new PizZip(content);
         const doc = new Docxtemplater(zip, {

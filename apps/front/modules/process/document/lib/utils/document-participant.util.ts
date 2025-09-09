@@ -1,6 +1,8 @@
 import { getParticipantName, getProductFieldByCodeValue, IAlfaProduct } from "@/modules/entities";
 import { IParticipantPpk, ITopicStat } from "@/modules/features/participant-product/type/participant-ppk.type";
-import { EnumPpkApplicationFieldCode, EnumPpkApplicationParticipantFieldCode, IParticipant, IPpkApplicationParticipant, IPpkDocumentApplicationData} from "@alfa/entities";
+import { EnumPpkApplicationFieldCode, EnumPpkApplicationParticipantFieldCode, IParticipant, IPpkApplicationParticipant, IPpkDocumentApplicationData } from "@alfa/entities";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 
 
 
@@ -9,9 +11,7 @@ import { EnumPpkApplicationFieldCode, EnumPpkApplicationParticipantFieldCode, IP
 export interface GetDocumentPpkApplicationData {
     documentPrefix: string;
     documentCounter: string;
-    day: string;
-    month: string;
-    year: string;
+  
     participants: IParticipantPpk;
     name_organization: string;
     position_director: string;
@@ -21,12 +21,18 @@ export interface GetDocumentPpkApplicationData {
 
 
 export const getDocumentPpkApplicationData = (dto: GetDocumentPpkApplicationData): IPpkDocumentApplicationData => {
+    const date = new Date();
+
+    const day = format(date, "dd", { locale: ru });       // "09"
+    const month = format(date, "MMMM", { locale: ru });   // "сентября"
+    const year = format(date, "yyyy", { locale: ru });    // "2025"
+
     return {
         [EnumPpkApplicationFieldCode.prefix]: dto.documentPrefix,
         [EnumPpkApplicationFieldCode.document_number]: dto.documentCounter,
-        [EnumPpkApplicationFieldCode.day]: dto.day,
-        [EnumPpkApplicationFieldCode.month]: dto.month,
-        [EnumPpkApplicationFieldCode.year]: dto.year,
+        [EnumPpkApplicationFieldCode.day]: day,
+        [EnumPpkApplicationFieldCode.month]: month,
+        [EnumPpkApplicationFieldCode.year]: year,
         [EnumPpkApplicationFieldCode.participants]: getDocumentParticipants(dto.participants),
         [EnumPpkApplicationFieldCode.name_organization]: dto.name_organization,
         [EnumPpkApplicationFieldCode.position_director]: dto.position_director,

@@ -1,7 +1,5 @@
 import { FilterTabs, SimpleCard } from '@/modules/shared';
-import { ParticipantsTable } from '@/modules/widgetes/Participant/ParticipantsTable/ParticipantsTable';
-import { PartisipantProductSimpleStatistics } from '@/modules/widgetes/Participant/PartisipantProductSimpleStatistics/PartisipantProductSimpleStatistics';
-import { CheckCircle, CreditCard, Package, Users } from 'lucide-react';
+import { CheckCircle, Package, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ParticipantsTableWidget } from '@/modules/widgetes/Participant/ParticipantsTable/ParticipantsTableWidget';
 import { ContractPreview, ProductsTableWidget } from '@/modules/widgetes';

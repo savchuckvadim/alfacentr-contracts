@@ -43,7 +43,16 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     })
     @IsString()
     domain: string;
+    @ApiProperty({
+        description: 'ID пользователя',
+        example: 1,
+    })
+    @IsNotEmpty()
+    @IsNumber()
+    userId: number;
 
+
+    
     @ApiProperty({
         description: 'ID сокета',
         example: '123',
@@ -64,6 +73,8 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
             Object.values(RQ_TYPE).join(', '),
     })
     clientType: RQ_TYPE;
+
+
     @ApiProperty({
         description: 'Тип договора',
         example: EContractType.seminar,
