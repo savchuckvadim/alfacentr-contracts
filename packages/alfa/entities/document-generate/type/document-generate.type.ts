@@ -172,6 +172,32 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: DocumentGenerateFieldTemplateCode.Paragraph3,
                 type: 'string',
             },
+            {
+                name: 'Номер документа',
+                code: DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
+                type: 'string',
+            },
+            {
+                name: 'Номер документа счетчик',
+                code: DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
+                type: 'string',
+            },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+            {
+                name: 'Email контакта для договора (электронном виде на адрес электронной почты )',
+                code: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
+                templateCode: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
+                type: 'string',
+            },
         ],
         forContract: [EContractType.seminar] as EContractType[],
     } as const,
@@ -199,12 +225,33 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
                 type: 'string',
             },
-    {
+            {
                 name: 'Если в течение 5-ти дней с момента направления документов ЗАКАЗЧИК не подписал акт и не направил мотивированный отказ от подписания акта, услуга считается оказанной, принятой в полном объеме и подлежит оплате. 3.3. {UfCrm8PaymentPoitDoc}',
                 code: DocumentGenerateFieldTemplateCode.Paragraph3,
                 templateCode: DocumentGenerateFieldTemplateCode.Paragraph3,
                 type: 'string',
             },
+            {
+                name: 'Номер документа',
+                code: DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
+                type: 'string',
+            },
+            {
+                name: 'Номер документа счетчик',
+                code: DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
+                type: 'string',
+            },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+
         ],
         forContract: [EContractType.ppk] as EContractType[],
     } as const,
@@ -288,7 +335,7 @@ export const DocumentGenerateTemplatesType = {
 
 
     ACT: {
-        id:140,
+        id: 140,
         name: 'Акт оказанных услуг',
         code: 'Act',
         fields: [
