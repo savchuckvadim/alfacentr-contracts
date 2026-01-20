@@ -121,7 +121,7 @@ export const documentGenerate = createAsyncThunk<
             signature_director: clientSignature,
         })
         : undefined;
-    debugger;
+
 
 
     void await service.push({

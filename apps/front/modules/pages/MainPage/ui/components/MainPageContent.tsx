@@ -1,13 +1,13 @@
 import { FilterTabs, SimpleCard } from '@/modules/shared';
 import { CheckCircle, Package, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ParticipantsTableWidget } from '@/modules/widgetes/Participant/ParticipantsTable/ParticipantsTableWidget';
 import { ContractPreview, ProductsTableWidget } from '@/modules/widgetes';
 
 export const MainPageContent = () => {
     const [filter, setFilter] = useState<string>('main');
-    const [title, setTitle] = useState<string>('Основные данные');
-    const tabs = [
+    // const [title, setTitle] = useState<string>('Основные данные');
+    const tabs = useMemo(() => [
         {
             value: 'main',
             label: 'Основные данные',
@@ -43,38 +43,28 @@ export const MainPageContent = () => {
             icon: <Users />,
             content: <ParticipantsTableWidget />,
         },
-        // {
-        //     value: "requisites",
-        //     label: "Реквизиты",
-        //     icon: <CreditCard />,
-        //     content: <SimpleCard children={<ParticipantsTable />} />
 
-        // },
         {
             value: 'contract',
             label: 'Что будет в договоре',
             icon: <CheckCircle />,
             content: <ContractPreview />,
         },
-    ];
-    useEffect(() => {
-        setTitle(
-            tabs.find(tab => tab.value === filter)?.label || 'Основные данные',
-        );
-    }, [filter]);
+    ], []);
+    // useEffect(() => {
+    //     setTitle(
+    //         tabs.find(tab => tab.value === filter)?.label || 'Основные данные',
+    //     );
+    // }, [filter]);
+    const title = useMemo(
+        () => tabs.find((tab) => tab.value === filter)?.label || "Основные данные",
+        [filter, tabs]
+      );
+      
     return (
         <div className="bg-background p-5 rounded-2xl">
             <h3 className="text-2xl mb-4 font-bold">{title}</h3>
-            {/* {filter !== "main" ? (
-                <div className="space-y-6 my-3">
-                    <PartisipantProductSimpleStatistics />
-                </div>
-            )
-                : (
-                    <div className="space-y-6 my-3 h-17">
-                        Main statistics
-                    </div>
-                )} */}
+
             <FilterTabs
                 tabs={tabs}
                 defaultValue={filter}

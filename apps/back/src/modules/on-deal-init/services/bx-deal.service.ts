@@ -5,7 +5,7 @@ import { getIsNotEmptyParticipant } from './deal-helper/get-participant-product-
 
 export class BxDealService {
     private bitrix: BitrixService;
-    constructor() {}
+    constructor() { }
 
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;
@@ -21,7 +21,8 @@ export class BxDealService {
     async setTimeline(dealId: number, dealValues: DealValue[]) {
         const comment = this.getComment(dealValues);
 
-        await this.setTimelineComment(dealId, comment);
+        comment
+            && await this.setTimelineComment(dealId, comment);
     }
     getComment(dealValues: DealValue[]) {
         const participants = this.getParticipants(dealValues);

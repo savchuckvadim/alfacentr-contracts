@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
     Card,
     CardContent,
@@ -13,10 +12,6 @@ import { BxRqEditModal } from './BxRqEditModal';
 import {
     EvsRqItem,
     RqItem,
-    RQ_TYPE,
-    CONTRACT_LTYPE,
-    SupplyTypesType,
-    filterFieldItems,
     useBxRqEditBase,
     useBxRq,
 } from '@workspace/bx-rq';

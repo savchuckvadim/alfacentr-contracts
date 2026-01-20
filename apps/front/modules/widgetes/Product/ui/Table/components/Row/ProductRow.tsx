@@ -1,17 +1,15 @@
 'use client';
-
 import { TableCell, TableRow } from '@workspace/ui/components/table';
 import { Badge } from '@workspace/ui/components/badge';
 import { IAlfaProduct } from '@/modules/entities';
-
 import { useProductPpk } from '@/modules/features/participant-product/hook/useProductPpk';
-import { Tooltip } from '@/modules/shared';
 import {
     ProductParticipantQuantityBadge,
     ProductParticipantStatusBadge,
 } from '@/modules/features/';
+import { memo } from 'react';
 
-export const ProductsTableRow = ({
+export const ProductsTableRow = memo(({
     product,
     index,
 }: {
@@ -20,16 +18,10 @@ export const ProductsTableRow = ({
 }) => {
     const {
         productType,
-        isPpk,
-        isSeminar,
-        isUp,
-        assignedCount,
         productName,
-        quantity,
         formattedQuantity,
-        price,
         formattedPrice,
-        availabilityStatus,
+
         getTypeBadgeColor,
     } = useProductPpk(product);
 
@@ -38,13 +30,7 @@ export const ProductsTableRow = ({
             <TableCell className="font-medium text-gray-500">
                 {index + 1}
             </TableCell>
-            {/* < TableCell width={10} >
-                <Tooltip content={'тип товара'}>
-                    <Badge variant={'default'} className={`text-xs ${getTypeBadgeColor()}`} >
-                        {productType}
-                    </Badge>
-                </Tooltip>
-            </TableCell> */}
+
             <TableCell>
                 <div className="flex items-center justify-between">
                     <div>
@@ -84,13 +70,7 @@ export const ProductsTableRow = ({
                     index={index}
                 />
             </TableCell>
-            {/* < TableCell >
-                <div className="flex items-center space-x-1" >
-                    <ProductEditAction product={product} />
-                    <ProductDeleteAction product={product} />
 
-                </div>
-            </TableCell> */}
         </TableRow>
     );
-};
+});

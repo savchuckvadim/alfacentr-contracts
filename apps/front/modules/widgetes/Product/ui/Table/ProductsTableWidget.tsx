@@ -5,8 +5,10 @@ import { DeleteConfirmModal } from '../DeleteConfirm/DeleteConfirmModal';
 import { ProductsTable } from './components/Table/ProductsTable';
 import { useDeleteEditMode } from '@/modules/entities/product/hook/useDeleteEditMode';
 import { LinkBadge } from '@/modules/shared';
+import { memo } from 'react';
 
-export function ProductsTableWidget() {
+// export function ProductsTableWidget() {
+export const ProductsTableWidget = memo(function ProductsTableWidget() {
     const { items, loading, error } = useAlfaProducts();
 
     const {
@@ -73,7 +75,7 @@ export function ProductsTableWidget() {
         );
     }
 
-    return (
+    return  (
         <>
             <div className="flex justify-end mb-4">
                 <LinkBadge
@@ -97,4 +99,4 @@ export function ProductsTableWidget() {
             )}
         </>
     );
-}
+});

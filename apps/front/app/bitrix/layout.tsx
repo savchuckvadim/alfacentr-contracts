@@ -10,20 +10,13 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        // <html lang="en" suppressHydrationWarning>
 
-        //   <body
-        //     className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
-        //   >
-        //     <Providers>
         <div>
-            {/* Хедер */}
+
             <Header brandComponent={<CompanyBrand />} />
             <App>{children}</App>
         </div>
-        //     </Providers>
-        //   </body>
 
-        // </html>
+
     );
 }

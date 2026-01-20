@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import {
     Dialog,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@workspace/ui/components/dialog';
@@ -24,6 +25,7 @@ import { isFieldRequired } from '../lib/utils/is-field-required';
 import { useBxRqEditBase } from '@workspace/bx-rq';
 import { MicroPreloader } from '@/modules/shared/Preloader/MicroPreloader';
 import { ComponentPreloader } from '@/modules/shared';
+import { createPortal } from 'react-dom';
 
 interface BxRqEditModalProps {
     title: string;
@@ -179,17 +181,20 @@ export const BxRqEditModal = ({
                                 handleFieldBlur(field.code, e.target.value)
                             }
                             placeholder={`Введите ${field.name.toLowerCase()}`}
-                            // disabled={field.isDisable}
+                        // disabled={field.isDisable}
                         />
                     </div>
                 );
         }
     };
+    const modalRoot = document.getElementById("modal-root");
 
-    return (
+    if (!modalRoot) return null; // safety check
+    if (!isOpen) return null;
+    return createPortal(
         <>
-            <div className="bg-white/20 backdrop-blur-xs min-h-screen w-full absolute top-0 bottom-0 left-0 z-10"></div>
-            <Dialog open={isOpen} onOpenChange={onCancel}>
+            {/* <div className="bg-background/20 backdrop-blur-xs min-h-screen w-full absolute top-0  left-0 z-10"></div> */}
+            <Dialog  open={isOpen} onOpenChange={onCancel} modal={true} >
                 <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     {isLoading ? (
                         <div className=" min-h-[400px] min-w-full ">
@@ -206,27 +211,32 @@ export const BxRqEditModal = ({
                             </div>
                         </>
                     )}
-                    <div className="flex justify-end gap-2 pt-4">
-                        <Button
-                            variant="outline"
-                            onClick={onCancel}
-                            disabled={isLoading}
-                        >
-                            Отмена
-                        </Button>
-                        <Button onClick={onSave} disabled={isLoading}>
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Сохранение...
-                                </>
-                            ) : (
-                                'Сохранить'
-                            )}
-                        </Button>
-                    </div>
+                    <DialogFooter>
+                        <div className="flex justify-end gap-2 pt-4">
+                            <Button
+                                variant="outline"
+                                onClick={onCancel}
+                                disabled={isLoading}
+                            >
+                                Отмена
+                            </Button>
+                            <Button onClick={onSave} disabled={isLoading}>
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Сохранение...
+                                    </>
+                                ) : (
+                                    'Сохранить'
+                                )}
+                            </Button>
+                        </div>
+                    </DialogFooter>
                 </DialogContent>
+
             </Dialog>
         </>
+        , modalRoot
     );
+
 };
