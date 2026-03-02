@@ -1,4 +1,3 @@
-
 import { EContractType } from './document-generate.type';
 //todo вынести в пакет переиспользуемый и для фронта и для бэка
 export interface IRequestDocumentGenerateType {
@@ -12,7 +11,12 @@ export interface IRequestDocumentGenerateType {
     totalSum: string;
     client: string[];
     fields: IRequestDocumentGenerateFieldsType;
+    actDate: string;
     clientShortRq: string;
+    clientUpdShortRq: string;
+    clientUpdInnKpp: string; //2526003992 / 252601001
+    clientUpdAddress: string;
+    clientCompanyShortTitle: string;
     clientSignature: string;
     paragraphItems?: string[];
     documentPrefixNumber: string;
@@ -21,8 +25,10 @@ export interface IRequestDocumentGenerateType {
     email: IRequestDocumentGenerateEmail;
     seminarParticipantsCount: string;
     ppkApplicationData?: IPpkDocumentApplicationData;
+    userName: string;
+    userEmail: string;
+    userId: number;
 }
-
 
 export enum EnumPpkApplicationFieldCode {
     prefix = 'prefix',
@@ -64,19 +70,12 @@ export interface IPpkDocumentApplicationData {
     [EnumPpkApplicationFieldCode.signature_director]: string;
 }
 
-
-
-
 export interface IRequestDocumentGenerateEmail {
-
     email?: string;
     needEmail?: boolean;
     name?: string;
     phone?: string;
-
 }
-
-
 
 export interface IRequestDocumentGenerateFieldsType {
     [key: string]: IRequestDocumentGenerateFieldValueType;

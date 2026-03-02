@@ -9,6 +9,7 @@ import { BxCompanyService } from '../services/bx-company.service';
 import { BxDealDataKeys } from '@alfa/entities';
 import { AlfaProductService } from '@/modules/alfa-products';
 import { AlfaFieldsService } from '@/modules/alfa-fields';
+import { InitialBidTypeService } from '../services/deal-helper/initial-contract-type.service';
 
 export enum BitrixEntityType {
     DEAL = 'deal',
@@ -18,7 +19,10 @@ export enum BitrixEntityType {
 }
 @Injectable()
 export class OnDealInitUseCase {
-    constructor(private readonly pbx: PBXService) { }
+    constructor(
+        private readonly pbx: PBXService,
+        private readonly initialContractTypeService: InitialBidTypeService,
+    ) {}
     async init(domain: string) {
         const { bitrix } = await this.pbx.init(domain);
         const bxDealService = new BxDealService();
@@ -42,7 +46,6 @@ export class OnDealInitUseCase {
     }
     async onDealCreate(data: OnDealInitRequestDto) {
         const {
-
             bxDealService,
             alfaFieldService,
             bxSmartService,
@@ -52,38 +55,52 @@ export class OnDealInitUseCase {
 
         const { fieldData, bxFieldsIds } =
             await alfaFieldService.getDealFieldsDataWithIds();
-        const testInn = fieldData[BxDealDataKeys.inn];
 
         const deal = await bxDealService.getDeal(data.dealId, bxFieldsIds);
         const dealValues = DealFieldValuesHelperService.getDealValues(
             deal,
             fieldData,
         );
+        await bxDealService.setTimelineInitProccess(data.dealId);
+        const contractType =
+            this.initialContractTypeService.initialContractType(dealValues);
+
+        //is UP - означает что пришло из формы связанной с УП если true
+        //   если false - значит пришло из формы Семинары
+        const isUp =
+            contractType && this.initialContractTypeService.isUp(contractType);
 
         if (deal && deal.ID) {
             const dealId = deal.ID;
-            void await bxProductService.addPpkProducts(
-                dealId,
-                dealValues,
-            );
-            await bxSmartService.setParticipantsSmarts(dealValues, dealId);
+            if (isUp) {
+                //если УП то добавляем продукты связанные с УП
+                // todo переделать - товары не добавляем
+                // void await bxProductService.addUpProducts(
+                //     dealId,
+                //     dealValues,
+                // );
+            } else {
+                //если Семинары то добавляем продукты связанные с Семинарами
+                void (await bxProductService.addPpkProducts(
+                    dealId,
+                    dealValues,
+                ));
+                //добавляем участников
+                await bxSmartService.setParticipantsSmarts(dealValues, dealId);
+            }
         }
 
         const inn = dealValues.find(
             (value) => value.code === BxDealDataKeys.inn,
         )?.value as string;
 
-
-
         deal &&
             deal.ID &&
+            dealValues &&
+            dealValues.length > 0 &&
             (await bxDealService.setTimeline(deal.ID, dealValues));
 
-
-        deal &&
-            deal.ID &&
-            inn &&
-            (await bxCompanyService.searchCompany(deal.ID, inn));
+        deal && deal.ID && (await bxCompanyService.searchCompany(deal.ID, inn));
         return deal;
     }
 }

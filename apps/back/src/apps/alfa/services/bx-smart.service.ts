@@ -30,7 +30,7 @@ export class BxSmartService {
             entityTypeId as unknown as string,
             item,
         );
-       
+
         return smarts;
     }
 }

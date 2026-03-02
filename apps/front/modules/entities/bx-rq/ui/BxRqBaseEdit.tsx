@@ -9,12 +9,7 @@ import {
 import { Button } from '@workspace/ui/components/button';
 import { Badge } from '@workspace/ui/components/badge';
 import { BxRqEditModal } from './BxRqEditModal';
-import {
-    EvsRqItem,
-    RqItem,
-    useBxRqEditBase,
-    useBxRq,
-} from '@workspace/bx-rq';
+import { EvsRqItem, RqItem, useBxRqEditBase, useBxRq } from '@workspace/bx-rq';
 import { Edit2, Save, X } from 'lucide-react';
 import { useApp } from '@/modules/app';
 import { useClientType } from '@/modules/features/client-type/hook/useClientType';
@@ -75,6 +70,8 @@ export const BxRqBaseEdit = ({
     if (!clientType) return null;
     const handleSave = () => {
         saveBase(domain, companyId, clientType);
+
+        //TODO: set current rq to deal
 
         // setIsEditMode(false)
     };

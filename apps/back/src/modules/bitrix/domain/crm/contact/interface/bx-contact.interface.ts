@@ -9,10 +9,12 @@ export interface IBXContact {
         VALUE: string;
         TYPE: string;
     }[];
-    EMAIL?: {
-        VALUE: string;
-        TYPE: string;
-    }[];
+    EMAIL?:
+        | {
+              VALUE: string;
+              TYPE: string;
+          }[]
+        | string;
     POST?: string;
     COMMENTS?: string;
 
@@ -33,6 +35,7 @@ export interface IBXContact {
     UTM_CAMPAIGN?: string;
     UTM_CONTENT?: string;
     UTM_TERM?: string;
+    [key: string]: any;
 }
 
 // export interface IBXContact {

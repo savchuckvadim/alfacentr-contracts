@@ -36,6 +36,7 @@ export const appInit = async (
     );
 
     const bxResult = await bitrixInit();
+
     if (!bxResult) {
         window && window?.location
             ? (window.location.href = '/no-company')

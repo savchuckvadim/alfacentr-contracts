@@ -38,7 +38,13 @@ export class BxDealService {
     async getField(id: number | string) {
         return await this.repo.getField(id);
     }
-    async contactItemsSet(dealId: number | string, contactIds: number[] | string[]) {
+    async contactItemsSet(
+        dealId: number | string,
+        contactIds: number[] | string[],
+    ) {
         return await this.repo.contactItemsSet(dealId, contactIds);
+    }
+    async contactItemsGet(dealId: number | string) {
+        return await this.repo.contactItemsGet(dealId);
     }
 }

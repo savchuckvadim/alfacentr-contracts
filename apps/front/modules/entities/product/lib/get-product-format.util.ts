@@ -1,7 +1,6 @@
 import { getPrefixByProductName } from '@alfa/entities';
 import { IAlfaProduct } from '../model/ProductSlice';
 
-
 export const getProductFormat = (product: IAlfaProduct): string => {
     const seminarPlaceField = product.fields.find(
         field => field.bitrixId === 'property158',

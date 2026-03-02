@@ -57,7 +57,6 @@ export class BxClientRqService {
                 ?.value as string) || fullname;
         result.name = fullname;
 
-
         const innValue = clientRq.fields.find(
             fld => fld.code === RQ_ITEM_CODE.INN,
         )?.value;
@@ -158,7 +157,7 @@ export class BxClientRqService {
         };
         let fullname = '________________________________________';
         let inn = '________________________________________';
-
+        let kpp = '________________________________________';
         fullname =
             this.findFieldByCode(clientRq, RQ_ITEM_CODE.FULLNAME) || fullname;
         result.fullname = fullname;
@@ -167,6 +166,10 @@ export class BxClientRqService {
 
         inn = `ИНН: ${innValue || inn}`;
         result.inn = inn;
+
+        const kppValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.KPP);
+        kpp = `КПП: ${kppValue || kpp}`;
+        result.kpp = kpp;
 
         let based = '_____________________________';
         const basedValue = this.findFieldByCode(clientRq, RQ_ITEM_CODE.BASED);
@@ -282,7 +285,7 @@ export class BxClientRqService {
         kppResult = kppValue ? `КПП: ${kppValue}` : `${kppResult}`;
 
         let addressResult = 'Адрес: ________________________________________';
-        let address = this.getAddressString(
+        let registredAdress = this.getAddressString(
             clientRq,
             BX_ADDRESS_TYPE.REGISTERED,
             RQ_TYPE.ORGANIZATION,
@@ -295,11 +298,12 @@ export class BxClientRqService {
             true,
         );
 
-        addressResult = primaryAddress
-            ? `Адрес: ${primaryAddress}`
-            : address
-                ? `Адрес: ${address}`
-                : `${addressResult}`;
+        addressResult = registredAdress
+            ? `Адрес: ${registredAdress}`
+            : primaryAddress
+              ? `Адрес: ${primaryAddress}`
+              : `${addressResult}`;
+
         result = `${fullnameResult} ${innResult} ${kppResult} ${addressResult}`;
         return result;
     }
@@ -389,11 +393,10 @@ export class BxClientRqService {
         addressResult = primaryAddress
             ? `Адрес: ${primaryAddress}`
             : address
-                ? `Адрес: ${address}`
-                : `${addressResult}`;
+              ? `Адрес: ${address}`
+              : `${addressResult}`;
         // return `${fullname} ${documentType} ${docSeries} ${docNumber} ${docDate} ${depCode} ${inn} ${addressResult}`;
         return `${fullname}`;
-
     }
     private findFieldByCode(clientRq: EvsRqItem, code: RQ_ITEM_CODE) {
         return clientRq.fields.find(fld => fld.code === code)?.value as string;
@@ -406,6 +409,7 @@ export class BxClientRqService {
         isClean: boolean = false,
     ): string {
         let address = '';
+        const space = '________________________________________';
         clientRq.address.items.forEach(addresType => {
             if (addresType.type_id === type) {
                 addresType.fields.forEach((field, index) => {
@@ -418,6 +422,7 @@ export class BxClientRqService {
                         } else {
                             address += field.value;
                         }
+
                         if (index < addresType.fields.length - 1) {
                             address += ', ';
                         }
@@ -441,14 +446,12 @@ export class BxClientRqService {
         }
 
         if (isClean) {
-            return `${address}` || `________________________________________`;
+            return `${address}` || space;
         } else {
-            return (
-                `${addressType}: ${address}` ||
-                `${addressType}: ________________________________________`
-            );
+            return `${addressType}: ${address}` || `${addressType}: ${space}`;
         }
     }
+
     private getBankRqs(bankRq: BankRqItem | null) {
         if (!bankRq) {
             return {
@@ -524,9 +527,7 @@ export class BxClientRqService {
         return bank.fields.find(fld => fld.code === code)?.value as string;
     }
 
-
     public prepareClientFizSignature(clientRq: EvsRqItem): string {
-
         // let fullname = '';
 
         // fullname =
@@ -540,17 +541,14 @@ export class BxClientRqService {
         return `_________________________/ ${initials}`;
     }
 
-
-
     public prepareClientOrgSignature(clientRq: EvsRqItem): string {
-
         let result: string = '';
-        const directorNameResult = this.prepareClientOrgDirectorInitials(clientRq);
+        const directorNameResult =
+            this.prepareClientOrgDirectorInitials(clientRq);
         // let directorNameResult =
         //     ' _____________________';
 
-        let directorPositionResult =
-            '';
+        let directorPositionResult = '';
 
         // const directorFullName = this.findFieldByCode(
         //     clientRq,
@@ -559,7 +557,6 @@ export class BxClientRqService {
         // if (directorFullName) {
         //     directorNameResult = this.getIinitialsNameByFullName(directorFullName);
         // }
-
 
         const directorPosition = this.findFieldByCode(
             clientRq,
@@ -574,7 +571,6 @@ export class BxClientRqService {
     }
 
     public prepareClientFizDirectorInitials(clientRq: EvsRqItem): string {
-
         let fullname = '';
 
         fullname =
@@ -587,49 +583,35 @@ export class BxClientRqService {
         return initials;
     }
 
-
-
     public prepareClientOrgDirectorInitials(clientRq: EvsRqItem): string {
-
-
-        let directorNameResult =
-            ' _____________________';
-
+        let directorNameResult = ' _____________________';
 
         const directorFullName = this.findFieldByCode(
             clientRq,
             RQ_ITEM_CODE.DIRECTOR_NAME,
         );
         if (directorFullName) {
-            directorNameResult = this.getIinitialsNameByFullName(directorFullName);
+            directorNameResult =
+                this.getIinitialsNameByFullName(directorFullName);
         }
-
-
 
         return directorNameResult;
     }
-
 
     public prepareClientCompanyTitle(
         clientType: RQ_TYPE,
         clientRq: EvsRqItem | null,
     ) {
-
         let clientCompanyName = '';
         if (clientRq?.fields) {
             if (
-
                 clientType === RQ_TYPE.ORGANIZATION ||
                 clientType === RQ_TYPE.BUDGET ||
                 clientType === RQ_TYPE.IP
             ) {
-
                 for (const rqItem of clientRq.fields) {
                     if (rqItem.value) {
-                        if (
-                            rqItem.code === RQ_ITEM_CODE.SHORTNAME
-
-                        ) {
+                        if (rqItem.code === RQ_ITEM_CODE.SHORTNAME) {
                             clientCompanyName = rqItem.value as string;
                         }
                     }
@@ -637,38 +619,129 @@ export class BxClientRqService {
                 if (!clientCompanyName) {
                     for (const rqItem of clientRq.fields) {
                         if (rqItem.value) {
-                            if (
-                                rqItem.code === RQ_ITEM_CODE.FULLNAME
-
-                            ) {
+                            if (rqItem.code === RQ_ITEM_CODE.FULLNAME) {
                                 clientCompanyName = rqItem.value as string;
                             }
                         }
                     }
                 }
-
-
-            } else if (
-
-                clientType === RQ_TYPE.FIZ
-            ) {
-
+            } else if (clientType === RQ_TYPE.FIZ) {
                 for (const rqItem of clientRq.fields) {
                     if (rqItem.value) {
-                        if (
-                            rqItem.code === RQ_ITEM_CODE.PERSON_NAME
-                        ) {
+                        if (rqItem.code === RQ_ITEM_CODE.PERSON_NAME) {
                             clientCompanyName = rqItem.value as string;
                         }
                     }
                 }
-
-
             }
         }
 
         return clientCompanyName;
     }
+
+    public prepareClientCompanyShortTitle(
+        clientType: RQ_TYPE,
+        clientRq: EvsRqItem | null,
+    ): string {
+        let clientCompanyName = '';
+        const space = '';
+        if (clientRq?.fields) {
+            if (
+                clientType === RQ_TYPE.ORGANIZATION ||
+                clientType === RQ_TYPE.BUDGET ||
+                clientType === RQ_TYPE.IP
+            ) {
+                for (const rqItem of clientRq.fields) {
+                    if (rqItem.value) {
+                        if (rqItem.code === RQ_ITEM_CODE.SHORTNAME) {
+                            clientCompanyName = rqItem.value as string;
+                        }
+                    }
+                }
+            } else if (clientType === RQ_TYPE.FIZ) {
+                for (const rqItem of clientRq.fields) {
+                    if (rqItem.value) {
+                        if (rqItem.code === RQ_ITEM_CODE.PERSON_NAME) {
+                            const value = rqItem.value as string;
+                            const initials = !value
+                                ? space
+                                : this.getIinitialsNameByFullName(
+                                      rqItem.value as string,
+                                  );
+                            clientCompanyName = initials;
+                        }
+                    }
+                }
+            }
+        }
+
+        return clientCompanyName || space;
+    }
+
+    public getUpdShortRq(
+        clientType: RQ_TYPE,
+        clientRq: EvsRqItem | null,
+    ): string {
+        let clientCompanyName = '';
+        const space = '________________________________________';
+        let result = '';
+        const innKpp = this.getUpdInnKpp(clientType, clientRq);
+        if (clientRq?.fields) {
+            const inn =
+                this.findFieldByCode(clientRq, RQ_ITEM_CODE.INN) || space;
+
+            if (
+                clientType === RQ_TYPE.ORGANIZATION ||
+                clientType === RQ_TYPE.BUDGET ||
+                clientType === RQ_TYPE.IP
+            ) {
+                const kpp =
+                    this.findFieldByCode(clientRq, RQ_ITEM_CODE.KPP) || space;
+                // kpp = `КПП: ${kppValue || kpp}`;
+                result += `ИНН / КПП: ${inn} / ${kpp}`;
+            } else if (clientType === RQ_TYPE.FIZ) {
+                result += `ИНН: ${inn}`;
+            }
+        }
+
+        return result;
+    }
+
+    public getUpdInnKpp(
+        clientType: RQ_TYPE,
+        clientRq: EvsRqItem | null,
+    ): string {
+        let result = '';
+
+        if (clientRq?.fields) {
+            const inn = this.findFieldByCode(clientRq, RQ_ITEM_CODE.INN);
+
+            if (
+                clientType === RQ_TYPE.ORGANIZATION ||
+                clientType === RQ_TYPE.BUDGET ||
+                clientType === RQ_TYPE.IP
+            ) {
+                const kpp = this.findFieldByCode(clientRq, RQ_ITEM_CODE.KPP);
+                // kpp = `КПП: ${kppValue || kpp}`;
+                result += `${inn} / ${kpp}`;
+            } else if (clientType === RQ_TYPE.FIZ) {
+                result += `${inn}`;
+            }
+        }
+
+        return result;
+    }
+
+    public getAdreesForShortRq(clientRq: EvsRqItem): string {
+        const address = this.getAddressString(
+            clientRq,
+            BX_ADDRESS_TYPE.REGISTERED,
+            RQ_TYPE.ORGANIZATION,
+            true,
+        );
+        return address;
+    }
+
     private getIinitialsNameByFullName(fullname: string): string {
         const person = this.splitFullName(fullname);
         const first = person.first?.[0]?.toUpperCase() || '';

@@ -1,7 +1,9 @@
 import { API_METHOD } from '../type/type';
 import axios from 'axios';
 
-const prod = `https://event.april-app.ru/api/v1/event/`;
+// const prod = `https://event.april-app.ru/api/v1/event/`;
+// const prod = `http://localhost:8000/api/v1/event/`;
+const prod = `http://localhost:3000/api/`;
 // const dev = `https://obsessively-busy-moonfish.cloudpub.ru/api/v1/event/`;
 
 const url = prod;
@@ -60,9 +62,18 @@ export const eventServiceAPI = {
 
         if (response && response !== undefined) {
             response = response as EVSResponse;
+
             if (response.data) {
                 if (response.data.resultCode === 0) {
-                    result = response.data.result;
+                    if (response.data.result) {
+                        result = response.data.result;
+                        //@ts-ignore
+                    } else if (response.data.data) {
+                        //@ts-ignore
+                        result = response.data.data;
+                    } else {
+                        result = response.data;
+                    }
                 }
             }
         }

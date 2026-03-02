@@ -34,6 +34,8 @@ import { AlfaActivityCommandsModule } from './commands/alfa/alfa-activity.module
 import { DocumentGenerateModule } from './modules/document-generate/document-generate.module';
 import { DocumentNumberModule } from './modules/document-number/document-number.module';
 import { ValidateCheckModule } from './modules/validate-check/validate-check.module';
+import { RqModule } from './apps/rq/rq.module';
+import { CaseModule } from './apps/case/case.module';
 
 @Module({
     imports: [
@@ -93,7 +95,9 @@ import { ValidateCheckModule } from './modules/validate-check/validate-check.mod
         ValidateCheckModule,
 
         HelperModule,
-        AlfaActivityCommandsModule
+        AlfaActivityCommandsModule,
+        RqModule,
+        CaseModule,
     ],
     controllers: [AppController, HealthController],
     providers: [AppService, GlobalExceptionFilter],

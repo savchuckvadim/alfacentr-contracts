@@ -74,7 +74,6 @@ export class BxProductService {
             }
         }
 
-      
         return products;
     }
 }

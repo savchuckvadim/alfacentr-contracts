@@ -8,15 +8,15 @@ export const ProductParticipantCount = ({
     productId: number;
 }) => {
     const { productToParticipants } = useParticipantPpk();
-    const { } = useAlfaProducts();
+    const {} = useAlfaProducts();
     const participantsCount = useMemo(
         () => productToParticipants[productId]?.length || 0,
-        [productToParticipants, productId]
+        [productToParticipants, productId],
     );
 
-
-    return memo(() => (<div>
-        <span className="text-sm text-gray-500">{participantsCount}</span>
-    </div>
+    return memo(() => (
+        <div>
+            <span className="text-sm text-gray-500">{participantsCount}</span>
+        </div>
     ));
 };

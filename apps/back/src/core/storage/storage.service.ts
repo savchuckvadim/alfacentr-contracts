@@ -1,9 +1,6 @@
 import { Global, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-    existsSync,
-    mkdirSync,
-} from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { promisify } from 'util';
 import { pipeline } from 'stream';

@@ -7,9 +7,12 @@ import {
 } from '../lib/get-product-type.util';
 import { IAlfaProduct } from '../model/ProductSlice';
 import { getProductQuantity, getProductSum } from '../lib/product-sum.util';
+import { useIsUpContractType } from '@/modules/features';
+import { useMemo } from 'react';
 
 export const useAlfaProducts = () => {
     const { items, loading, error } = useAppSelector(state => state.product);
+
     const ppkProducts = items.filter(product =>
         getIsPpkProduct(product),
     ) as IAlfaProduct[];
@@ -29,8 +32,8 @@ export const useAlfaProducts = () => {
         if (getIsPpkProduct(product)) {
             return 'primary';
         }
-
     };
+
     return {
         items,
         loading,

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IAlfaProduct } from '@/modules/entities/product';
-import { getContractTypeByProducts } from '../lib/utils/get-contract-type-by-products.util';
+import { getContractTypeByProducts } from '../../lib/utils/get-contract-type-by-products.util';
 import { RootState } from '@/modules/app/model/store';
 
 export interface IContractTypeState {
@@ -14,13 +14,15 @@ export enum EContractType {
     seminar = 'seminar',
     ppk = 'ppk',
     seminar_ppk = 'seminar_ppk',
-    up = 'up',
+    up_complect = 'up_complect',
+    up_video = 'up_video',
 }
 export enum EContractName {
     seminar = 'Семинар',
     ppk = 'ППК',
     seminar_ppk = 'Семинар ППК',
-    up = 'УП',
+    up_complect = 'УП комплектом',
+    up_video = 'УП видеозапись',
 }
 
 export interface EContractTypeField {
@@ -47,8 +49,13 @@ const initialState: IContractTypeState = {
             id: 3,
         },
         {
-            code: EContractType.up,
-            name: EContractName.up,
+            code: EContractType.up_complect,
+            name: EContractName.up_complect,
+            id: 4,
+        },
+        {
+            code: EContractType.up_video,
+            name: EContractName.up_video,
             id: 4,
         },
     ],
@@ -69,6 +76,7 @@ const contractSlice = createSlice({
             const currentCode = getContractTypeByProducts(
                 action.payload.products,
             );
+
             state.current =
                 state.items.find(item => item.code === currentCode) || null;
         },
@@ -96,6 +104,10 @@ export const withSeminarContractTypeSelector = (state: RootState) => {
     );
 };
 
-export const withUpContractTypeSelector = (state: RootState) => {
-    return state.contractType.current?.code === EContractType.up;
+export const withUpComplectContractTypeSelector = (state: RootState) => {
+    return state.contractType.current?.code === EContractType.up_complect;
+};
+
+export const withUpVideoContractTypeSelector = (state: RootState) => {
+    return state.contractType.current?.code === EContractType.up_video;
 };

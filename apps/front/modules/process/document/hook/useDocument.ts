@@ -3,8 +3,6 @@ import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
 import { documentGenerate } from '../model/DocumentThunk';
 import { useEffect, useState } from 'react';
 
-
-
 export const useDocument = () => {
     const dispatch = useAppDispatch();
     const [isLoading, setIsLoading] = useState(false);
@@ -20,16 +18,8 @@ export const useDocument = () => {
     };
 
     return {
-        // emailConfirm: confirm,
         generateDocument,
         isLoading,
-        // setEmailConfirmConfirmed: () => {
-        //     dispatch(communicationsActions.setEmailConfirmConfirmed(true));
-        // },
-        // cancelEmailConfirm: () => {
-        //     dispatch(communicationsSliceActions.setConfirmCommunicationsActive(false));
-        //     dispatch(communicationsSliceActions.setEmailConfirmConfirmed(false));
-        // },
     };
 };
 

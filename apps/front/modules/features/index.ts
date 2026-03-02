@@ -5,3 +5,4 @@ export * from './document-paragraph';
 export * from './document-number';
 export * from './seminar-days-select';
 export * from './communications';
+export * from './deal-act-date';

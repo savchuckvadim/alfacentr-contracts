@@ -17,7 +17,10 @@ export const ProductFullStatisticItem = ({
         <SimpleCard title={title}>
             <div className="space-y-2">
                 {items.map((item, index) => (
-                    <div key={`product-full-statistic-item-${index}`} className="flex justify-between items-center">
+                    <div
+                        key={`product-full-statistic-item-${index}`}
+                        className="flex justify-between items-center"
+                    >
                         <span className="text-xs text-muted-foreground">
                             {item.title}
                         </span>

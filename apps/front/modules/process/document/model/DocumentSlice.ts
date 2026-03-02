@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {  documentGenerate } from './DocumentThunk';
+import { documentGenerate } from './DocumentThunk';
 
 export interface IDocumentState {
     document: {
@@ -62,7 +62,6 @@ export const documentSlice = createSlice({
         ) => {
             state.document.isGeneratedSuccess = action.payload;
         },
-
     },
     extraReducers: builder => {
         builder.addCase(
@@ -90,8 +89,6 @@ export const documentSlice = createSlice({
                 state.document.isGeneratedSuccess = false;
             },
         );
-
-
     },
 });
 

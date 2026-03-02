@@ -10,7 +10,7 @@ export interface UpdateDealFieldPayload {
     value: string | number;
     field: IDealFieldsData;
 }
-
+//UF_CRM_8_DATE_ACT
 export const updateDealField = createAsyncThunk(
     'deal/updateDealField',
 

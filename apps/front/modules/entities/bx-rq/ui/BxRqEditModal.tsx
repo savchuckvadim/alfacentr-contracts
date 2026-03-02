@@ -181,20 +181,20 @@ export const BxRqEditModal = ({
                                 handleFieldBlur(field.code, e.target.value)
                             }
                             placeholder={`Введите ${field.name.toLowerCase()}`}
-                        // disabled={field.isDisable}
+                            // disabled={field.isDisable}
                         />
                     </div>
                 );
         }
     };
-    const modalRoot = document.getElementById("modal-root");
+    const modalRoot = document.getElementById('modal-root');
 
     if (!modalRoot) return null; // safety check
     if (!isOpen) return null;
     return createPortal(
         <>
             {/* <div className="bg-background/20 backdrop-blur-xs min-h-screen w-full absolute top-0  left-0 z-10"></div> */}
-            <Dialog  open={isOpen} onOpenChange={onCancel} modal={true} >
+            <Dialog open={isOpen} onOpenChange={onCancel} modal={true}>
                 <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     {isLoading ? (
                         <div className=" min-h-[400px] min-w-full ">
@@ -233,10 +233,8 @@ export const BxRqEditModal = ({
                         </div>
                     </DialogFooter>
                 </DialogContent>
-
             </Dialog>
-        </>
-        , modalRoot
+        </>,
+        modalRoot,
     );
-
 };

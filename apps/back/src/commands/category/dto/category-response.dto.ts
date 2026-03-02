@@ -5,6 +5,7 @@ export enum BitrixOwnerTypeId {
     DEAL = 2,
     CONTACT = 3,
     LEAD = 1,
+    REQUISITE = 8,
 }
 export class CategoryResponseDto {
     @ApiProperty({

@@ -7,7 +7,7 @@ import { EBXEntity } from '../../../../core/domain/consts/bitrix-entities.enum';
 import { IBXContact } from '../interface/bx-contact.interface';
 
 export class BxContactRepository {
-    constructor(private readonly bxApi: BitrixBaseApi) {}
+    constructor(private readonly bxApi: BitrixBaseApi) { }
 
     async get(contactId: number) {
         return this.bxApi.callType(
@@ -18,7 +18,7 @@ export class BxContactRepository {
         );
     }
 
-    async getBtch(cmdCode: string, contactId: number) {
+    getBtch(cmdCode: string, contactId: number) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
@@ -29,15 +29,18 @@ export class BxContactRepository {
     }
 
     async getList(filter: Partial<IBXContact>, select?: string[]) {
-        return this.bxApi.callType(
+        return await this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.CONTACT,
-            EBxMethod.GET,
-            { ID: filter.ID || 0 },
+            EBxMethod.LIST,
+            {
+                filter,
+                select,
+            }
         );
     }
 
-    async getListBtch(
+    getListBtch(
         cmdCode: string,
         filter: Partial<IBXContact>,
         select?: string[],
@@ -46,8 +49,11 @@ export class BxContactRepository {
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.CONTACT,
-            EBxMethod.GET,
-            { ID: filter.ID || 0 },
+            EBxMethod.LIST,
+            {
+                filter,
+                select,
+            }
         );
     }
 
@@ -60,7 +66,7 @@ export class BxContactRepository {
         );
     }
 
-    async setBtch(cmdCode: string, data: Partial<IBXContact>) {
+    setBtch(cmdCode: string, data: Partial<IBXContact>) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
@@ -79,7 +85,7 @@ export class BxContactRepository {
         );
     }
 
-    async updateBtch(
+    updateBtch(
         cmdCode: string,
         id: number | string,
         data: Partial<IBXContact>,
@@ -111,7 +117,7 @@ export class BxContactRepository {
         );
     }
 
-    async getFieldBtch(cmdCode: string, id: number | string) {
+    getFieldBtch(cmdCode: string, id: number | string) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,

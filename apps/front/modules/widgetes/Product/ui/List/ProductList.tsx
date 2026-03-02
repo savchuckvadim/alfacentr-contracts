@@ -50,7 +50,7 @@ export const ProductList = () => {
             {loading && !isClient && (
                 <PagePreloader text="Загрузка продуктов..." />
             )}
-            <div className="space-y-6">
+            <div className="space-y-6 mt-4">
                 {/* Заголовок и общая статистика */}
                 <div className="space-y-4">
                     <ProductListTitle />

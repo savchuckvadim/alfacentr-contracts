@@ -5,4 +5,3 @@ export { ParticipantsPage } from './ParticipantsPage/ParticipantsPage';
 export { ParticipantPage } from './ParticipantPage/ParticipantPage';
 export { ProductPage } from './ProductsPage/ProductPage';
 export { ErrorPage } from './ErrorPage/ErrorPage';
-

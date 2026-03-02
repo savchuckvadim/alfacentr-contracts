@@ -1,12 +1,9 @@
 import {
     Action,
-    AnyAction,
     combineReducers,
     configureStore,
     createListenerMiddleware,
-    Dispatch,
     Middleware,
-    MiddlewareAPI,
     ThunkAction,
 } from '@reduxjs/toolkit';
 import { appReducer } from './AppSlice';
@@ -20,17 +17,19 @@ import {
 import { bxrqReducer } from '@workspace/bx-rq';
 import {
     contractTypeReducer,
+    dealActDateReducer,
     documentParagraphReducer,
     seminarDaysSelectReducer,
+    documentNumberReducer,
+    communicationsReducer,
+    participantProductReducer,
 } from '@/modules/features';
-import { participantProductReducer } from '@/modules/features/';
+
 import { documentRqReducer } from '@/modules/features/document-rq';
 import { WSClient } from '@/modules/shared/Websocket/ws-client';
 import { WSClient as WSClientWorkspace } from '@workspace/ws';
 
-import { documentNumberReducer } from '@/modules/features';
 import { documentReducer } from '@/modules/process/document/model/DocumentSlice';
-import { communicationsReducer } from '@/modules/features/';
 
 export const listenerMiddleware = createListenerMiddleware();
 
@@ -49,6 +48,7 @@ const rootReducer = combineReducers({
     documentParagraph: documentParagraphReducer,
     documentNumber: documentNumberReducer,
     communications: communicationsReducer,
+    dealActDate: dealActDateReducer,
     //process
     document: documentReducer,
 });
@@ -76,7 +76,6 @@ export const setupStore = () => {
             })
                 .concat(errorMiddleware)
                 .concat(listenerMiddleware.middleware),
-
     });
 };
 

@@ -34,6 +34,7 @@ export enum E_REQUIRED_DOCUMENT_RQ_ITEM_CODE {
 }
 export enum E_REQUIRED_DOCUMENT_ADDRESS_RQ_ITEM_CODE {
     ADDRESS_COUNTRY = 'address_country',
+    ADDRESS_PROVINCE = 'address_province',
     ADDRESS_REGION = 'address_region',
     ADDRESS_CITY = 'address_city',
     ADDRESS_1 = 'address_1',

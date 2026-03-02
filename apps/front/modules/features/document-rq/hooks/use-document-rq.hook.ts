@@ -17,5 +17,8 @@ export const useDocumentRq = () => {
         header: rqs.general.header,
         provider: provider,
         isClient,
+        clientShortRq: rqs.clientShortRq,
+        clientUpdShortRq: rqs.clientUpdShortRq,
+        clientUpdAddress: rqs.clientUpdAddress,
     };
 };

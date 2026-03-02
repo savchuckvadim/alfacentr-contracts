@@ -2,13 +2,19 @@ import { BitrixService } from 'src/modules/bitrix';
 import { DealValue } from './deal-helper/deal-values-helper.service';
 import { BitrixEntityType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 import { getIsNotEmptyParticipant } from './deal-helper/get-participant-product-values-from-deal.helepr';
+import {
+    GetDealBidItemsType,
+    GetDealBidItemsUseCase,
+} from '../use-cases/get-deal-bid-items.use-case';
 
 export class BxDealService {
     private bitrix: BitrixService;
-    constructor() { }
+    private bidService: GetDealBidItemsUseCase;
+    constructor() {}
 
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;
+        this.bidService = new GetDealBidItemsUseCase(bitrix);
     }
 
     async getDeal(dealId: number, select: string[] = []) {
@@ -17,21 +23,28 @@ export class BxDealService {
 
         return deal;
     }
-
-    async setTimeline(dealId: number, dealValues: DealValue[]) {
-        const comment = this.getComment(dealValues);
-
-        comment
-            && await this.setTimelineComment(dealId, comment);
+    async setTimelineInitProccess(dealId: number) {
+        const comment = '🤖 [B]Начало обработки заявки...[/B] \n';
+        await this.setTimelineComment(dealId, comment);
     }
-    getComment(dealValues: DealValue[]) {
-        const participants = this.getParticipants(dealValues);
-        const info = this.getInfo(dealValues);
-        let comment = `${info}\n`;
-        for (const participant in participants) {
-            comment += participants[participant] + '\n \n';
-        }
+    async setTimeline(dealId: number, dealValues: DealValue[]) {
+        //значения попадающие в timeline из заявки
+        // при инициализации заявки
+        const comment = await this.getComment(dealId);
 
+        comment && (await this.setTimelineComment(dealId, comment));
+    }
+    async getComment(dealId: number) {
+        // const participants = this.getParticipants(dealValues);
+        // const info = this.getInfo(dealValues);
+        // let comment = `${info}\n`;
+        // for (const participant in participants) {
+        //     comment += participants[participant] + '\n \n';
+        // }
+        const comment = await this.bidService.getItems(
+            dealId,
+            GetDealBidItemsType.BB,
+        );
         return comment;
     }
     getParticipants(dealValues: DealValue[]) {

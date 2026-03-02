@@ -5,65 +5,68 @@ import { IPpkDocumentApplicationData } from '@alfa/entities';
 import { BxTimelineService } from './bx-timeline.service';
 import { BitrixService } from '@/modules/bitrix/';
 
-
-
 export class PpkApplicationGenerateService {
     constructor(
         private readonly storage: StorageService,
         private readonly bxTimelineService: BxTimelineService,
         private readonly bitrix: BitrixService,
         private readonly filesForSend: [string, string][] = [],
-    ) { }
+    ) {}
 
     public async getPpkApplicationFile(
         entityId: number,
         currentPpkApplicationBitrixId: string,
         ppkApplicationData: IPpkDocumentApplicationData,
     ): Promise<void> {
-        void await this.bxTimelineService.send('⏳ Ожидание генерации приложения ППК...', 'waiting');
-
+        void (await this.bxTimelineService.send(
+            '⏳ Ожидание генерации приложения ППК...',
+            'waiting',
+        ));
 
         try {
-
             if (ppkApplicationData) {
                 const ppkApplicationFileData =
-                    await this.generateDocxBase64(
-                        ppkApplicationData
-
-                    );
-                void await this.bitrix.deal.update(
-                    entityId,
-                    {
-                        [`${currentPpkApplicationBitrixId}`]: {
-                            // @ts-ignore
-                            fileData: ppkApplicationFileData,
-                        },
+                    await this.generateDocxBase64(ppkApplicationData);
+                void (await this.bitrix.deal.update(entityId, {
+                    [`${currentPpkApplicationBitrixId}`]: {
+                        // @ts-ignore
+                        fileData: ppkApplicationFileData,
                     },
-                );
-                const updtdDeal = await this.bitrix.deal.get(entityId, [`${currentPpkApplicationBitrixId}`]);
+                }));
+                const updtdDeal = await this.bitrix.deal.get(entityId, [
+                    `${currentPpkApplicationBitrixId}`,
+                ]);
                 this.filesForSend.push(ppkApplicationFileData);
 
                 //@ts-ignore
                 const url = updtdDeal.result[currentPpkApplicationBitrixId]?.downloadUrl as string;
 
-
                 if (url) {
-                    void await this.bxTimelineService.send(`📜<a href="${url}"> Приложение ППК сгенерировано №${ppkApplicationData.document_number}</a>`, 'ppk');
+                    void (await this.bxTimelineService.send(
+                        `📜<a href="${url}"> Приложение ППК сгенерировано №${ppkApplicationData.document_number}</a>`,
+                        'ppk',
+                    ));
                 } else {
-                    void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+                    void (await this.bxTimelineService.send(
+                        '❌ Произошла ошибка: Приложение ППК не сгенерировано',
+                        'error',
+                    ));
                 }
-
             } else {
-                void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+                void (await this.bxTimelineService.send(
+                    '❌ Произошла ошибка: Приложение ППК не сгенерировано',
+                    'error',
+                ));
             }
-
         } catch (error) {
-            void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
-
+            void (await this.bxTimelineService.send(
+                '❌ Произошла ошибка: Приложение ППК не сгенерировано',
+                'error',
+            ));
         }
     }
     async generateDocxBase64(
-        documentData: IPpkDocumentApplicationData
+        documentData: IPpkDocumentApplicationData,
     ): Promise<[string, string]> {
         const templatePath = this.storage.getFilePath(
             StorageType.APP,
@@ -89,7 +92,6 @@ export class PpkApplicationGenerateService {
         const buffer = doc.getZip().generate({ type: 'nodebuffer' });
         const fileName = `Приложение №1.docx`;
         const file = buffer.toString('base64');
-
 
         return [fileName, file];
     }

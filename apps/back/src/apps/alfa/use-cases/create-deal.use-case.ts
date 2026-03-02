@@ -57,7 +57,6 @@ export class CreateDealUseCase {
 
         // const testInn = fieldData[BxDealDataKeys.inn];
 
-
         const deal = await bxDealService.getDeal(data.dealId, bxFieldsIds);
         const dealValues = DealFieldValuesHelperService.getDealValues(
             deal,
@@ -75,7 +74,7 @@ export class CreateDealUseCase {
         const inn = dealValues.find(
             (value) => value.code === BxDealDataKeys.inn,
         )?.value as string;
-     
+
         deal &&
             deal.ID &&
             (await bxDealService.setTimeline(deal.ID, dealValues));

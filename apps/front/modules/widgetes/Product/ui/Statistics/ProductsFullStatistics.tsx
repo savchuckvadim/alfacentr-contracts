@@ -2,6 +2,7 @@ import { memo } from 'framer-motion';
 import { ProductFullStatisticItem } from './components/ProductFullStatisticItem';
 import { useProductStatistics } from './hook/useProductStatistics';
 import { useMemo } from 'react';
+import { useIsUpContractType } from '@/modules/features';
 
 export const ProductsFullStatistics = memo(function ProductsFullStatistics() {
     const {
@@ -18,20 +19,29 @@ export const ProductsFullStatistics = memo(function ProductsFullStatistics() {
         ppkSum,
         seminarSum,
     } = useProductStatistics();
-
+    const { isUp } = useIsUpContractType();
     const getStatistics = () => {
         const statistics = [
             {
                 title: 'Продукты',
                 items: [
-                    { title: 'ППК', value: totalPpkProducts, isDestructive: true },
+                    {
+                        title: 'ППК',
+                        value: totalPpkProducts,
+                        isDestructive: true,
+                    },
                     {
                         title: 'Семинары',
                         value: totalSeminarProducts,
                         isDestructive: false,
                     },
-                    { title: 'УП', value: totalUpProducts, isDestructive: false },
+                    {
+                        title: 'УП',
+                        value: totalUpProducts,
+                        isDestructive: false,
+                    },
                 ],
+                isUp: false,
             },
             {
                 title: 'Участники',
@@ -47,6 +57,7 @@ export const ProductsFullStatistics = memo(function ProductsFullStatistics() {
                         isDestructive: true,
                     },
                 ],
+                isUp: false,
             },
             {
                 title: 'Темы ППК',
@@ -67,6 +78,7 @@ export const ProductsFullStatistics = memo(function ProductsFullStatistics() {
                         isDestructive: false,
                     },
                 ],
+                isUp: false,
             },
             {
                 title: 'Общая статистика',
@@ -82,42 +94,59 @@ export const ProductsFullStatistics = memo(function ProductsFullStatistics() {
                         isDestructive: true,
                     },
                 ],
+                isUp: false,
             },
             {
                 title: 'Финансы',
                 items: [
-                    { title: 'Общая сумма', value: totalSum, isDestructive: false },
+                    {
+                        title: 'Общая сумма',
+                        value: totalSum,
+                        isDestructive: false,
+                    },
                     { title: 'ППК', value: ppkSum, isDestructive: true },
-                    { title: 'Семинары', value: seminarSum, isDestructive: false },
+                    {
+                        title: 'Семинары',
+                        value: seminarSum,
+                        isDestructive: false,
+                    },
                 ],
+                isUp: true,
             },
         ];
         return statistics;
-    }
-    const statistics = useMemo(() => getStatistics(), [
-        totalPpkProducts,
-        totalSeminarProducts,
-        totalUpProducts,
-        totalAssignedParticipants,
-        totalUnassignedParticipants,
-        totalTopics,
-        topicsWithDeficit,
-        topicsWithSurplus,
-        balancedTopics,
-        totalSum,
-        ppkSum,
-        seminarSum,
-    ]);
+    };
+    const statistics = useMemo(
+        () => getStatistics(),
+        [
+            totalPpkProducts,
+            totalSeminarProducts,
+            totalUpProducts,
+            totalAssignedParticipants,
+            totalUnassignedParticipants,
+            totalTopics,
+            topicsWithDeficit,
+            topicsWithSurplus,
+            balancedTopics,
+            totalSum,
+            ppkSum,
+            seminarSum,
+        ],
+    );
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {/* Статистика продуктов */}
-            {statistics.map((stat, index) => (
-                <ProductFullStatisticItem
-                    key={`product-full-statistic-item-${index}`}
-                    title={stat.title}
-                    items={stat.items}
-                />
-            ))}
-        </div>
+        <>
+            {!isUp && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    {/* Статистика продуктов */}
+                    {statistics.map((stat, index) => (
+                        <ProductFullStatisticItem
+                            key={`product-full-statistic-item-${index}`}
+                            title={stat.title}
+                            items={stat.items}
+                        />
+                    ))}
+                </div>
+            )}
+        </>
     );
 });

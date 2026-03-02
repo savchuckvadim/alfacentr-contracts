@@ -1,12 +1,11 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { Label } from "@workspace/ui/components/label";
-import { Checkbox } from "@workspace/ui/components/checkbox";
-import { Input } from "@workspace/ui/components/input";
-import { Button } from "@workspace/ui/components/button";
-
+import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { Label } from '@workspace/ui/components/label';
+import { Checkbox } from '@workspace/ui/components/checkbox';
+import { Input } from '@workspace/ui/components/input';
+import { Button } from '@workspace/ui/components/button';
 
 type FormValues = {
     name: string;
@@ -20,7 +19,7 @@ export default function Form() {
     const onSubmit = (data: FormValues) => console.log(data);
 
     // следим за чекбоксом
-    const extraEnabled = watch("extra");
+    const extraEnabled = watch('extra');
 
     return (
         <form
@@ -30,7 +29,7 @@ export default function Form() {
             <div>
                 <Label htmlFor="extra">Показать дополнительные поля</Label>
                 <div className="flex items-center space-x-2">
-                    <Checkbox id="extra" {...register("extra")} />
+                    <Checkbox id="extra" {...register('extra')} />
                     <span>Активировать</span>
                 </div>
             </div>
@@ -39,7 +38,11 @@ export default function Form() {
                 <>
                     <div>
                         <Label htmlFor="name">Имя</Label>
-                        <Input id="name" placeholder="Введите имя" {...register("name")} />
+                        <Input
+                            id="name"
+                            placeholder="Введите имя"
+                            {...register('name')}
+                        />
                     </div>
 
                     <div>
@@ -48,7 +51,7 @@ export default function Form() {
                             id="email"
                             type="email"
                             placeholder="Введите email"
-                            {...register("email")}
+                            {...register('email')}
                         />
                     </div>
 
@@ -58,7 +61,7 @@ export default function Form() {
                             id="phone"
                             type="tel"
                             placeholder="+7..."
-                            {...register("phone")}
+                            {...register('phone')}
                         />
                     </div>
                 </>

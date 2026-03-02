@@ -151,10 +151,6 @@ export class AlfaBitrixService {
                 (item) => `${item.inn}` === `${company.UF_CRM_1539345538}`,
             );
             if (!parsedCompany) {
-                console.log(
-                    `Company ${company.UF_CRM_1539345538} not found in parsed data`,
-                );
-                console.log(company);
                 noParsed += 1;
                 return;
             }

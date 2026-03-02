@@ -30,6 +30,7 @@ export interface IBXProductRowRow {
     measureCode?: number | string;
     measureId?: number | string;
     sort?: number;
+    taxRate?: number;
 }
 
 export interface IBXDealProductRowGet {

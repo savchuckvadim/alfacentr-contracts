@@ -1,9 +1,9 @@
 'use client';
-import { ParticipantPpkInfo } from "@/modules/widgetes";
-import { useApp } from "@/modules/app";
-import { useParticipant } from "@/modules/entities/participant";
-import { User, XCircle } from "lucide-react";
-import { useAlfaProducts } from "@/modules/entities/product/hook/useAlfaProducts";
+import { ParticipantPpkInfo } from '@/modules/widgetes';
+import { useApp } from '@/modules/app';
+import { useParticipant } from '@/modules/entities/participant';
+import { User, XCircle } from 'lucide-react';
+import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts';
 
 export const ParticipantPage = ({ id }: { id: number }) => {
     const { isClient } = useApp();
@@ -51,8 +51,10 @@ export const ParticipantPage = ({ id }: { id: number }) => {
     }
 
     return (
-
-        <ParticipantPpkInfo participant={participant} loading={loading} loadingProducts={loadingProducts} />
-
+        <ParticipantPpkInfo
+            participant={participant}
+            loading={loading}
+            loadingProducts={loadingProducts}
+        />
     );
 };

@@ -1,4 +1,9 @@
-import { API_METHOD, backAPI, EBACK_ENDPOINT } from '@workspace/api';
+import {
+    API_METHOD,
+    backAPI,
+    EBACK_ENDPOINT,
+    EResultCode,
+} from '@workspace/api';
 import { IRequestDocumentGenerateType } from '@alfa/entities';
 import { WSClient } from '@workspace/ws';
 import { registerWSHandler } from '@/modules/shared/Websocket/ws-handlers-registry';
@@ -13,6 +18,14 @@ export class DocumentGenerateOwnService {
             API_METHOD.POST,
             dto,
         );
+        if (response.resultCode !== EResultCode.SUCCESS) {
+            throw new Error(
+                response?.errors?.join(', ') ||
+                    response.message ||
+                    'Error generating document',
+            );
+        }
+        return response.data;
     }
 
     // async wsListener(socketId: string, wsClient: WSClient) {

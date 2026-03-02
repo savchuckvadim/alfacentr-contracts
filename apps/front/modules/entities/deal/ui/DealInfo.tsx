@@ -7,14 +7,9 @@ import { BxParticipantsDataKeys } from '@alfa/entities';
 export const DealInfo = () => {
     const { dealData } = useAppSelector(state => state.deal);
 
-
     return (
         <div>
-            <SimpleCard
-                title="Заявка"
-            >
-
-
+            <SimpleCard title="Заявка">
                 {dealData?.map(field => {
                     let value = field.value;
                     if (
@@ -24,13 +19,15 @@ export const DealInfo = () => {
                         field.list &&
                         field.list.length > 0
                     ) {
-                        if (field.code === BxParticipantsDataKeys.format || field.code === BxParticipantsDataKeys.format_v2) {
-
+                        if (
+                            field.code === BxParticipantsDataKeys.format ||
+                            field.code === BxParticipantsDataKeys.format_v2
+                        ) {
                         }
                         value =
-                            field.list.find(item => item.bitrixId === field.value)
-                                ?.name || 'Не установлено';
-
+                            field.list.find(
+                                item => item.bitrixId === field.value,
+                            )?.name || 'Не установлено';
                     } else if (
                         Array.isArray(field.value) &&
                         field.type === 'enumeration' &&
@@ -38,15 +35,16 @@ export const DealInfo = () => {
                         field.list &&
                         field.list.length > 0
                     ) {
-
-                        value = 'Не установлено'
+                        value = 'Не установлено';
                         if (field.value && Array.isArray(field.value)) {
                             const values = field.value as number[];
-                            const names = values.map(value => field.list.find(item => Number(item.bitrixId) === value)?.name);
+                            const names = values.map(
+                                value =>
+                                    field.list.find(
+                                        item => Number(item.bitrixId) === value,
+                                    )?.name,
+                            );
                             value = names.join(', ');
-
-
-
                         }
                     }
                     return (

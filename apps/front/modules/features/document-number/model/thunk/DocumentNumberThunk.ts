@@ -57,6 +57,7 @@ export const updateDocumentNumber = createAsyncThunk<
                     dinamycPrefix: newDinamycPrefix,
                     socketId,
                 } as IDocumentNumberUpdateRequest;
+
                 const response = await backAPI.service(
                     EBACK_ENDPOINT.DOCUMENT_NUMBER,
                     API_METHOD.POST,

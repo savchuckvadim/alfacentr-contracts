@@ -1,7 +1,9 @@
 'use client';
 
 import {
+    DocumentInvoiceShortRq,
     DocumentRqsPreview,
+    DocumentUpdShortRq,
     useDocumentRq,
 } from '@/modules/features/document-rq';
 import { useDocumentParagraph } from '@/modules/features/document-paragraph';
@@ -11,7 +13,6 @@ import { Dot } from 'lucide-react';
 export const ContractPreview = () => {
     const { header } = useDocumentRq();
 
-
     const { totalSum, paragraphItems } = useDocumentParagraph();
     const paragraphTitle =
         paragraphItems.length > 1
@@ -20,42 +21,47 @@ export const ContractPreview = () => {
 
     return (
         <div className="flex flex-col gap-4">
-            <SimpleCard
-                withCollapse={true}
-                title="Шапка договора"
-                children={<p>{header}</p>}
-            />
+            <SimpleCard withCollapse={true} title="Шапка договора">
+                <p>{header}</p>
+            </SimpleCard>
 
             {paragraphItems && paragraphItems.length > 0 && (
-                <SimpleCard
-                    withCollapse={true}
-                    title="Пункт 1.1.2"
-                    children={
-                        <div>
-                            <p>{paragraphTitle}</p>
-                            {paragraphItems.map((item, index) => (
-                                <div
-                                    key={`${index}-paragraph-item`}
-                                    className="flex items-center gap-2 my-2"
-                                >
-                                    <Dot className="w-4 h-4 text-primary" />
-                                    <p>{item}</p>
-                                </div>
-                            ))}
-                        </div>
-                    }
-                />
+                <SimpleCard withCollapse={true} title="Пункт 1.1.2">
+                    <div>
+                        <p>{paragraphTitle}</p>
+                        {paragraphItems.map((item, index) => (
+                            <div
+                                key={`${index}-paragraph-item`}
+                                className="flex items-center gap-2 my-2"
+                            >
+                                <Dot className="w-4 h-4 text-primary" />
+                                <p>{item}</p>
+                            </div>
+                        ))}
+                    </div>
+                </SimpleCard>
             )}
+            <SimpleCard withCollapse={true} title="Общая стоимость услуг">
+                <p>{totalSum}</p>
+            </SimpleCard>
+
             <SimpleCard
                 withCollapse={true}
-                title="Общая стоимость услуг"
-                children={<p>{totalSum}</p>}
-            />
+                title="Сокращенные реквизиты для Счета"
+            >
+                <DocumentInvoiceShortRq />
+            </SimpleCard>
+
             <SimpleCard
                 withCollapse={true}
-                title="Реквизиты"
-                children={<DocumentRqsPreview />}
-            />
+                title="Сокращенные реквизиты для УПД"
+            >
+                <DocumentUpdShortRq />
+            </SimpleCard>
+
+            <SimpleCard withCollapse={true} title="Реквизиты">
+                <DocumentRqsPreview />
+            </SimpleCard>
         </div>
     );
 };

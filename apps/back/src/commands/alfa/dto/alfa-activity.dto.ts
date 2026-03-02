@@ -25,7 +25,6 @@ export class AlfaActivityQueryDto {
 export class ActivityResponseDto {
     @ApiProperty({
         description: 'Список активностей',
-        type: 'array',
     })
     result: any[];
 

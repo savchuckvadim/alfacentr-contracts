@@ -4,11 +4,10 @@ import { CommunicationsConfirmMenu } from '@/modules/features';
 import { SummaryPanel } from '../../../widgetes';
 import { MainPageContent } from './components/MainPageContent';
 import { useEffect, useState } from 'react';
-
+import { Processing, useDocument } from '@/modules/process';
 export const MainPage = () => {
-
     const [isClient, setIsClient] = useState(false);
-
+    const { isLoading: isProcessing } = useDocument();
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -20,6 +19,7 @@ export const MainPage = () => {
     return (
         <div className="flex flex-col  rounded-full">
             <CommunicationsConfirmMenu />
+            {isProcessing && <Processing />}
             <div className="flex ">
                 {/* Левая часть - основная область */}
                 <div className="flex-1 p-2">

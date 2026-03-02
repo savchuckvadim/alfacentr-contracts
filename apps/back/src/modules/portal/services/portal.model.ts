@@ -12,8 +12,10 @@ import {
     PMeasureCode,
     IFieldCode,
     IDeal,
+    IPresetRQ,
 } from '../interfaces/portal.interface';
 import { TelegramService } from '../../telegram/telegram.service';
+import { PresetCode } from '@/apps/rq/enums/preset-code.enum';
 
 // @Injectable()
 export class PortalModel {
@@ -35,10 +37,9 @@ export class PortalModel {
         portal: IPortal,
         departament: EDepartamentGroup,
     ): IPDepartment | undefined {
-        //@ts-ignore
         return portal.departament?.group === departament
             ? portal.departament
-            : 0;
+            : undefined;
     }
 
     getDepartamentIdByCode(
@@ -234,8 +235,10 @@ export class PortalModel {
         return undefined;
     }
 
-    getPresetForName(code: string) {
-        return this.portal.bx_rq?.find((preset) => preset.code === code);
+    getPresetForName(code: PresetCode): IPresetRQ | undefined {
+        return this.portal.bx_rq?.find(
+            (preset) => preset.code === code.toString(),
+        );
     }
 
     getSmartByType(type: 'service_offer' | 'service_month' | 'presentation') {

@@ -1,10 +1,4 @@
-import {
-    Controller,
-    Post,
-    Body,
-    Param,
-    ValidationPipe
-} from '@nestjs/common';
+import { Controller, Post, Body, Param, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OnDealInitUseCase } from '../use-cases/on-deal-init.use-case';
 import { BitrixHookDto } from '@/lib/dto';
@@ -16,8 +10,8 @@ import { FrontDealUseCase } from '../use-cases/front-deal.use-case';
 export class OnDealInitController {
     constructor(
         private readonly alfaUseCase: OnDealInitUseCase,
-        private readonly frontDealUseCase: FrontDealUseCase
-    ) { }
+        private readonly frontDealUseCase: FrontDealUseCase,
+    ) {}
 
     @ApiOperation({ summary: 'On deal init' })
     @Post('create-deal/:dealId')
@@ -33,28 +27,20 @@ export class OnDealInitController {
         return this.alfaUseCase.onDealCreate(fullDto);
     }
 
-
-
-
     @ApiOperation({ summary: 'Get deal values' })
     @Post('get-deal-values/:dealId')
     async getDealValues(
         @Body(ValidationPipe) body: BitrixHookDto,
         @Param('dealId') dealId: string,
     ) {
-
-        await this.frontDealUseCase.init(body.auth.domain)
+        await this.frontDealUseCase.init(body.auth.domain);
         return this.frontDealUseCase.getDealValues(Number(dealId));
     }
 
-
     @ApiOperation({ summary: 'Get Fields Ids' })
     @Post('get-fields-data')
-    async getFieldsIds(
-        @Body(ValidationPipe) body: BitrixHookDto,
-    ) {
-
-        await this.frontDealUseCase.init(body.auth.domain)
+    async getFieldsIds(@Body(ValidationPipe) body: BitrixHookDto) {
+        await this.frontDealUseCase.init(body.auth.domain);
         return this.frontDealUseCase.getFieldsIds();
     }
 }

@@ -93,6 +93,7 @@ export const getAddressFillPercent = (
     let addressFill = 0;
     let fieldsCount = 0;
     let filledFieldsCount = 0;
+
     address.forEach(item => {
         const fields = item.fields;
 
@@ -110,6 +111,7 @@ export const getAddressFillPercent = (
             filledFieldsCount += filledFields.length;
         }
     });
+
     addressFill = (filledFieldsCount / fieldsCount) * 100;
     return Number(addressFill.toFixed(1));
 };

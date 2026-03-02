@@ -2,10 +2,11 @@ import {
     getHasPpk,
     getHasSeminar,
     getHasSeminarPpk,
-    getHasUp,
+    getHasUpComplect,
+    getHasUpVideo,
     IAlfaProduct,
 } from '@/modules/entities/product';
-import { EContractType } from '../../model/ContractTypeSlice';
+import { EContractType } from '../../model/slice/ContractTypeSlice';
 
 export const getContractTypeByProducts = (
     products: IAlfaProduct[],
@@ -14,7 +15,9 @@ export const getContractTypeByProducts = (
     const hasPpk = getHasPpk(products);
     const hasSeminar = getHasSeminar(products);
     const hasSeminarPpk = getHasSeminarPpk(products);
-    const hasUp = getHasUp(products);
+    const hasUpComplect = getHasUpComplect(products);
+    const hasUpVideo = getHasUpVideo(products);
+
     if (hasSeminarPpk) {
         return EContractType.seminar_ppk;
     }
@@ -24,22 +27,11 @@ export const getContractTypeByProducts = (
     if (hasSeminar) {
         return EContractType.seminar;
     }
-    if (hasUp) {
-        return EContractType.up;
+    if (hasUpComplect) {
+        return EContractType.up_complect;
+    }
+    if (hasUpVideo) {
+        return EContractType.up_video;
     }
     return EContractType.seminar;
-    // products.forEach(product => {
-    //     product.fields.forEach(field => {
-    //         const value =
-    //             typeof field.value === 'string'
-    //                 ? field.value.toLowerCase()
-    //                 : (field.value as any)?.value
-    //                   ? (field.value as any).value.toLowerCase()
-    //                   : '';
-    //         if (value.includes('ппк')) {
-    //             contractType = EContractType.seminar_ppk;
-    //         }
-    //     });
-    // });
-    // return contractType;
 };

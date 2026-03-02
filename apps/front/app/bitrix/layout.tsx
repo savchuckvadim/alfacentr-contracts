@@ -10,13 +10,9 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-
         <div>
-
             <Header brandComponent={<CompanyBrand />} />
             <App>{children}</App>
         </div>
-
-
     );
 }

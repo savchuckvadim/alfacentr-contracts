@@ -17,7 +17,7 @@ export class DocumentBitrixGenerateUseCase {
         private readonly documentContractFieldsService: DocumentContractFieldsService,
 
         private readonly telegramService: TelegramService,
-    ) { }
+    ) {}
 
     async generateDocumentAndPushToBx(dto: DocumentGenerateDto) {
         const documentGenerateBatchService = new DocumentGenerateFlowService(
@@ -30,5 +30,4 @@ export class DocumentBitrixGenerateUseCase {
 
         return documentGenerateBatchService.generateDocument(dto);
     }
-
 }

@@ -43,16 +43,17 @@ export const Products = ({
                                     Назначен
                                 </Badge>
                             </div>
-                            {isSeminar && productSeminarName && <p>
-                                <span className="text-xs text-muted-foreground">
-                                    Тема: {productSeminarName}
-                                </span>
-                            </p>}
+                            {isSeminar && productSeminarName && (
+                                <p>
+                                    <span className="text-xs text-muted-foreground">
+                                        Тема: {productSeminarName}
+                                    </span>
+                                </p>
+                            )}
                             <p className="text-sm font-medium">
                                 {productTopicName}
                             </p>
                             <p className="text-xs text-muted-foreground">
-
                                 ID: {product.id} • {product.productName} • Цена:{' '}
                                 {product.price || 0} ₽
                             </p>

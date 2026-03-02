@@ -26,15 +26,15 @@ export const DocumentGlobalConfig = () => {
                 <div className="w-[200px]">
                     <ClientTypeSelect />
                 </div>
-                <div >
+                <div>
                     <ContractType />
                 </div>
-                <div >
+                <div>
                     <DocumentNumber />
                 </div>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 mr-5">
                 <ThemeToggler />
                 <ReloadApp />
             </div>

@@ -2,15 +2,21 @@ export enum EContractType {
     seminar = 'seminar',
     ppk = 'ppk',
     seminar_ppk = 'seminar_ppk',
-    up = 'up',
+    up_complect = 'up_complect',
+    up_video = 'up_video',
 }
 export enum EContractName {
     seminar = 'Семинар',
     ppk = 'ППК',
     seminar_ppk = 'Семинар ППК',
-    up = 'УП',
+    up_complect = 'УП комплектом',
+    up_video = 'УП видеозапись',
 }
 export enum DocumentGenerateFieldTemplateCode {
+    ACT_DATE = 'DateAct',
+    CLIENT_SHORT_NAME = 'ShortClientName',
+    CLIENT_UPD_ADDRESS = 'ClientUpdAddress',
+    CLIENT_UPD_INN_KPP = 'InnKpp',
     ClientRq = 'ClientRq',
     Header = 'Header',
     Paragraph12 = 'Paragraph12',
@@ -53,7 +59,10 @@ export type DocumentContractInvoiceWithoutStampsFieldsType =
     typeof DocumentGenerateTemplatesType.INVOISE_WITHOUT_STAMPS.fields;
 export type DocumentContractActFieldsType =
     typeof DocumentGenerateTemplatesType.ACT.fields;
-
+export type DocumentContractUPComplectFieldsType =
+    typeof DocumentGenerateTemplatesType.UP_COMPLECT.fields;
+export type DocumentContractUPVideoFieldsType =
+    typeof DocumentGenerateTemplatesType.UP_VIDEO.fields;
 export const DocumentGenerateTemplatesType = {
     SEMINAR_PPK_DEAL: {
         id: 134,
@@ -115,10 +124,10 @@ export const DocumentGenerateTemplatesType = {
             {
                 name: 'Email контакта для договора (электронном виде на адрес электронной почты )',
                 code: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
-                templateCode: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
                 type: 'string',
             },
-
         ] as const,
         forContract: [EContractType.seminar_ppk] as EContractType[],
     } as const,
@@ -149,20 +158,23 @@ export const DocumentGenerateTemplatesType = {
             {
                 name: 'Количество участников(слушателей) семинара',
                 code: DocumentGenerateFieldTemplateCode.DocumentParticipantsCount,
-                templateCode: DocumentGenerateFieldTemplateCode.DocumentParticipantsCount,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentParticipantsCount,
                 type: 'string',
             },
             {
                 name: 'В случае участия в семинаре онлайн адрес электронной почты',
                 code: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
-                templateCode: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
                 type: 'string',
             },
 
             {
                 name: 'Договор действует до',
                 code: DocumentGenerateFieldTemplateCode.DocumentContractEndDate,
-                templateCode: DocumentGenerateFieldTemplateCode.DocumentContractEndDate,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentContractEndDate,
                 type: 'string',
             },
 
@@ -195,7 +207,8 @@ export const DocumentGenerateTemplatesType = {
             {
                 name: 'Email контакта для договора (электронном виде на адрес электронной почты )',
                 code: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
-                templateCode: DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
                 type: 'string',
             },
         ],
@@ -251,10 +264,117 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
                 type: 'string',
             },
-
         ],
         forContract: [EContractType.ppk] as EContractType[],
     } as const,
+
+    UP_COMPLECT: {
+        id: 242,
+        name: 'Договор УП комплектом СДЕЛКА',
+        code: 'ContractUPComplectDeal',
+        fields: [
+            {
+                name: 'Клиент',
+
+                code: DocumentGenerateFieldTemplateCode.ClientRq,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientRq,
+                type: 'string',
+            },
+            {
+                name: 'Шапка договора',
+                code: DocumentGenerateFieldTemplateCode.Header,
+                templateCode: DocumentGenerateFieldTemplateCode.Header,
+                type: 'string',
+            },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+            {
+                name: 'Если в течение 5-ти дней с момента направления документов ЗАКАЗЧИК не подписал акт и не направил мотивированный отказ от подписания акта, услуга считается оказанной, принятой в полном объеме и подлежит оплате. 3.3. {UfCrm8PaymentPoitDoc}',
+                code: DocumentGenerateFieldTemplateCode.Paragraph3,
+                templateCode: DocumentGenerateFieldTemplateCode.Paragraph3,
+                type: 'string',
+            },
+            {
+                name: 'Номер документа',
+                code: DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
+                type: 'string',
+            },
+            {
+                name: 'Номер документа счетчик',
+                code: DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
+                type: 'string',
+            },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+        ],
+        forContract: [EContractType.ppk] as EContractType[],
+    } as const,
+    UP_VIDEO: {
+        id: 240,
+        name: 'Договор УП видеозапись СДЕЛКА',
+        code: 'ContractUPVideoDeal',
+        fields: [
+            {
+                name: 'Клиент',
+
+                code: DocumentGenerateFieldTemplateCode.ClientRq,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientRq,
+                type: 'string',
+            },
+            {
+                name: 'Шапка договора',
+                code: DocumentGenerateFieldTemplateCode.Header,
+                templateCode: DocumentGenerateFieldTemplateCode.Header,
+                type: 'string',
+            },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+            {
+                name: 'Если в течение 5-ти дней с момента направления документов ЗАКАЗЧИК не подписал акт и не направил мотивированный отказ от подписания акта, услуга считается оказанной, принятой в полном объеме и подлежит оплате. 3.3. {UfCrm8PaymentPoitDoc}',
+                code: DocumentGenerateFieldTemplateCode.Paragraph3,
+                templateCode: DocumentGenerateFieldTemplateCode.Paragraph3,
+                type: 'string',
+            },
+            {
+                name: 'Номер документа',
+                code: DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
+                type: 'string',
+            },
+            {
+                name: 'Номер документа счетчик',
+                code: DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
+                type: 'string',
+            },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+        ],
+        forContract: [EContractType.ppk] as EContractType[],
+    } as const,
+
     INVOISE_WITH_STAMPS: {
         id: 136,
         name: 'Счет с печатью СЕМИНАРЫ СДЕЛКА',
@@ -271,7 +391,8 @@ export const DocumentGenerateTemplatesType = {
             EContractType.seminar,
             EContractType.seminar_ppk,
             EContractType.ppk,
-            EContractType.up,
+            EContractType.up_complect,
+            EContractType.up_video,
         ] as EContractType[],
     } as const,
     INVOISE_WITHOUT_STAMPS: {
@@ -290,7 +411,8 @@ export const DocumentGenerateTemplatesType = {
             EContractType.seminar,
             EContractType.seminar_ppk,
             EContractType.ppk,
-            EContractType.up,
+            EContractType.up_complect,
+            EContractType.up_video,
         ] as EContractType[],
     } as const,
 
@@ -310,7 +432,8 @@ export const DocumentGenerateTemplatesType = {
             EContractType.seminar,
             EContractType.seminar_ppk,
             EContractType.ppk,
-            EContractType.up,
+            EContractType.up_complect,
+            EContractType.up_video,
         ] as EContractType[],
     } as const,
     INVOISE_QR_WITHOUT_STAMPS: {
@@ -329,48 +452,57 @@ export const DocumentGenerateTemplatesType = {
             EContractType.seminar,
             EContractType.seminar_ppk,
             EContractType.ppk,
-            EContractType.up,
+            EContractType.up_complect,
+            EContractType.up_video,
         ] as EContractType[],
     } as const,
 
-
     ACT: {
-        id: 140,
-        name: 'Акт оказанных услуг',
+        id: 244,
+        name: 'УПД',
         code: 'Act',
         fields: [
             {
-                name: 'Реквизиты для счета',
-                code: 'InvoiceRq',
-                templateCode: 'InvoiceRq',
+                name: 'Номер документа самого УПД',
+                code: DocumentGenerateFieldTemplateCode.DocumentNumber,
+                templateCode: DocumentGenerateFieldTemplateCode.DocumentNumber,
                 type: 'string',
             },
             {
-                name: 'Подпись клиента',
-                code: DocumentGenerateFieldTemplateCode.ClientSignature,
-                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                name: 'Дата самого УПД',
+                code: DocumentGenerateFieldTemplateCode.ACT_DATE,
+                templateCode: DocumentGenerateFieldTemplateCode.ACT_DATE,
                 type: 'string',
             },
             {
-                name: 'Наименование компании из реквизитов для акта',
-                code: DocumentGenerateFieldTemplateCode.DocumentCompanyTitle,
-                templateCode: DocumentGenerateFieldTemplateCode.DocumentCompanyTitle,
+                name: 'Короткое наименование клиента',
+                code: DocumentGenerateFieldTemplateCode.CLIENT_SHORT_NAME,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.CLIENT_SHORT_NAME,
                 type: 'string',
             },
             {
-                name: 'Инициалы директора из реквизитов для акта',
-                code: DocumentGenerateFieldTemplateCode.DocumentDirectorInitials,
-                templateCode: DocumentGenerateFieldTemplateCode.DocumentDirectorInitials,
+                name: 'Короткое наименование клиента clientCompanyShortTitle',
+                code: DocumentGenerateFieldTemplateCode.CLIENT_SHORT_NAME,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.CLIENT_SHORT_NAME,
                 type: 'string',
             },
 
-
+            {
+                name: 'Адрес для УПД clientUpdAddress',
+                code: DocumentGenerateFieldTemplateCode.CLIENT_SHORT_NAME,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.CLIENT_SHORT_NAME,
+                type: 'string',
+            },
         ],
         forContract: [
             EContractType.seminar,
             EContractType.seminar_ppk,
             EContractType.ppk,
-            EContractType.up,
+            EContractType.up_complect,
+            EContractType.up_video,
         ] as EContractType[],
     } as const,
 };

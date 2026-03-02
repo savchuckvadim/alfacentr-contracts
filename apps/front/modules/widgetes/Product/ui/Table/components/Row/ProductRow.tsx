@@ -6,71 +6,71 @@ import { useProductPpk } from '@/modules/features/participant-product/hook/usePr
 import {
     ProductParticipantQuantityBadge,
     ProductParticipantStatusBadge,
+    useIsUpContractType,
 } from '@/modules/features/';
 import { memo } from 'react';
 
-export const ProductsTableRow = memo(({
-    product,
-    index,
-}: {
-    product: IAlfaProduct;
-    index: number;
-}) => {
-    const {
-        productType,
-        productName,
-        formattedQuantity,
-        formattedPrice,
+export const ProductsTableRow = memo(
+    ({ product, index }: { product: IAlfaProduct; index: number }) => {
+        const {
+            productType,
+            productName,
+            formattedQuantity,
+            formattedPrice,
 
-        getTypeBadgeColor,
-    } = useProductPpk(product);
+            getTypeBadgeColor,
+        } = useProductPpk(product);
+        const { isUp } = useIsUpContractType();
+        return (
+            <TableRow key={product.id || index} className="">
+                <TableCell className="font-medium text-gray-500">
+                    {index + 1}
+                </TableCell>
 
-    return (
-        <TableRow key={product.id || index} className="">
-            <TableCell className="font-medium text-gray-500">
-                {index + 1}
-            </TableCell>
-
-            <TableCell>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <div className="font-medium"> {productName} </div>
-                        <div className="text-sm text-gray-500">
-                            {' '}
-                            ID: {product.id || 'Не указан'}{' '}
+                <TableCell>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <div className="font-medium"> {productName} </div>
+                            <div className="text-sm text-gray-500">
+                                {' '}
+                                ID: {product.id || 'Не указан'}{' '}
+                            </div>
                         </div>
+                        <Badge
+                            variant={'default'}
+                            className={`text-xs ${getTypeBadgeColor()}`}
+                        >
+                            {productType}
+                        </Badge>
                     </div>
-                    <Badge
-                        variant={'default'}
-                        className={`text-xs ${getTypeBadgeColor()}`}
-                    >
-                        {productType}
-                    </Badge>
-                </div>
-            </TableCell>
-            <TableCell>
-                <span className="font-medium text-foreground text-sm">
-                    {formattedPrice}
-                </span>
-            </TableCell>
-            <TableCell align="center">
-                <span className="text-foreground text-sm">
-                    {formattedQuantity}
-                </span>
-            </TableCell>
+                </TableCell>
+                <TableCell>
+                    <span className="font-medium text-foreground text-sm">
+                        {formattedPrice}
+                    </span>
+                </TableCell>
+                <TableCell align="center">
+                    <span className="text-foreground text-sm">
+                        {formattedQuantity}
+                    </span>
+                </TableCell>
 
-            <TableCell>
-                {/* feature */}
-                <ProductParticipantQuantityBadge product={product} />
-            </TableCell>
-            <TableCell>
-                {/* feature */}
-                <ProductParticipantStatusBadge
-                    product={product}
-                    index={index}
-                />
-            </TableCell>
-
-        </TableRow>
-    );
-});
+                {!isUp && (
+                    <TableCell>
+                        {/* feature */}
+                        <ProductParticipantQuantityBadge product={product} />
+                    </TableCell>
+                )}
+                {!isUp && (
+                    <TableCell>
+                        {/* feature */}
+                        <ProductParticipantStatusBadge
+                            product={product}
+                            index={index}
+                        />
+                    </TableCell>
+                )}
+            </TableRow>
+        );
+    },
+);

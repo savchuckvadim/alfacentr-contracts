@@ -75,7 +75,7 @@ export const ProductsTableWidget = memo(function ProductsTableWidget() {
         );
     }
 
-    return  (
+    return (
         <>
             <div className="flex justify-end mb-4">
                 <LinkBadge

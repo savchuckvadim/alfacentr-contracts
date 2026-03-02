@@ -16,11 +16,7 @@ export const DocumentNumber = () => {
     return (
         <Tooltip content="Текущий номер договора">
             <div>
-                <Badge
-                    variant="outline"
-                    className="text-xs  text-primary"
-
-                >
+                <Badge variant="outline" className="text-xs  text-primary">
                     {prefix}-{counter}
                 </Badge>
             </div>

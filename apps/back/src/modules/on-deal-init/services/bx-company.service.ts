@@ -11,26 +11,35 @@ export class BxCompanyService {
     ): Promise<IBXCompany[] | null> {
         console.log('dealId', dealId);
         const innFieldId = BxCompanyData.inn.bitrixId;
-        const response = await this.bitrix.company.getList(
-            {
-                [`%${innFieldId}`]: inn,
-            },
-            ['ID', 'TITLE'],
-        );
-        const companies = response.result;
-
-        if (companies.length > 0) {
-            const comment = this.getComment(companies);
-            await this.setTimelineComment(dealId, comment);
+        let comment = '❌ ИНН не указан';
+        let companies: IBXCompany[] = [];
+        if (inn) {
+            const response = await this.bitrix.company.getList(
+                {
+                    [`%${innFieldId}`]: inn,
+                },
+                ['ID', 'TITLE'],
+            );
+            companies = response.result;
+            if (companies.length > 0) {
+                comment = this.getComment(companies, inn);
+            } else {
+                comment = `❌ Не найдены компании по ИНН: ${inn}`;
+            }
         }
+
+        await this.setTimelineComment(dealId, comment);
         return companies;
     }
-    protected getComment(companies: IBXCompany[]) {
+    protected getComment(companies: IBXCompany[], inn: string) {
         let info = '';
         companies.forEach((company) => {
             if (company.TITLE) {
                 if (!info)
-                    info = '🏢[B]' + '  Найденные компании  ' + '[/B] \n';
+                    info =
+                        '🏢[B]' +
+                        `  Найденные компании c ИНН: ${inn}` +
+                        '[/B] \n';
                 const companyLink = `🔹 [URL=https://alfacentr.bitrix24.ru/crm/company/details/${company.ID}/]${company.TITLE}[/URL]`;
                 info += companyLink + ' \n';
             }

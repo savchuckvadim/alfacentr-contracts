@@ -86,7 +86,6 @@ export type BXActivityFile = {
     // isPlaying: string
 };
 
-
 export type BXActivityUploadFile = {
     fileData: [string, string];
-}
+};

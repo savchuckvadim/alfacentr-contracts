@@ -1,9 +1,9 @@
-import { BitrixService } from "@/modules/bitrix";
+import { BitrixService } from '@/modules/bitrix';
+import { BitrixOwnerTypeId } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 import {
-
-    BitrixOwnerTypeId,
-} from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
-import { DocumentGenerateFieldTemplateCode, EnumDealCurrentDocumentFieldCode } from "@alfa/entities";
+    DocumentGenerateFieldTemplateCode,
+    EnumDealCurrentDocumentFieldCode,
+} from '@alfa/entities';
 
 export class BxBatchDocumentSendService {
     constructor(
@@ -11,8 +11,7 @@ export class BxBatchDocumentSendService {
 
         private readonly entityId: number,
         private readonly entityTypeId: BitrixOwnerTypeId.DEAL,
-    ) { }
-
+    ) {}
 
     public async add(
         stampsEnabled: 1 | 0,
@@ -35,7 +34,6 @@ export class BxBatchDocumentSendService {
                     MULTIPLE: 'Y',
                     SEPARATOR: 3,
                 },
-
             },
         };
 
@@ -44,6 +42,5 @@ export class BxBatchDocumentSendService {
             'crm.documentgenerator.document.add',
             generateDocumentData,
         );
-
     }
 }

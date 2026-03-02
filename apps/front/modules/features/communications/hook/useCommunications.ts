@@ -28,10 +28,17 @@ export const useCommunications = () => {
         dispatch(documentGenerate());
     };
 
-
     useEffect(() => {
-
-        setCanSend(!!(email?.value && phone?.value && name?.value && !errors.email && !errors.phone && !errors.name));
+        setCanSend(
+            !!(
+                email?.value &&
+                phone?.value &&
+                name?.value &&
+                !errors.email &&
+                !errors.phone &&
+                !errors.name
+            ),
+        );
     }, [email, phone, name, errors]);
 
     return {
@@ -48,7 +55,9 @@ export const useCommunications = () => {
             dispatch(communicationsActions.setEmailConfirmConfirmed(true));
         },
         cancelEmailConfirm: () => {
-            dispatch(communicationsActions.setConfirmCommunicationsActive(false));
+            dispatch(
+                communicationsActions.setConfirmCommunicationsActive(false),
+            );
             dispatch(communicationsActions.setEmailConfirmConfirmed(false));
         },
         setNeedEmail: (needEmail: boolean) => {

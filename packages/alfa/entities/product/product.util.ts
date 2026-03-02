@@ -1,4 +1,4 @@
-import { ProductType } from "./product.type";
+import { ProductType } from './product.type';
 
 export const getProductTypeByProductName = (
     productName: string,
@@ -13,7 +13,6 @@ export const getProductTypeByProductName = (
         return 'up' as ProductType;
     }
 };
-
 
 export function getPrefixByProductName(productName: string): string {
     const match = productName.match(/\[\]\s*(.*)/);

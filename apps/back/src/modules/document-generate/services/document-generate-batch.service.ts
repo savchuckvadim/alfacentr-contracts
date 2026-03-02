@@ -1,13 +1,10 @@
 import { DocumentGenerateDto } from '../dto/document-generate.dto';
 import { PBXService } from '@/modules/pbx/';
-import {
-
-    BitrixOwnerTypeId,
-} from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
+import { BitrixOwnerTypeId } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 import { DocumentContractFieldsService } from './document-contract-fields.service';
 import {
     currentDocumentFields,
-
+    DocumentGenerateFieldTemplateCode,
     DocumentGenerateTemplatesType,
     EContractType,
     EnumDealCurrentDocumentFieldCode,
@@ -15,13 +12,12 @@ import {
 } from '@alfa/entities';
 import { IRequestDocumentGenerateResponse } from '../type/request-document-generate.type';
 import { delay } from '@/lib';
-import { BitrixService, } from '@/modules/bitrix/';
+import { BitrixService } from '@/modules/bitrix/';
 import { PpkApplicationGenerateService } from './ppk-application-generate.service';
 import { EmailService } from './email.service';
 import { TelegramService } from '@/modules/telegram/telegram.service';
 import { BxTimelineService } from './bx-timeline.service';
 import { BxBatchDocumentSendService } from './bx-document-send.service';
-
 
 export class DocumentGenerateBatchService {
     private bitrix: BitrixService;
@@ -33,8 +29,7 @@ export class DocumentGenerateBatchService {
         private readonly pbxService: PBXService,
         private readonly documentContractFieldsService: DocumentContractFieldsService,
         private readonly ppkApplicationGenerateService: PpkApplicationGenerateService,
-        private readonly tgBot: TelegramService
-
+        private readonly tgBot: TelegramService,
     ) { }
 
     async generateDocument(dto: DocumentGenerateDto) {
@@ -42,12 +37,20 @@ export class DocumentGenerateBatchService {
         this.bitrix = bitrix;
         this.userId = dto.userId;
         const entityId = Number(dto.dealId);
-        this.bxTimelineService = new BxTimelineService(this.bitrix, this.userId, entityId);
-        this.bxDocumentSendService = new BxBatchDocumentSendService(this.bitrix, entityId, BitrixOwnerTypeId.DEAL);
-
+        this.bxTimelineService = new BxTimelineService(
+            this.bitrix,
+            this.userId,
+            entityId,
+        );
+        this.bxDocumentSendService = new BxBatchDocumentSendService(
+            this.bitrix,
+            entityId,
+            BitrixOwnerTypeId.DEAL,
+        );
 
         const contractTemplateContentData =
             this.documentContractFieldsService.getContractFields(
+                dto.clientType,
                 dto.contractType,
                 dto.header,
                 // dto.paragraph,
@@ -59,17 +62,14 @@ export class DocumentGenerateBatchService {
                 dto.documentCounter,
                 dto.email.email,
                 dto.seminarParticipantsCount,
-
-
             );
 
-        void await this.bxDocumentSendService.add(
+        void (await this.bxDocumentSendService.add(
             0,
             contractTemplateContentData.fields as Record<string, string>,
             Number(contractTemplateContentData.templateId),
             EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITHOUT_PT,
-        );
-
+        ));
 
         const currentContractWithoutPtBitrixId =
             currentDocumentFields[
@@ -87,46 +87,47 @@ export class DocumentGenerateBatchService {
             currentDocumentFields[
                 EnumDealCurrentDocumentFieldCode.CURRENT_ACT_WITH_PT
             ].bitrixId;
-        void await this.getActFile({
+        void (await this.getActFile({
             fields: {
                 UfCrm8ShotReqClient: dto.clientShortRq,
                 ShortClientRq: dto.clientShortRq,
                 DocumentNumber: dto.documentCounter,
                 TITLE: dto.documentPrefixNumber,
-                DocumentTitle: `Акт оказанных услуг №${dto.documentCounter} к Договору №${dto.documentPrefixNumber}`,
+                DocumentTitle: `УПД №${dto.documentCounter} к Договору №${dto.documentPrefixNumber}`,
                 DocumentPrefixNumber: dto.documentPrefixNumber,
                 DocumentNumberCounter: dto.documentCounter,
                 DocumentCompanyTitle: dto.clientCompanyTitle,
                 DocumentDirectorInitials: dto.clientDirectorInitials,
-
-
+                [DocumentGenerateFieldTemplateCode.ACT_DATE]: dto.actDate,
+                [DocumentGenerateFieldTemplateCode.CLIENT_SHORT_NAME]:
+                    dto.clientCompanyShortTitle,
+                [DocumentGenerateFieldTemplateCode.CLIENT_UPD_ADDRESS]:
+                    dto.clientUpdAddress,
+                [DocumentGenerateFieldTemplateCode.CLIENT_UPD_INN_KPP]:
+                    dto.clientUpdInnKpp,
             } as Record<string, string>,
-        });
+        }));
 
         const currentPpkApplicationBitrixId =
             currentDocumentFields[
                 EnumDealCurrentDocumentFieldCode.CURRENT_APPLICATION_DOC
             ].bitrixId;
 
+        await this.getInvoicesFiles(dto.clientType, {
+            fields: {
+                ShortClientRq: dto.clientShortRq,
 
-        await this.getInvoicesFiles(
-            dto.clientType,
-            {
-                fields: {
-                    ShortClientRq: dto.clientShortRq,
-
-                    DocumentPrefixNumber: dto.documentPrefixNumber,
-                    DocumentNumberCounter: dto.documentCounter,
-                    DocumentTitle: `Счет №${dto.documentCounter} к Договору №${dto.documentPrefixNumber}`,
-
-                } as Record<string, string>,
-            });
+                DocumentPrefixNumber: dto.documentPrefixNumber,
+                DocumentNumberCounter: dto.documentCounter,
+                DocumentTitle: `Счет №${dto.documentCounter} к Договору №${dto.documentPrefixNumber}`,
+            } as Record<string, string>,
+        });
         const result = await this.bitrix.api.callBatchWithConcurrency(1);
 
-
-
-        void await this.bxTimelineService.send('⌛ Ожидание генерации PDF ...', 'waiting');
-
+        void (await this.bxTimelineService.send(
+            '⌛ Ожидание генерации PDF ...',
+            'waiting',
+        ));
 
         for (const item of result) {
             const documentResults = item.result as {
@@ -170,14 +171,14 @@ export class DocumentGenerateBatchService {
                 },
             };
 
+            const documentResultKeys = Object.keys(documentResults) as Array<
+                keyof typeof documentResults
+            >;
 
-
-
-            for (const key in documentResults) {
+            for (const key of documentResultKeys) {
                 const document = documentResults[key].document;
                 switch (key) {
                     case EnumDealCurrentDocumentFieldCode.CURRENT_ACT_WITH_PT:
-
                         const actDocumentFileData =
                             await this.bitrix.file.downloadBitrixFileAndConvertToBase64(
                                 document.downloadUrlMachine,
@@ -187,7 +188,6 @@ export class DocumentGenerateBatchService {
                         this.filesForSend.push(actDocumentFileData);
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITH_PT:
-
                         const invoicePdf = await this.expectPdfFile(
                             document.id,
                         );
@@ -196,9 +196,9 @@ export class DocumentGenerateBatchService {
                         dealFields[`${currentInvoicesBitrixId}`].fileData =
                             pdfInvoiceFileData;
                         this.filesForSend.push(pdfInvoiceFileData);
+
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITHOUT_PT:
-
                         const invoiceDocWithoutPtFileData =
                             await this.bitrix.file.downloadBitrixFileAndConvertToBase64(
                                 document.downloadUrlMachine,
@@ -209,7 +209,6 @@ export class DocumentGenerateBatchService {
                         this.filesForSend.push(invoiceDocWithoutPtFileData);
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITHOUT_PT:
-
                         const contractDocWithoutPtFileData =
                             await this.bitrix.file.downloadBitrixFileAndConvertToBase64(
                                 document.downloadUrlMachine,
@@ -218,117 +217,138 @@ export class DocumentGenerateBatchService {
                             `${currentContractWithoutPtBitrixId}`
                         ].fileData = contractDocWithoutPtFileData;
                         this.filesForSend.push(contractDocWithoutPtFileData);
-
                 }
             }
 
-            void await this.bitrix.deal.update(
+            void (await this.bitrix.deal.update(
                 entityId,
                 // @ts-ignore
                 dealFields,
-            );
+            ));
         }
-        void await this.bxTimelineService.send('📜 PDF сгенерирован', 'document');
+        void (await this.bxTimelineService.send(
+            '📜 PDF сгенерирован',
+            'document',
+        ));
 
-
-        if (dto.contractType === EContractType.seminar_ppk || dto.contractType === EContractType.ppk) {
-            void await this.getPpkApplicationFile(entityId, currentPpkApplicationBitrixId, dto);
-
+        if (
+            dto.contractType === EContractType.seminar_ppk ||
+            dto.contractType === EContractType.ppk
+        ) {
+            void (await this.getPpkApplicationFile(
+                entityId,
+                currentPpkApplicationBitrixId,
+                dto,
+            ));
         }
 
-
-        void await this.bxTimelineService.send('✅ Документы сгенерированы', 'success');
-
+        void (await this.bxTimelineService.send(
+            '✅ Документы сгенерированы',
+            'success',
+        ));
 
         let mailResult: any = null;
         if (dto.email.needEmail && dto.email.email) {
-            await delay(500);
-            void await this.bxTimelineService.send('⌛ Отправка email...', 'email');
-
+            await delay(1100);
+            void (await this.bxTimelineService.send(
+                '⌛ Отправка email...',
+                'email',
+            ));
 
             const emailService = new EmailService(
                 this.bitrix,
                 this.filesForSend,
                 dto.email.email,
                 dto.email.name || '',
+                dto.email.phone || '',
                 dto.documentPrefixNumber,
                 '',
-                dto.dealId
+                dto.dealId,
+                dto.userEmail,
+                 0,
             );
             mailResult = await emailService.send();
-
-
         } else {
-            void await this.bxTimelineService.send('📄 Email не будет отправлен. Только формирование документов', 'email');
-
+            void (await this.bxTimelineService.send(
+                '📄 Email не будет отправлен. Только формирование документов',
+                'email',
+            ));
         }
 
-        return { result, filesCount: this.filesForSend.length, files: this.filesForSend, mailResult };
-
+        return {
+            result,
+            filesCount: this.filesForSend.length,
+            files: this.filesForSend,
+            mailResult,
+        };
     }
     private async getPpkApplicationFile(
         entityId: number,
         currentPpkApplicationBitrixId: string,
         dto: DocumentGenerateDto,
     ): Promise<void> {
-        void await this.bxTimelineService.send('⏳ Ожидание генерации приложения ППК...', 'waiting');
-
+        void (await this.bxTimelineService.send(
+            '⏳ Ожидание генерации приложения ППК...',
+            'waiting',
+        ));
 
         try {
-
             if (dto.ppkApplicationData) {
                 const ppkApplicationFileData =
                     await this.ppkApplicationGenerateService.generateDocxBase64(
-                        dto.ppkApplicationData
-
+                        dto.ppkApplicationData,
                     );
-                void await this.bitrix.deal.update(
-                    entityId,
-                    {
-                        [`${currentPpkApplicationBitrixId}`]: {
-                            // @ts-ignore
-                            fileData: ppkApplicationFileData,
-                        },
+                void (await this.bitrix.deal.update(entityId, {
+                    [`${currentPpkApplicationBitrixId}`]: {
+                        // @ts-ignore
+                        fileData: ppkApplicationFileData,
                     },
-                );
-                const updtdDeal = await this.bitrix.deal.get(entityId, [`${currentPpkApplicationBitrixId}`]);
+                }));
+                const updtdDeal = await this.bitrix.deal.get(entityId, [
+                    `${currentPpkApplicationBitrixId}`,
+                ]);
                 this.filesForSend.push(ppkApplicationFileData);
 
                 //@ts-ignore
                 const url = updtdDeal.result[currentPpkApplicationBitrixId]?.downloadUrl as string;
 
-
                 if (url) {
-                    void await this.bxTimelineService.send(`📜<a href="${url}"> Приложение ППК сгенерировано №${dto.ppkApplicationData.document_number}</a>`, 'ppk');
+                    void (await this.bxTimelineService.send(
+                        `📜<a href="${url}"> Приложение ППК сгенерировано №${dto.ppkApplicationData.document_number}</a>`,
+                        'ppk',
+                    ));
                 } else {
-                    void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+                    void (await this.bxTimelineService.send(
+                        '❌ Произошла ошибка: Приложение ППК не сгенерировано',
+                        'error',
+                    ));
                 }
-
             } else {
-                void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
+                void (await this.bxTimelineService.send(
+                    '❌ Произошла ошибка: Приложение ППК не сгенерировано',
+                    'error',
+                ));
             }
-
         } catch (error) {
-            void await this.bxTimelineService.send('❌ Произошла ошибка: Приложение ППК не сгенерировано', 'error');
-
+            void (await this.bxTimelineService.send(
+                '❌ Произошла ошибка: Приложение ППК не сгенерировано',
+                'error',
+            ));
         }
     }
 
-    private async getActFile(
-
-        contractTemplateContentData: { fields: Record<string, string> },
-    ): Promise<void> {
+    private async getActFile(contractTemplateContentData: {
+        fields: Record<string, string>;
+    }): Promise<void> {
         const templateWithoutStampsId = DocumentGenerateTemplatesType.ACT.id;
 
-        void await this.bxDocumentSendService.add(
-
+        void (await this.bxDocumentSendService.add(
             0,
             contractTemplateContentData.fields as Record<string, string>,
             Number(templateWithoutStampsId),
 
             EnumDealCurrentDocumentFieldCode.CURRENT_ACT_WITH_PT,
-        );
-
+        ));
     }
 
     private async getInvoicesFiles(
@@ -345,24 +365,21 @@ export class DocumentGenerateBatchService {
                 ? DocumentGenerateTemplatesType.INVOISE_QR_WITH_STAMPS.id
                 : DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS.id;
 
-        void await this.bxDocumentSendService.add(
-
+        void (await this.bxDocumentSendService.add(
             1,
             contractTemplateContentData.fields as Record<string, string>,
             Number(templateWithStampsId),
 
             EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITH_PT,
-        );
+        ));
 
-        void await this.bxDocumentSendService.add(
-
+        void (await this.bxDocumentSendService.add(
             0,
             contractTemplateContentData.fields as Record<string, string>,
             Number(templateWithoutStampsId),
 
             EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITHOUT_PT,
-        );
-
+        ));
     }
     private async getPdfFileData(
         document: IRequestDocumentGenerateResponse,
@@ -374,7 +391,6 @@ export class DocumentGenerateBatchService {
         return file;
     }
     private async expectPdfFile(fileId: number) {
-
         let count = 0;
         let result: IRequestDocumentGenerateResponse | null = null;
         while (!result) {
@@ -389,23 +405,19 @@ export class DocumentGenerateBatchService {
                 const document = readonly.result
                     .document as IRequestDocumentGenerateResponse;
 
-
                 count++;
 
                 if (document.pdfUrlMachine) {
                     result = document;
                 }
             } catch (error) {
-                await this.tgBot.sendMessage(error?.message ? `Ошибка при генерации PDF: ${error?.message}` : 'expectPdfFile Ошибка при генерации PDF');
+                await this.tgBot.sendMessage(
+                    error?.message
+                        ? `Ошибка при генерации PDF: ${error?.message}`
+                        : 'expectPdfFile Ошибка при генерации PDF',
+                );
             }
         }
         return result;
     }
-
-
-
-
-
-
-
 }

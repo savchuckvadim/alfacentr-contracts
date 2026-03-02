@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EContractType, IPpkApplicationParticipant, IPpkDocumentApplicationData, IRequestDocumentGenerateEmail } from '@alfa/entities';
+import {
+    EContractType,
+    IPpkApplicationParticipant,
+    IPpkDocumentApplicationData,
+    IRequestDocumentGenerateEmail,
+} from '@alfa/entities';
 import { IsStringOrArrayString } from '@/core/decorators/dto/string-or-array-string.decorator';
 import {
     IsArray,
@@ -19,7 +24,8 @@ import {
 } from '@alfa/entities';
 
 class DocumentGenerateFieldValueDto
-    implements IRequestDocumentGenerateFieldValueType {
+    implements IRequestDocumentGenerateFieldValueType
+{
     @ApiProperty({
         description: 'Код поля',
         example: 'Client',
@@ -38,6 +44,14 @@ class DocumentGenerateFieldsDto implements IRequestDocumentGenerateFieldsType {
 
 export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @ApiProperty({
+        description: 'Дата акта',
+        example: '27 февраля 2026 г.',
+    })
+    @IsString()
+    @IsOptional()
+    actDate: string;
+
+    @ApiProperty({
         description: 'Домен',
         example: 'https://alfacentr.bitrix24.ru',
     })
@@ -51,8 +65,22 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @IsNumber()
     userId: number;
 
+    @ApiProperty({
+        description: 'ID пользователя',
+        example: 1,
+    })
+    @IsNotEmpty()
+    @IsString()
+    userName: string;
 
-    
+    @ApiProperty({
+        description: 'Имя пользователя',
+        example: '1',
+    })
+    @IsNotEmpty()
+    @IsString()
+    userEmail: string;
+
     @ApiProperty({
         description: 'ID сокета',
         example: '123',
@@ -73,7 +101,6 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
             Object.values(RQ_TYPE).join(', '),
     })
     clientType: RQ_TYPE;
-
 
     @ApiProperty({
         description: 'Тип договора',
@@ -157,14 +184,49 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @IsString()
     clientSignature: string;
 
-
     @ApiProperty({
-        description: 'Наименование компании или физ лица из реквизитов для акта',
+        description:
+            'Наименование компании или физ лица из реквизитов для акта',
         example: 'ООО Пирожок или Иванов Иван Иванович',
     })
     @IsOptional()
     @IsString()
     clientCompanyTitle: string;
+
+    @ApiProperty({
+        description:
+            'Короткое наименование компании или физ лица из реквизитов для акта',
+        example: 'ООО Пирожок или Иванов Иван Иванович',
+    })
+    @IsOptional()
+    @IsString()
+    clientCompanyShortTitle: string;
+
+    @ApiProperty({
+        description: 'Адрес компании или физ лица из реквизитов для акта',
+        example: 'г. Москва, ул. Ленина, д. 1',
+    })
+    @IsOptional()
+    @IsString()
+    clientUpdAddress: string;
+
+    @ApiProperty({
+        description:
+            'Короткое наименование компании или физ лица из реквизитов для акта',
+        example: 'ООО Пирожок или Иванов Иван Иванович',
+    })
+    @IsOptional()
+    @IsString()
+    clientUpdShortRq: string;
+
+    @ApiProperty({
+        description: 'ИНН/КПП компании или физ лица из реквизитов для акта',
+        example: '2526003992 / 252601001',
+    })
+    @IsOptional()
+    @IsString()
+    clientUpdInnKpp: string;
+
     @ApiProperty({
         description: 'Инициалы директора или физ лица из реквизитов для акта',
         example: 'ИВАНОВ И. И. или Иванов И. И.',
@@ -172,7 +234,6 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @IsOptional()
     @IsString()
     clientDirectorInitials: string;
-
 
     @ApiProperty({
         description: 'Массив элементов Пункт договора 1.1.2',
@@ -212,7 +273,6 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
         example: 'test@test.com',
     })
     @IsOptional()
-
     email: IRequestDocumentGenerateEmail;
 
     @ApiProperty({
@@ -233,11 +293,6 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @IsObject()
     ppkApplicationData?: IPpkDocumentApplicationData;
 }
-
-
-
-
-
 
 export class DocumentGenerateEmailDto implements IRequestDocumentGenerateEmail {
     @ApiProperty({

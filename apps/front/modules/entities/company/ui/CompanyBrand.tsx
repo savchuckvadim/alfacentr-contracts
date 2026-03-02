@@ -15,20 +15,14 @@ export const CompanyBrand = () => {
     const url = `https://${app.domain}/crm/company/details/${company?.ID}/`;
     return (
         <Tooltip content="Перейти в компанию в Битрикс">
-            <div className="cursor-pointer text-xl font-bold text-foreground hover:text-primary/90 transition-colors max-w-[500px] overflow-hidden text-ellipsis whitespace-nowrap"
+            <div
+                className="cursor-pointer text-xl font-bold text-foreground hover:text-primary/90 transition-colors max-w-[500px] overflow-hidden text-ellipsis whitespace-nowrap"
                 style={{
                     cursor: 'pointer',
                 }}
             >
-
-
-                <Link
-                    target="_blank"
-                    href={url}
-
-                >
-                    {company?.TITLE}{' '}
-                    {inn && <span className="">{inn}</span>}
+                <Link target="_blank" href={url}>
+                    {company?.TITLE} {inn && <span className="">{inn}</span>}
                 </Link>
             </div>
         </Tooltip>

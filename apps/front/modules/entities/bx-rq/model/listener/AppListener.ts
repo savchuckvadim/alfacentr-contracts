@@ -18,9 +18,9 @@ export function setupRqAppListener(
             const domain = state.app.domain;
             const companyId = state.app.bitrix.company?.ID;
             const deal = state.app.bitrix.deal;
-            const currentRqId = getCurrentRq(deal as IBXDeal) || (undefined as undefined);
+            const currentRqId =
+                getCurrentRq(deal as IBXDeal) || (undefined as undefined);
             if (domain && companyId) {
-
                 dispatch(fetchBXRQ(domain, companyId, currentRqId) as any);
             }
         },

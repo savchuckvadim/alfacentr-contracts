@@ -1,8 +1,8 @@
 import { API_METHOD } from '../type/type';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 //
-const prod = 'https://alfacentr.back.april-app.ru/api/';
-// const prod = `http://localhost:3000/api/`;
+// const prod = 'https://alfacentr.back.april-app.ru/api/';
+const prod = `http://localhost:3000/api/`;
 // const prod = `http://localhost:8200/api/`;
 const url = prod;
 
@@ -11,7 +11,6 @@ export enum EBACK_ENDPOINT {
     DOCUMENT_GENERATE = 'document-generate',
 
     QUEUE_PING = 'queue/ping',
-
 
     BITRIX_METHOD = 'helper/bitrix/method',
 
@@ -71,7 +70,8 @@ export const backAPI = {
         } catch (error: unknown) {
             console.error('API error', error);
 
-            return (error as AxiosError<IBackResponse<T>>).response?.data as IBackResponse<T>;
+            return (error as AxiosError<IBackResponse<T>>).response
+                ?.data as IBackResponse<T>;
 
             // return {
             //     resultCode: EResultCode.ERROR,

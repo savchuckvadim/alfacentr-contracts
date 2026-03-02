@@ -39,7 +39,8 @@ export function setupRqListener(
             const dealData = state.deal.dealData;
             let currentClientType = RQ_TYPE.ORGANIZATION;
             if (dealData) {
-                currentClientType = getDealClientType(dealData);
+                currentClientType =
+                    getDealClientType(dealData) || RQ_TYPE.ORGANIZATION;
             }
 
             if (currentItem) {
@@ -54,15 +55,26 @@ export function setupRqListener(
                     currentItem,
                 );
 
+                const clientShortRq = clientRqs.clientShortRq;
+                const clientUpdShortRq = clientRqs.clientUpdShortRq;
+                const clientUpdAddress = clientRqs.clientUpdAddress;
+                const clientCompanyShortTitle =
+                    clientRqs.clientCompanyShortTitle;
+                const clientUpdInnKpp = clientRqs.clientUpdInnKpp;
                 listenerApi.dispatch(
                     setClient({
                         client: clientRqs.client,
+                        clientShortRq,
+                        clientUpdAddress: clientUpdAddress,
+                        clientUpdShortRq: clientUpdShortRq,
+                        clientUpdInnKpp: clientUpdInnKpp,
                         header: header,
-                        clientShortRq: clientRqs.clientShortRq,
+
                         clientSignature: clientRqs.clientSignature,
                         clientCompanyTitle: clientRqs.clientCompanyTitle,
-                        clientDirectorInitials: clientRqs.clientDirectorInitials,
-
+                        clientCompanyShortTitle: clientCompanyShortTitle,
+                        clientDirectorInitials:
+                            clientRqs.clientDirectorInitials,
                     }),
                 );
             }

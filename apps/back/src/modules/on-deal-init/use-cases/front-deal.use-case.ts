@@ -15,11 +15,10 @@ export class FrontDealUseCase {
     private alfaFieldService: AlfaFieldsService;
     private bxDealService: BxDealService;
 
-
     constructor(
         private readonly pbx: PBXService,
         private readonly redisService: RedisService,
-    ) { }
+    ) {}
     async init(domain: string) {
         const { bitrix } = await this.pbx.init(domain);
 
@@ -28,8 +27,6 @@ export class FrontDealUseCase {
         this.bxDealService = new BxDealService();
         await this.bxDealService.init(bitrix);
         await this.alfaFieldService.init(bitrix);
-
-
     }
     async getDealValues(dealId: number) {
         const { bxDealService, alfaFieldService } = {
@@ -37,10 +34,11 @@ export class FrontDealUseCase {
             alfaFieldService: this.alfaFieldService,
         };
 
-
-
         const { alfaFieldData, resultBxFieldsIds } = await this.getFieldsIds();
-        const deal = await bxDealService.getDeal(dealId, resultBxFieldsIds as string[]);
+        const deal = await bxDealService.getDeal(
+            dealId,
+            resultBxFieldsIds as string[],
+        );
         if (!deal || !alfaFieldData) {
             return null;
         }
@@ -69,22 +67,24 @@ export class FrontDealUseCase {
                 `ALFA fieldData`,
                 60 * 10,
                 JSON.stringify(alfaFieldData),
-
             );
             await redisClient.setex(
                 `ALFA bxFieldsIds`,
                 60 * 10,
                 JSON.stringify(bxFieldsIds),
-
             );
             resultBxFieldsIds = bxFieldsIds;
         }
 
         return {
             alfaFieldData,
-            alfaFieldDataCount: alfaFieldData ? Object.keys(alfaFieldData).length : 0,
+            alfaFieldDataCount: alfaFieldData
+                ? Object.keys(alfaFieldData).length
+                : 0,
             resultBxFieldsIds,
-            resultBxFieldsIdsCount: resultBxFieldsIds ? resultBxFieldsIds.length : 0,
-        }
+            resultBxFieldsIdsCount: resultBxFieldsIds
+                ? resultBxFieldsIds.length
+                : 0,
+        };
     }
 }

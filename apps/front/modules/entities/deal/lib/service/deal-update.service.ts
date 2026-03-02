@@ -1,4 +1,4 @@
-import { Bitrix, IBXDeal } from '@bitrix/index';
+import { Bitrix } from '@bitrix/index';
 import { IDealFieldsData } from '../../type/deal-field.type';
 
 export const updateDeal = async (

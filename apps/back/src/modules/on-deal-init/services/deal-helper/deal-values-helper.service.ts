@@ -57,9 +57,18 @@ export class DealFieldValuesHelperService {
         deal: IBXDeal,
         fieldsTemplate: TDealData,
     ): DealField[] {
-        if (
-            !deal[fieldsTemplate[BxDealDataKeys.participants][1].name.bitrixId]
-        ) {
+        const searchedElementIndex1 =
+            fieldsTemplate[BxDealDataKeys.participants][1];
+        let searchedElement1 = deal[searchedElementIndex1.name.bitrixId];
+
+        for (const key in searchedElementIndex1) {
+            if (deal[searchedElementIndex1[key].bitrixId]) {
+                searchedElement1 =
+                    searchedElement1 ||
+                    deal[searchedElementIndex1[key].bitrixId];
+            }
+        }
+        if (!searchedElement1) {
             fields = fields.filter(
                 (field) =>
                     !field.name.includes('Участник 1') &&
@@ -140,9 +149,10 @@ export class DealFieldValuesHelperService {
         participantNumber: number,
     ): boolean {
         let hasAnyDataInParticipant = false;
-        for (const key in fieldsTemplate[BxDealDataKeys.participants][
-            participantNumber
-        ]) {
+        const searchedElement =
+            fieldsTemplate[BxDealDataKeys.participants][participantNumber];
+
+        for (const key in searchedElement) {
             if (
                 deal[
                     fieldsTemplate[BxDealDataKeys.participants][

@@ -30,9 +30,7 @@ export const ClientTypeSelect = () => {
     return (
         <Tooltip content="Текущий тип клиента">
             <div>
-
                 <Select
-
                     value={clientType}
                     onValueChange={value => {
                         updateFieldWithAPI(
@@ -44,27 +42,29 @@ export const ClientTypeSelect = () => {
                 >
                     <SelectTrigger
                         style={{
-
                             cursor: 'pointer',
                         }}
-                        size="sm" className="h-5 border-primary/30 text-primary w-[200px]">
+                        size="sm"
+                        className="h-5 border-primary/30 text-primary w-[200px]"
+                    >
                         <SelectValue placeholder="Выберите тип клиента" />
                     </SelectTrigger>
-                    <SelectContent className="text-primary"
+                    <SelectContent
+                        className="text-primary"
                         style={{
-
                             cursor: 'pointer',
                         }}
-
                     >
                         {clientTypeList?.map(item => (
-                            <SelectItem key={item.bitrixId} value={item.bitrixId}>
+                            <SelectItem
+                                key={item.bitrixId}
+                                value={item.bitrixId}
+                            >
                                 {item.name}
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-
             </div>
         </Tooltip>
     );

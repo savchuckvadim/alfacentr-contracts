@@ -43,16 +43,16 @@ export class AlfaActivityController {
         description: 'Список активностей и уникальные компании',
         schema: {
             type: 'object',
-            properties: {
-                activities: {
-                    type: 'array',
-                    description: 'Список активностей',
-                },
-                companies: {
-                    type: 'array',
-                    description: 'Уникальные ID компаний',
-                },
-            },
+            // properties: {
+            //     activities: {
+            //         type: 'array',
+            //         description: 'Список активностей',
+            //     },
+            //     companies: {
+            //         type: 'array',
+            //         description: 'Уникальные ID компаний',
+            //     },
+            // },
         },
     })
     @Get('activity/collect')
@@ -81,15 +81,15 @@ export class AlfaActivityController {
     @ApiResponse({
         status: 200,
         description: 'Результаты обновления компаний',
-        schema: {
-            type: 'object',
-            properties: {
-                results: {
-                    type: 'array',
-                    description: 'Результаты обновления',
-                },
-            },
-        },
+        // schema: {
+        //     type: 'object',
+        //     properties: {
+        //         results: {
+        //             type: 'array',
+        //             description: 'Результаты обновления',
+        //         },
+        //     },
+        // },
     })
     @Get('activity/update-companies')
     async updateCompanies(

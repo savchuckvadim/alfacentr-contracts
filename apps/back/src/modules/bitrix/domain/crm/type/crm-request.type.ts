@@ -12,7 +12,7 @@ export type CrmGetRequestType = {
 };
 
 export type CrmListRequestType<T> = {
-    filter: Partial<T>;
+    filter: Partial<T> | { [key: string]: any };
     select?: string[];
     start?: -1 | number;
     order?: {

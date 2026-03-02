@@ -1,6 +1,5 @@
-
+'use client';
 import { useDocumentRq } from '../hooks/use-document-rq.hook';
-
 
 export const DocumentRqsPreview = () => {
     const { client, provider } = useDocumentRq();

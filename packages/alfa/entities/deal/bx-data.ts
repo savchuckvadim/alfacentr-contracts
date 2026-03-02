@@ -2,6 +2,7 @@ import { BxParticipantsDataKeys } from '../smart/participant.interface';
 import { BxParticipantsData } from './bx-participants-data';
 
 export enum BxDealDataKeys {
+    // contract_type_enum = 'contract_type_enum',
     prefix = 'prefix',
     inn = 'inn',
     companyName = 'companyName',
@@ -10,7 +11,8 @@ export enum BxDealDataKeys {
     directorBased = 'directorBased',
     directorPhone = 'directorPhone',
     use_edo = 'use_edo',
-    contact_up_doc = 'contact_up_doc',
+    bid_type = 'bid_type',
+    // contact_up_doc = 'contact_up_doc',
     exchange_doc_name = 'exchange_doc_name',
     exchange_doc_email = 'exchange_doc_email',
     exchange_doc_phone = 'exchange_doc_phone',
@@ -19,6 +21,22 @@ export enum BxDealDataKeys {
     seminar_format = 'seminar_format',
     seminar_up_packet = 'seminar_up_packet',
     participants = 'participants',
+
+    //up
+    edo_alternative_address = 'edo_alternative_address',
+    up_type = 'up_type',
+    up_packet = 'up_packet',
+
+    // fio_recipient_of_up = 'fio_recipient_of_up', //only for fiz
+    // phone_recipient_of_up = 'phone_recipient_of_up', //only for fiz
+    // email_recipient_of_up = 'email_recipient_of_up', //only for fiz
+
+    up_comment = 'up_comment',
+
+    up_email_for_send = 'up_email_for_send',
+    // up_contact_fio = 'up_contact_fio', //only for organizations
+    // up_contact_phone = 'up_contact_phone', //only for organizations
+    // up_contact_email = 'up_contact_email', //only for organizations
 }
 export const BxDealData: TDealData = {
     [BxDealDataKeys.prefix]: {
@@ -99,16 +117,16 @@ export const BxDealData: TDealData = {
         value: '' as string,
     },
 
-    [BxDealDataKeys.contact_up_doc]: {
-        multiple: false as const,
-        mandatory: false as const,
-        bitrixId: 'UF_CRM_1743414644' as const,
-        name: 'Контактное лицо для направления комплекта документов \"Учетная политика\" (ФИО, мобильный телефон, e-mail)' as const,
-        type: 'string' as const,
-        code: 'contact_up_doc' as const,
-        group: 'contacts' as const,
-        value: '' as string,
-    },
+    // [BxDealDataKeys.contact_up_doc]: {
+    //     multiple: false as const,
+    //     mandatory: false as const,
+    //     bitrixId: 'UF_CRM_1743414644' as const,
+    //     name: 'Контактное лицо для направления комплекта документов \"Учетная политика\" (ФИО, мобильный телефон, e-mail)' as const,
+    //     type: 'string' as const,
+    //     code: 'contact_up_doc' as const,
+    //     group: 'contacts' as const,
+    //     value: '' as string,
+    // },
     [BxDealDataKeys.exchange_doc_name]: {
         multiple: false as const,
         mandatory: false as const,
@@ -158,7 +176,7 @@ export const BxDealData: TDealData = {
             },
         ] as TFieldItem[],
         name: 'Вы являетесь физическим или юридическим лицом?' as const,
-        code: 'organization_type' as const,
+        code: BxDealDataKeys.organization_type as const,
         multiple: false as const,
         mandatory: false as const,
         group: 'organization' as const,
@@ -169,7 +187,7 @@ export const BxDealData: TDealData = {
         bitrixId: 'UF_CRM_1744358668' as const,
         type: 'string' as const,
         name: 'ФИО (Физлцо)' as const,
-        code: 'fiz_fio' as const,
+        code: BxDealDataKeys.organizationfiz_fio as const,
         multiple: false as const,
         mandatory: false as const,
         group: 'organization' as const,
@@ -203,17 +221,19 @@ export const BxDealData: TDealData = {
             },
         ],
         name: 'Форма регистрации',
-        code: null,
+        code: BxDealDataKeys.seminar_format,
         multiple: false,
         mandatory: false,
         group: 'seminar',
         value: '' as string,
     },
+
+    //TODO: походу больше не используем
     [BxDealDataKeys.seminar_up_packet]: {
         id: '8468',
         bitrixId: 'UF_CRM_1744363400',
         type: 'enumeration',
-        code: 'up_packet',
+        code: BxDealDataKeys.seminar_up_packet,
         list: [
             {
                 bitrixId: '18038',
@@ -267,7 +287,258 @@ export const BxDealData: TDealData = {
     },
     //Пользуетесь ли вы эдо
 
+    // [BxDealDataKeys.contract_type_enum]: {
+    //     id: '10264',
+    //     bitrixId: 'UF_CRM_8_1700638045',
+    //     type: 'enumeration',
+    //     code: BxDealDataKeys.contract_type_enum,
+    //     list: [
+    //         {
+    //             bitrixId: '20014',
+    //             name: 'УП комплектом',
+    //             sort: '10',
+    //             // xmlId: '35234d4bb375ef35c3dcaa518fba3e20',
+    //         },
+    //         {
+    //             bitrixId: '20016',
+    //             name: 'УП видеозапись',
+    //             sort: '20',
+    //             // xmlId: '0e8e95b4d4ec79de6bccdae28b25a43f',
+    //         },
+    //         {
+    //             bitrixId: '20018',
+    //             name: 'Семинар',
+    //             sort: '30',
+    //             // xmlId: '21c669fbc0b6f641e6c7049934141090',
+    //         },
+    //         {
+    //             bitrixId: '20020',
+    //             name: 'Семинар ППК',
+    //             sort: '40',
+    //             // xmlId: '52a8f9e5b16a8cb9e2df068f2d629a4c',
+    //         },
+    //         {
+    //             bitrixId: '20022',
+    //             name: 'ППК',
+    //             sort: '50',
+    //             // xmlId: '122a585d2820b8cdcee246701a87733b',
+    //         },
+    //         {
+    //             bitrixId: '23548',
+    //             name: 'Проживание',
+    //             sort: '60',
+    //             // xmlId: '0c2cca52dc148cdb95802ce9124a42ad',
+    //         },
+    //     ],
+    //     name: 'Тип',
+    //     multiple: false,
+    //     mandatory: false,
+    //     group: 'seminar',
+    //     value: '' as string,
+    // },
+
+    [BxDealDataKeys.bid_type]: {
+        id: '11746',
+        bitrixId: 'UF_CRM_1771410918',
+        type: 'enumeration',
+        code: BxDealDataKeys.bid_type,
+        list: [
+            {
+                bitrixId: '23630',
+                name: 'Семинары',
+                sort: '10',
+            },
+            {
+                bitrixId: '23632',
+                name: 'Учетная политика',
+                sort: '20',
+            },
+        ],
+        name: 'Тип заявки (скрытое)',
+        multiple: false,
+        mandatory: false,
+        group: 'general',
+        value: '' as string,
+    },
     [BxDealDataKeys.participants]: BxParticipantsData,
+
+    //up
+    [BxDealDataKeys.edo_alternative_address]: {
+        multiple: false as const,
+        mandatory: false as const,
+        bitrixId: 'UF_CRM_1688709447' as const,
+        name: 'Если Вы не используете ЭДО, укажите, пожалуйста, почтовый адрес для направления оригиналов бухгалтерских документов' as const,
+        code: BxDealDataKeys.edo_alternative_address as const,
+        group: 'general' as const,
+        type: 'string' as const,
+        value: '' as string,
+    },
+
+    [BxDealDataKeys.up_type]: {
+        id: '11738',
+        bitrixId: 'UF_CRM_1771299602',
+        type: 'enumeration',
+        code: BxDealDataKeys.up_type,
+        list: [
+            {
+                bitrixId: '23578',
+                name: 'Бюджетное',
+                sort: '10',
+            },
+            {
+                bitrixId: '23580',
+                name: 'Автономное',
+                sort: '20',
+            },
+            {
+                bitrixId: '23582',
+                name: 'Казенное',
+                sort: '30',
+            },
+            {
+                bitrixId: '23584',
+                name: 'Бюджетное для медицинских учреждений',
+                sort: '40',
+            },
+            {
+                bitrixId: '23586',
+                name: 'Автономное для медицинских учреждений',
+                sort: '50',
+            },
+        ],
+        name: 'Тип учетной политики',
+        multiple: false,
+        mandatory: false,
+        group: 'general',
+        value: '' as string,
+    },
+
+    [BxDealDataKeys.up_packet]: {
+        id: '11740',
+        bitrixId: 'UF_CRM_1771299911',
+        type: 'enumeration',
+        code: BxDealDataKeys.up_packet,
+        list: [
+            {
+                bitrixId: '23592',
+                name: 'Учетная политика 2024',
+                sort: '10',
+            },
+            {
+                bitrixId: '23594',
+                name: 'Учетная политика 2025',
+                sort: '20',
+            },
+            {
+                bitrixId: '23596',
+                name: 'Учетная политика 2026',
+                sort: '30',
+            },
+        ],
+        name: 'Пакет УП',
+        multiple: true,
+        mandatory: false,
+        group: 'general',
+        value: '' as string,
+    },
+
+    // [BxDealDataKeys.fio_recipient_of_up]: {
+    //     multiple: false as const,
+    //     mandatory: false as const,
+    //     bitrixId: 'UF_CRM_1771556135' as const,
+    //     name: 'ФИО получателя учетной политики' as const,
+    //     code: BxDealDataKeys.fio_recipient_of_up as const,
+    //     group: 'up' as const,
+    //     type: 'string' as const,
+    //     value: '' as string,
+    //     isFizOnly: true as const,
+    //     isOrgOnly: false as const,
+    // },
+
+    // [BxDealDataKeys.email_recipient_of_up]: {
+    //     multiple: false as const,
+    //     mandatory: false as const,
+    //     bitrixId: 'UF_CRM_1771556147' as const,
+    //     name: 'E-mail УП' as const,
+    //     code: BxDealDataKeys.email_recipient_of_up as const,
+    //     group: 'up' as const,
+    //     type: 'string' as const,
+    //     value: '' as string,
+    //     isFizOnly: true as const,
+    //     isOrgOnly: false as const,
+    // },
+    // [BxDealDataKeys.phone_recipient_of_up]: {
+    //     multiple: false as const,
+    //     mandatory: false as const,
+    //     bitrixId: 'UF_CRM_1771556159' as const,
+    //     name: 'Телефон УП' as const,
+    //     code: BxDealDataKeys.phone_recipient_of_up as const,
+    //     group: 'up' as const,
+    //     type: 'string' as const,
+    //     value: '' as string,
+    //     isFizOnly: true as const,
+    //     isOrgOnly: false as const,
+    // },
+    [BxDealDataKeys.up_comment]: {
+        multiple: false as const,
+        mandatory: false as const,
+        bitrixId: 'UF_CRM_1771556171' as const,
+        name: 'Комментарий УП' as const,
+        code: BxDealDataKeys.up_comment as const,
+        group: 'up' as const,
+        type: 'string' as const,
+        value: '' as string,
+        isFizOnly: false as const,
+        isOrgOnly: false as const,
+    },
+    [BxDealDataKeys.up_email_for_send]: {
+        multiple: false as const,
+        mandatory: false as const,
+        bitrixId: 'UF_CRM_1771556547' as const,
+        name: 'E-mail для направления комплекта документов "Учетная политика"' as const,
+        code: BxDealDataKeys.up_email_for_send as const,
+        group: 'up' as const,
+        type: 'string' as const,
+        value: '' as string,
+        isFizOnly: false as const,
+        isOrgOnly: false as const,
+    },
+    // [BxDealDataKeys.up_contact_fio]: {
+    //     multiple: false as const,
+    //     mandatory: false as const,
+    //     bitrixId: 'UF_CRM_1771556190' as const,
+    //     name: 'Контактное лицо для обмена документами (ФИО) УП' as const,
+    //     code: BxDealDataKeys.up_contact_fio as const,
+    //     group: 'up' as const,
+    //     type: 'string' as const,
+    //     value: '' as string,
+    //     isFizOnly: false as const,
+    //     isOrgOnly: true as const,
+    // },
+    // [BxDealDataKeys.up_contact_phone]: {
+    //     multiple: false as const,
+    //     mandatory: false as const,
+    //     bitrixId: 'UF_CRM_1771556213' as const,
+    //     name: 'Телефон контактного лица УП' as const,
+    //     code: BxDealDataKeys.up_contact_phone as const,
+    //     group: 'up' as const,
+    //     type: 'string' as const,
+    //     value: '' as string,
+    //     isFizOnly: false as const,
+    //     isOrgOnly: true as const,
+    // },
+    // [BxDealDataKeys.up_contact_email]: {
+    //     multiple: false as const,
+    //     mandatory: false as const,
+    //     bitrixId: 'UF_CRM_1771556201' as const,
+    //     name: 'E-mail контактного лица УП' as const,
+    //     code: BxDealDataKeys.up_contact_email as const,
+    //     group: 'up' as const,
+    //     type: 'string' as const,
+    //     value: '' as string,
+    //     isFizOnly: false as const,
+    //     isOrgOnly: true as const,
+    // },
 };
 
 export type TFieldItem = {
@@ -285,12 +556,15 @@ export type TField = {
     group: string;
     value: string | number | string[] | number[];
     type: 'enumeration' | 'string' | 'boolean' | 'date' | 'number' | 'datetime';
+    isFizOnly?: boolean;
+    isOrgOnly?: boolean;
 };
 export type TFieldSelect = TField & {
     type: 'enumeration';
     list: TFieldItem[];
 };
 export interface TDealData {
+    // [BxDealDataKeys.contract_type_enum]: TFieldSelect;
     [BxDealDataKeys.prefix]: TFieldSelect;
     [BxDealDataKeys.inn]: TField;
     [BxDealDataKeys.companyName]: TField;
@@ -299,7 +573,8 @@ export interface TDealData {
     [BxDealDataKeys.directorBased]: TField;
     [BxDealDataKeys.directorPhone]: TField;
     [BxDealDataKeys.use_edo]: TFieldSelect;
-    [BxDealDataKeys.contact_up_doc]: TField;
+    [BxDealDataKeys.bid_type]: TFieldSelect;
+    // [BxDealDataKeys.contact_up_doc]: TField;
     [BxDealDataKeys.exchange_doc_name]: TField;
     [BxDealDataKeys.exchange_doc_email]: TField;
     [BxDealDataKeys.exchange_doc_phone]: TField;
@@ -319,6 +594,17 @@ export interface TDealData {
         9: (typeof BxParticipantsData)[9];
         10: (typeof BxParticipantsData)[10];
     };
+    [BxDealDataKeys.edo_alternative_address]: TField;
+    [BxDealDataKeys.up_type]: TFieldSelect;
+    [BxDealDataKeys.up_packet]: TFieldSelect;
+    // [BxDealDataKeys.fio_recipient_of_up]: TField;
+    // [BxDealDataKeys.phone_recipient_of_up]: TField;
+    // [BxDealDataKeys.email_recipient_of_up]: TField;
+    [BxDealDataKeys.up_comment]: TField;
+    [BxDealDataKeys.up_email_for_send]: TField;
+    // [BxDealDataKeys.up_contact_fio]: TField;
+    // [BxDealDataKeys.up_contact_phone]: TField;
+    // [BxDealDataKeys.up_contact_email]: TField;
 }
 export interface TParticipantData {
     [BxParticipantsDataKeys.name]?: TField;

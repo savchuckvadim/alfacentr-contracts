@@ -40,7 +40,6 @@ export const getParticipantValuesFromDeal = (
     dealValues: DealValue[],
     dealId: number,
 ): IAlfaParticipantSmartItem[] => {
-
     const prefix = dealValues.find(
         (value) => value.code === BxDealDataKeys.prefix,
     )?.value as string;
@@ -60,7 +59,6 @@ export const getParticipantValuesFromDeal = (
             // ) {
             needPushParticipant = getIsNotEmptyParticipant(dealValues, i);
             if (needPushParticipant) {
-
                 if (value && value.value) {
                     if (
                         value.name.includes(`Участник ${i}`) &&
@@ -93,7 +91,6 @@ export const getParticipantValuesFromDeal = (
             // }
         }
         if (needPushParticipant) {
-        
             participants.push(getSmartAddData(participant, dealId, i));
         }
     }

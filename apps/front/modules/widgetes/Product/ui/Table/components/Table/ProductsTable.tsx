@@ -9,9 +9,11 @@ import {
 import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts';
 
 import { ProductsTableBody } from '../TableBody/ProductsTableBody';
+import { useIsUpContractType } from '@/modules/features';
 
 export function ProductsTable() {
     const { items } = useAlfaProducts();
+    const { isUp } = useIsUpContractType();
 
     return (
         <Table>
@@ -23,8 +25,8 @@ export function ProductsTable() {
                     <TableHead>Цена</TableHead>
                     <TableHead>Количество</TableHead>
 
-                    <TableHead>Участники</TableHead>
-                    <TableHead>Статус</TableHead>
+                    {!isUp && <TableHead>Участники</TableHead>}
+                    {!isUp && <TableHead>Статус</TableHead>}
                     {/* <TableHead className="w-32">Действия</TableHead> */}
                 </TableRow>
             </TableHeader>

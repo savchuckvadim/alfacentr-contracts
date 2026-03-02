@@ -1,9 +1,14 @@
-import { IPpkApplicationParticipant, IPpkDocumentApplicationData } from "@alfa/entities";
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsArray, IsString } from "class-validator";
+import {
+    IPpkApplicationParticipant,
+    IPpkDocumentApplicationData,
+} from '@alfa/entities';
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsArray, IsString } from 'class-validator';
 
-export class DocumentGeneratePpkApplicationParticipantDto implements IPpkApplicationParticipant {
+export class DocumentGeneratePpkApplicationParticipantDto
+    implements IPpkApplicationParticipant
+{
     @ApiProperty({
         description: 'Индекс',
         example: '123',
@@ -17,7 +22,6 @@ export class DocumentGeneratePpkApplicationParticipantDto implements IPpkApplica
     })
     @IsString()
     fio: string;
-
 
     @ApiProperty({
         description: 'Тема',
@@ -39,10 +43,11 @@ export class DocumentGeneratePpkApplicationParticipantDto implements IPpkApplica
     })
     @IsString()
     date_end: string;
-
 }
 
-export class DocumentGeneratePpkApplicationDataDto implements IPpkDocumentApplicationData {
+export class DocumentGeneratePpkApplicationDataDto
+    implements IPpkDocumentApplicationData
+{
     @ApiProperty({
         description: 'Префикс',
         example: '123',
@@ -80,8 +85,6 @@ export class DocumentGeneratePpkApplicationDataDto implements IPpkDocumentApplic
     @IsArray()
     @Type(() => DocumentGeneratePpkApplicationParticipantDto)
     participants: DocumentGeneratePpkApplicationParticipantDto[];
-
-
 
     @ApiProperty({
         description: 'Наименование организации',

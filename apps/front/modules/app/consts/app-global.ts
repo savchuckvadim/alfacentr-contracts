@@ -1,8 +1,7 @@
 import { IBXUser } from '@workspace/bitrix/src/domain/interfaces/bitrix.interface';
 import { Placement } from '@workspace/bx';
 
-export const IS_PROD = true;
-
+export const IS_PROD = false;
 
 export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru' as string;
 export const TESTING_USER = {
@@ -34,9 +33,9 @@ export const TESTING_USER = {
     WORK_POSITION: 'Оператор ТМЦ',
 } as IBXUser;
 
-export const IS_REMEMBER_DEV = true;
-export const TESTING_DEAL_ID = 47998; //11311
-export const TESTING_COMPANY_ID = 158587 as number; // 158479
+// export const IS_REMEMBER_DEV = true;
+export const TESTING_DEAL_ID = 96878; //11311
+// export const TESTING_COMPANY_ID = 158587 as number; // 158479
 export const DEV_CURRENT_USER_ID = 1;
 
 export const TESTING_PLACEMENT = {
@@ -45,4 +44,3 @@ export const TESTING_PLACEMENT = {
         ID: TESTING_DEAL_ID,
     },
 } as Placement;
-

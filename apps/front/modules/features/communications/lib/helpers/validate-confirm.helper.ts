@@ -12,7 +12,6 @@ export const getValidateEmail = async (email: string) => {
 
         return validate.errors?.[0] || '';
     } catch (error) {
-
         return '';
     }
 };
@@ -29,7 +28,6 @@ export const getValidatePhone = async (phone: string) => {
 
         return validate.errors?.[0] || '';
     } catch (error) {
-
         return '';
     }
 };

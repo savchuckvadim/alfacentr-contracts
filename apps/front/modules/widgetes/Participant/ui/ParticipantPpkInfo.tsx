@@ -9,7 +9,6 @@ import {
     getParticipantName,
     getParticipantPhone,
     getParticipantPrograms,
-
 } from '@/modules/entities';
 import {
     useParticipantPpk,
@@ -28,10 +27,8 @@ import {
 import { Button } from '@workspace/ui/components/button';
 import {
     User,
-
     Package,
     AlertTriangle,
-
     Plus,
     Calendar,
     Phone,
@@ -63,9 +60,7 @@ import { ParticipantSeminarProducts } from './components/Products/ParticipantSem
 export const ParticipantPpkInfo = ({
     participant,
     loading,
-    loadingProducts
-
-
+    loadingProducts,
 }: {
     participant: IParticipant;
     loading: boolean;
@@ -390,9 +385,7 @@ export const ParticipantPpkInfo = ({
             />
 
             <ParticipantSeminarProducts
-                loading={
-                    loadingProducts || !participant || !isClient
-                }
+                loading={loadingProducts || !participant || !isClient}
                 participant={participant}
                 participantId={id}
             />

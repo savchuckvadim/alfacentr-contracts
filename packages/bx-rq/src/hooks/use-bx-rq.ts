@@ -213,6 +213,7 @@ export const useBxRqEditAddress = (): IBxRqEditAddressHook => {
     const primaryPercent = getAddressFillPercent(
         addresses.filter(item => item.type_id === BX_ADDRESS_TYPE.PRIMARY),
     );
+
     return {
         addresses,
         registredPercent,

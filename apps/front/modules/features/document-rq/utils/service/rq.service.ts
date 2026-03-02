@@ -18,7 +18,11 @@ export class ContractRqService {
         clientShortRq: string;
         clientSignature: string;
         clientCompanyTitle: string;
+        clientCompanyShortTitle: string;
         clientDirectorInitials: string;
+        clientUpdShortRq: string;
+        clientUpdAddress: string;
+        clientUpdInnKpp: string;
         roles: {
             provider: string;
             client: string;
@@ -34,16 +38,35 @@ export class ContractRqService {
         const roles = this.getRoles();
         const clientShortRq = this.getClientShortRq(clientRq, clientType);
         const clientSignature = this.getClientSignature(clientRq, clientType);
-        const clientCompanyTitle = this.getClientCompanyTitle(clientRq, clientType);
-        const clientDirectorInitials = this.getClientDirectorInitials(clientRq, clientType);
-
+        const clientCompanyTitle = this.getClientCompanyTitle(
+            clientRq,
+            clientType,
+        );
+        const clientCompanyShortTitle = this.getClientCompanyShortTitle(
+            clientRq,
+            clientType,
+        );
+        const clientDirectorInitials = this.getClientDirectorInitials(
+            clientRq,
+            clientType,
+        );
+        const clientUpdShortRq = this.getClientUpdShortRq(clientRq, clientType);
+        const clientUpdAddress = this.getClientAddressForShortRq(
+            clientRq,
+            clientType,
+        );
+        const clientUpdInnKpp = this.getClientUpdInnKpp(clientRq, clientType);
 
         return {
             client: clientRqData,
             clientShortRq,
+            clientUpdShortRq,
+            clientUpdAddress,
             clientSignature,
             clientCompanyTitle,
+            clientCompanyShortTitle,
             clientDirectorInitials,
+            clientUpdInnKpp,
             roles,
         };
     }
@@ -61,8 +84,6 @@ export class ContractRqService {
             return shortRq;
         }
     }
-
-
 
     public getRoles(): {
         provider: string;
@@ -83,7 +104,10 @@ export class ContractRqService {
         };
     }
 
-    private getClientSignature(clientRq: EvsRqItem, clientType: RQ_TYPE): string {
+    private getClientSignature(
+        clientRq: EvsRqItem,
+        clientType: RQ_TYPE,
+    ): string {
         if (clientType === RQ_TYPE.FIZ) {
             return this.clientRqService.prepareClientFizSignature(clientRq);
         } else {
@@ -91,18 +115,62 @@ export class ContractRqService {
         }
     }
 
-    private getClientCompanyTitle(clientRq: EvsRqItem, clientType: RQ_TYPE): string {
-        return this.clientRqService.prepareClientCompanyTitle(clientType, clientRq);
+    private getClientCompanyTitle(
+        clientRq: EvsRqItem,
+        clientType: RQ_TYPE,
+    ): string {
+        return this.clientRqService.prepareClientCompanyTitle(
+            clientType,
+            clientRq,
+        );
+    }
+    private getClientCompanyShortTitle(
+        clientRq: EvsRqItem,
+        clientType: RQ_TYPE,
+    ): string {
+        return this.clientRqService.prepareClientCompanyShortTitle(
+            clientType,
+            clientRq,
+        );
+    }
+    private getClientAddressForShortRq(
+        clientRq: EvsRqItem,
+        clientType: RQ_TYPE,
+    ): string {
+        return this.clientRqService.getAdreesForShortRq(clientRq);
+    }
+    private getClientUpdShortRq(
+        clientRq: EvsRqItem,
+        clientType: RQ_TYPE,
+    ): string {
+        const shortCompanyTitle = this.getClientCompanyShortTitle(
+            clientRq,
+            clientType,
+        );
+        const innKpp = this.clientRqService.getUpdShortRq(clientType, clientRq);
 
+        const shortUpdRq = `${shortCompanyTitle} ${innKpp}`;
+        return shortUpdRq;
+    }
+    private getClientUpdInnKpp(
+        clientRq: EvsRqItem,
+        clientType: RQ_TYPE,
+    ): string {
+        return this.clientRqService.getUpdInnKpp(clientType, clientRq);
     }
 
-    private getClientDirectorInitials(clientRq: EvsRqItem, clientType: RQ_TYPE): string {
+    private getClientDirectorInitials(
+        clientRq: EvsRqItem,
+        clientType: RQ_TYPE,
+    ): string {
         if (clientType === RQ_TYPE.FIZ) {
-            return this.clientRqService.prepareClientFizDirectorInitials(clientRq);
+            return this.clientRqService.prepareClientFizDirectorInitials(
+                clientRq,
+            );
         } else {
-            return this.clientRqService.prepareClientOrgDirectorInitials(clientRq);
+            return this.clientRqService.prepareClientOrgDirectorInitials(
+                clientRq,
+            );
         }
     }
-
-
 }

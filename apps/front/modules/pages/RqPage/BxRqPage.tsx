@@ -1,11 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-    filterFieldItems,
-    getRqShowName,
-    useBxRq,
-} from '@workspace/bx-rq';
+import { filterFieldItems, getRqShowName, useBxRq } from '@workspace/bx-rq';
 
 import {
     RQ_TYPE,
@@ -14,7 +10,6 @@ import {
     EvsRqItem,
     getClinetTypeNameByCode,
     isFieldsEmpty,
-
 } from '@workspace/bx-rq';
 
 import { Save, X } from 'lucide-react';
@@ -43,8 +38,11 @@ import {
 import { useClientType } from '@/modules/features/client-type/hook/useClientType';
 import { useApp, useAppSelector } from '@/modules/app';
 import { PagePreloader } from '@/modules/shared';
-import { BxRqAddressEdit, BxRqBaseEdit, BxRqBankEdit } from '@/modules/entities/bx-rq';
-
+import {
+    BxRqAddressEdit,
+    BxRqBaseEdit,
+    BxRqBankEdit,
+} from '@/modules/entities/bx-rq';
 
 interface BxRqPageProps {
     currentClientType?: RQ_TYPE;
@@ -55,7 +53,6 @@ interface BxRqPageProps {
 }
 
 export const BxRqPage = ({
-
     onSave, //для сохранения текущих реквизитов в карточку сделки
     onCancel,
 }: BxRqPageProps) => {
@@ -78,7 +75,6 @@ export const BxRqPage = ({
     if (!isClient) {
         return null;
     }
-
 
     const percent = getRqFillPercent(current.item, clientType as RQ_TYPE);
 
@@ -113,7 +109,6 @@ export const BxRqPage = ({
         );
     }
 
-
     const currentRqs = current.items;
     const currentRq = current.item;
 
@@ -132,7 +127,6 @@ export const BxRqPage = ({
     const fields = filterFieldItems(
         currentRq.fields,
         clientType || (RQ_TYPE.ORGANIZATION as RQ_TYPE),
-
     );
 
     const isEmpty = fields ? isFieldsEmpty(fields) : false;
@@ -229,7 +223,6 @@ export const BxRqPage = ({
                                     fields={fields}
                                     isEmpty={isEmpty}
                                     percent={percent.base}
-
                                     onSave={handleSaveBase}
                                     onCancel={handleCancel}
                                     isLoading={isSaving}
@@ -239,8 +232,8 @@ export const BxRqPage = ({
 
                         <TabsContent value="addresses" className="space-y-4">
                             {!isEmpty &&
-                                currentRq.address?.items &&
-                                currentRq.address.items.length > 0 ? (
+                            currentRq.address?.items &&
+                            currentRq.address.items.length > 0 ? (
                                 <BxRqAddressEdit />
                             ) : (
                                 <Card>
@@ -255,10 +248,7 @@ export const BxRqPage = ({
 
                         <TabsContent value="bank" className="space-y-4">
                             {!isEmpty && currentRq.bank ? (
-                                <BxRqBankEdit
-                                    bank={currentRq.bank.current}
-
-                                />
+                                <BxRqBankEdit bank={currentRq.bank.current} />
                             ) : (
                                 <Card>
                                     <CardContent className="text-center p-6">

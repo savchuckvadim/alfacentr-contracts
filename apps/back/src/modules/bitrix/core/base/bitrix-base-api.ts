@@ -400,7 +400,7 @@ export class BitrixBaseApi {
              *
              */
             await this.telegramBot.sendMessageAdminError(JSON.stringify(error));
-            
+
             throw new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

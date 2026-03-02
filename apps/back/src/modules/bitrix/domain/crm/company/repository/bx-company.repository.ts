@@ -29,7 +29,11 @@ export class BxCompanyRepository {
         );
     }
 
-    async getList(filter: Partial<IBXCompany>, select?: string[], order?: { [key: string]: 'asc' | 'desc' | 'ASC' | 'DESC' }) {
+    async getList(
+        filter: Partial<IBXCompany>,
+        select?: string[],
+        order?: { [key: string]: 'asc' | 'desc' | 'ASC' | 'DESC' },
+    ) {
         return this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.COMPANY,

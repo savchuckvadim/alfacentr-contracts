@@ -30,6 +30,7 @@ export const App = ({ children }: { children: React.ReactNode }) => {
             }
         }
     }, [isMounted]);
+
     return (
         <div className="h-calc(100vh - 300px)">
             {isClient && initialized && !isLoading && hasCompany ? (
@@ -37,6 +38,7 @@ export const App = ({ children }: { children: React.ReactNode }) => {
             ) : (
                 <LoadingScreen />
             )}
+
         </div>
     );
 };

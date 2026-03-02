@@ -6,10 +6,7 @@ import {
     BankRqItem,
     ResolvedRQType,
 } from '../type/evs-rq-type';
-import {
-    RQ_TYPE,
-    StringInput,
-} from '../type/input-type';
+import { RQ_TYPE, StringInput } from '../type/input-type';
 import { getResolvedType } from '../lib/rq-util';
 import { filterFieldItems } from '../lib/field-items-util';
 import { addressMap, AddressTypeId } from '../type/evs-address-type';
@@ -69,7 +66,7 @@ export const bxrqSlice = createSlice({
                 [RQ_TYPE.IP]: pay.bxrq[RQ_TYPE.IP] || null,
                 [RQ_TYPE.FIZ]: pay.bxrq[RQ_TYPE.FIZ] || null,
                 current: current || pay.bxrq.current,
-            }
+            };
 
             state.rqs = rqResult;
             state.isFetched = true;
@@ -91,7 +88,10 @@ export const bxrqSlice = createSlice({
         },
         setCurrentRqItems: (
             state: BXRQState,
-            action: PayloadAction<{ clientType: RQ_TYPE, currentRqId?: number }>,
+            action: PayloadAction<{
+                clientType: RQ_TYPE;
+                currentRqId?: number;
+            }>,
         ) => {
             if (!state.rqs) return;
 
@@ -114,7 +114,9 @@ export const bxrqSlice = createSlice({
 
             const item: EvsRqItem = current
                 ? current
-                : items.length > 0 ? items[0]! : rqData.default!;
+                : items.length > 0
+                  ? items[0]!
+                  : rqData.default!;
 
             state.current.items = items;
             state.current.item = item;
@@ -155,11 +157,11 @@ export const bxrqSlice = createSlice({
                 const base = { ...state.current.item };
                 base.fields = base.fields
                     ? filterFieldItems(
-                        base.fields,
-                        action.payload.currentClientType,
-                        // action.payload.contractType,
-                        // action.payload.supplyType,
-                    )
+                          base.fields,
+                          action.payload.currentClientType,
+                          // action.payload.contractType,
+                          // action.payload.supplyType,
+                      )
                     : base.fields;
 
                 state.creating.base = base;

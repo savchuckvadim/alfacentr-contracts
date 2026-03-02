@@ -1,5 +1,9 @@
 import { IAlfaProduct } from '@/modules/entities';
-import { getPrefixByProductName, getProductTypeByProductName, ProductType } from '@alfa/entities';
+import {
+    getPrefixByProductName,
+    getProductTypeByProductName,
+    ProductType,
+} from '@alfa/entities';
 // import { bxProductData } from '@alfa/entities';
 
 export const getProductTypeName = (product: IAlfaProduct): string => {
@@ -26,8 +30,6 @@ export const getProductTypeName = (product: IAlfaProduct): string => {
 };
 
 export const getProductType = (product: IAlfaProduct): ProductType => {
-
-
     return getProductTypeByProductName(product.productName || '');
 };
 
@@ -70,15 +72,22 @@ export const getHasPpk = (products: IAlfaProduct[]): boolean => {
 };
 
 export const getHasSeminar = (products: IAlfaProduct[]): boolean => {
-    return products.some(product =>
-        getPrefixByProductName(product.productName || '').includes('СР') || getPrefixByProductName(product.productName || '').includes('СН'),
+    return products.some(
+        product =>
+            getPrefixByProductName(product.productName || '').includes('СР') ||
+            getPrefixByProductName(product.productName || '').includes('СН'),
     );
 };
 export const getHasSeminarPpk = (products: IAlfaProduct[]): boolean => {
     return getHasPpk(products) && getHasSeminar(products);
 };
-export const getHasUp = (products: IAlfaProduct[]): boolean => {
+export const getHasUpComplect = (products: IAlfaProduct[]): boolean => {
     return products.some(product =>
         getPrefixByProductName(product.productName || '').includes('УП'),
+    );
+};
+export const getHasUpVideo = (products: IAlfaProduct[]): boolean => {
+    return products.some(product =>
+        getPrefixByProductName(product.productName || '').includes('УВ'),
     );
 };

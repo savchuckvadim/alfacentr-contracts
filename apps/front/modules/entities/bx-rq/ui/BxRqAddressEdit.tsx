@@ -16,6 +16,7 @@ import {
     isFieldsEmpty,
     useBxRqEditAddress,
     AddressTypeId,
+    getAddressFillPercent,
 } from '@workspace/bx-rq';
 import { Edit2, Copy, CheckCircle } from 'lucide-react';
 import { useApp } from '@/modules/app';
@@ -112,6 +113,7 @@ export const BxRqAddressEdit = ({}: BxRqAddressEditProps) => {
         <div className="space-y-4">
             {addresses.map(address => {
                 const isEmpty = isFieldsEmpty(address.fields);
+
                 const otherIsFull = addresses.some(
                     otherAddress =>
                         otherAddress.type_id !== address.type_id &&
@@ -119,7 +121,7 @@ export const BxRqAddressEdit = ({}: BxRqAddressEditProps) => {
                 );
                 const sourceType = getSourceTypeForCopy(address.type_id);
                 const canCopy = otherIsFull && isEmpty;
-                const addressPercent =
+                const addressPercent = //getAddressFillPercent([address]);
                     address.type_id === BX_ADDRESS_TYPE.REGISTERED
                         ? registredPercent
                         : primaryPercent;

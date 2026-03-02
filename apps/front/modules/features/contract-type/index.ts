@@ -1,3 +1,4 @@
 export * from './model/listener/ContractTypeListener';
 export * from './ui/ContractType';
-export * from './model/ContractTypeSlice';
+export * from './hooks/use-contract-type.hook';
+export * from './model/slice/ContractTypeSlice';

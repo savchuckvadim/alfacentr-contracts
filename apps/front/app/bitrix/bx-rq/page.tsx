@@ -2,7 +2,6 @@
 import { BxRqPage } from '@/modules/pages/';
 
 function Page() {
-
     return (
         <div>
             <BxRqPage />

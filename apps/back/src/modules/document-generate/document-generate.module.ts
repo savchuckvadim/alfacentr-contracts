@@ -18,8 +18,8 @@ import { GetDealBidItemsUseCase } from '../on-deal-init/use-cases/get-deal-bid-i
         DocumentGenerateQueueProcessor,
         DocumentContractFieldsService,
         PpkApplicationGenerateService,
-       
-        GetDealBidItemsUseCase
+
+        GetDealBidItemsUseCase,
     ],
 })
 export class DocumentGenerateModule {}

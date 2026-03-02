@@ -1,28 +1,20 @@
-import { TFieldItem } from "@alfa/entities";
-
+import { TFieldItem } from '@alfa/entities';
 
 export interface DealValue {
     code: string;
     bitrixId: string;
     name: string;
-    value:
-    | string
-    | number
-    | boolean
-    | TFieldItem
-    | TFieldItem[]
-    | string[];
+    value: string | number | boolean | TFieldItem | TFieldItem[] | string[];
     listItem: TFieldItem | TFieldItem[];
 }
 
-export interface DealValueListItem  {
+export interface DealValueListItem {
     readonly name: string;
     readonly bitrixId: string | number;
     readonly sort?: string;
 }
 
 export class BxDealService {
-
     getComment(dealValues: DealValue[]) {
         const participants = this.getParticipants(dealValues);
         const info = this.getInfo(dealValues);
@@ -79,7 +71,7 @@ export class BxDealService {
     }
     getInfo(dealValues: DealValue[]) {
         let info = '';
-        dealValues.forEach((value) => {
+        dealValues.forEach(value => {
             if (!value.name.includes('Участник')) {
                 if (value.value) {
                     if (!info) info = '💡[B]' + 'Информация' + '[/B] \n';
@@ -115,5 +107,5 @@ export class BxDealService {
             }
         }
         return needPushParticipant;
-    }
+    };
 }

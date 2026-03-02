@@ -28,8 +28,12 @@ export interface DocumentRqState {
     client: DocumentOrganizationRqAgent | DocumentFizRqAgent | null;
     provider: DocumentOrganizationRqAgent | DocumentFizRqAgent | null;
     clientShortRq: string;
+    clientUpdShortRq: string;
+    clientUpdAddress: string;
+    clientUpdInnKpp: string;
     clientSignature: string;
     clientCompanyTitle: string;
+    clientCompanyShortTitle: string;
     clientDirectorInitials: string;
 }
 
@@ -41,9 +45,13 @@ const initialState: DocumentRqState = {
     client: null,
     provider: Provider,
     clientShortRq: '',
+    clientUpdShortRq: '',
+    clientUpdAddress: '',
     clientSignature: '',
     clientCompanyTitle: '',
+    clientCompanyShortTitle: '',
     clientDirectorInitials: '',
+    clientUpdInnKpp: '',
 };
 
 export const documentRqSlice = createSlice({
@@ -56,9 +64,13 @@ export const documentRqSlice = createSlice({
                 client: DocumentRqAgent<T>;
                 header: string;
                 clientShortRq: string;
+                clientUpdShortRq: string;
+                clientUpdAddress: string;
                 clientSignature: string;
                 clientCompanyTitle: string;
+                clientCompanyShortTitle: string;
                 clientDirectorInitials: string;
+                clientUpdInnKpp: string;
             }>,
         ) => {
             state.client = action.payload.client;
@@ -66,8 +78,14 @@ export const documentRqSlice = createSlice({
             state.clientSignature = action.payload.clientSignature;
             state.clientShortRq = action.payload.clientShortRq;
             state.clientCompanyTitle = action.payload.clientCompanyTitle;
-            state.clientDirectorInitials = action.payload.clientDirectorInitials;
+            state.clientDirectorInitials =
+                action.payload.clientDirectorInitials;
 
+            state.clientUpdAddress = action.payload.clientUpdAddress;
+            state.clientUpdShortRq = action.payload.clientUpdShortRq;
+            state.clientCompanyShortTitle =
+                action.payload.clientCompanyShortTitle;
+            state.clientUpdInnKpp = action.payload.clientUpdInnKpp;
         },
         setProvider: (
             state: DocumentRqState,

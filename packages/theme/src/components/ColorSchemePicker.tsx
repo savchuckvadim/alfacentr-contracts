@@ -1,38 +1,18 @@
 'use client';
 
-import { useState, useRef } from 'react';
 import { Palette } from 'lucide-react';
-import { useColorScheme } from '../hook/useColorScheme';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useOutsideClick } from '../hook/useOutsideClick';
-import { ColorScheme } from '../provider/Theme';
-
-const schemeList = [
-    { value: 'default', color: '#1E293B' },
-    { value: 'blue', color: '#3B82F6' },
-    { value: 'violet', color: '#8B5CF6' },
-    { value: 'pink', color: '#EC4899' },
-    { value: 'red', color: '#EF4444' },
-    { value: 'orange', color: '#F97316' },
-    { value: 'yellow', color: '#FACC15' },
-    { value: 'green', color: '#22C55E' },
-    { value: 'bx', color: '#34c3f1' },
-    { value: 'beige', color: '#ffeacf' },
-    { value: 'explosive-pink', color: '#ff69b4' },
-];
+import { useColorSchemePicker } from '../hook/useColorSchemePicker';
+import { COLOR_SCHEME_OPTIONS } from '../lib/constants/color-schemes';
 
 export const ColorSchemePicker = () => {
-    const { scheme, setScheme } = useColorScheme();
-    const [open, setOpen] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
-
-    useOutsideClick(ref, () => setOpen(false));
+    const { scheme, open, ref, toggle, selectScheme } = useColorSchemePicker();
 
     return (
         <div className="relative" ref={ref}>
             <button
                 className="cursor-pointer hover:text-primary text-foreground p-2 rounded-md hover:bg-muted transition"
-                onClick={() => setOpen(!open)}
+                onClick={toggle}
                 title="Выбрать цветовую схему"
             >
                 <Palette size={20} />
@@ -47,15 +27,17 @@ export const ColorSchemePicker = () => {
                         transition={{ duration: 0.15 }}
                         className="absolute right-30 z-50 mt-2 w-48 p-4 bg-popover rounded-md shadow-lg grid grid-cols-4 gap-2"
                     >
-                        {schemeList.map(({ value, color }) => (
+                        {COLOR_SCHEME_OPTIONS.map(({ value, color }) => (
                             <button
                                 key={value}
-                                className={`cursor-pointer w-8 h-8 rounded-full border-2 ${scheme === value ? 'ring-2 ring-foreground' : ''}`}
+                                className={`cursor-pointer w-8 h-8 rounded-full border-2 ${
+                                    scheme === value
+                                        ? 'ring-2 ring-foreground'
+                                        : ''
+                                }`}
                                 style={{ backgroundColor: color }}
-                                onClick={() => {
-                                    setScheme(value as ColorScheme);
-                                    setOpen(false);
-                                }}
+                                onClick={() => selectScheme(value)}
+                                aria-label={`Выбрать цветовую схему ${value}`}
                             />
                         ))}
                     </motion.div>

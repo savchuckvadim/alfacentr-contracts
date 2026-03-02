@@ -14,7 +14,9 @@ export class DocumentNumberByPrefixUseCase {
     async execute(dto: DocumentNumberByPrefixDto) {
         // try {
 
-        const { bitrix } = await this.pbxService.init('alfacentr.bitrix24.ru');
+        const { bitrix, PortalModel } = await this.pbxService.init(
+            'alfacentr.bitrix24.ru',
+        );
         const listId = 46;
         const listResponse = await bitrix.list.getList(undefined, listId);
 

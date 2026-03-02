@@ -26,11 +26,10 @@ export class DocumentNumberByPrefixQueueProcessor {
         const dto = job.data;
         const { socketId, dealId } = dto;
 
-        console.log('✅ DOCUMENT_NUMBER_BY_PREFIX dto ', dto);
+        // console.log('✅ DOCUMENT_NUMBER_BY_PREFIX dto ', dto);
 
         try {
             const result = await this.useCase.execute(dto);
-            console.log('✅ result ', result);
 
             // Отправляем событие успешного выполнения
             this.wsEvents.emit(

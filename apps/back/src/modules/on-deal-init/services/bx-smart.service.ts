@@ -20,7 +20,6 @@ export class BxSmartService {
     ) {
         const participants = getParticipantValuesFromDeal(dealValues, dealId);
         for (const participant of participants) {
-
             await this.add(this.entityTypeId, participant);
         }
     }
@@ -39,7 +38,6 @@ export class BxSmartService {
             entityTypeId as unknown as string,
             item,
         );
-
 
         return smarts;
     }

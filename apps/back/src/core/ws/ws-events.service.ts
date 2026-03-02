@@ -151,9 +151,7 @@ export class WsEventsService {
      */
     emit(event: WsEvents, payload: any, context: WsEventContext) {
         const { userId, dealId, socketId, room } = context;
-        console.log('✅ event ', event);
-        console.log('✅ payload ', payload);
-        console.log('✅ context ', context);
+
         if (socketId) {
             this.emitToSocket(socketId, event, payload, context);
         } else if (userId) {

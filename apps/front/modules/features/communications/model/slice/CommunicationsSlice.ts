@@ -2,17 +2,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { validateEmailAndPhone } from '../thunk/CommunicationsThunk';
 
 export interface ICommunicationsState {
-
     confirm: {
         isActive: boolean;
         isConfirmed: boolean;
         needEmail: boolean;
-    },
+    };
     errors: {
         email: string;
         phone: string;
         name: string;
-    },
+    };
     validateLoading: boolean;
 }
 const initialState: ICommunicationsState = {
@@ -33,7 +32,6 @@ export const communicationsSlice = createSlice({
     name: 'communications',
     initialState,
     reducers: {
-
         setConfirmCommunicationsActive: (
             state: ICommunicationsState,
             action: PayloadAction<boolean>,
@@ -72,8 +70,6 @@ export const communicationsSlice = createSlice({
         },
     },
     extraReducers: builder => {
-
-
         //check email and phone
         builder.addCase(
             validateEmailAndPhone.fulfilled,

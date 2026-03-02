@@ -21,9 +21,11 @@ export interface EvsRq {
 
 export interface EvsRqItem {
     bx_id: number | -1;
+    preset_id: keyof typeof BXRQ_ENTITY_TYPE;
     fields: RqItem[];
     address: AddressRq;
     bank: BankRq;
+    type: RQ_TYPE;
 }
 
 export interface AddressRq {
@@ -52,9 +54,9 @@ export interface BankRqItem {
 }
 
 export const BXRQ_ENTITY_TYPE: Record<RQ_TYPE, number | undefined> = {
-    [RQ_TYPE.ORGANIZATION]: 1,
+    [RQ_TYPE.ORGANIZATION]: 1, //id иогут отличаться в разных порталах
     [RQ_TYPE.IP]: 3,
-    [RQ_TYPE.FIZ]: 5,
+    [RQ_TYPE.FIZ]: 6,
     [RQ_TYPE.BUDGET]: undefined, // Это значение исключается
 };
 

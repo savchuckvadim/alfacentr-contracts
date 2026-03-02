@@ -23,7 +23,6 @@ export const initial =
             appInit(dispatch, getState, getWSClient, () => {
                 dispatch(appActions.loading({ status: false }));
             });
-           
         }
     };
 

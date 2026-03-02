@@ -22,7 +22,7 @@ export class BxDealRepository {
         );
     }
 
-     getBtch(cmdCode: string, dealId: number | string) {
+    getBtch(cmdCode: string, dealId: number | string) {
         return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
@@ -182,6 +182,15 @@ export class BxDealRepository {
             { id: dealId, items: contactIds.map((id) => ({ CONTACT_ID: id })) },
         );
     }
+    async contactItemsGet(dealId: number | string) {
+        return await this.bxApi.callType(
+            EBxNamespace.CRM,
+            EBXEntity.DEAL,
+            EBxMethod.CONTACT_ITEMS_GET,
+            { id: dealId },
+        );
+    }
+
     async contactItemsSetBtch(
         cmdCode: string,
         dealId: number | string,

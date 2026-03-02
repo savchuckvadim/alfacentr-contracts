@@ -5,62 +5,59 @@ import { Badge } from '@workspace/ui/components/badge';
 import { useApp } from '@/modules/app';
 import { memo } from 'react';
 
-export const ProductParticipantStatusBadge = memo(({
-    product,
-    index,
-}: {
-    product: IAlfaProduct;
-    index: number;
-}) => {
-    const { isClient } = useApp();
-    const {
-        isPpk,
-        quantity: quantityPpk,
-        availabilityStatus: availabilityStatusPpk,
-        getTypeBadgeColor,
-    } = useProductPpk(product);
+export const ProductParticipantStatusBadge = memo(
+    ({ product, index }: { product: IAlfaProduct; index: number }) => {
+        const { isClient } = useApp();
+        const {
+            isPpk,
+            quantity: quantityPpk,
+            availabilityStatus: availabilityStatusPpk,
+            getTypeBadgeColor,
+        } = useProductPpk(product);
 
-    const {
-        isSeminar,
-        assignedCount: assignedCountSeminar,
-        quantity: quantitySeminar,
-        participantsNamesString: participantsNamesStringSeminar,
-        availabilityStatus: availabilityStatusSeminar,
-    } = useProductSeminar(product);
+        const {
+            isSeminar,
+            assignedCount: assignedCountSeminar,
+            quantity: quantitySeminar,
+            participantsNamesString: participantsNamesStringSeminar,
+            availabilityStatus: availabilityStatusSeminar,
+        } = useProductSeminar(product);
 
-    const availabilityStatus = isPpk
-        ? availabilityStatusPpk
-        : availabilityStatusSeminar;
-    const quantity = isPpk ? quantityPpk : quantitySeminar;
+        const availabilityStatus = isPpk
+            ? availabilityStatusPpk
+            : availabilityStatusSeminar;
+        const quantity = isPpk ? quantityPpk : quantitySeminar;
 
-    if (!isClient) return null;
-    if (!isPpk && !isSeminar) return null;
+        if (!isClient) return null;
+        if (!isPpk && !isSeminar) return null;
 
-    return (
-        <Tooltip content={availabilityStatus?.message || ''}>
-            <Badge
-                variant={'default'}
-                className={`m-0 p-0 text-xs w-18 h-5 ${(isPpk || isSeminar) &&
-                    availabilityStatus?.status === 'balanced'
-                    ? 'bg-primary text-primary-foreground'
-                    : (isPpk || isSeminar) &&
-                        availabilityStatus?.status !== 'balanced'
-                        ? 'bg-red-500 text-zinc-50'
-                        : quantity > 0
-                            ? 'bg-green-500 text-zinc-50'
-                            : 'bg-red-500 text-zinc-50'
+        return (
+            <Tooltip content={availabilityStatus?.message || ''}>
+                <Badge
+                    variant={'default'}
+                    className={`m-0 p-0 text-xs w-18 h-5 ${
+                        (isPpk || isSeminar) &&
+                        availabilityStatus?.status === 'balanced'
+                            ? 'bg-primary text-primary-foreground'
+                            : (isPpk || isSeminar) &&
+                                availabilityStatus?.status !== 'balanced'
+                              ? 'bg-red-500 text-zinc-50'
+                              : quantity > 0
+                                ? 'bg-green-500 text-zinc-50'
+                                : 'bg-red-500 text-zinc-50'
                     }`}
-            >
-                {(isPpk || isSeminar) &&
+                >
+                    {(isPpk || isSeminar) &&
                     availabilityStatus?.status === 'balanced'
-                    ? 'ок'
-                    : (isPpk || isSeminar) &&
-                        availabilityStatus?.status !== 'balanced'
-                        ? 'проблема'
-                        : quantity > 0
+                        ? 'ок'
+                        : (isPpk || isSeminar) &&
+                            availabilityStatus?.status !== 'balanced'
+                          ? 'проблема'
+                          : quantity > 0
                             ? 'ок'
                             : 'проблема'}
-            </Badge>
-        </Tooltip>
-    );
-});
+                </Badge>
+            </Tooltip>
+        );
+    },
+);

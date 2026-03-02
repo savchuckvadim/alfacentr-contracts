@@ -1,7 +1,11 @@
-import { BitrixActivityTypeId } from "@/modules/bitrix/domain/enums/bitrix-constants.enum";
-import { BitrixService } from "@/modules/bitrix/bitrix.service";
-import { GetDealBidItemsType, GetDealBidItemsUseCase } from "@/modules/on-deal-init/use-cases/get-deal-bid-items.use-case";
-import { BitrixOwnerTypeId } from "@/modules/bitrix/domain/enums/bitrix-constants.enum";
+import { BitrixActivityTypeId } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
+import { BitrixService } from '@/modules/bitrix/bitrix.service';
+import {
+    GetDealBidItemsType,
+    GetDealBidItemsUseCase,
+} from '@/modules/on-deal-init/use-cases/get-deal-bid-items.use-case';
+import { BitrixOwnerTypeId } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
+import { IBXActivity } from '@/modules/bitrix/domain/activity/interfaces/bx-activity.interface';
 
 //документы в email
 // юр лицо:
@@ -16,14 +20,15 @@ import { BitrixOwnerTypeId } from "@/modules/bitrix/domain/enums/bitrix-constant
 // приложение 1  doc
 // акт об оказании услуг doc
 
-
 export class EmailServiceInitDto {
     filesForSend: [string, string][] = [];
     email: string;
     name: string;
+    phone: string;
     subject: string;
     body: string;
     bid: string;
+    userEmail: string;
 }
 export class EmailService {
     private bidService: GetDealBidItemsUseCase;
@@ -32,28 +37,32 @@ export class EmailService {
         private readonly filesForSend: [string, string][] = [],
         private readonly email: string,
         private readonly name: string,
+        private readonly phone: string,
         private readonly subject: string,
         private readonly body: string,
         private readonly dealId: number,
+        private readonly userEmail: string,
+        private readonly contactId: number,
     ) {
-        this.bidService = new GetDealBidItemsUseCase(
-            this.bitrix
-        );
+        this.bidService = new GetDealBidItemsUseCase(this.bitrix);
     }
 
     async send() {
-
         const entityId = this.dealId;
+
+        // const dealContactResponse = await this.bitrix.deal.contactItemsGet(this.dealId);
+        // const contactId = dealContactResponse.result[0].CONTACT_ID;
+
         const body = await this.getEmailHtmlBody();
-        const activityResponse = await this.bitrix.activity.createActivity({
+        const sendData = {
             OWNER_TYPE_ID: BitrixOwnerTypeId.DEAL,
             OWNER_ID: entityId,
             TYPE_ID: BitrixActivityTypeId.EMAIL,
             DIRECTION: 2, // 1 - incoming, 2 - outgoing
             RESPONSIBLE_ID: '502',
-
+            CONTACT_ID: this.contactId,
             SETTINGS: {
-                MESSAGE_FROM: `Иванов Иван <laravelsamvel@gmail.com>`,
+                MESSAGE_FROM: `Альфацентр <${this.userEmail}>`,
             },
             SUBJECT: `Документы на согласование Договор №${this.subject} от ООО "Альфацентр"`,
             DESCRIPTION: body,
@@ -63,21 +72,25 @@ export class EmailService {
             END_TIME: new Date(Date.now() + 3600 * 1000).toISOString(),
             COMMUNICATIONS: [
                 {
-                    ENTITY_ID: entityId,
-                    ENTITY_TYPE_ID: BitrixOwnerTypeId.DEAL,
+                    ENTITY_ID: this.contactId,
+                    ENTITY_TYPE_ID: BitrixOwnerTypeId.CONTACT,
                     // TYPE_ID: 1,
+
                     VALUE: this.email,
                 },
             ],
-            FILES: this.filesForSend.map(file => ({
-                fileData: file
+            FILES: this.filesForSend.map((file) => ({
+                fileData: file,
             })),
-        });
+        } as IBXActivity;
 
+        console.log('sendData', sendData);
+        const activityResponse =
+            await this.bitrix.activity.createActivity(sendData);
+        console.log('activityResponse', activityResponse);
     }
 
     async getEmailHtmlBody(): Promise<string> {
-
         const bid = await this.getBidHtml();
         return `<html><body>
         <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
@@ -92,7 +105,7 @@ export class EmailService {
 </p>
 <ul style="margin-top:0cm" type="disc">
 	<li class="MsoNormal" style="margin-bottom:0cm;line-height:normal;mso-list:l0 level1 lfo1"><b>Если документы соответствуют требованиям Вашего учреждения</b> - подпишите, пожалуйста, его в системе ЭДО. Если Ваше учреждение не использует систему ЭДО, то направьте нам ответным e-mail скан Договора, заверенного с Вашей стороны печатью и подписью руководителя.<br>Наш<b>&nbsp;СБИС&nbsp;ID: 2BEbe3508291e7a494ca4d051e2230821b1 </b>(Оператор&nbsp;ООО "Компания "Тензор")</li><li class="MsoNormal" style="margin-bottom:0cm;line-height:normal;mso-list:l0 level1 lfo1"><b>Если документы требуют корректировки</b> - откорректированный текст договора, вышлите, пожалуйста, ответным e-mail в текстовом формате (например Word).</li></ul><p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
- В течение 1 рабочего дня с момента направления данного письма на номер телефона {{Телефон контактного лица по документам}} Вам позвонит робот Ирина для подтверждения получения документов. Просим Вас подтвердить получение простым ответом "ДА".
+ В течение 1 рабочего дня с момента направления данного письма на номер телефона ${this.phone ? `, <span style="color: #151515;"> ${this.phone}</span>` : ''} Вам позвонит робот Ирина для подтверждения получения документов. Просим Вас подтвердить получение простым ответом "ДА".
 </p>
 <p class="MsoNormal" style="margin-bottom:0cm;line-height:normal">
  С уважением,<br>
@@ -116,10 +129,11 @@ export class EmailService {
         </body></html>`;
     }
 
-
     private async getBidHtml(): Promise<string> {
-
-        const bid = await this.bidService.getItems(this.dealId, GetDealBidItemsType.HTML);
+        const bid = await this.bidService.getItems(
+            this.dealId,
+            GetDealBidItemsType.HTML,
+        );
         return bid;
         // return `
         // Наименование учреждения: АДМИНИСТРАЦИЯ ВОРОГОВСКОГО СЕЛЬСОВЕТА

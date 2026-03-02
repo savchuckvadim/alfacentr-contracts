@@ -1,74 +1,55 @@
-'use client';
-import React, { createContext, useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
+import React, { createContext } from 'react';
+import { useTheme as useNextTheme } from 'next-themes';
+import { useColorSchemeState } from '../hook/useColorSchemeState';
+import { useApplyColorScheme } from '../hook/useApplyColorScheme';
+import type { ColorContextValue, ThemeContextValue } from '../lib/types/theme';
+import { ColorSchemes } from '../lib/types/theme';
 
-export type ColorScheme =
-    | 'default'
-    | 'blue'
-    | 'violet'
-    | 'pink'
-    | 'green'
-    | 'yellow'
-    | 'orange'
-    | 'red'
-    | 'bx'
-    | 'beige'
-    | 'explosive-pink';
-export const ColorSchemes = [
-    'default',
-    'blue',
-    'violet',
-    'pink',
-    'green',
-    'yellow',
-    'orange',
-    'red',
-    'bx',
-    'beige',
-    'explosive-pink',
-] as const;
-
-interface ColorContextValue {
-    scheme: ColorScheme;
-    setScheme: (s: ColorScheme) => void;
-}
+// Реэкспортируем типы и константы
+export type {
+    ColorScheme,
+    ColorContextValue,
+    ThemeContextValue,
+} from '../lib/types/theme';
+export { ColorSchemes };
 
 export const ColorContext = createContext<ColorContextValue | null>(null);
+export const ThemeContext = createContext<ThemeContextValue | null>(null);
 
+export interface AprilThemeProviderProps {
+    children: React.ReactNode;
+    theme?: string | undefined;
+    resolvedTheme?: string | undefined;
+    setTheme?: (theme: string) => void;
+}
+
+/**
+ * Провайдер для управления темой и цветовыми схемами
+ * Интегрируется с NextThemesProvider для работы с темами
+ */
 export const AprilThemeProvider = ({
     children,
-}: {
-    children: React.ReactNode;
-}) => {
-    const [scheme, setScheme] = useState<ColorScheme>('default');
-    const { theme } = useTheme(); // light / dark / system
-    const [isMounted, setIsMounted] = useState(false);
+    theme: themeProp,
+    resolvedTheme: resolvedThemeProp,
+    setTheme: setThemeProp,
+}: AprilThemeProviderProps) => {
+    // Управление состоянием цветовой схемы
+    const [scheme, setScheme] = useColorSchemeState('default');
 
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
+    // Используем переданные пропсы или useTheme() из next-themes
+    const nextTheme = useNextTheme();
+    const theme = themeProp ?? nextTheme.theme;
+    const resolvedTheme = resolvedThemeProp ?? nextTheme.resolvedTheme;
+    const setTheme = setThemeProp ?? nextTheme.setTheme;
 
-    useEffect(() => {
-        if (isMounted) {
-            const stored = localStorage.getItem('color-scheme') as ColorScheme;
-            if (stored) setScheme(stored);
-        }
-    }, [isMounted]);
-
-    useEffect(() => {
-        if (isMounted) {
-            const className = `${scheme}-${theme}`;
-            document.documentElement.classList.remove(
-                ...ColorSchemes.flatMap(s => [`${s}-light`, `${s}-dark`]),
-            );
-            document.documentElement.classList.add(className);
-            localStorage.setItem('color-scheme', scheme);
-        }
-    }, [scheme, theme, isMounted]);
+    // Применяем цветовую схему при изменении scheme, theme или resolvedTheme
+    useApplyColorScheme(scheme, resolvedTheme, theme);
 
     return (
         <ColorContext.Provider value={{ scheme, setScheme }}>
-            {children}
+            <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
+                {children}
+            </ThemeContext.Provider>
         </ColorContext.Provider>
     );
 };

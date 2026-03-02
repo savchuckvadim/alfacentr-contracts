@@ -23,6 +23,7 @@ export function setupCurrentRqListener(
             // setFetched,
             setCurrentItem,
             setCurrentRqItems,
+            saveBaseCreating,
             // setDealData,
             // saveBaseCreating,
             // saveAddressCreating,
@@ -32,17 +33,16 @@ export function setupCurrentRqListener(
         effect: async (action, listenerApi) => {
             const { getState } = listenerApi;
 
-            const state = getState() as RootState;
-            const currentItem = state.bxrq?.current?.item;
+            // const state = getState() as RootState;
+            // const currentItem = state.bxrq?.current?.item;
 
-            const dealData = state.deal.dealData;
-            let currentClientType = RQ_TYPE.ORGANIZATION;
-            if (dealData) {
-                currentClientType = getDealClientType(dealData);
-            }
-            listenerApi.dispatch(
-                setCurrentRqThunk()
-            );
+            // const dealData = state.deal.dealData;
+            // let currentClientType = RQ_TYPE.ORGANIZATION;
+            // if (dealData) {
+            //     currentClientType = getDealClientType(dealData) || RQ_TYPE.ORGANIZATION;
+            // }
+
+            listenerApi.dispatch(setCurrentRqThunk());
         },
     });
 }

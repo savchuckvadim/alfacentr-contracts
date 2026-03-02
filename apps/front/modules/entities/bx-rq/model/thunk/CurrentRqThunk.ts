@@ -1,9 +1,7 @@
-import { RootState } from "@/modules/app/model/store"
-import { setCurrentRq } from "@/modules/entities/deal"
-import { BitrixService } from "@bitrix/index"
-import { createAsyncThunk } from "@reduxjs/toolkit"
-
-
+import { RootState } from '@/modules/app/model/store';
+import { setCurrentRq } from '@/modules/entities/deal';
+import { BitrixService } from '@bitrix/index';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const setCurrentRqThunk = createAsyncThunk(
     'bx-rq/setCurrentRq',
@@ -15,14 +13,14 @@ export const setCurrentRqThunk = createAsyncThunk(
             const rqId = state.bxrq.current.item?.bx_id;
 
             if (!dealId || !rqId) {
-                return rejectWithValue('dealId or rqId is not defined')
+                return rejectWithValue('dealId or rqId is not defined');
             }
 
-            await setCurrentRq(dealId, rqId)
+            await setCurrentRq(dealId, rqId);
 
             //TODO: update deal in app reducer
-
         } catch (error) {
-            return rejectWithValue(error)
+            return rejectWithValue(error);
         }
-    })
+    },
+);

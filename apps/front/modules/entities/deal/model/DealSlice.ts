@@ -32,7 +32,6 @@ const dealSlice = createSlice({
 
             state.error = null;
             state.fetched = true;
-
         },
         setDealId: (state, action: PayloadAction<number>) => {
             state.dealId = action.payload;

@@ -1,4 +1,4 @@
-import {IAlfaProduct } from '@/modules/entities';
+import { IAlfaProduct } from '@/modules/entities';
 import { ProductType, getProductTypeByProductName } from '@alfa/entities';
 import { bxProductData } from '@alfa/entities';
 

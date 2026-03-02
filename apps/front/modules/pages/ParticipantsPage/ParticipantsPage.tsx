@@ -2,10 +2,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@workspace/ui/components/button';
-import {
-    fetchParticipants,
-
-} from '../../entities/participant/model/ParticipantThunk';
+import { fetchParticipants } from '../../entities/participant/model/ParticipantThunk';
 import { RootState, AppDispatch } from '@/modules/app/model/store';
 import { ParticipantPpkListInfo } from '@/modules/widgetes/Participant';
 import { ParticipantStatistics } from '../../entities/participant/ui/components/ParticipantStatistics';

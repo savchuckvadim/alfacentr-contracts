@@ -7,6 +7,8 @@ import {
     fetchProducts,
     getProductFieldByCodeValue,
     getProductSum,
+    getProductTax,
+    getProductTaxSum,
     setFetchedProducts,
     setParticipants,
     updateParticipant,
@@ -74,8 +76,10 @@ export function setupDocumentParagraphProductParticipantListener(
                             result += seminarNameVallue?.value + '\n';
                             itemResult += seminarNameVallue?.value;
                         } else {
-                            result += 'Тема семинара: __________________________________\n';
-                            itemResult += ',  Тема семинара: __________________________________';
+                            result +=
+                                'Тема семинара: __________________________________\n';
+                            itemResult +=
+                                ',  Тема семинара: __________________________________';
                         }
 
                         const seminarDateVallue = getProductFieldByCodeValue(
@@ -86,8 +90,10 @@ export function setupDocumentParagraphProductParticipantListener(
                             result += seminarDateVallue?.value + '\n';
                             itemResult += ',  ' + seminarDateVallue?.value;
                         } else {
-                            result += 'Дата проведения: __________________________________\n';
-                            itemResult += ',  Дата проведения: __________________________________';
+                            result +=
+                                'Дата проведения: __________________________________\n';
+                            itemResult +=
+                                ',  Дата проведения: __________________________________';
                         }
 
                         const seminarPlaceVallue = getProductFieldByCodeValue(
@@ -98,8 +104,10 @@ export function setupDocumentParagraphProductParticipantListener(
                             result += seminarPlaceVallue?.value + '\n';
                             itemResult += ',  ' + seminarPlaceVallue?.value;
                         } else {
-                            result += 'Место проведения: __________________________________\n';
-                            itemResult += ',  Место проведения: __________________________________';
+                            result +=
+                                'Место проведения: __________________________________\n';
+                            itemResult +=
+                                ',  Место проведения: __________________________________';
                         }
 
                         let participantsQuantity = 1;
@@ -114,9 +122,13 @@ export function setupDocumentParagraphProductParticipantListener(
                     });
                 }
                 const productsSum = getProductSum(products);
+                const productsTax = getProductTax(products);
+                const productsTaxSum = getProductTaxSum(products);
 
                 totalSum = `Общая стоимость услуг по Договору составляет ${formatRuble(productsSum)} рублей. \n`;
-
+                totalSum += `Общая стоимость услуг по Договору составляет ${formatRuble(productsSum)} рублей. \n`;
+                totalSum += `В том числе НДС 5% ${formatRuble(productsTaxSum)} рублей. \n`;
+                totalSum += `В соответствии с пп.1 п.8 ст.164 НК РФ. \n`;
                 // Можно диспатчить дополнительные действия
                 // listenerApi.dispatch(setParticipantPpk(serializedResult));
             }

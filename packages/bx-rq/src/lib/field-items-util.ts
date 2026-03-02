@@ -58,6 +58,9 @@ export const filterFieldItems = (
 };
 
 export const getClinetTypeNameByCode = (type: RQ_TYPE | null): RQ_TYPE_NAME => {
+    if (!type) {
+        return RQ_TYPE_NAME.ORGANIZATION;
+    }
     switch (type) {
         case RQ_TYPE.ORGANIZATION:
             return RQ_TYPE_NAME.ORGANIZATION;

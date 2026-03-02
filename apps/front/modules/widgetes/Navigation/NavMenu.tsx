@@ -5,52 +5,79 @@ import { cn } from '@workspace/ui/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-
+import { useIsUpContractType } from '@/modules/features';
+import { useEffect, useMemo, useState } from 'react';
 
 export const NavMenu = ({ withMobile = true }: { withMobile?: boolean }) => {
     const pathname = usePathname();
+    const { isUp, isContractTypeLoading, currentContractType } =
+        useIsUpContractType();
+    const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
-    const navItems = [
-        { href: '/bitrix/main', label: 'Главная' },
-        { href: '/bitrix/client-bid', label: 'Заявка' },
-        { href: '/bitrix/participants', label: 'Участники' },
-        { href: '/bitrix/products', label: 'Товары' },
-        { href: '/bitrix/bx-rq', label: 'Реквизиты' },
-    ];
+    const isReady = useMemo(() => {
+        return !isContractTypeLoading && isMounted && currentContractType;
+    }, [currentContractType, isContractTypeLoading, isMounted]);
 
+    const navItems = useMemo(() => {
+        const seminarNavItems = [
+            { href: '/bitrix/main', label: 'Главная' },
+            { href: '/bitrix/client-bid', label: 'Заявка' },
+            { href: '/bitrix/participants', label: 'Участники' },
+            { href: '/bitrix/products', label: 'Товары' },
+            { href: '/bitrix/bx-rq', label: 'Реквизиты' },
+        ];
+
+        const upNavItems = [
+            { href: '/bitrix/main', label: 'Главная' },
+            { href: '/bitrix/client-bid', label: 'Заявка' },
+            { href: '/bitrix/products', label: 'Товары' },
+            { href: '/bitrix/bx-rq', label: 'Реквизиты' },
+        ];
+
+        return isUp ? upNavItems : seminarNavItems;
+    }, [isUp]);
+
+    if (!isReady) {
+        return null;
+    }
     return (
         <div className="flex items-center justify-between">
             <nav className="hidden md:flex items-center space-x-6">
-                {navItems.map(({ href, label }) => (
-                    <motion.div
-                        key={`nav-badge-${href}`}
-                        // initial={{ opacity: 0 }}
-                        // animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                    >
+                {isReady &&
+                    navItems.map(({ href, label }) => (
                         <motion.div
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.97}} // <-- эффект нажатия
-                            transition={{ type: "spring", stiffness: 100 }}
+                            key={`nav-badge-${href}`}
+                            // initial={{ opacity: 0 }}
+                            // animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
                         >
-                            <Button
-                                variant={!pathname.startsWith(href) ? "ghost" : "default"}
-                                className="h-7"
+                            <motion.div
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.97 }} // <-- эффект нажатия
+                                transition={{ type: 'spring', stiffness: 100 }}
                             >
-                                <Link
-                                    href={href}
-                                    className={cn(
-                                        "transition-colors",
-
-                                    )}
+                                <Button
+                                    variant={
+                                        !pathname.startsWith(href)
+                                            ? 'ghost'
+                                            : 'default'
+                                    }
+                                    className="h-7"
                                 >
-                                    {label}
-                                </Link>
-                            </Button>
+                                    <Link
+                                        href={href}
+                                        className={cn('transition-colors')}
+                                    >
+                                        {label}
+                                    </Link>
+                                </Button>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
-                ))}
+                    ))}
             </nav>
 
             {/* Мобильное меню */}

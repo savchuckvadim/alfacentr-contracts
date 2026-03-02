@@ -39,7 +39,6 @@ export const fetchProducts = createAsyncThunk(
     'product/fetchProducts',
     async (dealId: string, { rejectWithValue }) => {
         try {
-
             const bitrix = Bitrix.getService();
             const domain = bitrix.api.getDomain();
             // const service = new AlfaBxProductService()
@@ -70,7 +69,7 @@ export const fetchProducts = createAsyncThunk(
 
             const products = validResponseDataRows as BxProductRowWithProduct[];
             const alfaProducts = getProductsWithFields(products);
-        
+
             return alfaProducts;
         } catch (error) {
             // Обрабатываем сетевые ошибки и другие исключения

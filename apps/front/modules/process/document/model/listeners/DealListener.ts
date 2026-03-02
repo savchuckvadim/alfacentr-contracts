@@ -11,7 +11,6 @@ export function setupDocumentDealListener(
         effect: async (action, listenerApi) => {
             const dispatch = listenerApi.dispatch as AppDispatch;
             console.log('Process DealListener', action);
-
         },
     });
 }

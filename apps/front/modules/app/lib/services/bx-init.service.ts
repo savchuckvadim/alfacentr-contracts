@@ -55,6 +55,7 @@ export class BxInitService {
         const dealId = await this.getDealId();
 
         this.dealCompanyService.getDealAndCompanyComand(Number(dealId));
+
         this.participantService.getParticipantsComand(dealId.toString());
         const totalBxResponse =
             (await this.bitrix.api.callBatch()) as IBitrixinitResponse;
@@ -62,6 +63,7 @@ export class BxInitService {
 
         // console.log("ROWS WITH PRODUCTS")
         // console.log(rows)
+
         const { company, deal, items } = this.prepare(totalBxResponse);
 
         if (!deal || !company) {

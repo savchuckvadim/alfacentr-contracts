@@ -14,7 +14,7 @@ export class FieldsController {
     constructor(
         private readonly factory: FieldsFactoryService,
         private readonly pbx: PBXService,
-    ) { }
+    ) {}
 
     @ApiOperation({ summary: 'Получить пользовательские поля Bitrix' })
     @ApiResponse({
@@ -105,19 +105,14 @@ export class FieldsController {
     }
 
     @ApiOperation({ summary: 'Добавить поле в Bitrix' })
-     @ApiQuery({
+    @ApiQuery({
         name: 'entity',
         description: 'Тип сущности Bitrix24',
         enum: EBXEntity,
         enumName: 'EBXEntity',
     })
-
-
     @Post('field/add')
-    async addField(
-
-        @Query('entity') entity: EBXEntity,
-    ) {
+    async addField(@Query('entity') entity: EBXEntity) {
         const domain = 'alfacentr.bitrix24.ru';
         const service = await this.factory.getService(domain);
         const result = await service.addField(entity);
@@ -136,8 +131,6 @@ export class FieldsController {
         enum: EBXEntity,
         enumName: 'EBXEntity',
     })
-
-
     @Get('field/id')
     async getFieldById(
         @Query('id') id: string,

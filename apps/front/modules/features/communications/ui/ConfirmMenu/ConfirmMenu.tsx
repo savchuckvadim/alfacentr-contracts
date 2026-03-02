@@ -8,8 +8,13 @@ import useCommunications from '../../hook/useCommunications';
 import { Checkbox } from '@workspace/ui/components/checkbox';
 
 import { useForm } from 'react-hook-form';
+import {
+    DealActDateField,
+    useDealActDate,
+} from '@/modules/features/deal-act-date';
 
 type FormValues = {
+    date: string;
     name: string;
     email: string;
     phone: string;
@@ -31,16 +36,20 @@ export const CommunicationsConfirmMenu = () => {
         updateFieldWithAPI,
     } = useCommunications();
 
+    const { dealActDate } = useDealActDate();
+
     const {
+        control,
         register,
         handleSubmit,
-        formState: { errors, isValid },
+        formState: { errors },
     } = useForm<FormValues>({
         mode: 'onChange',
         defaultValues: {
-            name: name?.value as string || '',
-            email: email?.value as string || '',
-            phone: phone?.value as string || '',
+            date: dealActDate || '',
+            name: (name?.value as string) || '',
+            email: (email?.value as string) || '',
+            phone: (phone?.value as string) || '',
         },
     });
 
@@ -69,21 +78,34 @@ export const CommunicationsConfirmMenu = () => {
             submitDisabled={!canSend}
         >
             <div className="flex flex-col gap-4">
+                {/* Дата акта */}
+
+                <DealActDateField
+                    control={control}
+                    name="date"
+                    rules={{
+                        required: 'Дата акта обязательна',
+                    }}
+                    className={errors.name ? 'border-red-500' : ''}
+                />
+
                 {/* name */}
                 <div className="flex flex-row gap-2 items-center">
                     <Label>Контактное лицо</Label>
                     {errors.name && (
-                        <Label className="text-red-500">{errors.name.message}</Label>
+                        <Label className="text-red-500">
+                            {errors.name.message}
+                        </Label>
                     )}
                 </div>
                 <Input
                     {...register('name', {
                         required: 'Имя обязательно',
-                        onBlur: (e) => {
+                        onBlur: e => {
                             updateField(
                                 BxDealDataKeys.exchange_doc_name,
                                 e.target.value,
-                            )
+                            );
                             // updateFieldWithAPI(
                             //     BxDealDataKeys.exchange_doc_name,
                             //     e.target.value,
@@ -97,9 +119,10 @@ export const CommunicationsConfirmMenu = () => {
                 <div className="flex flex-row gap-2 items-center m-0 p-0">
                     <Label>Email</Label>
                     {errors.email && (
-                        <Label className="text-red-500">{errors.email.message}</Label>
+                        <Label className="text-red-500">
+                            {errors.email.message}
+                        </Label>
                     )}
-
                 </div>
 
                 <Input
@@ -109,17 +132,16 @@ export const CommunicationsConfirmMenu = () => {
                             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                             message: 'Некорректный email',
                         },
-                        onBlur: (e) => {
+                        onBlur: e => {
                             updateField(
                                 BxDealDataKeys.exchange_doc_email,
                                 e.target.value,
-                            )
+                            );
                             // updateFieldWithAPI(
                             //     BxDealDataKeys.exchange_doc_email,
                             //     e.target.value,
                             // )
                         },
-
                     })}
                     className={errors.email ? 'border-red-500' : ''}
                 />
@@ -128,7 +150,9 @@ export const CommunicationsConfirmMenu = () => {
                 <div className="flex flex-row gap-2 items-center">
                     <Label>Телефон</Label>
                     {errors.phone && (
-                        <Label className="text-red-500">{errors.phone.message}</Label>
+                        <Label className="text-red-500">
+                            {errors.phone.message}
+                        </Label>
                     )}
                 </div>
                 <Input
@@ -138,11 +162,11 @@ export const CommunicationsConfirmMenu = () => {
                             value: /^(\+7|8)?[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/,
                             message: 'Некорректный номер',
                         },
-                        onBlur: (e) => {
+                        onBlur: e => {
                             updateField(
                                 BxDealDataKeys.exchange_doc_phone,
                                 e.target.value,
-                            )
+                            );
                             // updateFieldWithAPI(
                             //     BxDealDataKeys.exchange_doc_phone,
                             //     e.target.value,
