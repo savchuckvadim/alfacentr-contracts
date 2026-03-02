@@ -3,9 +3,9 @@ import axios from 'axios';
 
 // const prod = `https://event.april-app.ru/api/v1/event/`;
 // const prod = `http://localhost:8000/api/v1/event/`;
-const prod = `http://localhost:3000/api/`;
+// const prod = `http://localhost:3000/api/`;
 // const dev = `https://obsessively-busy-moonfish.cloudpub.ru/api/v1/event/`;
-
+const prod = 'https://alfacentr.back.april-app.ru/';
 const url = prod;
 
 export enum EVS_ENDPOINT {
@@ -30,8 +30,8 @@ interface EVSResponse {
 
 const evsHeaders = {
     'content-type': 'application/json',
-    'X-EVS-API-KEY':
-        'idwKgtikyJkTxVD74V7RUalZuBy3rs59GpuGLrV9B6DL5Lcl4qqJoMtCuYaqV1AQ',
+    // 'X-EVS-API-KEY':
+    //     'idwKgtikyJkTxVD74V7RUalZuBy3rs59GpuGLrV9B6DL5Lcl4qqJoMtCuYaqV1AQ',
 };
 
 const evs = axios.create({
