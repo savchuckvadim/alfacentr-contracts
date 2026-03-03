@@ -235,7 +235,7 @@
                         "sort": "30"
                     }
                 ],
-                "name": "Участник 10 Формат участия v2",
+                "name": "Участник 10 Формат участия",
                 "code": null,
                 "multiple": false,
                 "mandatory": false
@@ -245,7 +245,7 @@
                 "bitrixId": "UF_CRM_1747738629",
                 "type": "enumeration",
                 "list": [],
-                "name": "Участник 10 Дни участия v2",
+                "name": "Участник 10 Дни участия",
                 "code": null,
                 "multiple": true,
                 "mandatory": false

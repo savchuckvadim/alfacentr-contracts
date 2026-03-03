@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AlfaBxField } from '../../type/bx-deal-field.type';
+import { AlfaBxField } from '../../modules/on-deal-init/type/bx-deal-field.type';
 import {
     BxDealData,
     BxDealDataKeys,
@@ -7,7 +7,7 @@ import {
     TField,
     TFieldSelect,
 } from '@alfa/entities';
-import { DealField } from '../../type/deal-field.type';
+import { DealField } from '../../modules/on-deal-init/type/deal-field.type';
 
 @Injectable()
 export class DealFieldHelperService {

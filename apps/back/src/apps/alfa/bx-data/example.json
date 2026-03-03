@@ -611,7 +611,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 1 Формат участия v2",
+        "name": "Участник 1 Формат участия",
         "code": null,
         "multiple": false,
         "mandatory": false
@@ -637,7 +637,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 2 Формат участия v2",
+        "name": "Участник 2 Формат участия",
         "code": null,
         "multiple": false,
         "mandatory": false
@@ -663,7 +663,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 1 Дни участия v2",
+        "name": "Участник 1 Дни участия",
         "code": null,
         "multiple": true,
         "mandatory": false
@@ -689,7 +689,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 2 Дни участия v2",
+        "name": "Участник 2 Дни участия",
         "code": null,
         "multiple": true,
         "mandatory": false
@@ -2524,7 +2524,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 3 Формат участия v2",
+        "name": "Участник 3 Формат участия",
         "code": null,
         "multiple": false,
         "mandatory": false
@@ -2550,7 +2550,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 4 Формат участия v2",
+        "name": "Участник 4 Формат участия",
         "code": null,
         "multiple": false,
         "mandatory": false
@@ -2576,7 +2576,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 5 Формат участия v2",
+        "name": "Участник 5 Формат участия",
         "code": null,
         "multiple": false,
         "mandatory": false
@@ -2602,7 +2602,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 6 Формат участия v2",
+        "name": "Участник 6 Формат участия",
         "code": null,
         "multiple": false,
         "mandatory": false
@@ -2628,7 +2628,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 7 Формат участия v2",
+        "name": "Участник 7 Формат участия",
         "code": null,
         "multiple": false,
         "mandatory": false
@@ -2654,7 +2654,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 8 Формат участия v2",
+        "name": "Участник 8 Формат участия",
         "code": null,
         "multiple": false,
         "mandatory": false
@@ -2680,7 +2680,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 9 Формат участия v2",
+        "name": "Участник 9 Формат участия",
         "code": null,
         "multiple": false,
         "mandatory": false
@@ -2706,7 +2706,7 @@
                 "sort": "30"
             }
         ],
-        "name": "Участник 10 Формат участия v2",
+        "name": "Участник 10 Формат участия",
         "code": null,
         "multiple": false,
         "mandatory": false
@@ -2716,7 +2716,7 @@
         "bitrixId": "UF_CRM_1747738499",
         "type": "enumeration",
         "list": [],
-        "name": "Участник 3 Дни участия v2",
+        "name": "Участник 3 Дни участия",
         "code": null,
         "multiple": true,
         "mandatory": false
@@ -2726,7 +2726,7 @@
         "bitrixId": "UF_CRM_1747738523",
         "type": "enumeration",
         "list": [],
-        "name": "Участник 4 Дни участия v2",
+        "name": "Участник 4 Дни участия",
         "code": null,
         "multiple": true,
         "mandatory": false
@@ -2736,7 +2736,7 @@
         "bitrixId": "UF_CRM_1747738539",
         "type": "enumeration",
         "list": [],
-        "name": "Участник 5 Дни участия v2",
+        "name": "Участник 5 Дни участия",
         "code": null,
         "multiple": true,
         "mandatory": false
@@ -2746,7 +2746,7 @@
         "bitrixId": "UF_CRM_1747738557",
         "type": "enumeration",
         "list": [],
-        "name": "Участник 6 Дни участия v2",
+        "name": "Участник 6 Дни участия",
         "code": null,
         "multiple": true,
         "mandatory": false
@@ -2756,7 +2756,7 @@
         "bitrixId": "UF_CRM_1747738576",
         "type": "enumeration",
         "list": [],
-        "name": "Участник 7 Дни участия v2",
+        "name": "Участник 7 Дни участия",
         "code": null,
         "multiple": true,
         "mandatory": false
@@ -2766,7 +2766,7 @@
         "bitrixId": "UF_CRM_1747738594",
         "type": "enumeration",
         "list": [],
-        "name": "Участник 8 Дни участия v2",
+        "name": "Участник 8 Дни участия",
         "code": null,
         "multiple": true,
         "mandatory": false
@@ -2776,7 +2776,7 @@
         "bitrixId": "UF_CRM_1747738613",
         "type": "enumeration",
         "list": [],
-        "name": "Участник 9 Дни участия v2",
+        "name": "Участник 9 Дни участия",
         "code": null,
         "multiple": true,
         "mandatory": false
@@ -2786,7 +2786,7 @@
         "bitrixId": "UF_CRM_1747738629",
         "type": "enumeration",
         "list": [],
-        "name": "Участник 10 Дни участия v2",
+        "name": "Участник 10 Дни участия",
         "code": null,
         "multiple": true,
         "mandatory": false

@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { OnDealInitRequestDto } from '../dto/on-deal-init-request.dto';
 import { BxDealService } from '../services/bx-deal.service';
 
-import { DealFieldValuesHelperService } from '../services/deal-helper/deal-values-helper.service';
+import { DealFieldValuesHelperService } from '../../../lib/deal-helper/deal-values-helper.service';
 import { PBXService } from '@/modules/pbx';
 import { BxSmartService } from '../services/bx-smart.service';
 import { BxCompanyService } from '../services/bx-company.service';
 import { BxDealDataKeys } from '@alfa/entities';
 import { AlfaProductService } from '@/modules/alfa-products';
 import { AlfaFieldsService } from '@/modules/alfa-fields';
-import { InitialBidTypeService } from '../services/deal-helper/initial-contract-type.service';
+import { InitialBidTypeService } from '../../../lib/deal-helper/initial-contract-type.service';
 
 export enum BitrixEntityType {
     DEAL = 'deal',
@@ -22,7 +22,7 @@ export class OnDealInitUseCase {
     constructor(
         private readonly pbx: PBXService,
         private readonly initialContractTypeService: InitialBidTypeService,
-    ) {}
+    ) { }
     async init(domain: string) {
         const { bitrix } = await this.pbx.init(domain);
         const bxDealService = new BxDealService();

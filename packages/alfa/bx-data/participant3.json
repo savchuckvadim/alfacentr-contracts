@@ -232,7 +232,7 @@
                     "sort": "30"
                 }
             ],
-            "name": "Участник 3 Формат участия v2",
+            "name": "Участник 3 Формат участия",
             "code": null,
             "multiple": false,
             "mandatory": false
@@ -242,7 +242,7 @@
             "bitrixId": "UF_CRM_1747738499",
             "type": "enumeration",
             "list": [],
-            "name": "Участник 3 Дни участия v2",
+            "name": "Участник 3 Дни участия",
             "code": null,
             "multiple": true,
             "mandatory": false

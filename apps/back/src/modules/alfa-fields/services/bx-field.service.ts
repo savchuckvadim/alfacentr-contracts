@@ -4,7 +4,7 @@ import { AlfaBxField } from '../../on-deal-init/type/bx-deal-field.type';
 
 export class BxFieldsService {
     private bitrix: BitrixService;
-    constructor() {}
+    constructor() { }
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;
     }
@@ -22,8 +22,8 @@ export class BxFieldsService {
         // const filtredFields = fields.filter(field => field.name.includes('Участник 2'))
         // console.log('BxFieldsService filtredFields')
         // filtredFields.map(field => {
-        //     if (field.name.includes('Участник 2 Дни участия v2')
-        //         || field.name.includes('Участник 2 Формат участия v2')
+        //     if (field.name.includes('Участник 2 Дни участия')
+        //         || field.name.includes('Участник 2 Формат участия')
         //     ) {
         //         console.log(field.name)
         //         console.log(field.bitrixId)

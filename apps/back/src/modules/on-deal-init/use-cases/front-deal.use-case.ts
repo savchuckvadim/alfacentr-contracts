@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { OnDealInitRequestDto } from '../dto/on-deal-init-request.dto';
 import { BxDealService } from '../services/bx-deal.service';
 
-import { DealFieldValuesHelperService } from '../services/deal-helper/deal-values-helper.service';
+import { DealFieldValuesHelperService } from '../../../lib/deal-helper/deal-values-helper.service';
 import { PBXService } from '@/modules/pbx';
-import { BxSmartService } from '../services/bx-smart.service';
 
 import { AlfaFieldsService } from '@/modules/alfa-fields';
 import { RedisService } from '@/core/redis/redis.service';
@@ -18,7 +16,7 @@ export class FrontDealUseCase {
     constructor(
         private readonly pbx: PBXService,
         private readonly redisService: RedisService,
-    ) {}
+    ) { }
     async init(domain: string) {
         const { bitrix } = await this.pbx.init(domain);
 
@@ -29,16 +27,13 @@ export class FrontDealUseCase {
         await this.alfaFieldService.init(bitrix);
     }
     async getDealValues(dealId: number) {
-        const { bxDealService, alfaFieldService } = {
+        const { bxDealService } = {
             bxDealService: this.bxDealService,
-            alfaFieldService: this.alfaFieldService,
+            // alfaFieldService: this.alfaFieldService,
         };
 
         const { alfaFieldData, resultBxFieldsIds } = await this.getFieldsIds();
-        const deal = await bxDealService.getDeal(
-            dealId,
-            resultBxFieldsIds as string[],
-        );
+        const deal = await bxDealService.getDeal(dealId, resultBxFieldsIds);
         if (!deal || !alfaFieldData) {
             return null;
         }

@@ -4,7 +4,7 @@ import {
     IBXProductRow,
     IBXProductRowRow,
 } from '@/modules/bitrix';
-import { DealValue } from '../../on-deal-init/services/deal-helper/deal-values-helper.service';
+import { DealValue } from '../../../lib/deal-helper/deal-values-helper.service';
 import { BxDealDataKeys, getProductTypeByProductName } from '@alfa/entities';
 import { bxProductData } from '@alfa/entities';
 import { BitrixOwnerType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
@@ -39,7 +39,7 @@ const select = [
     bxProductData.NAME_BID.bitrixId,
 ];
 export class AlfaProductService {
-    constructor(private readonly bitrix: BitrixService) {}
+    constructor(private readonly bitrix: BitrixService) { }
 
     //TODO: убрать вообще этот метод уп товары не добавляем
 

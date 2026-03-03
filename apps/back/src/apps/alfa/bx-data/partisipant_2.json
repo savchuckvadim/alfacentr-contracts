@@ -235,7 +235,7 @@
                         "sort": "30"
                     }
                 ],
-                "name": "Участник 2 Формат участия v2",
+                "name": "Участник 2 Формат участия",
                 "code": null,
                 "multiple": false,
                 "mandatory": false
@@ -261,7 +261,7 @@
                         "sort": "30"
                     }
                 ],
-                "name": "Участник 2 Дни участия v2",
+                "name": "Участник 2 Дни участия",
                 "code": null,
                 "multiple": true,
                 "mandatory": false

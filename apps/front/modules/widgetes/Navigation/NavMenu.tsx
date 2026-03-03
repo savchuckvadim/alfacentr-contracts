@@ -48,35 +48,38 @@ export const NavMenu = ({ withMobile = true }: { withMobile?: boolean }) => {
             <nav className="hidden md:flex items-center space-x-6">
                 {isReady &&
                     navItems.map(({ href, label }) => (
-                        <motion.div
-                            key={`nav-badge-${href}`}
-                            // initial={{ opacity: 0 }}
-                            // animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
+                        <Link
+                            key={`nav-item-${href}`}
+                            href={href}
+                            className={cn('transition-colors')}
                         >
                             <motion.div
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.97 }} // <-- эффект нажатия
-                                transition={{ type: 'spring', stiffness: 100 }}
+
+                                // initial={{ opacity: 0 }}
+                                // animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
                             >
-                                <Button
-                                    variant={
-                                        !pathname.startsWith(href)
-                                            ? 'ghost'
-                                            : 'default'
-                                    }
-                                    className="h-7"
+                                <motion.div
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.97 }} // <-- эффект нажатия
+                                    transition={{ type: 'spring', stiffness: 100 }}
                                 >
-                                    <Link
-                                        href={href}
-                                        className={cn('transition-colors')}
+                                    <Button
+                                        variant={
+                                            !pathname.startsWith(href)
+                                                ? 'ghost'
+                                                : 'default'
+                                        }
+                                        className="h-7"
                                     >
+
                                         {label}
-                                    </Link>
-                                </Button>
+
+                                    </Button>
+                                </motion.div>
                             </motion.div>
-                        </motion.div>
+                        </Link>
                     ))}
             </nav>
 

@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
     EContractType,
-    IPpkApplicationParticipant,
     IPpkDocumentApplicationData,
     IRequestDocumentGenerateEmail,
 } from '@alfa/entities';

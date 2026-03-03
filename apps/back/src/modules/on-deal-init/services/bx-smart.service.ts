@@ -1,14 +1,14 @@
 import { BitrixService } from 'src/modules/bitrix';
-import { DealValue } from './deal-helper/deal-values-helper.service';
+import { DealValue } from '../../../lib/deal-helper/deal-values-helper.service';
 import { EntityTypeIdEnum, IAlfaParticipantSmartItem } from '@alfa/entities';
-import { getParticipantValuesFromDeal } from './deal-helper/get-participant-product-values-from-deal.helepr';
+import { getParticipantValuesFromDeal } from '../../../lib/deal-helper/get-participant-product-values-from-deal.helepr';
 import { delay } from '@/lib';
 
 export class BxSmartService {
     private bitrix: BitrixService;
     private smart: IAlfaParticipantSmartItem;
     private entityTypeId: EntityTypeIdEnum = EntityTypeIdEnum.PARTICIPANT;
-    constructor() {}
+    constructor() { }
 
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;

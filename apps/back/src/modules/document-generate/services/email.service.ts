@@ -1,7 +1,6 @@
 import { BitrixActivityTypeId } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 import { BitrixService } from '@/modules/bitrix/bitrix.service';
 import {
-    GetDealBidItemsType,
     GetDealBidItemsUseCase,
 } from '@/modules/on-deal-init/use-cases/get-deal-bid-items.use-case';
 import { BitrixOwnerTypeId } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
@@ -131,8 +130,7 @@ export class EmailService {
 
     private async getBidHtml(): Promise<string> {
         const bid = await this.bidService.getItems(
-            this.dealId,
-            GetDealBidItemsType.HTML,
+            this.dealId
         );
         return bid;
         // return `

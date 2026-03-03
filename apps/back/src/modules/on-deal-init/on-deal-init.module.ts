@@ -5,7 +5,7 @@ import { PBXModule } from '../pbx/pbx.module';
 import { FrontDealUseCase } from './use-cases/front-deal.use-case';
 import { RedisModule } from '@/core/redis/redis.module';
 import { GetDealBidItemsUseCase } from './use-cases/get-deal-bid-items.use-case';
-import { InitialBidTypeService } from './services/deal-helper/initial-contract-type.service';
+import { InitialBidTypeService } from '../../lib/deal-helper/initial-contract-type.service';
 
 @Module({
     controllers: [OnDealInitController],
@@ -18,4 +18,4 @@ import { InitialBidTypeService } from './services/deal-helper/initial-contract-t
     ],
     exports: [GetDealBidItemsUseCase],
 })
-export class OnDealInitModule {}
+export class OnDealInitModule { }
