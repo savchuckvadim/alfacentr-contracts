@@ -21,6 +21,7 @@ import {
 } from '../utils/requisite.utils';
 import { PresetConfig } from '../consts/preset.consts';
 import { BitrixOwnerTypeId } from '@/modules/bitrix';
+import { PortalModel } from '@/modules/portal/services/portal.model';
 
 /**
  * Основной сервис для работы с реквизитами Bitrix24
@@ -32,13 +33,13 @@ export class BxRqService {
         private readonly addressService: BxRqAddressService,
         private readonly bankService: BxRqBankService,
         private readonly customFieldService: BxRqCustomFieldService,
-    ) {}
+    ) { }
 
     /**
      * Получает все реквизиты компании
      */
     async getRq(companyId: number, domain: string): Promise<BXRequisiteDTO[]> {
-        const { bitrix, portal, PortalModel } =
+        const { bitrix, PortalModel } =
             await this.pbxService.init(domain);
 
         const preset = getPresetConfig(PortalModel);
@@ -174,6 +175,8 @@ export class BxRqService {
                 if (rqs.length > 0) {
                     await this.deleteRq(rqs[0].ID, domain);
                     rqs[0].ID = -1;
+                    rqs[0].ENTITY_TYPE_ID = 4;
+                    rqs[0].ENTITY_ID = companyId;
                     updatePresetIds(rqs, preset);
                 }
                 return rqs;
@@ -285,7 +288,7 @@ export class BxRqService {
      */
     private applyPresetToRequisite(
         bxRqs: BXRequisiteDTO,
-        PortalModel: any,
+        PortalModel: PortalModel,
     ): void {
         const presetOrg = PortalModel.getPresetForName(PresetCode.ORG);
         const presetIp = PortalModel.getPresetForName(PresetCode.IP);

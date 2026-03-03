@@ -172,9 +172,7 @@ export class DealFieldValuesHelperService {
         dealValue: any,
     ): DealValue | null {
         if (!field.name) {
-            console.log(
-                `Missing name for field with bitrixId: ${field.bitrixId}`,
-            );
+            
             return null;
         }
 

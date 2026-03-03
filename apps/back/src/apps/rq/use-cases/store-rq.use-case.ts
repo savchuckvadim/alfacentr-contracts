@@ -4,12 +4,15 @@ import { ERQItem } from '../dto/erq-item.dto';
 import { RequisiteService } from '../services/requisite.service';
 import { RequisiteUpdateService } from '../services/requisite-update.service';
 import { ErrorMessage } from '../enums/error-message.enum';
+import { PortalModel } from '@/modules/portal/services/portal.model';
+import { PBXService } from '@/modules/pbx';
 
 @Injectable()
 export class StoreRqUseCase {
     constructor(
         private readonly requisiteService: RequisiteService,
         private readonly requisiteUpdateService: RequisiteUpdateService,
+        private readonly pbxService: PBXService,
     ) {}
 
     async execute(dto: StoreRqRequestDto): Promise<ERQItem | boolean | number> {
@@ -17,6 +20,7 @@ export class StoreRqUseCase {
         // iswait всегда true - убрали логику очередей
         const bxRqs = await this.requisiteService.getRq(company_id, domain);
         const { address, bank } = dto;
+        const { PortalModel } = await this.pbxService.init(domain);
         if (rq) {
             // Обновление реквизита
             const result = await this.requisiteUpdateService.updateRequisite(
@@ -26,6 +30,7 @@ export class StoreRqUseCase {
                 company_id,
                 domain,
                 preset_id,
+                PortalModel,
             );
             return result;
         } else if (address) {

@@ -18,7 +18,7 @@ export class DocumentNumberQueueProcessor {
     async handle(job: Job<DocumentNumberDto>) {
         const dto = job.data;
 
-        const result = await this.useCase.execute(dto);
-        console.log('✅ result ', result);
+        await this.useCase.execute(dto);
+
     }
 }

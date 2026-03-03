@@ -409,7 +409,7 @@ export class RequisiteService {
         const result = await bitrix.api.call('crm.requisite.add', {
             fields: updateRqs,
         });
-        return result.result?.[0];
+        return result.result;
     }
 
     async updateRq(

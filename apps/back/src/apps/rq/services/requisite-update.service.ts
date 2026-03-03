@@ -15,10 +15,12 @@ import { TypeIdAddress } from '../types/type-id-address.enum';
 import { ErrorMessage } from '../enums/error-message.enum';
 import { PresetId } from '../enums/preset-id.enum';
 import { BitrixOwnerTypeId } from '@/commands/category/dto/category-response.dto';
+import { PortalModel } from '@/modules/portal/services/portal.model';
+import { getPresetConfig, PresetConfig } from './BxRqService';
 
 @Injectable()
 export class RequisiteUpdateService {
-    constructor(private readonly requisiteService: RequisiteService) {}
+    constructor(private readonly requisiteService: RequisiteService) { }
 
     async updateRequisite(
         erqItem: ERQItem,
@@ -27,11 +29,12 @@ export class RequisiteUpdateService {
         companyId: number,
         domain: string,
         presetId: number | undefined,
+        PortalModel: PortalModel,
     ): Promise<ERQItem> {
         if (!erqItem) {
             throw new BadRequestException(ErrorMessage.NOT_FULL_DATA);
         }
-
+        const preset: PresetConfig = getPresetConfig(PortalModel);
         erqItem.bx_id = rqId || null;
         erqItem.preset_id = presetId || null;
 
@@ -71,25 +74,34 @@ export class RequisiteUpdateService {
             updateRq.PRESET_ID = erqItem.preset_id || PresetId.ORG;
 
             // Устанавливаем название в зависимости от preset_id
-            if (erqItem.preset_id === PresetId.ORG) {
+            if (Number(erqItem.preset_id) === Number(preset.org)) {
                 updateRq.NAME = PresetName.ORGANIZATION;
-            } else if (erqItem.preset_id === PresetId.IP) {
+            } else if (Number(erqItem.preset_id) === Number(preset.ip)) {
                 updateRq.NAME = PresetName.IP;
-            } else if (erqItem.preset_id === PresetId.FIZ) {
+            } else if (Number(erqItem.preset_id) === Number(preset.fiz)) {
                 updateRq.NAME = PresetName.PHYSICAL_PERSON;
             }
+            if (!updateRq.NAME) {
+                updateRq.NAME = `Название: ${PresetName.ORGANIZATION}`;
+            }
+            try {
+                const bx_id = await this.requisiteService.createRq(
+                    updateRq,
+                    domain,
+                    erqItem.preset_id!,
+                );
+                return new ERQItem({ bx_id: bx_id });
+            } catch (error) {
+              
+                throw new BadRequestException(ErrorMessage.NOT_FULL_DATA);
+            }
 
-            const bx_id = await this.requisiteService.createRq(
-                updateRq,
-                domain,
-                erqItem.preset_id!,
-            );
 
             // if (typeof task === 'string') {
             //     throw new BadRequestException(ErrorMessage.NOT_FULL_DATA);
             // }
 
-            return new ERQItem({ bx_id: bx_id });
+
         } else {
             // Обновление существующего реквизита
             await this.requisiteService.updateRq(updateRq, rqId!, domain);

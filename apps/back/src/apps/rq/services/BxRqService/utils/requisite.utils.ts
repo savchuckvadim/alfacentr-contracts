@@ -163,6 +163,7 @@ export const createEmptyRequisite = (
     return new BXRequisiteDTO({
         ID: -1,
         ENTITY_ID: companyId,
+        ENTITY_TYPE_ID: 4,
         PRESET_ID: presetId,
     });
 };
@@ -197,6 +198,7 @@ export const updatePresetIds = (
     requisites: BXRequisiteDTO[],
     preset: PresetConfig,
 ): void => {
+  
     for (const rq of requisites) {
         if (rq.PRESET_ID === PresetId.ORG) {
             rq.PRESET_ID = preset.org;

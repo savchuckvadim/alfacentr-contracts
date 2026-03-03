@@ -298,12 +298,7 @@ export const getParicipantSeminarTopicsStats = (
                 product: null,
                 potintialProduct: topic.products[0] ?? null,
             });
-            console.log(
-                'у участника нет ни одного товара семинара',
-                participant.id,
-                topic.topic,
-            );
-            console.log(participantPpkThemesStats);
+      
         }
     });
 

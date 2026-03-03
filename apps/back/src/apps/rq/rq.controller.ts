@@ -1,4 +1,4 @@
-import { Controller, Post, Body, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, Body, } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { GetRqUseCase } from './use-cases/get-rq.use-case';
 import { StoreRqUseCase } from './use-cases/store-rq.use-case';
@@ -11,7 +11,7 @@ import {
     StoreRqRequestDto,
     UpdateAddressRequestDto,
 } from './dto/request.dto';
-import { ERQDTO, ERQItem, RqResponseDto } from './dto/erq-item.dto';
+import { RqResponseDto } from './dto/erq-item.dto';
 
 @ApiTags('Реквизиты')
 @Controller('rq')
@@ -47,6 +47,7 @@ export class RqController {
         | StoreRqAddressResponseDto
         | StoreRqBankResponseDto
     > {
+        
         const result = await this.storeRqUseCase.execute(body);
 
         return { data: result };

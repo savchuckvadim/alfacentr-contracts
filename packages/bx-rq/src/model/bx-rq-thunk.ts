@@ -36,41 +36,41 @@ import { BX_ADDRESS_TYPE } from '../type/evs-address-type';
 
 export const fetchBXRQ =
     (domain: string, companyId: number, currentRqId?: number) =>
-    async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
-        const state = getState();
+        async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
+            const state = getState();
 
-        const isLoading = state.bxrq.isLoading;
-        if (!isLoading) {
-            dispatch(setLoading(true));
-            dispatch(setRequiredUnderstand({ status: false }));
+            const isLoading = state.bxrq.isLoading;
+            if (!isLoading) {
+                dispatch(setLoading(true));
+                dispatch(setRequiredUnderstand({ status: false }));
 
-            const rqRequestData = {
-                domain,
-                company_id: companyId,
-                iswait: true,
-            };
+                const rqRequestData = {
+                    domain,
+                    company_id: companyId,
+                    iswait: true,
+                };
 
-            const rqData = (await eventServiceAPI.service(
-                EVS_ENDPOINT.GET_RQS,
-                API_METHOD.POST,
-                rqRequestData,
-            )) as EvsResponse | null;
+                const rqData = (await eventServiceAPI.service(
+                    EVS_ENDPOINT.GET_RQS,
+                    API_METHOD.POST,
+                    rqRequestData,
+                )) as EvsResponse | null;
 
-            if (rqData) {
-                if (rqData.rqs) {
-                    dispatch(
-                        setFetched({
-                            bxrq: rqData.rqs,
-                            currentRqId: currentRqId,
-                        }),
-                    );
+                if (rqData) {
+                    if (rqData.rqs) {
+                        dispatch(
+                            setFetched({
+                                bxrq: rqData.rqs,
+                                currentRqId: currentRqId,
+                            }),
+                        );
 
-                    return;
+                        return;
+                    }
                 }
+                dispatch(setFetchedStatus(true));
             }
-            dispatch(setFetchedStatus(true));
-        }
-    };
+        };
 
 export const saveBXRQ =
     (
@@ -80,89 +80,90 @@ export const saveBXRQ =
         // contractType: CONTRACT_LTYPE,
         // supplyType: SupplyTypesType,
     ) =>
-    async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
-        const state = getState();
+        async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
+            const state = getState();
 
-        const rqsState = state.bxrq as BXRQState;
+            const rqsState = state.bxrq as BXRQState;
 
-        const rqCreatingBase = rqsState.creating.base;
-        const resolvedType = getResolvedType(
-            currentClientType,
-        ) as ResolvedRQType;
-
-        dispatch(setCreatingLoadingStatus(true));
-        dispatch(setRequiredUnderstand({ status: false }));
-
-        if (rqsState && rqsState.rqs && rqCreatingBase) {
-            const fields = filterFieldItems(
-                rqCreatingBase.fields,
+            const rqCreatingBase = rqsState.creating.base;
+            const resolvedType = getResolvedType(
                 currentClientType,
-                // contractType,
-                // supplyType,
-            );
+            ) as ResolvedRQType;
 
-            const entityTypeId = getEntityTypeId(currentClientType);
-            const data = {
-                domain,
-                company_id: companyId,
-                preset_id: entityTypeId,
-                bx_id: rqCreatingBase.bx_id, // -1 если новый
-                rq: {
-                    fields,
-                },
-                iswait: true,
-            };
+            dispatch(setCreatingLoadingStatus(true));
+            dispatch(setRequiredUnderstand({ status: false }));
 
-            const result = (await eventServiceAPI.service(
-                EVS_ENDPOINT.STORE_RQ,
-                API_METHOD.POST,
-                data,
-            )) as RQStore | null;
+            if (rqsState && rqsState.rqs && rqCreatingBase) {
+                const fields = filterFieldItems(
+                    rqCreatingBase.fields,
+                    currentClientType,
+                    // contractType,
+                    // supplyType,
+                );
 
-            let rq_id = rqCreatingBase.bx_id;
-            if (result && result.data.bx_id) {
-                rq_id = result.data.bx_id;
-            }
+                // const entityTypeId = getEntityTypeId(currentClientType);
+                const presetId = rqCreatingBase.preset_id;
+                const data = {
+                    domain,
+                    company_id: companyId,
+                    preset_id: presetId,
+                    bx_id: rqCreatingBase.bx_id, // -1 если новый
+                    rq: {
+                        fields,
+                    },
+                    iswait: true,
+                };
 
-            const currentItem = {
-                ...rqsState.current.item,
-                bx_id: rq_id,
-                fields: fields,
-            };
+                const result = (await eventServiceAPI.service(
+                    EVS_ENDPOINT.STORE_RQ,
+                    API_METHOD.POST,
+                    data,
+                )) as RQStore | null;
 
-            const currentItems = rqsState.current.items.map(
-                (item: EvsRqItem) => {
-                    if (item.bx_id == -1 || item.bx_id == rq_id) {
-                        return { ...item, bx_id: rq_id, fields: fields };
-                    }
-                    return item;
-                },
-            );
+                let rq_id = rqCreatingBase.bx_id;
+                if (result && result.data.bx_id) {
+                    rq_id = result.data.bx_id;
+                }
 
-            const updatedState = {
-                ...rqsState,
-                creating: {
-                    ...rqsState.creating,
-                    base: null,
-                },
-                current: {
-                    ...rqsState.current,
-                    item: currentItem,
-                    items: currentItems,
-                },
-                rqs: {
-                    ...rqsState.rqs,
-                    [resolvedType]: {
-                        ...rqsState.rqs[resolvedType],
+                const currentItem = {
+                    ...rqsState.current.item,
+                    bx_id: rq_id,
+                    fields: fields,
+                };
+
+                const currentItems = rqsState.current.items.map(
+                    (item: EvsRqItem) => {
+                        if (item.bx_id == -1 || item.bx_id == rq_id) {
+                            return { ...item, bx_id: rq_id, fields: fields };
+                        }
+                        return item;
+                    },
+                );
+
+                const updatedState = {
+                    ...rqsState,
+                    creating: {
+                        ...rqsState.creating,
+                        base: null,
+                    },
+                    current: {
+                        ...rqsState.current,
+                        item: currentItem,
                         items: currentItems,
                     },
-                },
-            } as BXRQState;
+                    rqs: {
+                        ...rqsState.rqs,
+                        [resolvedType]: {
+                            ...rqsState.rqs[resolvedType],
+                            items: currentItems,
+                        },
+                    },
+                } as BXRQState;
 
-            dispatch(setCreatingLoadingStatus(false));
-            dispatch(saveBaseCreating({ updatedState }));
-        }
-    };
+                dispatch(setCreatingLoadingStatus(false));
+                dispatch(saveBaseCreating({ updatedState }));
+            }
+        };
 
 export const saveAddress =
     (
@@ -171,104 +172,104 @@ export const saveAddress =
         currentClientType: RQ_TYPE,
         typeId: BX_ADDRESS_TYPE,
     ) =>
-    async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
-        const state = getState();
-        // const domain = state.app.domain;
-        // const companyId = state.app.company;
-        // const clientTypestate = state.documentClientType as ClientTypeState;
-        // const currentClientTypeItem = clientTypestate.current;
-        const rqsState = state.bxrq as BXRQState;
+        async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
+            const state = getState();
+            // const domain = state.app.domain;
+            // const companyId = state.app.company;
+            // const clientTypestate = state.documentClientType as ClientTypeState;
+            // const currentClientTypeItem = clientTypestate.current;
+            const rqsState = state.bxrq as BXRQState;
 
-        const resolvedType = getResolvedType(
-            currentClientType,
-        ) as ResolvedRQType;
+            const resolvedType = getResolvedType(
+                currentClientType,
+            ) as ResolvedRQType;
 
-        dispatch(setRequiredUnderstand({ status: false }));
+            dispatch(setRequiredUnderstand({ status: false }));
 
-        const addressCreating = rqsState.creating.address as AddressRqItem;
-        const rq = rqsState.current.item;
+            const addressCreating = rqsState.creating.address as AddressRqItem;
+            const rq = rqsState.current.item;
 
-        if (rqsState && rqsState.rqs && addressCreating && rq) {
-            const rq_id = rq.bx_id;
-            const data = {
-                domain,
-                company_id: companyId,
-                bx_id: rq_id,
-                address: addressCreating,
-                iswait: true,
-            };
+            if (rqsState && rqsState.rqs && addressCreating && rq) {
+                const rq_id = rq.bx_id;
+                const data = {
+                    domain,
+                    company_id: companyId,
+                    bx_id: rq_id,
+                    address: addressCreating,
+                    iswait: true,
+                };
 
-            dispatch(setCreatingLoadingStatus(true));
+                dispatch(setCreatingLoadingStatus(true));
 
-            const result = (await eventServiceAPI.service(
-                EVS_ENDPOINT.STORE_RQ,
-                API_METHOD.POST,
-                data,
-            )) as RQStore | null;
+                const result = (await eventServiceAPI.service(
+                    EVS_ENDPOINT.STORE_RQ,
+                    API_METHOD.POST,
+                    data,
+                )) as RQStore | null;
 
-            let address_id = addressCreating.id;
-            // if (result && result.data.id) {
-            //   address_id = result.data.id;
-            // }
+                let address_id = addressCreating.id;
+                // if (result && result.data.id) {
+                //   address_id = result.data.id;
+                // }
 
-            const updatedAddress = {
-                ...addressCreating,
-                id: address_id,
-            };
+                const updatedAddress = {
+                    ...addressCreating,
+                    id: address_id,
+                };
 
-            // Обновляем адреса в текущем элементе
-            const updatedCurrentItem = {
-                ...rq,
-                address: {
-                    ...rq.address,
-                    items: rq.address.items.map((ad: AddressRqItem) => {
-                        if (ad.type_id === typeId) {
-                            return updatedAddress;
+                // Обновляем адреса в текущем элементе
+                const updatedCurrentItem = {
+                    ...rq,
+                    address: {
+                        ...rq.address,
+                        items: rq.address.items.map((ad: AddressRqItem) => {
+                            if (ad.type_id === typeId) {
+                                return updatedAddress;
+                            }
+                            return ad;
+                        }),
+                    },
+                };
+
+                // Обновляем элементы в current.items
+                const updatedCurrentItems = rqsState.current.items.map(
+                    (rqItem: EvsRqItem) => {
+                        if (rqItem.bx_id === rq.bx_id) {
+                            return updatedCurrentItem;
                         }
-                        return ad;
-                    }),
-                },
-            };
+                        return rqItem;
+                    },
+                );
 
-            // Обновляем элементы в current.items
-            const updatedCurrentItems = rqsState.current.items.map(
-                (rqItem: EvsRqItem) => {
-                    if (rqItem.bx_id === rq.bx_id) {
-                        return updatedCurrentItem;
-                    }
-                    return rqItem;
-                },
-            );
+                // Обновляем rqs
+                const updatedRqs = {
+                    ...rqsState.rqs,
+                    [resolvedType]: {
+                        ...rqsState.rqs[resolvedType],
+                        items: updatedCurrentItems,
+                    },
+                };
 
-            // Обновляем rqs
-            const updatedRqs = {
-                ...rqsState.rqs,
-                [resolvedType]: {
-                    ...rqsState.rqs[resolvedType],
-                    items: updatedCurrentItems,
-                },
-            };
+                const updatedState = {
+                    ...rqsState,
+                    creating: {
+                        ...rqsState.creating,
+                        address: null,
+                    },
+                    current: {
+                        ...rqsState.current,
+                        item: updatedCurrentItem,
+                        items: updatedCurrentItems,
+                    },
+                    rqs: updatedRqs,
+                } as BXRQState;
 
-            const updatedState = {
-                ...rqsState,
-                creating: {
-                    ...rqsState.creating,
-                    address: null,
-                },
-                current: {
-                    ...rqsState.current,
-                    item: updatedCurrentItem,
-                    items: updatedCurrentItems,
-                },
-                rqs: updatedRqs,
-            } as BXRQState;
-
-            dispatch(setCreatingLoadingStatus(false));
-            dispatch(
-                saveAddressCreating({ typeId, clientType: currentClientType }),
-            );
-        }
-    };
+                dispatch(setCreatingLoadingStatus(false));
+                dispatch(
+                    saveAddressCreating({ typeId, clientType: currentClientType }),
+                );
+            }
+        };
 
 export const saveBank =
     (
@@ -276,177 +277,177 @@ export const saveBank =
         companyId: number,
         // bankId: number,
     ) =>
-    async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
-        const state = getState();
-        // const domain = state.app.domain;
-        // const companyId = state.app.company;
-        const rqsState = state.bxrq as BXRQState;
+        async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
+            const state = getState();
+            // const domain = state.app.domain;
+            // const companyId = state.app.company;
+            const rqsState = state.bxrq as BXRQState;
 
-        dispatch(setRequiredUnderstand({ status: false }));
+            dispatch(setRequiredUnderstand({ status: false }));
 
-        const bankCreating = rqsState.creating.bank;
-        const rq = rqsState.current.item;
+            const bankCreating = rqsState.creating.bank;
+            const rq = rqsState.current.item;
 
-        if (rqsState && rqsState.rqs && bankCreating && rq) {
-            const rq_id = rq.bx_id;
-            const data = {
-                domain,
-                company_id: companyId,
-                bx_id: rq_id,
-                bank: bankCreating,
-                iswait: true,
-            };
+            if (rqsState && rqsState.rqs && bankCreating && rq) {
+                const rq_id = rq.bx_id;
+                const data = {
+                    domain,
+                    company_id: companyId,
+                    bx_id: rq_id,
+                    bank: bankCreating,
+                    iswait: true,
+                };
 
-            dispatch(setCreatingLoadingStatus(true));
+                dispatch(setCreatingLoadingStatus(true));
 
-            const result = (await eventServiceAPI.service(
-                EVS_ENDPOINT.STORE_RQ,
-                API_METHOD.POST,
-                data,
-            )) as { data: number } | null;
+                const result = (await eventServiceAPI.service(
+                    EVS_ENDPOINT.STORE_RQ,
+                    API_METHOD.POST,
+                    data,
+                )) as { data: number } | null;
 
-            let newBankId = result?.data || bankCreating.id;
+                let newBankId = result?.data || bankCreating.id;
 
-            // if (result && result.data.id) {
-            //   newBankId = result.data.id;
-            // }
+                // if (result && result.data.id) {
+                //   newBankId = result.data.id;
+                // }
 
-            const updatedBank = {
-                ...bankCreating,
-                id: newBankId,
-            };
+                const updatedBank = {
+                    ...bankCreating,
+                    id: newBankId,
+                };
 
-            // Обновляем банк в текущем элементе
-            const updatedCurrentItem = {
-                ...rq,
-                bank: {
-                    ...rq.bank,
-                    items: [updatedBank],
-                    current: updatedBank,
-                },
-            };
+                // Обновляем банк в текущем элементе
+                const updatedCurrentItem = {
+                    ...rq,
+                    bank: {
+                        ...rq.bank,
+                        items: [updatedBank],
+                        current: updatedBank,
+                    },
+                };
 
-            // Обновляем элементы в current.items
-            const updatedCurrentItems = rqsState.current.items.map(
-                (rqItem: EvsRqItem) => {
-                    if (rqItem.bx_id === rq.bx_id) {
-                        return updatedCurrentItem;
-                    }
-                    return rqItem;
-                },
-            );
+                // Обновляем элементы в current.items
+                const updatedCurrentItems = rqsState.current.items.map(
+                    (rqItem: EvsRqItem) => {
+                        if (rqItem.bx_id === rq.bx_id) {
+                            return updatedCurrentItem;
+                        }
+                        return rqItem;
+                    },
+                );
 
-            const updatedState = {
-                ...rqsState,
-                creating: {
-                    ...rqsState.creating,
-                    bank: null,
-                },
-                current: {
-                    ...rqsState.current,
-                    item: updatedCurrentItem,
-                    items: updatedCurrentItems,
-                },
-                rqs: {
-                    ...rqsState.rqs,
-                    [getResolvedType(RQ_TYPE.ORGANIZATION) as ResolvedRQType]: {
-                        ...rqsState.rqs[
+                const updatedState = {
+                    ...rqsState,
+                    creating: {
+                        ...rqsState.creating,
+                        bank: null,
+                    },
+                    current: {
+                        ...rqsState.current,
+                        item: updatedCurrentItem,
+                        items: updatedCurrentItems,
+                    },
+                    rqs: {
+                        ...rqsState.rqs,
+                        [getResolvedType(RQ_TYPE.ORGANIZATION) as ResolvedRQType]: {
+                            ...rqsState.rqs[
                             getResolvedType(
                                 RQ_TYPE.ORGANIZATION,
                             ) as ResolvedRQType
-                        ],
-                        items: updatedCurrentItems,
+                            ],
+                            items: updatedCurrentItems,
+                        },
                     },
-                },
-            } as BXRQState;
+                } as BXRQState;
 
-            dispatch(setCreatingLoadingStatus(false));
-            dispatch(
-                saveBankCreating({
-                    bankId: newBankId,
-                    clientType: RQ_TYPE.ORGANIZATION,
-                }),
-            );
-        }
-    };
+                dispatch(setCreatingLoadingStatus(false));
+                dispatch(
+                    saveBankCreating({
+                        bankId: newBankId,
+                        clientType: RQ_TYPE.ORGANIZATION,
+                    }),
+                );
+            }
+        };
 
 export const setBasePropThunk =
     (code: string, value: string) =>
-    async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
-        dispatch(setBasePropAction({ code, value }));
-    };
+        async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
+            dispatch(setBasePropAction({ code, value }));
+        };
 
 export const blurCase =
     (code: string, value: string) =>
-    async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
-        const state = getState();
+        async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
+            const state = getState();
 
-        if (state.bxrq.caseLoading.includes(code)) {
-            return;
-        }
-
-        if (
-            code == 'first_name' ||
-            code == 'last_name' ||
-            code == 'second_name'
-        ) {
-            const creatingItem = (state.bxrq as BXRQState).creating.base;
-            if (creatingItem?.fields) {
-                const currentFullname = getFullName(
-                    creatingItem?.fields,
-                ).fullName;
-                const currentIPFullname = `Индивидуальный Предприниматель ${currentFullname}`;
-                const currentIPFullShortname = `ИП ${getFullName(creatingItem?.fields).initials}`;
-
-                dispatch(
-                    setBasePropAction({
-                        code: RQ_ITEM_CODE.PERSON_NAME,
-                        value: currentFullname,
-                    }),
-                );
-                dispatch(
-                    setBasePropAction({
-                        code: RQ_ITEM_CODE.FULLNAME,
-                        value: currentIPFullname,
-                    }),
-                );
-                dispatch(
-                    setBasePropAction({
-                        code: RQ_ITEM_CODE.SHORTNAME,
-                        value: currentIPFullShortname,
-                    }),
-                );
+            if (state.bxrq.caseLoading.includes(code)) {
+                return;
             }
-        }
 
-        if (code == 'director' || code == 'position' || code == 'based') {
-            const caseCode = `${code}_case`;
-            dispatch(setCaseLoading({ code: caseCode }));
             if (
-                code == 'based' &&
-                (value.toLocaleLowerCase() === 'устав' ||
-                    value.toLocaleLowerCase() === 'устава')
+                code == 'first_name' ||
+                code == 'last_name' ||
+                code == 'second_name'
             ) {
-                let casedValue = 'Устава';
-                dispatch(
-                    setBasePropAction({ code: caseCode, value: casedValue }),
-                );
-            } else {
-                const caseValue = (await eventServiceAPI.service(
-                    EVS_ENDPOINT.CASE,
-                    API_METHOD.POST,
-                    { value },
-                )) as { case: string } | null;
+                const creatingItem = (state.bxrq as BXRQState).creating.base;
+                if (creatingItem?.fields) {
+                    const currentFullname = getFullName(
+                        creatingItem?.fields,
+                    ).fullName;
+                    const currentIPFullname = `Индивидуальный Предприниматель ${currentFullname}`;
+                    const currentIPFullShortname = `ИП ${getFullName(creatingItem?.fields).initials}`;
 
-                let casedValue = value;
-                if (caseValue?.case) {
-                    casedValue = caseValue?.case;
+                    dispatch(
+                        setBasePropAction({
+                            code: RQ_ITEM_CODE.PERSON_NAME,
+                            value: currentFullname,
+                        }),
+                    );
+                    dispatch(
+                        setBasePropAction({
+                            code: RQ_ITEM_CODE.FULLNAME,
+                            value: currentIPFullname,
+                        }),
+                    );
+                    dispatch(
+                        setBasePropAction({
+                            code: RQ_ITEM_CODE.SHORTNAME,
+                            value: currentIPFullShortname,
+                        }),
+                    );
                 }
-                dispatch(
-                    setBasePropAction({ code: caseCode, value: casedValue }),
-                );
             }
 
-            dispatch(setCaseLoading({ code: caseCode }));
-        }
-    };
+            if (code == 'director' || code == 'position' || code == 'based') {
+                const caseCode = `${code}_case`;
+                dispatch(setCaseLoading({ code: caseCode }));
+                if (
+                    code == 'based' &&
+                    (value.toLocaleLowerCase() === 'устав' ||
+                        value.toLocaleLowerCase() === 'устава')
+                ) {
+                    let casedValue = 'Устава';
+                    dispatch(
+                        setBasePropAction({ code: caseCode, value: casedValue }),
+                    );
+                } else {
+                    const caseValue = (await eventServiceAPI.service(
+                        EVS_ENDPOINT.CASE,
+                        API_METHOD.POST,
+                        { value },
+                    )) as { case: string } | null;
+
+                    let casedValue = value;
+                    if (caseValue?.case) {
+                        casedValue = caseValue?.case;
+                    }
+                    dispatch(
+                        setBasePropAction({ code: caseCode, value: casedValue }),
+                    );
+                }
+
+                dispatch(setCaseLoading({ code: caseCode }));
+            }
+        };

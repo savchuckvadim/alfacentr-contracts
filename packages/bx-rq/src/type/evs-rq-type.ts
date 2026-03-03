@@ -21,7 +21,7 @@ export interface EvsRq {
 
 export interface EvsRqItem {
     bx_id: number | -1;
-    preset_id: keyof typeof BXRQ_ENTITY_TYPE;
+    preset_id: number;
     fields: RqItem[];
     address: AddressRq;
     bank: BankRq;

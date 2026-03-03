@@ -5,7 +5,7 @@ import { ERQDTO, ERQItem, ERQObject } from '../dto/erq-item.dto';
 import { ERQField } from '../dto/erq-field.dto';
 import { ERQAddress, ERQAddressItem } from '../dto/erq-address.dto';
 import { ERQBank, ERQBankItem } from '../dto/erq-bank.dto';
-import { CodesField } from '../dto/codes-field';
+import { CodesField, Names } from '../dto/codes-field';
 import { Address } from '../types/bx-address.type';
 import { Bank } from '../types/bx-bank.type';
 import { PresetCode } from '../enums/preset-code.enum';
@@ -14,7 +14,6 @@ import { AddressFieldCode } from '../enums/address-field-code.enum';
 import { BankFieldName } from '../enums/bank-field-name.enum';
 import { BankFieldCode } from '../enums/bank-field-code.enum';
 import { TypeIdAddress } from '../types/type-id-address.enum';
-import { PresetId } from '../enums/preset-id.enum';
 import { RQ_TYPE } from '@alfa/entities';
 
 @Injectable()
@@ -77,23 +76,26 @@ export class RequisiteMapperService {
             eventRqFiz,
             eventRqIp,
         );
-        const defaultItem = this.createDefaultItem(current);
+        // const defaultItem = this.createDefaultItem(current);
 
-        return new ERQDTO({
+        const result = new ERQDTO({
             org: new ERQObject({
                 items: eventRqOrg,
-                default: defaultItem,
+                default: eventRqOrg.find((item) => item.bx_id === -1) || null,
             }),
             fiz: new ERQObject({
                 items: eventRqFiz,
-                default: defaultItem,
+                default: eventRqFiz.find((item) => item.bx_id === -1) || null,
             }),
             ip: new ERQObject({
                 items: eventRqIp,
-                default: defaultItem,
+                default: eventRqIp.find((item) => item.bx_id === -1) || null,
             }),
             current: current,
         });
+
+      
+        return result;
     }
 
     private getRqType(
@@ -118,7 +120,7 @@ export class RequisiteMapperService {
             if (name === 'constructor' || name === 'prototype') {
                 continue;
             }
-            const fieldValue = (CodesField as any)[name];
+            const fieldValue = CodesField[name] as Names;
             if (fieldValue && fieldValue.code) {
                 codes[name] = fieldValue;
             }
@@ -133,8 +135,8 @@ export class RequisiteMapperService {
         const eventRequisiteDto: ERQField[] = [];
 
         for (const codeName of Object.keys(codes)) {
-            const code = codes[codeName];
-            let value = (bxRq as any)[codeName];
+            const code = codes[codeName] as Names;
+            let value = bxRq[codeName] as string | number | null;
             if (!value) {
                 value = '';
             }

@@ -45,8 +45,7 @@ export class DocumentGenerateFlowService {
         });
 
 
-        console.log('CONTACT');
-        console.log('CONTACT', contactResponse);
+
         const contact = (contactResponse.result?.[0] || null) as IBXContact | null;
         let contactId = null as number | null;
 
@@ -64,15 +63,12 @@ export class DocumentGenerateFlowService {
         } else {
             contactId = Number((contact as IBXContact).ID) as number;
         }
-        const dealContacts = await bitrix.deal.contactItemsGet(dto.dealId);
-        const dealHasContact = dealContacts.result.some((contact) => contact.CONTACT_ID === contactId);
-        console.log('dealHasContact', dealHasContact);
-        console.log('contactId', contactId);
-        console.log('dealContacts', dealContacts.result);
-        // if (!dealHasContact) {
-            const dealContactResponse = await bitrix.deal.contactItemsSet(dto.dealId, [contactId]);
-            console.log('dealContactResponse', dealContactResponse);
-        // }
+         await bitrix.deal.contactItemsGet(dto.dealId);
+
+
+        await bitrix.deal.contactItemsSet(dto.dealId, [contactId]);
+
+
 
         const entityId = Number(dto.dealId);
         this.bxTimelineService = new BxTimelineService(
@@ -155,10 +151,7 @@ export class DocumentGenerateFlowService {
 
         let mailResult: any = null;
         if (dto.email.needEmail && dto.email.email) {
-            console.log('NEED EMAIL');
-            console.log('dto.email.needEmail', dto.email.needEmail);
-            console.log('dto.email.email', dto.email.email);
-            console.log('send email');
+        
             await delay(1100);
             void (await this.bxTimelineService.send(
                 '⌛ Отправка email...',
