@@ -16,12 +16,12 @@ RUN pnpm approve-builds
 
 RUN pnpm config set fetch-retries 5 && \
     pnpm config set fetch-timeout 60000 && \
-    pnpm install 
-   
+    pnpm install
+
 
 # Сборка NextJS API и проверка
-# RUN pnpm run build 
-RUN pnpm --filter alfacentr-front run build 
+# RUN pnpm run build
+RUN pnpm --filter alfacentr-front run build
 
 # ==== PRODUCTION ====
 FROM node:20-slim AS prod
@@ -69,7 +69,7 @@ COPY --from=base /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=base /app/packages ./packages
 COPY --from=base /app/apps/front/public ./public
 # COPY --from=base /app/apps/kpi-sales/next.config.js ./next.config.js
-COPY --from=base /app/apps/front/next.config.ts ./next.config.ts
+COPY --from=base /app/apps/front/next.config.js ./next.config.js
 COPY --from=base /app/apps/front/.env ./.env
 
 
@@ -78,7 +78,7 @@ RUN pnpm install --prod --no-frozen-lockfile && \
     pnpm --filter alfacentr-front install --prod --no-frozen-lockfile
 
 
-    
+
 # Запуск NextJS
 CMD ["pnpm", "start"]
 
@@ -97,11 +97,11 @@ CMD ["pnpm", "start"]
 # # Установка зависимостей и генерация Prisma Client
 # RUN pnpm config set fetch-retries 5 && \
 #     pnpm config set fetch-timeout 60000 && \
-#     pnpm install --no-frozen-lockfile 
-   
+#     pnpm install --no-frozen-lockfile
+
 
 # # Сборка NextJS API и проверка
-# RUN pnpm --filter kpi-sales run build 
+# RUN pnpm --filter kpi-sales run build
 
 
 # # ==== PRODUCTION ====
@@ -129,6 +129,6 @@ CMD ["pnpm", "start"]
 #     pnpm --filter kpi-sales install --prod --no-frozen-lockfile
 
 
-    
+
 # # Запуск NextJS
 # CMD ["pnpm", "start"]

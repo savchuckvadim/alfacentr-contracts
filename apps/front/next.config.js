@@ -1,4 +1,4 @@
-import type { NextConfig } from 'next';
+import process from 'node:process';
 
 // Проверяем наличие обязательных переменных окружения
 const requiredEnvVars = ['ONLINE_API_KEY', 'IN_BITRIX', 'LOG_FILE_PATH'];
@@ -9,7 +9,8 @@ for (const envVar of requiredEnvVars) {
     }
 }
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
     // compress: false, // <--- отключает gzip-сжатие и минификацию на сервере
 
     // // если хочешь также отключить минификацию сборки (клиентского JS), допиши:
