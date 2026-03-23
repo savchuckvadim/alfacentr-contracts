@@ -98,15 +98,15 @@ export class ERQField {
     order?: number | null;
 
     constructor(data: Partial<ERQField> = {}) {
-        this.type = data?.type || '';
+        this.type = data.code?.toLowerCase() === 'comments' ? 'text' : data?.type || '';
         this.name = data?.name || '';
         this.value = data?.value ?? '';
         this.code = data?.code || '';
-        this.isRequired = data?.isRequired ?? true;
+        this.isRequired = data?.isRequired || false;
         this.includes = data?.includes || [];
         this.group = data?.group ?? null;
         this.isActive = data?.isActive ?? true;
-        this.isDisable = data?.isDisable ?? true;
+        this.isDisable = data?.isDisable;
         this.order = data?.order ?? null;
     }
 }

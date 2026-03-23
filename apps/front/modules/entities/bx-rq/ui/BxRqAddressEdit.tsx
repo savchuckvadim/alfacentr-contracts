@@ -230,6 +230,7 @@ export const BxRqAddressEdit = ({}: BxRqAddressEditProps) => {
                     onFieldChange={(code, value) =>
                         handleFieldChange(creating.type_id, code, value)
                     }
+                    type="address"
                 />
             )}
         </div>

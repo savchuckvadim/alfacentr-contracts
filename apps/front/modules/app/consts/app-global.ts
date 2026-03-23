@@ -1,7 +1,9 @@
 import { IBXUser } from '@workspace/bitrix/src/domain/interfaces/bitrix.interface';
 import { Placement } from '@workspace/bx';
 
-export const IS_PROD = true;
+const isProd = process.env.NEXT_PUBLIC_IS_PROD === 'true';
+console.log('🔧 IS_PROD ', isProd);
+export const IS_PROD = isProd;
 
 export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru' as string;
 export const TESTING_USER = {

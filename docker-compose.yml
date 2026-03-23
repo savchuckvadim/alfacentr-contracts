@@ -13,6 +13,7 @@ services:
     environment:
       - IN_BITRIX=true
       - LOG_FILE_PATH=/app/logs/server.log
+      - NEXT_PUBLIC_IS_PROD=true
 
     volumes:
       - ./logs:/app/logs

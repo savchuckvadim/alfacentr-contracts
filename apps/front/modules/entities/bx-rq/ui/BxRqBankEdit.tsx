@@ -179,6 +179,7 @@ export const BxRqBankEdit = ({
                         onFieldChange={(code, value) =>
                             handleFieldChange(creating.id, code, value)
                         }
+                        type="bank"
                     />
                 )}
             </div>

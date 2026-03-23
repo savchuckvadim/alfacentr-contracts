@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -19,7 +19,7 @@ import {
     SelectValue,
 } from '@workspace/ui/components/select';
 import { Textarea } from '@workspace/ui/components/textarea';
-import { RqItem } from '@workspace/bx-rq';
+import { BANK_RQ_ITEM_CODE, RqItem } from '@workspace/bx-rq';
 import { Loader2 } from 'lucide-react';
 import { isFieldRequired } from '../lib/utils/is-field-required';
 import { useBxRqEditBase } from '@workspace/bx-rq';
@@ -32,6 +32,7 @@ interface BxRqEditModalProps {
     fields: RqItem[];
     isOpen: boolean;
     isLoading?: boolean;
+    type: 'base' | 'address' | 'bank';
     onSave: () => void;
     onCancel: () => void;
     onFieldChange: (code: string, value: string) => void;
@@ -43,16 +44,25 @@ export const BxRqEditModal = ({
     fields,
     isOpen,
     isLoading = false,
-
+    type,
     onSave,
     onCancel,
     onFieldChange,
     onFieldBlur,
 }: BxRqEditModalProps) => {
     const [localValues, setLocalValues] = useState<Record<string, string>>({});
+    const [validationErrors, setValidationErrors] = useState<
+        Record<string, string>
+    >({});
 
     const handleFieldChange = (code: string, value: string) => {
         setLocalValues(prev => ({ ...prev, [code]: value }));
+        setValidationErrors(prev => {
+            if (!prev[code]) return prev;
+            const next = { ...prev };
+            delete next[code];
+            return next;
+        });
         onFieldChange(code, value);
     };
 
@@ -64,11 +74,38 @@ export const BxRqEditModal = ({
 
     const { caseLoading } = useBxRqEditBase();
 
+    const getFieldValue = (field: RqItem) =>
+        localValues[field.code] ||
+        (typeof field.value === 'string' ? field.value : '') ||
+        '';
+
+    const validateBeforeSave = () => {
+        const nextErrors: Record<string, string> = {};
+
+        if (type === 'bank') {
+            const bankNameField = fields.find(
+                field => field.code === BANK_RQ_ITEM_CODE.BANK_NAME,
+            );
+
+            if (bankNameField && !getFieldValue(bankNameField).trim()) {
+                nextErrors[bankNameField.code] = 'Заполните название банка';
+            }
+        }
+
+        setValidationErrors(nextErrors);
+        return Object.keys(nextErrors).length === 0;
+    };
+
+    const handleSaveClick = () => {
+        if (!validateBeforeSave()) {
+            return;
+        }
+        onSave();
+    };
+
     const renderField = (field: RqItem) => {
-        const value =
-            localValues[field.code] ||
-            (typeof field.value === 'string' ? field.value : '') ||
-            '';
+        const value = getFieldValue(field);
+        const fieldError = validationErrors[field.code];
         if (caseLoading.includes(field.code)) {
             return (
                 <div className="flex justify-center items-center h-10">
@@ -76,8 +113,10 @@ export const BxRqEditModal = ({
                 </div>
             );
         }
+
         switch (field.type) {
             case 'text':
+
                 return (
                     <div key={field.code} className="space-y-2">
                         <Label htmlFor={field.code}>
@@ -98,6 +137,9 @@ export const BxRqEditModal = ({
                             placeholder={`Введите ${field.name.toLowerCase()}`}
                             disabled={field.isDisable}
                         />
+                        {fieldError && (
+                            <p className="text-sm text-red-500">{fieldError}</p>
+                        )}
                     </div>
                 );
 
@@ -133,6 +175,9 @@ export const BxRqEditModal = ({
                                 ))}
                             </SelectContent>
                         </Select>
+                        {fieldError && (
+                            <p className="text-sm text-red-500">{fieldError}</p>
+                        )}
                     </div>
                 );
 
@@ -157,6 +202,9 @@ export const BxRqEditModal = ({
                             }
                             disabled={field.isDisable}
                         />
+                        {fieldError && (
+                            <p className="text-sm text-red-500">{fieldError}</p>
+                        )}
                     </div>
                 );
 
@@ -181,8 +229,11 @@ export const BxRqEditModal = ({
                                 handleFieldBlur(field.code, e.target.value)
                             }
                             placeholder={`Введите ${field.name.toLowerCase()}`}
-                            // disabled={field.isDisable}
+                        // disabled={field.isDisable}
                         />
+                        {fieldError && (
+                            <p className="text-sm text-red-500">{fieldError}</p>
+                        )}
                     </div>
                 );
         }
@@ -220,7 +271,10 @@ export const BxRqEditModal = ({
                             >
                                 Отмена
                             </Button>
-                            <Button onClick={onSave} disabled={isLoading}>
+                            <Button
+                                onClick={handleSaveClick}
+                                disabled={isLoading}
+                            >
                                 {isLoading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BitrixService } from '@/modules/bitrix/bitrix.service';
 import { IBitrixBatchResponseResult } from '@/modules/bitrix/core/interface/bitrix-api.intterface';
 import { Bank } from '../../../types/bx-bank.type';
-import { BXRequisiteDTO } from '../../../types/bx-requisite-dto.type';
+
 import {
     filterBankFields,
     addMissingBank,

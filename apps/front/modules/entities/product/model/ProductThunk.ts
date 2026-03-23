@@ -51,7 +51,7 @@ export const fetchProducts = createAsyncThunk(
                 {},
                 `${domain}/${dealId}`,
             );
-debugger
+
             // Проверяем различные случаи ошибок с помощью утилиты
             const validResponse = validateApiResponse(
                 response,

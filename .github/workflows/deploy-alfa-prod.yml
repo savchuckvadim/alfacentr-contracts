@@ -11,7 +11,7 @@ jobs:
 
         steps:
             - name: ✅ CI запущен
-              run: echo "🚀 NESTback api GitHub Actions запущен"
+              run: echo "🚀 Alfacentr monorepo GitHub Actions запущен"
 
             - name: Deploy to server via SSH
               uses: appleboy/ssh-action@v0.1.10

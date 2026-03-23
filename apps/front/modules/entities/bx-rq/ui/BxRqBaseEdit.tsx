@@ -10,7 +10,7 @@ import { Button } from '@workspace/ui/components/button';
 import { Badge } from '@workspace/ui/components/badge';
 import { BxRqEditModal } from './BxRqEditModal';
 import { EvsRqItem, RqItem, useBxRqEditBase, useBxRq } from '@workspace/bx-rq';
-import { Edit2, Save, X } from 'lucide-react';
+import { Edit2,  } from 'lucide-react';
 import { useApp } from '@/modules/app';
 import { useClientType } from '@/modules/features/client-type/hook/useClientType';
 
@@ -169,6 +169,7 @@ export const BxRqBaseEdit = ({
                     onCancel={handleCancel}
                     onFieldChange={setBaseProp}
                     onFieldBlur={blurCase}
+                    type="base"
                 />
             )}
         </>

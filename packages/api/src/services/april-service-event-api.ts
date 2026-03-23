@@ -5,8 +5,8 @@ import axios from 'axios';
 // const prod = `http://localhost:8000/api/v1/event/`;
 // const prod = `http://localhost:3000/api/`;
 // const dev = `https://obsessively-busy-moonfish.cloudpub.ru/api/v1/event/`;
-const prod = `http://localhost:3000/api/`;
-// const prod = 'https://alfacentr.back.april-app.ru/api/';
+// const prod = `http://localhost:3000/api/`;
+const prod = 'https://alfacentr.back.april-app.ru/api/';
 const url = prod;
 
 export enum EVS_ENDPOINT {
