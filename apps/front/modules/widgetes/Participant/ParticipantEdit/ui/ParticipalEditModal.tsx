@@ -16,15 +16,6 @@ interface ParticipalEditModalProps {
     editable: IParticipant;
 }
 
-// const generalCodes = [
-//     BxParticipantsDataKeys.name,
-//     BxParticipantsDataKeys.email,
-//     BxParticipantsDataKeys.phone,
-//     BxParticipantsDataKeys.format,
-//     BxParticipantsDataKeys.address_for_udost,
-// ];
-
-// const ppkCodes = [BxParticipantsDataKeys.is_ppk, BxParticipantsDataKeys.days];
 
 export const ppkProgramCodes = [
     BxParticipantsDataKeys.accountant_gos,

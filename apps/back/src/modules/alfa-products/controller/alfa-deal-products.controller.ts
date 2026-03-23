@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { AlfaDealProductsUseCase } from '../use-case/alfa-deal-products.use-case';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { BxProductRowWithProduct } from '../services/bx-product-row.service';

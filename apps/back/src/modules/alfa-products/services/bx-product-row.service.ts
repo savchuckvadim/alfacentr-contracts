@@ -17,6 +17,8 @@ export interface BxProductRowWithProduct extends IBXProductRowRow {
     measureId?: number | string;
     product: IBXProduct;
 }
+
+
 const select = [
     'iblockId',
     'active',
@@ -42,41 +44,54 @@ const select = [
     bxProductData.SEMINAR_TOPIC.bitrixId,
 ];
 export class BxProductRowService {
-    constructor(private readonly bitrix: BitrixService) {}
+    constructor(private readonly bitrix: BitrixService) { }
 
     public async getDealProductRowsWithProducts(dealId: string) {
         const productRows = await this.getDealProductRows(dealId);
         const products = [] as IBXProduct[];
-        // const rowsWithProducts = [] as BxProductRowWithProduct[];
+        const rowsWithProducts = [] as BxProductRowWithProduct[];
 
-        // for (const row of productRows) {
-        //     // this.getProductBatch(row.productId as number, row.id?.toString() || index.toString())
-        //     // const product = await this.getProduct(
-        //     //     row.productId as number,
-        //     //     row.id?.toString() || '',
-        //     // );
-        //     // const resultRow = {
-        //     //     ...row,
-        //     //     product: product as IBXProduct,
-        //     // } as BxProductRowWithProduct;
-        //     // products.push(product);
+        for (const row of productRows) {
 
-        //     // rowsWithProducts.push(resultRow);
-        //     // await delay(300);
-        // }
-        productRows.forEach((row, index) => {
-            this.getProductBatch(
+            const product = await this.getProduct(
                 row.productId as number,
-                row.id?.toString() || index.toString(),
+                row.id?.toString() || '',
             );
-        });
-        const response = await this.bitrix.api.callBatchWithConcurrency(1);
-        const rowsWithProducts = this.prepareRowToRowWithProduct(
-            productRows,
-            response,
-        );
+            const resultRow = {
+                ...row,
+                product: product as IBXProduct,
+            } as BxProductRowWithProduct;
+            products.push(product);
+
+            rowsWithProducts.push(resultRow);
+            await delay(300);
+        }
+
+        // productRows.forEach((row, index) => {
+        //     this.getProduct(
+        //         row.productId as number,
+        //         row.id?.toString() || index.toString(),
+        //     );
+        // });
+        // const response = await this.bitrix.api.callBatchWithConcurrency(1);
+
+
+        // const rowsWithProducts = this.prepareRowToRowWithProduct(
+        //     productRows,
+        //     response,
+        // );
         return { rowsWithProducts };
     }
+    // private prepareResponses(responses: IBitrixBatchResponseResult<IBitrixBatchResponseResultProduct>[]): IBXProduct[] {
+    //     const products: IBXProduct[] = [];
+
+    //     for (const response of responses) {
+    //         for (const key in response.result) {
+    //             products.push(response.result[key].product);
+    //         }
+    //     }
+    //     return products;
+    // }
     private async getDealProductRows(
         dealId: string,
     ): Promise<IBXProductRowRow[]> {
@@ -88,85 +103,85 @@ export class BxProductRowService {
         return response.result.productRows;
     }
 
-    // private async getProduct(
-    //     productId: number,
-    //     batchKey: string,
-    // ): Promise<IBXProduct> {
-    //     const product = await this.bitrix.product.get(productId, select);
-    //     if (product.result.product) {
-    //         const currentProduct = product.result.product;
-    //         if (currentProduct.parentId) {
-    //             // console.log('✅ currentProduct.parentId ', currentProduct.parentId)
-    //             // if (typeof currentProduct.parentId === 'object' && Array.isArray(currentProduct.parentId)) {
-    //             if (currentProduct.parentId.value) {
-    //                 const parentProduct = await this.bitrix.product.get(
-    //                     Number(currentProduct.parentId.value),
-    //                     select,
-    //                 );
+    private async getProduct(
+        productId: number,
+        rowId: string,
+    ): Promise<IBXProduct> {
+        const product = await this.bitrix.product.get(productId, select);
+        if (product.result.product) {
+            const currentProduct = product.result.product;
+            if (currentProduct.parentId) {
+                // console.log('✅ currentProduct.parentId ', currentProduct.parentId)
+                // if (typeof currentProduct.parentId === 'object' && Array.isArray(currentProduct.parentId)) {
+                if (currentProduct.parentId.value) {
+                    const parentProduct = await this.bitrix.product.get(
+                        Number(currentProduct.parentId.value),
+                        select,
+                    );
 
-    //                 if (parentProduct.result.product) {
-    //                     return parentProduct.result.product;
-    //                 }
-    //             }
-    //             // }
-    //         }
-    //     }
-
-    //     return product.result.product;
-    // }
-
-    private getProductBatch(productId: number, batchKey: string): void {
-        const select = [
-            'iblockId',
-            'active',
-            'name',
-            'price',
-            'currencyId',
-            'id',
-            'property172',
-            'property174',
-            'property158',
-            'property168',
-            'property154',
-            'property155',
-            'property156',
-            'property164',
-            'property166',
-            'property216',
-            'property217',
-            'property218',
-            'property219',
-            'property220',
-            'property221',
-            bxProductData.SEMINAR_TOPIC.bitrixId,
-            bxProductData.NAME_BID.bitrixId,
-        ];
-
-        const product = this.bitrix.batch.product.get(
-            batchKey,
-            productId,
-            select,
-        );
-    }
-    private prepareRowToRowWithProduct(
-        rows: IBXProductRowRow[],
-        responses: IBitrixBatchResponseResult[],
-    ): BxProductRowWithProduct[] {
-        const result: BxProductRowWithProduct[] = [];
-        rows.map((row, index) => {
-            let product: IBXProduct | null = null;
-            responses.map((response) => {
-                const resultKey = row.id?.toString() || index.toString();
-                product = response.result[resultKey].product as IBXProduct;
-            });
-            if (product) {
-                const resultRow = {
-                    ...row,
-                    product: product as IBXProduct,
-                } as BxProductRowWithProduct;
-                result.push(resultRow);
+                    if (parentProduct.result.product) {
+                        return parentProduct.result.product;
+                    }
+                }
+                // }
             }
-        });
-        return result;
+        }
+
+        return product.result.product;
     }
+
+    // private getProductBatch(productId: number, batchKey: string): void {
+    //     const select = [
+    //         'iblockId',
+    //         'active',
+    //         'name',
+    //         'price',
+    //         'currencyId',
+    //         'id',
+    //         'property172',
+    //         'property174',
+    //         'property158',
+    //         'property168',
+    //         'property154',
+    //         'property155',
+    //         'property156',
+    //         'property164',
+    //         'property166',
+    //         'property216',
+    //         'property217',
+    //         'property218',
+    //         'property219',
+    //         'property220',
+    //         'property221',
+    //         bxProductData.SEMINAR_TOPIC.bitrixId,
+    //         bxProductData.NAME_BID.bitrixId,
+    //     ];
+
+    //     const product = this.bitrix.batch.product.getList(
+    //         batchKey,
+    //         { id: productId },
+    //         select,
+    //     );
+    // }
+    // private prepareRowToRowWithProduct(
+    //     rows: IBXProductRowRow[],
+    //     responses: IBitrixBatchResponseResult<IBitrixBatchResponseResultProduct>[],
+    // ): BxProductRowWithProduct[] {
+    //     const result: BxProductRowWithProduct[] = [];
+    //     rows.map((row, index) => {
+    //         let product: IBXProduct | null = null;
+    //         responses.map((response) => {
+    //             const resultKey = row.id?.toString() || index.toString();
+    //             product = response.result[resultKey].product as IBXProduct;
+    //         });
+    //         if (product) {
+    //             const resultRow = {
+    //                 ...row,
+    //                 product: product as IBXProduct,
+    //             } as BxProductRowWithProduct;
+    //             result.push(resultRow);
+    //         }
+    //     });
+    //     return result;
+    // }
 }

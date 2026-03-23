@@ -1,44 +1,114 @@
-name: Deploy alfa on push to main
+name: Monorepo on push to main
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "apps/alfa/**"  
+    push:
+        branches:
+            - main
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+    deploy:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: ✅ CI запущен
-        run: echo "🚀 GitHub Actions запущен"
+        steps:
+            - name: ✅ CI запущен
+              run: echo "🚀 NESTback api GitHub Actions запущен"
 
-      - name: Deploy to server via SSH
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          timeout: 30m
-          script: |
-            echo "🧩 Подключение к серверу"
-            cd /var/www/html/next/monorepo
-            git pull origin main
-            tmux kill-session -t front-alfa-prod-deploy-session || true
-            tmux new -d -s front-alfa-prod-deploy-session "\
-            docker compose --env-file .env build front-alfa && \
-            docker compose --env-file .env up -d front-alfa && \
-            docker ps -a > /tmp/front-alfa.log && \
-            docker logs front-alfa-prod >> /tmp/front-alfa.log && \
-            echo ✅ Готово"
+            - name: Deploy to server via SSH
+              uses: appleboy/ssh-action@v0.1.10
+              with:
+                  host: ${{ secrets.SERVER_IP }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SERVER_SSH_KEY }}
+                  timeout: 30m
+                  command_timeout: 90m
 
+                  debug: true
+                  script: |
+                      set -e
+                      echo "🧩 Подключение к серверу NEST API"
+                      cd /var/www/html/alfacentr
+                      git pull origin main
+                      echo "🔍 Проверяю Docker Compose v2..."
+                      docker compose version
 
-            echo "⌛ Ожидание запуска контейнера 60..."
-            sleep 60
-      
-  
-            docker ps -a
-            docker logs front-alfa-prod || true
+                      echo "⏳ Запускаю пересборку контейнеров front-alfacentr-prod и nest-api-alfacentr..."
+                      old_backend_id=$(docker ps -aq --filter "name=^/nest-api-alfacentr$" | head -n1)
+                      old_front_id=$(docker ps -aq --filter "name=^/front-alfacentr-prod$" | head -n1)
 
+                      # BuildKit + cache metadata in resulting image for faster incremental builds.
+                      export DOCKER_BUILDKIT=1
+                      export BUILDKIT_INLINE_CACHE=1
+
+                      # Pull updated base images without forcing full rebuild.
+                      docker compose pull front-alfacentr api-alfacentr redis-alfacentr || true
+
+                      # Build backend service.
+                      if ! docker compose build api-alfacentr; then
+                        echo "❌ docker compose build api-alfacentr завершился с ошибкой"
+                        docker compose ps || true
+                        docker compose logs --tail 200 api-alfacentr || true
+                        exit 1
+                      fi
+
+                      # Build frontend service.
+                      if ! docker compose build front-alfacentr; then
+                        echo "❌ docker compose build front-alfacentr завершился с ошибкой"
+                        docker compose ps || true
+                        docker compose logs --tail 200 front-alfacentr || true
+                        exit 1
+                      fi
+
+                      # Recreate backend and frontend containers, keep redis untouched.
+                      if ! docker compose up -d --no-deps --force-recreate api-alfacentr front-alfacentr; then
+                        echo "❌ docker compose build/up завершился с ошибкой"
+                        docker compose ps || true
+                        docker compose logs --tail 200 api-alfacentr || true
+                        docker compose logs --tail 200 front-alfacentr || true
+                        exit 1
+                      fi
+
+                      echo "⏳ Жду, пока backend и frontend обновятся и станут running/healthy..."
+                      timeout=900
+                      elapsed=0
+                      while true; do
+                        new_backend_id=$(docker ps -aq --filter "name=^/nest-api-alfacentr$" | head -n1)
+                        backend_status=$(docker inspect -f '{{.State.Status}}' "$new_backend_id" 2>/dev/null || echo "missing")
+                        backend_health=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$new_backend_id" 2>/dev/null || echo "unknown")
+
+                        new_front_id=$(docker ps -aq --filter "name=^/front-alfacentr-prod$" | head -n1)
+                        front_status=$(docker inspect -f '{{.State.Status}}' "$new_front_id" 2>/dev/null || echo "missing")
+                        front_health=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$new_front_id" 2>/dev/null || echo "unknown")
+
+                        backend_ready=false
+                        front_ready=false
+
+                        if [ -n "$new_backend_id" ] && [ "$backend_status" = "running" ] && { [ "$backend_health" = "healthy" ] || [ "$backend_health" = "none" ]; } && { [ -z "$old_backend_id" ] || [ "$new_backend_id" != "$old_backend_id" ]; }; then
+                          backend_ready=true
+                        fi
+
+                        if [ -n "$new_front_id" ] && [ "$front_status" = "running" ] && { [ "$front_health" = "healthy" ] || [ "$front_health" = "none" ]; } && { [ -z "$old_front_id" ] || [ "$new_front_id" != "$old_front_id" ]; }; then
+                          front_ready=true
+                        fi
+
+                        if [ "$backend_ready" = true ] && [ "$front_ready" = true ]; then
+                          echo "✅ Backend обновился: $old_backend_id -> $new_backend_id (status=$backend_status, health=$backend_health)"
+                          echo "✅ Frontend обновился: $old_front_id -> $new_front_id (status=$front_status, health=$front_health)"
+                          break
+                        fi
+
+                        if [ "$elapsed" -ge "$timeout" ]; then
+                          echo "❌ Таймаут ожидания контейнеров backend/frontend"
+                          docker compose ps || true
+                          docker logs nest-api-alfacentr --tail 200 || true
+                          docker logs front-alfacentr-prod --tail 200 || true
+                          exit 1
+                        fi
+
+                        echo "⌛ Жду... backend(status=$backend_status, health=$backend_health) front(status=$front_status, health=$front_health) elapsed=${elapsed}s"
+                        sleep 5
+                        elapsed=$((elapsed + 5))
+                      done
+
+                      docker compose ps
+                      docker logs nest-api-alfacentr --tail 100 || true
+                      docker logs front-alfacentr-prod --tail 100 || true

@@ -34,7 +34,7 @@ export const TESTING_USER = {
 } as IBXUser;
 
 // export const IS_REMEMBER_DEV = true;
-export const TESTING_DEAL_ID = 97878; //11311
+export const TESTING_DEAL_ID = 99446; //11311
 // export const TESTING_COMPANY_ID = 158587 as number; // 158479
 export const DEV_CURRENT_USER_ID = 1;
 

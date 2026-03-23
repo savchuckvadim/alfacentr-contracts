@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
 
@@ -57,11 +55,11 @@ services:
     ports:
       - "${ALFA_REDIS_PORT}:6379"
     restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD", "redis-cli", "ping"]
-    #   interval: 5s
-    #   timeout: 3s
-    #   retries: 60
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
     networks:
       - app-network-alfacentr
 

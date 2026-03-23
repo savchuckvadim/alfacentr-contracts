@@ -1,9 +1,8 @@
-import { AppDispatch, RootState } from '@/modules/app/model/store';
+import { AppDispatch} from '@/modules/app/model/store';
 import { updateDealField } from '@/modules/entities/deal/model/DealThunk';
 import { setDealData } from '@/modules/entities/deal/model/DealSlice';
 import { isAnyOf, ListenerMiddlewareInstance } from '@reduxjs/toolkit';
-import { validateEmailAndPhone } from '../thunk/CommunicationsThunk';
-import { BxDealDataKeys } from '@alfa/entities';
+
 
 export function setupCommunicationsDealListener(
     listenerMiddleware: ListenerMiddlewareInstance,

@@ -2,7 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { Bitrix } from '@bitrix/bitrix';
 import { BxProductRowWithProduct } from './ProductSlice';
-import { AlfaBxProductService } from '../services/alfa-bx-product.service';
 import { API_METHOD, backAPI, EBACK_ENDPOINT } from '@workspace/api';
 import { validateApiResponse } from '@/modules/app/lib/thunk-error-handler';
 import { getProductsWithFields } from '../lib/get-products-with-fields';
@@ -52,7 +51,7 @@ export const fetchProducts = createAsyncThunk(
                 {},
                 `${domain}/${dealId}`,
             );
-
+debugger
             // Проверяем различные случаи ошибок с помощью утилиты
             const validResponse = validateApiResponse(
                 response,

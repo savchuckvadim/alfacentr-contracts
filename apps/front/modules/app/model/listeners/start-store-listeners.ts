@@ -8,6 +8,7 @@ import { setupWsDocumentListener } from '@/modules/process/document/model/listen
 import { setupDocumentNumberListener } from '@/modules/features/document-number/model/listener/DocumentNumberListener';
 import { setupWsInitListener } from '@/modules/app/model/queue-ws-ping-test/QueueWsPingListener';
 import {
+    setupAppDealEdoCommentListener,
     setupCommunicationsDealListener,
     setupParticipantSeminarDaysListener,
 } from '@/modules/features';
@@ -35,4 +36,5 @@ export function startStoreListeners(
     setupDocumentDealListener(listenerMiddleware);
     setupCommunicationsDealListener(listenerMiddleware);
     setupAppDealActDateListener(listenerMiddleware);
+    setupAppDealEdoCommentListener(listenerMiddleware);
 }

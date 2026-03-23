@@ -83,7 +83,7 @@ export const documentGenerate = createAsyncThunk<
     const actDateRaw = (state.dealActDate.dealActDate || '') as string;
     const actDate = formatActDateForDocument(actDateRaw);
 
-    debugger;
+
     const dealData = state.deal.dealData;
     const clientType = getDealClientType(dealData as IDealFieldsData[]);
 
@@ -106,6 +106,7 @@ export const documentGenerate = createAsyncThunk<
 
     const products = state.product.items;
     const productsCount = products.length;
+    const edoComment = state.dealEdoComment.value || '';
 
     const phone = state.deal.dealData?.find(
         field => field.code === BxDealDataKeys.exchange_doc_phone,
@@ -193,6 +194,7 @@ export const documentGenerate = createAsyncThunk<
             },
             seminarParticipantsCount: `${productsCount}`,
             ppkApplicationData,
+            edoComment
         } as IRequestDocumentGenerateType;
         debugger;
         const response = await service.push(sendData);

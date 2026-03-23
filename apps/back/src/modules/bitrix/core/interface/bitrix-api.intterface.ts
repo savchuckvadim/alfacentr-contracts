@@ -1,9 +1,9 @@
 export interface IBitrixBatchResponse {
     result: IBitrixBatchResponseResult;
 }
-export interface IBitrixBatchResponseResult {
+export interface IBitrixBatchResponseResult<T extends any = any> {
     result: {
-        [key: string]: any;
+        [key: string]: T;
     };
     result_error:
         | {

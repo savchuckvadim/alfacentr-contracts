@@ -80,8 +80,7 @@ export const ParticipantEditContent = ({
             field.code === BxParticipantsDataKeys.is_ppk;
         const selectOptions = isSelect ? getParticipantSelect(field.code) : [];
 
-        if (isSelect) {
-        }
+ 
         return (
             <div key={field.bitrixId} className="space-y-2">
                 <Label className="text-sm font-medium text-foreground">

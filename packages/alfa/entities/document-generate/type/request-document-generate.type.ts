@@ -28,6 +28,7 @@ export interface IRequestDocumentGenerateType {
     userName: string;
     userEmail: string;
     userId: number;
+    edoComment?: string;
 }
 
 export enum EnumPpkApplicationFieldCode {

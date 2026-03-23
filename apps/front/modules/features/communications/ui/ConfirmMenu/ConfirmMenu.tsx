@@ -12,12 +12,16 @@ import {
     DealActDateField,
     useDealActDate,
 } from '@/modules/features/deal-act-date';
+import { useDealEdoComment } from '@/modules/features/deal-edo-comment';
+import { DealEdoCommentName } from '@/modules/features/deal-edo-comment/type/deal-edo-comment.type';
+import { Textarea } from '@workspace/ui/components/textarea';
 
-type FormValues = {
+export type FormValues = {
     date: string;
     name: string;
     email: string;
     phone: string;
+    comment: string;
 };
 
 export const CommunicationsConfirmMenu = () => {
@@ -37,7 +41,7 @@ export const CommunicationsConfirmMenu = () => {
     } = useCommunications();
 
     const { dealActDate } = useDealActDate();
-
+    const { comment, update: updateComment } = useDealEdoComment();
     const {
         control,
         register,
@@ -50,6 +54,7 @@ export const CommunicationsConfirmMenu = () => {
             name: (name?.value as string) || '',
             email: (email?.value as string) || '',
             phone: (phone?.value as string) || '',
+            comment: comment || '',
         },
     });
 
@@ -77,7 +82,12 @@ export const CommunicationsConfirmMenu = () => {
             }
             submitDisabled={!canSend}
         >
+
+
+
             <div className="flex flex-col gap-4">
+
+
                 {/* Дата акта */}
 
                 <DealActDateField
@@ -175,6 +185,33 @@ export const CommunicationsConfirmMenu = () => {
                     })}
                     className={errors.phone ? 'border-red-500' : ''}
                 />
+
+
+
+                {/* comment */}
+                <div className="flex flex-row gap-2 items-center">
+                    {!errors.comment && <Label>{DealEdoCommentName}</Label>}
+                    {errors.comment && (
+                        <Label className="text-red-500">
+                            {errors.comment.message}
+                        </Label>
+                    )}
+                </div>
+                <Textarea
+                    {...register('comment', {
+                        required: `${DealEdoCommentName} обязателен`,
+
+                        onBlur: e => {
+                            updateComment(
+                                e.target.value,
+                            );
+
+                        },
+                    })}
+
+                    className={errors.comment ? 'border-red-500' : ''}
+                />
+
             </div>
 
             {/* needEmail */}

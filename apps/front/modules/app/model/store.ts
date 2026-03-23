@@ -23,6 +23,7 @@ import {
     documentNumberReducer,
     communicationsReducer,
     participantProductReducer,
+    dealEdoCommentReducer,
 } from '@/modules/features';
 
 import { documentRqReducer } from '@/modules/features/document-rq';
@@ -49,6 +50,8 @@ const rootReducer = combineReducers({
     documentNumber: documentNumberReducer,
     communications: communicationsReducer,
     dealActDate: dealActDateReducer,
+    dealEdoComment: dealEdoCommentReducer,
+    
     //process
     document: documentReducer,
 });
