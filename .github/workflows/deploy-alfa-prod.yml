@@ -19,6 +19,7 @@ jobs:
                   host: ${{ secrets.SERVER_IP }}
                   username: ${{ secrets.SERVER_USER }}
                   key: ${{ secrets.SERVER_SSH_KEY }}
+                  passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
                   timeout: 30m
                   command_timeout: 90m
 
