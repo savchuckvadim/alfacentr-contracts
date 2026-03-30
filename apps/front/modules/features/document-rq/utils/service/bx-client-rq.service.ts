@@ -4,7 +4,6 @@ import {
     RQ_ITEM_CODE,
     BX_ADDRESS_TYPE,
     ADDRESS_RQ_ITEM_CODE,
-    BankRq,
     BANK_RQ_ITEM_CODE,
     BankRqItem,
 } from '@workspace/bx-rq';
@@ -88,7 +87,11 @@ export class BxClientRqService {
         const docDateValue = clientRq.fields.find(
             fld => fld.code === RQ_ITEM_CODE.DOCUMENT_DATE,
         )?.value;
-        docDate = `Документ выдан: ${docDate || docDate}`;
+
+
+        docDate = `Документ выдан: ${docDateValue || docDate}`;
+
+
         const issuedByValue = clientRq.fields.find(
             fld => fld.code === RQ_ITEM_CODE.ISSUED_BY,
         )?.value;
@@ -100,12 +103,16 @@ export class BxClientRqService {
         )?.value;
         depCode = `Код подразделения: ${depCodeValue || depCode}`;
         result.depCode = depCode;
-        let phone = '_____________________________';
-        const phoneValue = clientRq.fields.find(
-            fld => fld.code === RQ_ITEM_CODE.PHONE,
-        )?.value;
-        phone = `Телефон: ${phoneValue || phone}`;
-        result.phone = phone;
+
+
+        // let phone = '_____________________________';
+        // const phoneValue = clientRq.fields.find(
+        //     fld => fld.code === RQ_ITEM_CODE.PHONE,
+        // )?.value;
+        // phone = `Телефон: ${phoneValue || phone}`;
+        // result.phone = phone;
+
+
         let address = this.getAddressString(
             clientRq,
             BX_ADDRESS_TYPE.REGISTERED,
@@ -117,8 +124,12 @@ export class BxClientRqService {
             RQ_TYPE.FIZ,
         );
 
-        result.primaryAddress = primaryAddress;
+        // result.primaryAddress = primaryAddress;
         result.address = address;
+
+
+        const { bankComments } = this.getBankRqs(clientRq.bank.current || null);
+        result.other = bankComments;
         return result;
     }
 
@@ -225,19 +236,24 @@ export class BxClientRqService {
             BX_ADDRESS_TYPE.REGISTERED,
             RQ_TYPE.ORGANIZATION,
         );
-        const primaryAddress = this.getAddressString(
-            clientRq,
-            BX_ADDRESS_TYPE.PRIMARY,
-            RQ_TYPE.ORGANIZATION,
-        );
         result.address = address;
-        result.primaryAddress = primaryAddress;
 
+        const { bankComments } = this.getBankRqs(clientRq.bank.current || null);
+        result.other = bankComments;
+        //Почтовый адрес не добавляем в результат
+        // const primaryAddress = this.getAddressString(
+        //     clientRq,
+        //     BX_ADDRESS_TYPE.PRIMARY,
+        //     RQ_TYPE.ORGANIZATION,
+        // );
+
+        // result.primaryAddress = primaryAddress;
+        //Банковские реквизиты не добавляем в результат
         const bankRq = this.getBankRqStrings(clientRq.bank.current || null);
 
         const withBankResult = {
             ...result,
-            ...bankRq,
+
         };
         return withBankResult;
     }
@@ -301,8 +317,8 @@ export class BxClientRqService {
         addressResult = registredAdress
             ? `Адрес: ${registredAdress}`
             : primaryAddress
-              ? `Адрес: ${primaryAddress}`
-              : `${addressResult}`;
+                ? `Адрес: ${primaryAddress}`
+                : `${addressResult}`;
 
         result = `${fullnameResult} ${innResult} ${kppResult} ${addressResult}`;
         return result;
@@ -393,8 +409,8 @@ export class BxClientRqService {
         addressResult = primaryAddress
             ? `Адрес: ${primaryAddress}`
             : address
-              ? `Адрес: ${address}`
-              : `${addressResult}`;
+                ? `Адрес: ${address}`
+                : `${addressResult}`;
         // return `${fullname} ${documentType} ${docSeries} ${docNumber} ${docDate} ${depCode} ${inn} ${addressResult}`;
         return `${fullname}`;
     }
@@ -448,7 +464,9 @@ export class BxClientRqService {
         if (isClean) {
             return `${address}` || space;
         } else {
-            return `${addressType}: ${address}` || `${addressType}: ${space}`;
+            return address
+                ? `${addressType}: ${address}`
+                : `${addressType}: ${space}`;
         }
     }
 
@@ -516,8 +534,8 @@ export class BxClientRqService {
         bankKcString = `к/с: ${bankKc ? bankKc : `${bankKcString}`}`;
         return {
             [EnumOrganizationRqFields.BANK]: bankNameString,
-            [EnumOrganizationRqFields.RS]: bankPcString,
-            [EnumOrganizationRqFields.KS]: bankKcString,
+            // [EnumOrganizationRqFields.RS]: bankPcString,
+            // [EnumOrganizationRqFields.KS]: bankKcString,
             // [EnumOrganizationRqFields.BIK]: bankBikString,
             [EnumOrganizationRqFields.BANK_ADDRESS]: bankAddress,
         };
@@ -666,8 +684,8 @@ export class BxClientRqService {
                             const initials = !value
                                 ? space
                                 : this.getIinitialsNameByFullName(
-                                      rqItem.value as string,
-                                  );
+                                    rqItem.value as string,
+                                );
                             clientCompanyName = initials;
                         }
                     }

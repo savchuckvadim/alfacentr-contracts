@@ -1,22 +1,14 @@
-import { DocumentGenerateDto } from '../dto/document-generate.dto';
-import { PBXService } from '@/modules/pbx/';
-import { BitrixOwnerTypeId } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
-import { DocumentContractFieldsService } from './document-contract-fields.service';
 import {
     currentDocumentFields,
-    DocumentGenerateFieldTemplateCode,
-    DocumentGenerateTemplatesType,
-    EContractType,
     EnumDealCurrentDocumentFieldCode,
-    RQ_TYPE,
 } from '@alfa/entities';
 import { IRequestDocumentGenerateResponse } from '../type/request-document-generate.type';
 import { delay } from '@/lib';
-import { BitrixService, IBXTimelineComment } from '@/modules/bitrix/';
+import { BitrixService } from '@/modules/bitrix/';
 
 import { TelegramService } from '@/modules/telegram/telegram.service';
 import { IBitrixBatchResponseResult } from '@/modules/bitrix/core/interface/bitrix-api.intterface';
-import { BxTimelineService } from './bx-timeline.service';
+import { BxTimelineService } from '../../flow/timeline-flow/bx-timeline.service';
 
 export class DocumentGeneratePdfService {
     // private filesForSend: [string, string][] = [];
@@ -26,7 +18,7 @@ export class DocumentGeneratePdfService {
         private readonly timelineService: BxTimelineService,
         private filesForSend: [string, string][] = [],
         private readonly tgBot: TelegramService,
-    ) {}
+    ) { }
 
     async pdfGenerate(dto: IBitrixBatchResponseResult[], entityId: number) {
         void (await this.timelineService.send(
@@ -70,28 +62,28 @@ export class DocumentGeneratePdfService {
                 };
             };
 
-            const dealFields = {
-                // [`${currentContractBitrixId}`]: {
-                //     // @ts-ignore
-                //     fileData: null as [string, string] | null,
-                // },
-                [`${currentContractWithoutPtBitrixId}`]: {
-                    // @ts-ignore
-                    fileData: null as [string, string] | null,
-                },
-                [`${currentInvoicesBitrixId}`]: {
-                    // @ts-ignore
-                    fileData: null as [string, string] | null,
-                },
-                [`${currentInvoicesWithoutPtBitrixId}`]: {
-                    // @ts-ignore
-                    fileData: null as [string, string] | null,
-                },
-                [`${currentActBitrixId}`]: {
-                    // @ts-ignore
-                    fileData: null as [string, string] | null,
-                },
-            };
+            // const dealFields = {
+            //     // [`${currentContractBitrixId}`]: {
+            //     //     // @ts-ignore
+            //     //     fileData: null as [string, string] | null,
+            //     // },
+            //     [`${currentContractWithoutPtBitrixId}`]: {
+            //         // @ts-ignore
+            //         fileData: null as [string, string] | null,
+            //     },
+            //     [`${currentInvoicesBitrixId}`]: {
+            //         // @ts-ignore
+            //         fileData: null as [string, string] | null,
+            //     },
+            //     [`${currentInvoicesWithoutPtBitrixId}`]: {
+            //         // @ts-ignore
+            //         fileData: null as [string, string] | null,
+            //     },
+            //     [`${currentActBitrixId}`]: {
+            //         // @ts-ignore
+            //         fileData: null as [string, string] | null,
+            //     },
+            // };
 
             for (const key in documentResults) {
                 const document = documentResults[key].document;
@@ -101,8 +93,8 @@ export class DocumentGeneratePdfService {
                             await this.bitrix.file.downloadBitrixFileAndConvertToBase64(
                                 document.downloadUrlMachine,
                             );
-                        dealFields[`${currentActBitrixId}`].fileData =
-                            actDocumentFileData;
+                        // dealFields[`${currentActBitrixId}`].fileData =
+                        //     actDocumentFileData;
                         this.filesForSend.push(actDocumentFileData);
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITH_PT:
@@ -111,8 +103,8 @@ export class DocumentGeneratePdfService {
                         );
                         const pdfInvoiceFileData =
                             await this.getPdfFileData(invoicePdf);
-                        dealFields[`${currentInvoicesBitrixId}`].fileData =
-                            pdfInvoiceFileData;
+                        // dealFields[`${currentInvoicesBitrixId}`].fileData =
+                        //     pdfInvoiceFileData;
                         this.filesForSend.push(pdfInvoiceFileData);
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITHOUT_PT:
@@ -120,9 +112,9 @@ export class DocumentGeneratePdfService {
                             await this.bitrix.file.downloadBitrixFileAndConvertToBase64(
                                 document.downloadUrlMachine,
                             );
-                        dealFields[
-                            `${currentInvoicesWithoutPtBitrixId}`
-                        ].fileData = invoiceDocWithoutPtFileData;
+                        // dealFields[
+                        //     `${currentInvoicesWithoutPtBitrixId}`
+                        // ].fileData = invoiceDocWithoutPtFileData;
                         this.filesForSend.push(invoiceDocWithoutPtFileData);
                         break;
                     case EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITHOUT_PT:
@@ -130,18 +122,18 @@ export class DocumentGeneratePdfService {
                             await this.bitrix.file.downloadBitrixFileAndConvertToBase64(
                                 document.downloadUrlMachine,
                             );
-                        dealFields[
-                            `${currentContractWithoutPtBitrixId}`
-                        ].fileData = contractDocWithoutPtFileData;
+                        // dealFields[
+                        //     `${currentContractWithoutPtBitrixId}`
+                        // ].fileData = contractDocWithoutPtFileData;
                         this.filesForSend.push(contractDocWithoutPtFileData);
                 }
             }
 
-            void (await this.bitrix.deal.update(
-                entityId,
-                // @ts-ignore
-                dealFields,
-            ));
+            // void (await this.bitrix.deal.update(
+            //     entityId,
+            //     // @ts-ignore
+            //     dealFields,
+            // ));
         }
         void (await this.timelineService.send(
             '📜 PDF сгенерирован',
@@ -179,6 +171,19 @@ export class DocumentGeneratePdfService {
                     result = document;
                 }
             } catch (error) {
+
+                void (await this.timelineService.send(
+                    '❌ Ошибка при генерации PDF',
+                    'error',
+                ));
+
+                // error?.message
+                //     && typeof error?.message === 'string'
+                //     && void (await this.timelineService.send(
+                //         `❌ Ошибка при генерации PDF: ${error?.message}`,
+                //         'error',
+                //     ));
+
                 await this.tgBot.sendMessage(
                     error?.message
                         ? `Ошибка при генерации PDF: ${error?.message}`

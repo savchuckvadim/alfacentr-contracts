@@ -20,7 +20,7 @@ import { getPresetConfig, PresetConfig } from './BxRqService';
 
 @Injectable()
 export class RequisiteUpdateService {
-    constructor(private readonly requisiteService: RequisiteService) { }
+    constructor(private readonly requisiteService: RequisiteService) {}
 
     async updateRequisite(
         erqItem: ERQItem,
@@ -92,16 +92,12 @@ export class RequisiteUpdateService {
                 );
                 return new ERQItem({ bx_id: bx_id });
             } catch (error) {
-              
                 throw new BadRequestException(ErrorMessage.NOT_FULL_DATA);
             }
-
 
             // if (typeof task === 'string') {
             //     throw new BadRequestException(ErrorMessage.NOT_FULL_DATA);
             // }
-
-
         } else {
             // Обновление существующего реквизита
             await this.requisiteService.updateRq(updateRq, rqId!, domain);

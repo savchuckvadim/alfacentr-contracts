@@ -27,4 +27,5 @@ export enum EnumDealDocumentFieldCode {
     CONTRACT_TYPE = 'contract_type',
     POTENTIAL_COMPANIES = 'potential_companies',
     CURRENT_RQ = 'current_rq',
+    TIMELINE_DOCUMENT_PIN='timeline_document_pin',
 }

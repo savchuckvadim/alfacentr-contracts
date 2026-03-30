@@ -15,7 +15,7 @@ export class DocumentNumberUseCase {
             await bxProductRowService.getDealProductRowsWithProducts(
                 dto.dealId.toString(),
             );
-        console.log('✅ rowsWithProducts ', rowsWithProducts);
+      
         return rowsWithProducts;
     }
 }

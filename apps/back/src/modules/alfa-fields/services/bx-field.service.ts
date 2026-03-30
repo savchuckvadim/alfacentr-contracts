@@ -4,7 +4,7 @@ import { AlfaBxField } from '../../on-deal-init/type/bx-deal-field.type';
 
 export class BxFieldsService {
     private bitrix: BitrixService;
-    constructor() { }
+    constructor() {}
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;
     }

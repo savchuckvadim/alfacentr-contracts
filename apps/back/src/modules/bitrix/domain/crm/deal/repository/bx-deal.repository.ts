@@ -151,8 +151,8 @@ export class BxDealRepository {
         );
     }
 
-    async getFieldBtch(cmdCode: string, id: number | string) {
-        return await this.bxApi.addCmdBatchType(
+     getFieldBtch(cmdCode: string, id: number | string) {
+        return this.bxApi.addCmdBatchType(
             cmdCode,
             EBxNamespace.CRM,
             EBXEntity.DEAL,

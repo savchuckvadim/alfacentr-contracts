@@ -18,7 +18,6 @@ export interface BxProductRowWithProduct extends IBXProductRowRow {
     product: IBXProduct;
 }
 
-
 const select = [
     'iblockId',
     'active',
@@ -44,7 +43,7 @@ const select = [
     bxProductData.SEMINAR_TOPIC.bitrixId,
 ];
 export class BxProductRowService {
-    constructor(private readonly bitrix: BitrixService) { }
+    constructor(private readonly bitrix: BitrixService) {}
 
     public async getDealProductRowsWithProducts(dealId: string) {
         const productRows = await this.getDealProductRows(dealId);
@@ -52,14 +51,13 @@ export class BxProductRowService {
         const rowsWithProducts = [] as BxProductRowWithProduct[];
 
         for (const row of productRows) {
-
             const product = await this.getProduct(
                 row.productId as number,
                 row.id?.toString() || '',
             );
             const resultRow = {
                 ...row,
-                product: product as IBXProduct,
+                product: product,
             } as BxProductRowWithProduct;
             products.push(product);
 
@@ -74,7 +72,6 @@ export class BxProductRowService {
         //     );
         // });
         // const response = await this.bitrix.api.callBatchWithConcurrency(1);
-
 
         // const rowsWithProducts = this.prepareRowToRowWithProduct(
         //     productRows,

@@ -19,6 +19,5 @@ export class DocumentNumberQueueProcessor {
         const dto = job.data;
 
         await this.useCase.execute(dto);
-
     }
 }

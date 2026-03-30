@@ -98,7 +98,8 @@ export class ERQField {
     order?: number | null;
 
     constructor(data: Partial<ERQField> = {}) {
-        this.type = data.code?.toLowerCase() === 'comments' ? 'text' : data?.type || '';
+        this.type =
+            data.code?.toLowerCase() === 'comments' ? 'text' : data?.type || '';
         this.name = data?.name || '';
         this.value = data?.value ?? '';
         this.code = data?.code || '';

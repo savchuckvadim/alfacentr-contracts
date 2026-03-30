@@ -4,14 +4,12 @@ import { DocumentGenerateDto } from '../dto/document-generate.dto';
 import { QueueDispatcherService } from '@/modules/queue/dispatch/queue-dispatcher.service';
 import { QueueNames } from '@/modules/queue/constants/queue-names.enum';
 import { JobNames } from '@/modules/queue/constants/job-names.enum';
-import { DocumentBitrixGenerateUseCase } from '../use-cases/document-bitrix-generate.use-case';
 
 @ApiTags('Alfa document-generate')
 @Controller('document-generate')
 export class DocumentGenerateController {
     constructor(
         private readonly job: QueueDispatcherService,
-        private readonly useCase: DocumentBitrixGenerateUseCase,
     ) {}
     @Post('')
     async generateDocument(@Body() dto: DocumentGenerateDto) {

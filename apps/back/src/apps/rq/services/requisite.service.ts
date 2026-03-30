@@ -107,7 +107,7 @@ export class RequisiteService {
                                         ![
                                             TypeIdAddress.LEGAL,
                                             TypeIdAddress.FACTUAL,
-                                        ].includes(typeId as number)
+                                        ].includes(typeId)
                                     ) {
                                         continue;
                                     }
@@ -131,7 +131,7 @@ export class RequisiteService {
 
                         for (const cmd of rqCommands) {
                             if (cmd.key === resultKey) {
-                                const customField = resultValue as any;
+                                const customField = resultValue;
                                 customField.EDIT_FORM_LABEL =
                                     customField.EDIT_FORM_LABEL?.ru ||
                                     customField.EDIT_FORM_LABEL;

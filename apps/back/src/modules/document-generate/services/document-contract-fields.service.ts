@@ -7,7 +7,6 @@ import {
     DocumentContractUPVideoFieldsType,
     DocumentGenerateFieldTemplateCode,
     DocumentGenerateTemplatesType,
-    DocumentGenerateTemplateType,
     EContractType,
     RQ_TYPE,
 } from '@alfa/entities';
@@ -75,16 +74,16 @@ export class DocumentContractFieldsService {
         | typeof DocumentGenerateTemplatesType.UP_VIDEO {
         const templateType =
             contractType === EContractType.seminar_ppk
-                ? (DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL as typeof DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL)
+                ? DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL
                 : contractType === EContractType.seminar
-                  ? (DocumentGenerateTemplatesType.SEMINAR_DEAL as typeof DocumentGenerateTemplatesType.SEMINAR_DEAL)
+                  ? DocumentGenerateTemplatesType.SEMINAR_DEAL
                   : contractType === EContractType.ppk
-                    ? (DocumentGenerateTemplatesType.PPK_DEAL as typeof DocumentGenerateTemplatesType.PPK_DEAL)
+                    ? DocumentGenerateTemplatesType.PPK_DEAL
                     : contractType === EContractType.up_complect
-                      ? (DocumentGenerateTemplatesType.UP_COMPLECT as typeof DocumentGenerateTemplatesType.UP_COMPLECT)
+                      ? DocumentGenerateTemplatesType.UP_COMPLECT
                       : contractType === EContractType.up_video
-                        ? (DocumentGenerateTemplatesType.UP_VIDEO as typeof DocumentGenerateTemplatesType.UP_VIDEO)
-                        : (DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS as typeof DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS);
+                        ? DocumentGenerateTemplatesType.UP_VIDEO
+                        : DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS;
         return templateType;
     }
     private getTemplateId(

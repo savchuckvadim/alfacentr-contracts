@@ -8,7 +8,7 @@ import { getSwaggerConfig } from './core/config/swagger/swagger.config';
 import { cors } from './core/config/cors/cors.config';
 import { winstonLogger } from './core/config/logs/logger';
 import { WinstonModule } from 'nest-winston';
-import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import {  ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {

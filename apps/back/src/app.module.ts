@@ -36,6 +36,10 @@ import { DocumentNumberModule } from './modules/document-number/document-number.
 import { ValidateCheckModule } from './modules/validate-check/validate-check.module';
 import { RqModule } from './apps/rq/rq.module';
 import { CaseModule } from './apps/case/case.module';
+import { CategoryModule } from './commands/category/category.module';
+import { DiskCommandsModule } from './commands/disk/commands-disk.module';
+import { DocumentEmailModule } from './modules/document-email/document-email.module';
+import { EmployeeEdoModule } from './common/employee-edo/employee-edo.module';
 
 @Module({
     imports: [
@@ -55,7 +59,7 @@ import { CaseModule } from './apps/case/case.module';
             ],
         }),
         ScheduleModule.forRoot(),
-
+        CategoryModule,
         // MetricsModule,
         WsModule,
         QueueModule,
@@ -80,6 +84,7 @@ import { CaseModule } from './apps/case/case.module';
         // GarantPricesModule,
         // GsrModule,
         FieldsModule,
+        DiskCommandsModule,
         // AlfaActivityCommandsModule, //для собирания компаний из активностей юрфорум
         // CategoryModule,
         // ChangeDealCategoryModule,
@@ -91,13 +96,17 @@ import { CaseModule } from './apps/case/case.module';
 
         // BxDepartmentModule,
         DocumentGenerateModule,
+        DocumentEmailModule,
         DocumentNumberModule,
         ValidateCheckModule,
 
         HelperModule,
-        AlfaActivityCommandsModule,
+        // AlfaActivityCommandsModule,
+        // DiskCommandsModule,
+
         RqModule,
         CaseModule,
+        EmployeeEdoModule,
     ],
     controllers: [AppController, HealthController],
     providers: [AppService, GlobalExceptionFilter],

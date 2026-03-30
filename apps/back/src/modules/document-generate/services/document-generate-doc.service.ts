@@ -1,5 +1,4 @@
 import { DocumentGenerateDto } from '../dto/document-generate.dto';
-import { PBXService } from '@/modules/pbx/';
 
 import {
     DocumentGenerateFieldTemplateCode,
@@ -13,7 +12,7 @@ import { BxBatchDocumentSendService } from './bx-document-send.service';
 export class DocumentGenerateDocService {
     constructor(
         private readonly bxDocumentSendService: BxBatchDocumentSendService,
-    ) { }
+    ) {}
 
     async generateDocumentsBtch(
         dto: DocumentGenerateDto,

@@ -171,7 +171,7 @@ export const documentFields = {
         code: EnumDealDocumentFieldCode.COMMENT_FOR_OD,
         multiple: false,
         mandatory: false,
-    },
+    } as const,
 
     [EnumDealDocumentFieldCode.NAME_PRODUCT_NOT_PREFIX]: {
         id: '10210',
@@ -293,6 +293,15 @@ export const documentFields = {
         type: 'string',
         name: 'Текущий РК',
         code: EnumDealDocumentFieldCode.CURRENT_RQ,
+        multiple: false,
+        mandatory: false,
+    },
+    [EnumDealDocumentFieldCode.TIMELINE_DOCUMENT_PIN]: {
+        id: '10270',
+        bitrixId: 'UF_CRM_1774857468',
+        type: 'string',
+        name: 'Пин код для timeline',
+        code: EnumDealDocumentFieldCode.TIMELINE_DOCUMENT_PIN,
         multiple: false,
         mandatory: false,
     },

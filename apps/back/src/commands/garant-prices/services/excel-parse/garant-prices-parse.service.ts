@@ -77,7 +77,7 @@ export class GarantPricesParseService {
                             number: count,
                             name: complectName?.toString() || '',
                             code: code?.toString() || '',
-                            supplyCode: `${index - 2}` as string,
+                            supplyCode: `${index - 2}`,
                             complectNumber: complectNumber?.toString() || '',
                             supplyNumber: internetSupplyNumbers[index],
                             price: internetPriceNum,
@@ -116,7 +116,7 @@ export class GarantPricesParseService {
                                 number: count,
                                 name: complectName?.toString() || '',
                                 code: code?.toString() || '',
-                                supplyCode: `${supI - 2}` as string,
+                                supplyCode: `${supI - 2}`,
                                 complectNumber:
                                     complectNumber?.toString() || '',
                                 supplyNumber: proximaSupplyNumbers[supI],
@@ -132,7 +132,7 @@ export class GarantPricesParseService {
                                 number: count,
                                 name: complectName?.toString() || '',
                                 code: code?.toString() || '',
-                                supplyCode: `${supI - 2}` as string,
+                                supplyCode: `${supI - 2}`,
                                 complectNumber:
                                     complectNumber?.toString() || '',
                                 supplyNumber: proximaSupplyNumbers[supI + 1],
@@ -148,7 +148,7 @@ export class GarantPricesParseService {
                                 number: count,
                                 name: complectName?.toString() || '',
                                 code: code?.toString() || '',
-                                supplyCode: `${supI - 2}` as string,
+                                supplyCode: `${supI - 2}`,
                                 complectNumber:
                                     complectNumber?.toString() || '',
                                 supplyNumber: proximaSupplyNumbers[supI + 1],

@@ -13,7 +13,7 @@ services:
     environment:
       - IN_BITRIX=true
       - LOG_FILE_PATH=/app/logs/server.log
-      - NEXT_PUBLIC_IS_PROD=true
+      - NEXT_PUBLIC_NODE_MODE=${NODE_MODE}
 
     volumes:
       - ./logs:/app/logs

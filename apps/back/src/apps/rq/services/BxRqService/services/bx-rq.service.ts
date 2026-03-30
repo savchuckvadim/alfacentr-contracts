@@ -33,14 +33,13 @@ export class BxRqService {
         private readonly addressService: BxRqAddressService,
         private readonly bankService: BxRqBankService,
         private readonly customFieldService: BxRqCustomFieldService,
-    ) { }
+    ) {}
 
     /**
      * Получает все реквизиты компании
      */
     async getRq(companyId: number, domain: string): Promise<BXRequisiteDTO[]> {
-        const { bitrix, PortalModel } =
-            await this.pbxService.init(domain);
+        const { bitrix, PortalModel } = await this.pbxService.init(domain);
 
         const preset = getPresetConfig(PortalModel);
 

@@ -1,9 +1,7 @@
-
 import { DealValue } from '@/lib/deal-helper/deal-values-helper.service';
 import { getIsNotEmptyParticipant } from '@/lib/deal-helper/get-participant-product-values-from-deal.helepr';
 import { BitrixService } from '@/modules/bitrix';
 import { BxDealDataKeys } from '@alfa/entities';
-
 
 export enum GetDealBidItemsType {
     BB = 'bb',
@@ -23,15 +21,9 @@ export enum GetDealBidItemsIconCode {
 
 export class BidInfoLayoutService {
     private type: GetDealBidItemsType;
-    constructor(
-      
-        type: GetDealBidItemsType
-
-    ) {
-        this.type = type
-     }
-
-
+    constructor(type: GetDealBidItemsType) {
+        this.type = type;
+    }
 
     public getComment(dealValues: DealValue[]) {
         const participants = this.getParticipants(dealValues);
@@ -65,37 +57,37 @@ export class BidInfoLayoutService {
                             ) {
                                 participants[i] = isFirst
                                     ? this.getParticipantItemByType(
-                                        i,
-                                        value,
-                                        isFirst,
-                                        isFirstValue,
-                                    ) || ''
+                                          i,
+                                          value,
+                                          isFirst,
+                                          isFirstValue,
+                                      ) || ''
                                     : participants[i] +
-                                    this.getParticipantItemByType(
-                                        i,
-                                        value,
-                                        isFirst,
-                                        isFirstValue,
-                                    ) || '';
+                                          this.getParticipantItemByType(
+                                              i,
+                                              value,
+                                              isFirst,
+                                              isFirstValue,
+                                          ) || '';
                             }
                         } else {
                             if (value.name.includes(key) && value.value) {
                                 participants[i] = isFirst
                                     ? this.getParticipantItemByType(
-                                        i,
-                                        value,
-                                        isFirst,
-                                        isFirstValue,
-                                    ) || ''
+                                          i,
+                                          value,
+                                          isFirst,
+                                          isFirstValue,
+                                      ) || ''
                                     : participants[i]
-                                        ? participants[i] +
-                                        this.getParticipantItemByType(
-                                            i,
-                                            value,
-                                            isFirst,
-                                            isFirstValue,
-                                        ) || ''
-                                        : this.getParticipantItemByType(
+                                      ? participants[i] +
+                                            this.getParticipantItemByType(
+                                                i,
+                                                value,
+                                                isFirst,
+                                                isFirstValue,
+                                            ) || ''
+                                      : this.getParticipantItemByType(
                                             i,
                                             value,
                                             isFirst,
@@ -112,7 +104,9 @@ export class BidInfoLayoutService {
     }
     private getInfo(dealValues: DealValue[]) {
         let info = '';
-        const bidTye = dealValues.find((value) => value.code === BxDealDataKeys.bid_type);
+        const bidTye = dealValues.find(
+            (value) => value.code === BxDealDataKeys.bid_type,
+        );
 
         if (bidTye && bidTye.value) {
             const bidTypeFieldName = 'Тип заявки';
@@ -152,7 +146,9 @@ export class BidInfoLayoutService {
             key,
             value.name,
         );
-        const participantFieldValue = this.formatDealValueToText(value.value).trim();
+        const participantFieldValue = this.formatDealValueToText(
+            value.value,
+        ).trim();
         if (this.type === GetDealBidItemsType.BB) {
             if (isFirstValue) {
                 item += `${icon}[B] Участник ${key}[/B] \n`;
@@ -200,19 +196,34 @@ export class BidInfoLayoutService {
                 item = `${firstIcon}[B] ` + 'Информация' + '[/B] \n';
             }
 
-            item += `${icon}[B] ` + name + ':[/B] ' + this.formatDealValueToText(value.value) + ' \n';
+            item +=
+                `${icon}[B] ` +
+                name +
+                ':[/B] ' +
+                this.formatDealValueToText(value.value) +
+                ' \n';
         } else if (this.type === GetDealBidItemsType.HTML) {
             // if (isFirst) {
             //     item = '💡<b>' + 'Информация' + '</b> \n';
             // }
 
-            item += '<li> <b>' + ` ${name}` + ':</b> ' + this.formatDealValueToText(value.value) + '</li>';
+            item +=
+                '<li> <b>' +
+                ` ${name}` +
+                ':</b> ' +
+                this.formatDealValueToText(value.value) +
+                '</li>';
         } else if (this.type === GetDealBidItemsType.ARRAY) {
             if (isFirst) {
                 item = `${firstIcon}[B]` + 'Информация' + '[/B] \n';
             }
 
-            item += `${icon}[B] ` + name + ':[/B] ' + this.formatDealValueToText(value.value) + ' \n';
+            item +=
+                `${icon}[B] ` +
+                name +
+                ':[/B] ' +
+                this.formatDealValueToText(value.value) +
+                ' \n';
         }
         return item;
     }
@@ -237,7 +248,6 @@ export class BidInfoLayoutService {
                 return '';
         }
     }
-
 
     private formatDealValueToText(value: DealValue['value']): string {
         if (Array.isArray(value)) {
@@ -278,7 +288,10 @@ export class BidInfoLayoutService {
         rawName: string,
     ): string {
         return rawName
-            .replace(new RegExp(`^Участник\\s+${participantNumber}\\s*`, 'i'), '')
+            .replace(
+                new RegExp(`^Участник\\s+${participantNumber}\\s*`, 'i'),
+                '',
+            )
             .trim();
     }
 }

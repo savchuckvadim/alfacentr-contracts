@@ -22,7 +22,7 @@ export class OnDealInitUseCase {
     constructor(
         private readonly pbx: PBXService,
         private readonly initialContractTypeService: InitialBidTypeService,
-    ) { }
+    ) {}
     async init(domain: string) {
         const { bitrix } = await this.pbx.init(domain);
         const bxDealService = new BxDealService();

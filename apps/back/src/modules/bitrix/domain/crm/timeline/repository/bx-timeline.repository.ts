@@ -5,6 +5,7 @@ import {
     EBxMethod,
 } from 'src/modules/bitrix/core';
 import { IBXTimelineComment } from '../interface/bx-timeline.interface';
+import { IBXTimelineItemPin } from '../interface/bx-timeline-pin.interface';
 
 export class BxTimelineRepository {
     constructor(private readonly bxApi: BitrixBaseApi) {}
@@ -23,6 +24,14 @@ export class BxTimelineRepository {
             EBXEntity.TIMELINE_COMMENT,
             EBxMethod.ADD,
             { fields: data },
+        );
+    }
+    async pin(data: IBXTimelineItemPin) {
+        return await this.bxApi.callType(
+            EBxNamespace.CRM,
+            EBXEntity.TIMELINE_ITEM,
+            EBxMethod.PIN,
+            data,
         );
     }
 }

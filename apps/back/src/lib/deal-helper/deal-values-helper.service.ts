@@ -12,12 +12,12 @@ export interface DealValue {
     bitrixId: string;
     name: string;
     value:
-    | string
-    | number
-    | boolean
-    | DealValueListItem
-    | DealValueListItem[]
-    | string[];
+        | string
+        | number
+        | boolean
+        | DealValueListItem
+        | DealValueListItem[]
+        | string[];
     listItem?: DealValueListItem | DealValueListItem[];
 }
 
@@ -38,8 +38,8 @@ export class DealFieldValuesHelperService {
                 deal[field.bitrixId] === '0'
                     ? 'Нет'
                     : deal[field.bitrixId] === '1'
-                        ? 'Да'
-                        : deal[field.bitrixId];
+                      ? 'Да'
+                      : deal[field.bitrixId];
 
             if (this.isValidValue(dealValue)) {
                 const result = this.createDealValue(field, dealValue);
@@ -154,9 +154,9 @@ export class DealFieldValuesHelperService {
         for (const key in searchedElement) {
             if (
                 deal[
-                fieldsTemplate[BxDealDataKeys.participants][
-                    participantNumber
-                ][key].bitrixId
+                    fieldsTemplate[BxDealDataKeys.participants][
+                        participantNumber
+                    ][key].bitrixId
                 ]
             ) {
                 hasAnyDataInParticipant = true;

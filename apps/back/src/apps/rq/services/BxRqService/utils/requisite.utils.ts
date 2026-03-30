@@ -198,7 +198,6 @@ export const updatePresetIds = (
     requisites: BXRequisiteDTO[],
     preset: PresetConfig,
 ): void => {
-  
     for (const rq of requisites) {
         if (rq.PRESET_ID === PresetId.ORG) {
             rq.PRESET_ID = preset.org;

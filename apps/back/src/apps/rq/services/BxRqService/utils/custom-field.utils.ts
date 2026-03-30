@@ -32,7 +32,7 @@ export const processCustomFieldResult = (
     resultValue: any,
     fieldValue: any,
 ): CustomField => {
-    const customField = resultValue as any;
+    const customField = resultValue;
     customField.EDIT_FORM_LABEL =
         customField.EDIT_FORM_LABEL?.ru || customField.EDIT_FORM_LABEL;
     customField.value = fieldValue;

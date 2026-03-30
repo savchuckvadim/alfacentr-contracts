@@ -52,7 +52,7 @@ export class AlfaBxProductsController {
             // "=active": "Y",
             iblockId: 24,
             // '%name': prefix as string,
-            [`%${bxProductData.NAME_BID.bitrixId}`]: detailText as string,
+            [`%${bxProductData.NAME_BID.bitrixId}`]: detailText,
             // '%detailText': detailText as string
             // [`=${bxProductData.PREFIX.bitrixId}`]: (prefix as string)
             // 'property172': prefix

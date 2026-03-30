@@ -16,11 +16,13 @@ class IValidateCheckPhoneDto {
 export class ValidateCheckController {
     @Post('email')
     async email(@Body() dto: IValidateCheckEmailDto) {
+        console.log('dto', dto);
         return true;
     }
 
     @Post('phone')
     async phone(@Body() dto: IValidateCheckPhoneDto) {
+        console.log('dto', dto);
         return true;
     }
 }

@@ -13,6 +13,7 @@ export class QueueDispatcherService {
 
     constructor(
         @InjectQueue(QueueNames.DOCUMENT) private readonly documentQueue: Queue,
+        @InjectQueue(QueueNames.DOCUMENT_EMAIL) private readonly documentEmailQueue: Queue,
         @InjectQueue(QueueNames.DOCUMENT_NUMBER)
         private readonly documentNumberQueue: Queue,
         @InjectQueue(QueueNames.DOCUMENT_NUMBER_BY_PREFIX)
@@ -51,6 +52,8 @@ export class QueueDispatcherService {
                 return this.eventQueue;
             case QueueNames.DOCUMENT:
                 return this.documentQueue;
+            case QueueNames.DOCUMENT_EMAIL:
+                return this.documentEmailQueue;
             case QueueNames.DOCUMENT_NUMBER:
                 return this.documentNumberQueue;
             case QueueNames.DOCUMENT_NUMBER_BY_PREFIX:
@@ -68,9 +71,7 @@ export class QueueDispatcherService {
                 return this.serviceDealsQueue;
 
             default:
-                const error = `Unknown queue name: ${name}`;
-                this.logger.error(error);
-                throw new Error(error);
+                throw new Error(`Unknown queue name: ${name}`);
         }
     }
 }

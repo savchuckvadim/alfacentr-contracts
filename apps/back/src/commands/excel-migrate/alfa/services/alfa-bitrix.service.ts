@@ -281,7 +281,7 @@ export class AlfaBitrixService {
             StorageType.PRIVATE,
             'doubles',
         );
-        return buffer as Buffer;
+        return buffer;
     }
 
     private async getMigratedExcel(
@@ -374,6 +374,6 @@ export class AlfaBitrixService {
             StorageType.PRIVATE,
             'migrated',
         );
-        return buffer as Buffer;
+        return buffer;
     }
 }

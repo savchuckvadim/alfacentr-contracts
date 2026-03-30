@@ -1,6 +1,5 @@
-import { BXRQ, EvsRqItem, RQ_TYPE } from '@workspace/bx-rq';
+import { EvsRqItem, RQ_TYPE } from '@workspace/bx-rq';
 import { BxClientRqService } from './bx-client-rq.service';
-import { PROVIDER_RQ_CONST } from '../../consts/provider-rq.const';
 import { DocumentRqAgent } from '../../model/slice/DocumentRqSlice';
 
 export class ContractRqService {

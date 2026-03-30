@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { BxFileRepository } from './bx-file.repository';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { BitrixBaseApi } from '../../core';
 
 @Injectable()
 export class BxFileService {
+    private readonly logger = new Logger(BxFileService.name);
     private repo: BxFileRepository;
     clone(api: BitrixBaseApi): BxFileService {
         const instance = new BxFileService();
@@ -17,7 +18,12 @@ export class BxFileService {
     }
 
     public async getFile(id: number) {
-        return await this.repo.get(id);
+        try {
+            return await this.repo.get(id);
+        } catch (error) {
+            this.handleError(error);
+            throw error;
+        }
     }
 
     public async downloadBitrixFileAndConvertToBase64(
@@ -28,7 +34,9 @@ export class BxFileService {
             const response = await axios.get(url, {
                 responseType: 'arraybuffer', // 👈 обязательно!
             });
-            const contentDisposition = response.headers['content-disposition'];
+            const contentDisposition = response.headers[
+                'content-disposition'
+            ] as string | undefined;
             const filename =
                 this.getFilenameFromDisposition(contentDisposition) ||
                 `${name}.docx`;
@@ -39,15 +47,17 @@ export class BxFileService {
 
             return [filename, base64];
         } catch (error) {
-            console.log('error');
-            console.log(error);
+            this.handleError(error);
             throw error;
         }
     }
 
-    private getFilenameFromDisposition(header: string): string | undefined {
+    private getFilenameFromDisposition(header?: string): string | undefined {
+        if (!header) {
+            return undefined;
+        }
         // Пробуем сначала filename*=utf-8''
-        const utf8Match = header.match(/filename\*\=utf-8''([^;]+)/i);
+        const utf8Match = header.match(/filename\*=utf-8''([^;]+)/i);
         if (utf8Match) {
             return decodeURIComponent(utf8Match[1]);
         }
@@ -59,5 +69,28 @@ export class BxFileService {
         }
 
         return undefined;
+    }
+
+    private handleError(error: unknown) {
+        if (axios.isAxiosError(error)) {
+            const axiosError = error as AxiosError<unknown>;
+            const status = axiosError.response?.status;
+            const statusText = axiosError.response?.statusText;
+            const method = axiosError.config?.method?.toUpperCase();
+            const requestUrl = axiosError.config?.url ?? 'unknown';
+            const responseData =
+                typeof axiosError.response?.data === 'string'
+                    ? axiosError.response.data
+                    : JSON.stringify(axiosError.response?.data ?? null);
+
+            this.logger.error(
+                `Bitrix file failed: ${method ?? 'GET'} ${requestUrl} -> ${status ?? 'NO_STATUS'} ${statusText ?? ''}`.trim(),
+            );
+            this.logger.error(`Bitrix response payload: ${responseData}`);
+
+            throw new Error(
+                `Bitrix file  failed (${status ?? 'NO_STATUS'}) for ${requestUrl}`,
+            );
+        }
     }
 }

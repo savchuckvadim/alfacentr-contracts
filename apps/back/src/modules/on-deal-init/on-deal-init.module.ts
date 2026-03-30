@@ -18,4 +18,4 @@ import { InitialBidTypeService } from '../../lib/deal-helper/initial-contract-ty
     ],
     exports: [GetDealBidItemsUseCase],
 })
-export class OnDealInitModule { }
+export class OnDealInitModule {}

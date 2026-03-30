@@ -18,9 +18,7 @@ export interface BxProductRowWithProduct extends IBXProductRowRow {
 }
 
 interface IBitrixBatchResponseResultProduct {
-
-    product: IBXProduct
-
+    product: IBXProduct;
 }
 const select = [
     'iblockId',
@@ -48,7 +46,7 @@ const select = [
     bxProductData.NAME_BID.bitrixId,
 ];
 export class BxProductRowBatchService {
-    constructor(private readonly bitrix: BitrixService) { }
+    constructor(private readonly bitrix: BitrixService) {}
 
     public async getDealProductRowsWithProducts(dealId: string) {
         const productRows = await this.getDealProductRows(dealId);
@@ -77,7 +75,6 @@ export class BxProductRowBatchService {
             );
         });
         const response = await this.bitrix.api.callBatchWithConcurrency(1);
-
 
         const rowsWithProducts = this.prepareRowToRowWithProduct(
             productRows,
@@ -175,7 +172,7 @@ export class BxProductRowBatchService {
             let product: IBXProduct | null = null;
             responses.map((response) => {
                 const resultKey = row.id?.toString() || index.toString();
-                product = response.result[resultKey].product as IBXProduct;
+                product = response.result[resultKey].product;
             });
             if (product) {
                 const resultRow = {

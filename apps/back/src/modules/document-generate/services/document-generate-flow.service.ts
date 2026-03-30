@@ -6,24 +6,30 @@ import {
     currentDocumentFields,
     EContractType,
     EnumDealCurrentDocumentFieldCode,
-    IPpkDocumentApplicationData,
 } from '@alfa/entities';
-import { delay } from '@/lib';
+
 import { PpkApplicationGenerateService } from './ppk-application-generate.service';
-import { EmailService } from './email.service';
 import { TelegramService } from '@/modules/telegram/telegram.service';
-import { BxTimelineService } from './bx-timeline.service';
+import { BxTimelineService } from '../../flow/timeline-flow/bx-timeline.service';
 import { BxBatchDocumentSendService } from './bx-document-send.service';
 import { DocumentGenerateDocService } from './document-generate-doc.service';
 import { DocumentGeneratePdfService } from './document-generate-pdf.service';
 import { StorageService } from '@/core/storage';
 import { IBitrixBatchResponseResult } from '@/modules/bitrix/core/interface/bitrix-api.intterface';
-import { IBXContact } from '@/modules/bitrix';
+import { BxDealStageFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-stage-flow.service';
+import { EmailDocumentFlowService } from '@/modules/flow/email-flow/email-document-flow.service';
+import { BxDealContactFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-contact-flow.service';
+import { IRequestDocumentGenerateResponse } from '../type/request-document-generate.type';
+import { BitrixService } from '@/modules/bitrix';
+import { BxDiskFlowService } from '@/modules/flow/disk-flow/bx-disk-flow.service';
+import { delay } from '@/lib';
 
 export class DocumentGenerateFlowService {
-    // private bitrix: BitrixService;
+    private bitrix: BitrixService;
+    private dealId: number;
     private filesForSend: [string, string][] = [];
     private userId: number;
+    private companyName: string = 'Компания без названия';
     private bxTimelineService: BxTimelineService;
     private bxDocumentSendService: BxBatchDocumentSendService;
     private documentGenerateDocService: DocumentGenerateDocService;
@@ -38,37 +44,23 @@ export class DocumentGenerateFlowService {
 
     async generateDocument(dto: DocumentGenerateDto) {
         const { bitrix } = await this.pbxService.init('alfacentr.bitrix24.ru');
+        this.companyName = dto.companyName || 'Компания без названия';
+        this.bitrix = bitrix;
+        const dealId = Number(dto.dealId);
+        this.dealId = dealId;
+        const dealService = new BxDealStageFlowService(bitrix, dealId);
+        const contactService = new BxDealContactFlowService(bitrix, dealId);
+        const bxDiskFlowService = new BxDiskFlowService(bitrix, dealId);
         // this.bitrix = bitrix;
         this.userId = dto.userId;
-        const contactResponse = await bitrix.contact.getList({
-            'EMAIL': dto.email.email || '',
+
+        const contactResult = await contactService.flow({
+            email: dto.email.email || '',
+            name: dto.email.name || '',
+            phone: dto.email.phone || '',
+            userId: dto.userId,
         });
-
-
-
-        const contact = (contactResponse.result?.[0] || null) as IBXContact | null;
-        let contactId = null as number | null;
-
-        if (!contact) {
-            const contactAddResponse = await bitrix.contact.set({
-                RESPONSIBLE_ID: this.userId,
-                NAME: dto.email.name || '',
-                EMAIL: [{ VALUE: dto.email.email || '', TYPE: 'WORK' }],
-                PHONE: [{ VALUE: dto.email.phone || '', TYPE: 'WORK' }],
-                DEAL_ID: dto.dealId,
-            });
-            const createdContactId = contactAddResponse.result;
-
-            contactId = Number(createdContactId);
-        } else {
-            contactId = Number((contact as IBXContact).ID) as number;
-        }
-         await bitrix.deal.contactItemsGet(dto.dealId);
-
-
-        await bitrix.deal.contactItemsSet(dto.dealId, [contactId]);
-
-
+        const contactId = contactResult.contactId;
 
         const entityId = Number(dto.dealId);
         this.bxTimelineService = new BxTimelineService(
@@ -97,7 +89,6 @@ export class DocumentGenerateFlowService {
             bitrix,
             this.filesForSend,
         );
-
 
         const contractTemplateContentData =
             this.documentContractFieldsService.getContractFields(
@@ -148,29 +139,45 @@ export class DocumentGenerateFlowService {
             '✅ Документы сгенерированы',
             'success',
         ));
+        await delay(1000)
+        //обновление стадии сделки
+        void (await dealService.changeStageFromDocument());
+
+        //test upload files to bitrix disk
+        const { folderUrl } = await bxDiskFlowService.upload(this.filesForSend);
+
+        if (folderUrl) {
+            await delay(500)
+            await this.bxTimelineService.setTimelineDocumentPin(folderUrl);
+
+        }
+
+
 
         let mailResult: any = null;
         if (dto.email.needEmail && dto.email.email) {
-        
-            await delay(1100);
-            void (await this.bxTimelineService.send(
-                '⌛ Отправка email...',
-                'email',
-            ));
-
-            const emailService = new EmailService(
+            await delay(1000)
+            const emailDocumentFlowService = new EmailDocumentFlowService(
                 bitrix,
-                this.filesForSend,
-                dto.email.email,
-                dto.email.name || '',
-                dto.email.phone || '',
-                dto.documentPrefixNumber,
-                '',
-                dto.dealId,
-                dto.userEmail,
-                contactId,
+                this.bxTimelineService,
+                Number(dealId),
             );
-            mailResult = await emailService.send();
+            const emailDocumentFlowResult = await emailDocumentFlowService.flow(
+                {
+                    filesForSend: this.filesForSend,
+                    email: dto.email.email,
+                    name: dto.email.name || '',
+                    phone: dto.email.phone || '',
+                    documentPrefixNumber: dto.documentPrefixNumber,
+                    userName: dto.userName || '',
+                    userId: dto.userId.toString(),
+                    companyName: dto.companyName || '',
+                    contactId: contactId,
+                    edoComment: dto.edoComment || '',
+                    needEdoEmail: true,
+                },
+            );
+            mailResult = emailDocumentFlowResult;
         } else {
             void (await this.bxTimelineService.send(
                 '📄 Email не будет отправлен. Только формирование документов',
@@ -188,10 +195,11 @@ export class DocumentGenerateFlowService {
 
     protected prepareResult(results: IBitrixBatchResponseResult[]) {
         const result = results[0].result;
-        const updResult =
-            result[EnumDealCurrentDocumentFieldCode.CURRENT_ACT_WITH_PT];
-        const updNumber = updResult.document.number;
+        const updResult = result[
+            EnumDealCurrentDocumentFieldCode.CURRENT_ACT_WITH_PT
+        ] as { document: IRequestDocumentGenerateResponse };
 
         return updResult;
     }
+
 }

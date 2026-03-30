@@ -19,19 +19,7 @@ export class BxFieldsService {
             batchResult,
         ) as IBXField[];
         const fields = this.prepareFields(rowResults);
-        // const filtredFields = fields.filter(field => field.name.includes('Участник 2'))
-        // console.log('BxFieldsService filtredFields')
-        // filtredFields.map(field => {
-        //     if (field.name.includes('Участник 2 Дни участия')
-        //         || field.name.includes('Участник 2 Формат участия')
-        //     ) {
-        //         console.log(field.name)
-        //         console.log(field.bitrixId)
-        //         console.log(field.type)
-        //         console.log(field.list)
-        //         console.log(field.multiple)
-        //     }
-        // })
+
         return fields;
     }
 
@@ -45,7 +33,7 @@ export class BxFieldsService {
     }
 
     private prepareFields(fields: IBXField[]): AlfaBxField[] {
-        const result = [] as any[];
+        const result = [] as AlfaBxField[];
         fields.map((field) => {
             // result.push(field)
 

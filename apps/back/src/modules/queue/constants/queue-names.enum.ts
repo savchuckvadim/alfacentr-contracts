@@ -2,6 +2,7 @@ export enum QueueNames {
     ACTIVITY = 'activity',
     EVENT = 'event',
     DOCUMENT = 'document',
+    DOCUMENT_EMAIL = 'document-email',
     DOCUMENT_NUMBER = 'document-number',
     DOCUMENT_NUMBER_BY_PREFIX = 'document-number-by-prefix',
     TELEGRAM = 'telegram',

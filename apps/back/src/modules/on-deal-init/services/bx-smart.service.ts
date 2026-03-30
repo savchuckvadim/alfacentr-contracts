@@ -8,7 +8,7 @@ export class BxSmartService {
     private bitrix: BitrixService;
     private smart: IAlfaParticipantSmartItem;
     private entityTypeId: EntityTypeIdEnum = EntityTypeIdEnum.PARTICIPANT;
-    constructor() { }
+    constructor() {}
 
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;

@@ -122,6 +122,22 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @IsNumber()
     dealId: number;
 
+    @ApiProperty({
+        description: 'Наименование компании из битрикс',
+        example: 'ООО Компания',
+    })
+    @IsOptional()
+    @IsString()
+    companyName: string;
+
+    @ApiProperty({
+        description: 'ID компании из битрикс',
+        example: 1,
+    })
+    @IsOptional()
+    @IsNumber()
+    companyId: number;
+
     @IsObject()
     @IsOptional()
     @ApiProperty({
@@ -291,38 +307,46 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @IsOptional()
     @IsObject()
     ppkApplicationData?: IPpkDocumentApplicationData;
+
+    @ApiProperty({
+        description: 'Комментарий для сотрудника ЕДО',
+        example: 'Комментарий для сотрудника ЕДО',
+    })
+    @IsOptional()
+    @IsString()
+    edoComment?: string;
 }
 
-export class DocumentGenerateEmailDto implements IRequestDocumentGenerateEmail {
-    @ApiProperty({
-        description: 'Нужно ли отправлять email',
-        example: true,
-    })
-    @IsOptional()
-    @IsBoolean()
-    needEmail?: boolean;
+// export class DocumentGenerateEmailDto implements IRequestDocumentGenerateEmail {
+//     @ApiProperty({
+//         description: 'Нужно ли отправлять email',
+//         example: true,
+//     })
+//     @IsOptional()
+//     @IsBoolean()
+//     needEmail?: boolean;
 
-    @ApiProperty({
-        description: 'Email',
-        example: 'test@test.com',
-    })
-    @IsOptional()
-    @IsString()
-    email: string;
+//     @ApiProperty({
+//         description: 'Email',
+//         example: 'test@test.com',
+//     })
+//     @IsOptional()
+//     @IsString()
+//     email: string;
 
-    @ApiProperty({
-        description: 'Телефон',
-        example: '+79999999999',
-    })
-    @IsOptional()
-    @IsString()
-    phone?: string;
+//     @ApiProperty({
+//         description: 'Телефон',
+//         example: '+79999999999',
+//     })
+//     @IsOptional()
+//     @IsString()
+//     phone?: string;
 
-    @ApiProperty({
-        description: 'Имя',
-        example: 'test',
-    })
-    @IsOptional()
-    @IsString()
-    name?: string;
-}
+//     @ApiProperty({
+//         description: 'Имя',
+//         example: 'test',
+//     })
+//     @IsOptional()
+//     @IsString()
+//     name?: string;
+// }

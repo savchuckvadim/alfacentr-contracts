@@ -6,6 +6,7 @@ export interface IRequestDocumentGenerateType {
     clientType: RQ_TYPE;
     contractType: EContractType;
     dealId: number;
+    companyName: string;
     header: string;
     paragraph: string;
     totalSum: string;

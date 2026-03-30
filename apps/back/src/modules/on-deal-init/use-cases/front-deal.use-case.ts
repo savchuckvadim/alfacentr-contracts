@@ -16,7 +16,7 @@ export class FrontDealUseCase {
     constructor(
         private readonly pbx: PBXService,
         private readonly redisService: RedisService,
-    ) { }
+    ) {}
     async init(domain: string) {
         const { bitrix } = await this.pbx.init(domain);
 

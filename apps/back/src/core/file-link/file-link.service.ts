@@ -23,7 +23,6 @@ export class FileLinkService {
             | 'offer'
             | 'provider/stamp'
             | 'provider/logo'
-            | 'offer'
             | 'contract'
             | 'supply',
         year: string,
@@ -48,7 +47,6 @@ export class FileLinkService {
             | 'offer'
             | 'provider/stamp'
             | 'provider/logo'
-            | 'offer'
             | 'contract'
             | 'supply',
         year: string,

@@ -14,7 +14,7 @@ export const useEditParticipant = (participantId: number) => {
     const products = useAppSelector(state => state.product.items);
     const seminarProducts = products.filter(product => getIsSeminarProduct(product));
     const daysSelectBySeminarProducts = seminarProducts.map(product => getProductFieldByCodeValue(product, 'NAME_BID')?.value);
-    debugger
+
 
     const {
         name,

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { GetRqUseCase } from './use-cases/get-rq.use-case';
 import { StoreRqUseCase } from './use-cases/store-rq.use-case';
@@ -47,7 +47,6 @@ export class RqController {
         | StoreRqAddressResponseDto
         | StoreRqBankResponseDto
     > {
-        
         const result = await this.storeRqUseCase.execute(body);
 
         return { data: result };

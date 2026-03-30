@@ -1,4 +1,3 @@
-
 import { BxContactRepository } from '../repository/bx-contact.repository';
 import { BitrixBaseApi } from 'src/modules/bitrix/core/base/bitrix-base-api';
 import { IBXContact } from '../interface/bx-contact.interface';

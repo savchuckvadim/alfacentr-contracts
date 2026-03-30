@@ -65,7 +65,7 @@ export interface IBXActivity {
     DESCRIPTION?: string;
     START_TIME?: string;
     END_TIME?: string;
-    COMMUNICATIONS: BXActivityCommunication[];
+    COMMUNICATIONS?: BXActivityCommunication[];
     FILES?: BXActivityFile[] | BXActivityUploadFile[];
 }
 

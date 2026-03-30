@@ -18,8 +18,8 @@ export const getForDocumentItems = (
 ) => {
     if (!client || !provider) {
         return {
-            client: [],
-            provider: [],
+            client: [] as string[] | string[][],
+            provider: [] as string[],
         };
     }
     // Получаем ключи и фильтруем TYPE
@@ -65,8 +65,13 @@ export const getForDocumentItems = (
             }
             return null;
         })
-        .filter(value => value !== null);
-
+        .filter(value => value !== null && value !== "" && value !== undefined);
+    const normalizedClientValues = clientValues
+        .flatMap((item, itemIndex) =>
+            splitRqValueToLines(item)
+        )
+        .filter(value => value !== null && value !== "" && value !== undefined);
+    
     const providerValues = sortedProviderKeys
         .map(key => {
             if (
@@ -83,8 +88,9 @@ export const getForDocumentItems = (
         })
         .filter(value => value !== null);
 
+
     return {
-        client: clientValues,
+        client: normalizedClientValues,
         provider: providerValues,
     };
 };
@@ -111,4 +117,16 @@ const sortByEnumOrder = <T extends string>(
         // Если ни один элемент не в enum, сохраняем исходный порядок
         return 0;
     });
+};
+
+
+
+export const splitRqValueToLines = (value: unknown): string[] => {
+    if (typeof value !== 'string') return [];
+    const normalized = value
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n')
+        // превращаем \n, \\n, \\\\n и т.п. в реальный '\n'
+        .replace(/\\+n/g, '\n');
+    return normalized.split('\n');
 };

@@ -5,7 +5,7 @@ export class BxFileRepository {
     constructor(private readonly bitrixService: BitrixBaseApi) {}
 
     async get(id: number) {
-        return this.bitrixService.callType(
+        return await this.bitrixService.callType(
             EBxNamespace.DISK,
             EBXEntity.FILE,
             EBxMethod.GET,

@@ -61,6 +61,7 @@ export function setupRqListener(
                 const clientCompanyShortTitle =
                     clientRqs.clientCompanyShortTitle;
                 const clientUpdInnKpp = clientRqs.clientUpdInnKpp;
+
                 listenerApi.dispatch(
                     setClient({
                         client: clientRqs.client,

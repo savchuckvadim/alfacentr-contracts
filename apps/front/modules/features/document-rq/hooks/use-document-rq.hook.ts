@@ -12,6 +12,8 @@ export const useDocumentRq = () => {
         rqs.client?.type as RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION,
         rqs.provider as DocumentRqAgent<RQ_TYPE.ORGANIZATION>,
     );
+
+
     return {
         client: client,
         header: rqs.general.header,

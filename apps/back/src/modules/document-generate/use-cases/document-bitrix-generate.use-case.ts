@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DocumentGenerateDto } from '../dto/document-generate.dto';
 
-import { DocumentGenerateBatchService } from '../services/document-generate-batch.service';
 import { PBXService } from '@/modules/pbx';
 import { DocumentContractFieldsService } from '../services/document-contract-fields.service';
-import { PpkApplicationGenerateService } from '../services/ppk-application-generate.service';
 import { TelegramService } from '@/modules/telegram/telegram.service';
 import { StorageService } from '@/core/storage';
 import { DocumentGenerateFlowService } from '../services/document-generate-flow.service';
@@ -15,7 +13,6 @@ export class DocumentBitrixGenerateUseCase {
         private readonly storageService: StorageService,
         private readonly pbxService: PBXService,
         private readonly documentContractFieldsService: DocumentContractFieldsService,
-
         private readonly telegramService: TelegramService,
     ) {}
 

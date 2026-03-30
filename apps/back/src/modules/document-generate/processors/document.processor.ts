@@ -8,6 +8,7 @@ import { DocumentBitrixGenerateUseCase } from '../use-cases/document-bitrix-gene
 import { DocumentGenerateDto } from '../dto/document-generate.dto';
 import { TelegramService } from '@/modules/telegram/telegram.service';
 
+
 @Processor(QueueNames.DOCUMENT)
 export class DocumentGenerateQueueProcessor {
     private readonly logger = new Logger(QueueNames.DOCUMENT);

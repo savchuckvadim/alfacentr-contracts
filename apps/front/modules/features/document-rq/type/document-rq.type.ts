@@ -1,4 +1,3 @@
-import { RQ_TYPE } from '@workspace/bx-rq';
 
 export enum EnumFizRqFields {
     INN = 'inn',

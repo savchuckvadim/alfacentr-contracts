@@ -1,10 +1,9 @@
 import { BitrixActivityTypeId } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 import { BitrixService } from '@/modules/bitrix/bitrix.service';
-import {
-    GetDealBidItemsUseCase,
-} from '@/modules/on-deal-init/use-cases/get-deal-bid-items.use-case';
+import { GetDealBidItemsUseCase } from '@/modules/on-deal-init/use-cases/get-deal-bid-items.use-case';
 import { BitrixOwnerTypeId } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 import { IBXActivity } from '@/modules/bitrix/domain/activity/interfaces/bx-activity.interface';
+import { EmployeeEdoService } from '@/common/employee-edo/employee-edo.service';
 
 //документы в email
 // юр лицо:
@@ -19,6 +18,7 @@ import { IBXActivity } from '@/modules/bitrix/domain/activity/interfaces/bx-acti
 // приложение 1  doc
 // акт об оказании услуг doc
 
+// const baseUrl = process.env.BASE_URL || 'https://alfacentr.bitrix24.ru/';
 export class EmailServiceInitDto {
     filesForSend: [string, string][] = [];
     email: string;
@@ -29,23 +29,40 @@ export class EmailServiceInitDto {
     bid: string;
     userEmail: string;
 }
-export class EmailService {
+export class EmailServiceOld {
     private bidService: GetDealBidItemsUseCase;
+    private readonly edoEmployeeId: string;
+    private readonly edoEmployeeName: string;
+    private readonly edoEmployeeEmail: string;
+    private readonly needEdoEmail: boolean;
     constructor(
         private readonly bitrix: BitrixService,
         private readonly filesForSend: [string, string][] = [],
         private readonly email: string,
         private readonly name: string,
         private readonly phone: string,
-        private readonly subject: string,
-        private readonly body: string,
+        private readonly documentPrefixNumber: string,
         private readonly dealId: number,
+        private readonly companyName: string,
         private readonly userEmail: string,
+        private readonly userName: string = '',
+        private readonly userId: string,
         private readonly contactId: number,
+        private readonly edoComment: string,
     ) {
         this.bidService = new GetDealBidItemsUseCase(this.bitrix);
-    }
+        const employeeEdoService = new EmployeeEdoService();
 
+        const {
+            id: edoEmployeeId,
+            name: edoEmployeeName,
+            email: edoEmployeeEmail,
+        } = employeeEdoService.getEmployeeEdoInfo();
+        this.edoEmployeeId = edoEmployeeId;
+        this.edoEmployeeName = edoEmployeeName;
+        this.edoEmployeeEmail = edoEmployeeEmail;
+        console.log('edoEmployeeId', this.edoEmployeeId);
+    }
     async send() {
         const entityId = this.dealId;
 
@@ -58,12 +75,12 @@ export class EmailService {
             OWNER_ID: entityId,
             TYPE_ID: BitrixActivityTypeId.EMAIL,
             DIRECTION: 2, // 1 - incoming, 2 - outgoing
-            RESPONSIBLE_ID: '502',
+            RESPONSIBLE_ID: this.userId.toString(),
             CONTACT_ID: this.contactId,
             SETTINGS: {
                 MESSAGE_FROM: `Альфацентр <${this.userEmail}>`,
             },
-            SUBJECT: `Документы на согласование Договор №${this.subject} от ООО "Альфацентр"`,
+            SUBJECT: `Документы на согласование Договор №${this.documentPrefixNumber} от ООО "Альфацентр"`,
             DESCRIPTION: body,
             COMPLETED: 'Y',
             DESCRIPTION_TYPE: 3,
@@ -83,10 +100,10 @@ export class EmailService {
             })),
         } as IBXActivity;
 
-        console.log('sendData', sendData);
-        const activityResponse =
-            await this.bitrix.activity.createActivity(sendData);
-        console.log('activityResponse', activityResponse);
+
+
+        await this.bitrix.activity.createActivity(sendData);
+
     }
 
     async getEmailHtmlBody(): Promise<string> {
@@ -129,9 +146,7 @@ export class EmailService {
     }
 
     private async getBidHtml(): Promise<string> {
-        const bid = await this.bidService.getItems(
-            this.dealId
-        );
+        const bid = await this.bidService.getItems(this.dealId);
         return bid;
         // return `
         // Наименование учреждения: АДМИНИСТРАЦИЯ ВОРОГОВСКОГО СЕЛЬСОВЕТА

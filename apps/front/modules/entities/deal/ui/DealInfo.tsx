@@ -1,17 +1,30 @@
 'use client';
 
 import { useAppSelector } from '@/modules/app/lib/hooks/redux';
+import { useIsUpContractType } from '@/modules/features';
 import { SimpleCard } from '@/modules/shared';
-import { BxParticipantsDataKeys } from '@alfa/entities';
 
+const getBooleanFieldValue = (value: string | number | string[] | number[]) => {
+    return value === '0' || value === 0 ? 'Нет' : value === '1' || value === 1 ? 'Да' : value;
+};
 export const DealInfo = () => {
     const { dealData } = useAppSelector(state => state.deal);
-
+    const { isUp } = useIsUpContractType();
+    console.log(isUp);
     return (
         <div>
             <SimpleCard title="Заявка">
                 {dealData?.map(field => {
-                    let value = field.value;
+                    const group = field.group
+
+                    if(group === 'up' && !isUp) {
+                        return null;
+                    }
+                    if(group === 'seminar' && isUp) {
+                        return null;
+                    }
+                    debugger
+                    let value = getBooleanFieldValue(field.value);
                     if (
                         !Array.isArray(field.value) &&
                         field.type === 'enumeration' &&
@@ -19,11 +32,11 @@ export const DealInfo = () => {
                         field.list &&
                         field.list.length > 0
                     ) {
-                        if (
-                            field.code === BxParticipantsDataKeys.format ||
-                            field.code === BxParticipantsDataKeys.format_v2
-                        ) {
-                        }
+                        // if (
+                        //     field.code === BxParticipantsDataKeys.format ||
+                        //     field.code === BxParticipantsDataKeys.format_v2
+                        // ) {
+                        // }
                         value =
                             field.list.find(
                                 item => item.bitrixId === field.value,

@@ -45,7 +45,7 @@ export const getDealFieldsData = async (
         }
         const typedKey = key as BxDealDataKeys;
 
-        const currentFieldData = BxDealData[typedKey] as TFieldSelect | TField;
+        const currentFieldData = BxDealData[typedKey as keyof TDealData] as TFieldSelect | TField;
         const bitrixId = currentFieldData.bitrixId;
         const field = {
             ...currentFieldData,

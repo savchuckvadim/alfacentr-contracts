@@ -94,7 +94,6 @@ export class RequisiteMapperService {
             current: current,
         });
 
-      
         return result;
     }
 

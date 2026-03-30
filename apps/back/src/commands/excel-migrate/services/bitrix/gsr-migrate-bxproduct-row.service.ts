@@ -9,9 +9,7 @@ import { BitrixOwnerType } from 'src/modules/bitrix/domain/enums/bitrix-constant
 @Injectable()
 export class GsrMigrateBitrixProductRowService extends GsrMigrateBitrixAbstract {
     getProductRowCommand(element: MigrateToBxDto, dealCommandCode: string) {
-        const pMeasure = this.portal.getMeasureByCode(
-            'month',
-        ) as IPPortalMeasure;
+        const pMeasure = this.portal.getMeasureByCode('month');
 
         const productRowCommandCode = `${EBxNamespace.CRM_ITEM}.${EBXEntity.PRODUCT_ROW}.${EBxMethod.SET}.${element.id}`;
         const productTotal = {
@@ -34,9 +32,7 @@ export class GsrMigrateBitrixProductRowService extends GsrMigrateBitrixAbstract 
     }
 
     getProductRowCommandById(element: MigrateToBxDto, dealId: string) {
-        const pMeasure = this.portal.getMeasureByCode(
-            'month',
-        ) as IPPortalMeasure;
+        const pMeasure = this.portal.getMeasureByCode('month');
 
         const productRowCommandCode = `${EBxNamespace.CRM_ITEM}.${EBXEntity.PRODUCT_ROW}.${EBxMethod.SET}.${element.id}`;
         const productTotal = {

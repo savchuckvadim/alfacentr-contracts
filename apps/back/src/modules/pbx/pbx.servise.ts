@@ -1,4 +1,3 @@
-import { BitrixService } from '../bitrix/bitrix.service';
 import { PortalService } from '../portal/portal.service';
 import { Injectable } from '@nestjs/common';
 import { BitrixServiceFactory } from '../bitrix/bitrix-service.factory';

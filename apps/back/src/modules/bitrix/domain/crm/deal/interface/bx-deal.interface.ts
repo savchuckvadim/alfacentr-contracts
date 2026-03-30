@@ -1,5 +1,23 @@
+export interface IDealFileForUpload {
+    fileData: [string, string];
+}
+
+export interface IDealFileForDownload {
+    id: number;
+    downloadUrl: string;
+    showUrl: string;
+}
+
 export interface IBXDeal {
-    [key: string]: string | number | string[] | number[] | boolean | undefined;
+    [key: string]:
+        | string
+        | number
+        | string[]
+        | number[]
+        | boolean
+        | undefined
+        | IDealFileForUpload
+        | IDealFileForDownload;
     ID: number;
     TITLE: string;
     CONTACT_IDS?: string[] | number[];

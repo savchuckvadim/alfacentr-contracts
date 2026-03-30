@@ -1,6 +1,7 @@
 import { BxTimelineRepository } from '../repository/bx-timeline.repository';
 import { IBXTimelineComment } from '../interface/bx-timeline.interface';
 import { BitrixBaseApi } from 'src/modules/bitrix/core/base/bitrix-base-api';
+import { IBXTimelineItemPin } from '../interface/bx-timeline-pin.interface';
 
 export class BxTimelineService {
     private repo: BxTimelineRepository;
@@ -17,5 +18,8 @@ export class BxTimelineService {
 
     async addTimelineComment(data: IBXTimelineComment) {
         return await this.repo.addTimelineComment(data);
+    }
+    async pin(data: IBXTimelineItemPin) {
+        return await this.repo.pin(data);
     }
 }

@@ -39,7 +39,7 @@ const select = [
     bxProductData.NAME_BID.bitrixId,
 ];
 export class AlfaProductService {
-    constructor(private readonly bitrix: BitrixService) { }
+    constructor(private readonly bitrix: BitrixService) {}
 
     //TODO: убрать вообще этот метод уп товары не добавляем
 
@@ -105,7 +105,7 @@ export class AlfaProductService {
                     const filter = {
                         // "=active": "Y",
                         iblockId: 24,
-                        '%name': prefix as string,
+                        '%name': prefix,
                         // [`=${bxProductData.SEMINAR_TOPIC.bitrixId}`]:
                         //     value.value as string,
                         [`%${bxProductData.NAME_BID.bitrixId}`]:

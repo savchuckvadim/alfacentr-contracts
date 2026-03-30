@@ -2,7 +2,7 @@ import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import { StorageService, StorageType } from '@/core/storage';
 import { IPpkDocumentApplicationData } from '@alfa/entities';
-import { BxTimelineService } from './bx-timeline.service';
+import { BxTimelineService } from '../../flow/timeline-flow/bx-timeline.service';
 import { BitrixService } from '@/modules/bitrix/';
 
 export class PpkApplicationGenerateService {
@@ -11,7 +11,7 @@ export class PpkApplicationGenerateService {
         private readonly bxTimelineService: BxTimelineService,
         private readonly bitrix: BitrixService,
         private readonly filesForSend: [string, string][] = [],
-    ) {}
+    ) { }
 
     public async getPpkApplicationFile(
         entityId: number,
@@ -29,29 +29,31 @@ export class PpkApplicationGenerateService {
                     await this.generateDocxBase64(ppkApplicationData);
                 void (await this.bitrix.deal.update(entityId, {
                     [`${currentPpkApplicationBitrixId}`]: {
-                        // @ts-ignore
                         fileData: ppkApplicationFileData,
                     },
                 }));
-                const updtdDeal = await this.bitrix.deal.get(entityId, [
-                    `${currentPpkApplicationBitrixId}`,
-                ]);
+                // const updtdDeal = await this.bitrix.deal.get(entityId, [
+                //     `${currentPpkApplicationBitrixId}`,
+                // ]);
                 this.filesForSend.push(ppkApplicationFileData);
 
-                //@ts-ignore
-                const url = updtdDeal.result[currentPpkApplicationBitrixId]?.downloadUrl as string;
+                // const url = (
+                //     updtdDeal.result[
+                //         currentPpkApplicationBitrixId
+                //     ] as IDealFileForDownload
+                // )?.downloadUrl;
 
-                if (url) {
-                    void (await this.bxTimelineService.send(
-                        `📜<a href="${url}"> Приложение ППК сгенерировано №${ppkApplicationData.document_number}</a>`,
-                        'ppk',
-                    ));
-                } else {
-                    void (await this.bxTimelineService.send(
-                        '❌ Произошла ошибка: Приложение ППК не сгенерировано',
-                        'error',
-                    ));
-                }
+                // if (url) {
+                //     void (await this.bxTimelineService.send(
+                //         `📜<a href="${url}"> Приложение ППК сгенерировано №${ppkApplicationData.document_number}</a>`,
+                //         'ppk',
+                //     ));
+                // } else {
+                //     void (await this.bxTimelineService.send(
+                //         '❌ Произошла ошибка: Приложение ППК не сгенерировано',
+                //         'error',
+                //     ));
+                // }
             } else {
                 void (await this.bxTimelineService.send(
                     '❌ Произошла ошибка: Приложение ППК не сгенерировано',
@@ -59,6 +61,7 @@ export class PpkApplicationGenerateService {
                 ));
             }
         } catch (error) {
+            console.error(error);
             void (await this.bxTimelineService.send(
                 '❌ Произошла ошибка: Приложение ППК не сгенерировано',
                 'error',

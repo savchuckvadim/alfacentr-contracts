@@ -194,64 +194,64 @@ export const BxDealData: TDealData = {
         value: '' as string,
     },
 
-    [BxDealDataKeys.seminar_format]: {
-        id: '8322',
-        bitrixId: 'UF_CRM_1743997299',
-        type: 'enumeration',
-        list: [
-            {
-                bitrixId: '17822',
-                name: 'Семинар',
-                sort: '10',
-            },
-            {
-                bitrixId: '17824',
-                name: 'ППК',
-                sort: '20',
-            },
-            {
-                bitrixId: '17826',
-                name: 'Семинар + ППК',
-                sort: '30',
-            },
-            {
-                bitrixId: '17828',
-                name: 'УП',
-                sort: '40',
-            },
-        ],
-        name: 'Форма регистрации',
-        code: BxDealDataKeys.seminar_format,
-        multiple: false,
-        mandatory: false,
-        group: 'seminar',
-        value: '' as string,
-    },
+    // [BxDealDataKeys.seminar_format]: {
+    //     id: '8322',
+    //     bitrixId: 'UF_CRM_1743997299',
+    //     type: 'enumeration',
+    //     list: [
+    //         {
+    //             bitrixId: '17822',
+    //             name: 'Семинар',
+    //             sort: '10',
+    //         },
+    //         {
+    //             bitrixId: '17824',
+    //             name: 'ППК',
+    //             sort: '20',
+    //         },
+    //         {
+    //             bitrixId: '17826',
+    //             name: 'Семинар + ППК',
+    //             sort: '30',
+    //         },
+    //         {
+    //             bitrixId: '17828',
+    //             name: 'УП',
+    //             sort: '40',
+    //         },
+    //     ],
+    //     name: 'Форма регистрации',
+    //     code: BxDealDataKeys.seminar_format,
+    //     multiple: false,
+    //     mandatory: false,
+    //     group: 'seminar',
+    //     value: '' as string,
+    // },
 
     //TODO: походу больше не используем
-    [BxDealDataKeys.seminar_up_packet]: {
-        id: '8468',
-        bitrixId: 'UF_CRM_1744363400',
-        type: 'enumeration',
-        code: BxDealDataKeys.seminar_up_packet,
-        list: [
-            {
-                bitrixId: '18038',
-                name: 'Учетная политика 2025',
-                sort: '10',
-            },
-            {
-                bitrixId: '18040',
-                name: 'Учетная политика 2024/2025',
-                sort: '20',
-            },
-        ],
-        name: 'Пакет',
-        multiple: false,
-        mandatory: false,
-        group: 'seminar',
-        value: '' as string,
-    },
+    // [BxDealDataKeys.seminar_up_packet]: {
+    //     id: '8468',
+    //     bitrixId: 'UF_CRM_1744363400',
+    //     type: 'enumeration',
+    //     code: BxDealDataKeys.seminar_up_packet,
+    //     list: [
+    //         {
+    //             bitrixId: '18038',
+    //             name: 'Учетная политика 2025',
+    //             sort: '10',
+    //         },
+    //         {
+    //             bitrixId: '18040',
+    //             name: 'Учетная политика 2024/2025',
+    //             sort: '20',
+    //         },
+    //     ],
+    //     name: 'Пакет',
+    //     multiple: false,
+    //     mandatory: false,
+    //     group: 'up',
+    //     value: '' as string,
+    // },
     [BxDealDataKeys.use_edo]: {
         id: '1074',
         bitrixId: 'UF_CRM_1688709423',
@@ -409,7 +409,7 @@ export const BxDealData: TDealData = {
         name: 'Тип учетной политики',
         multiple: false,
         mandatory: false,
-        group: 'general',
+        group: 'up',
         value: '' as string,
     },
 
@@ -438,7 +438,7 @@ export const BxDealData: TDealData = {
         name: 'Пакет УП',
         multiple: true,
         mandatory: false,
-        group: 'general',
+        group: 'up',
         value: '' as string,
     },
 
@@ -580,8 +580,8 @@ export interface TDealData {
     [BxDealDataKeys.exchange_doc_phone]: TField;
     [BxDealDataKeys.organization_type]: TFieldSelect;
     [BxDealDataKeys.organizationfiz_fio]: TField;
-    [BxDealDataKeys.seminar_format]: TFieldSelect;
-    [BxDealDataKeys.seminar_up_packet]: TFieldSelect;
+    // [BxDealDataKeys.seminar_format]: TFieldSelect;
+    // [BxDealDataKeys.seminar_up_packet]: TFieldSelect;
     [BxDealDataKeys.participants]: {
         1: (typeof BxParticipantsData)[1];
         2: (typeof BxParticipantsData)[2];

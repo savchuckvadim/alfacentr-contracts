@@ -7,7 +7,7 @@ import { EBXEntity } from '../../../../core/domain/consts/bitrix-entities.enum';
 import { IBXContact } from '../interface/bx-contact.interface';
 
 export class BxContactRepository {
-    constructor(private readonly bxApi: BitrixBaseApi) { }
+    constructor(private readonly bxApi: BitrixBaseApi) {}
 
     async get(contactId: number) {
         return this.bxApi.callType(
@@ -36,7 +36,7 @@ export class BxContactRepository {
             {
                 filter,
                 select,
-            }
+            },
         );
     }
 
@@ -53,7 +53,7 @@ export class BxContactRepository {
             {
                 filter,
                 select,
-            }
+            },
         );
     }
 

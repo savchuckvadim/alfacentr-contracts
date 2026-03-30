@@ -172,7 +172,6 @@ export class DealFieldValuesHelperService {
         dealValue: any,
     ): DealValue | null {
         if (!field.name) {
-            
             return null;
         }
 

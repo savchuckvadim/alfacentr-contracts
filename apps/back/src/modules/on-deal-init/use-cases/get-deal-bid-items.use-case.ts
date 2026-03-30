@@ -1,12 +1,12 @@
-
 import { BxDealService } from '../services/bx-deal.service';
-import {
-    DealFieldValuesHelperService,
-} from '../../../lib/deal-helper/deal-values-helper.service';
+import { DealFieldValuesHelperService } from '../../../lib/deal-helper/deal-values-helper.service';
 
 import { AlfaFieldsService } from '@/modules/alfa-fields';
 import { BitrixService } from '@/modules/bitrix';
-import { BidInfoLayoutService, GetDealBidItemsType } from '@/modules/bid-info-layout/bid-info-layout.service';
+import {
+    BidInfoLayoutService,
+    GetDealBidItemsType,
+} from '@/modules/bid-info-layout/bid-info-layout.service';
 
 export enum BitrixEntityType {
     DEAL = 'deal',
@@ -15,10 +15,9 @@ export enum BitrixEntityType {
     LEAD = 'lead',
 }
 
-
 export class GetDealBidItemsUseCase {
     // private type: GetDealBidItemsType;
-    constructor(private readonly bitrix: BitrixService) { }
+    constructor(private readonly bitrix: BitrixService) {}
 
     private async init() {
         const bxDealService = new BxDealService();
@@ -26,7 +25,6 @@ export class GetDealBidItemsUseCase {
 
         await bxDealService.init(this.bitrix);
         await alfaFieldService.init(this.bitrix);
-
 
         return {
             bxDealService,
@@ -44,11 +42,11 @@ export class GetDealBidItemsUseCase {
             deal,
             fieldData,
         );
-        const bidInfoLayoutService = new BidInfoLayoutService(GetDealBidItemsType.HTML);
+        const bidInfoLayoutService = new BidInfoLayoutService(
+            GetDealBidItemsType.HTML,
+        );
         const comment = bidInfoLayoutService.getComment(dealValues);
 
         return comment;
     }
-
-
 }

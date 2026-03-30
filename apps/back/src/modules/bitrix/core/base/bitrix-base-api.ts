@@ -344,7 +344,7 @@ export class BitrixBaseApi {
                 this.httpService.post(url, payload, this.axiosOptions),
             )) as AxiosResponse<IBitrixBatchResponse>;
 
-            const result = response.data.result as IBitrixBatchResponseResult;
+            const result = response.data.result;
             // this.logger.log(`Batch request successful: ${JSON.stringify(result)}`);
             // this.logger.log(`Domain: ${this.domain}`);
             const batchResultsCount = Object.keys(result.result).length;

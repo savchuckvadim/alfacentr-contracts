@@ -55,6 +55,7 @@ export const documentGenerate = createAsyncThunk<
 >('document/generate', async (_, { dispatch, getState, extra }) => {
     // Получаем dispatch и state из деструктуризации
     const state = getState();
+
     const { needEmail, isConfirmed } = state.communications.confirm;
 
     if (!isConfirmed) {
@@ -90,6 +91,7 @@ export const documentGenerate = createAsyncThunk<
     const contractType = state.contractType.current?.code as EContractType;
 
     const { client } = getDocumentRqs(state);
+
     const header = getDocumentHeader(state);
     const { paragraph, totalSum, paragraphItems } = state.documentParagraph;
 
@@ -103,6 +105,8 @@ export const documentGenerate = createAsyncThunk<
         clientCompanyShortTitle,
         clientUpdInnKpp,
     } = state.documentRq;
+    const companyName = state.app.bitrix.company?.TITLE || clientCompanyTitle || '__';
+    const companyId = Number(state.app.bitrix.company?.ID) || 0;
 
     const products = state.product.items;
     const productsCount = products.length;
@@ -146,16 +150,17 @@ export const documentGenerate = createAsyncThunk<
 
     const ppkApplicationData =
         contractType === EContractType.seminar_ppk ||
-        contractType === EContractType.ppk
+            contractType === EContractType.ppk
             ? getDocumentPpkApplicationData({
-                  documentPrefix: documentNumber.prefix,
-                  documentCounter: documentNumber.counter.toString(),
-                  participants: state.participantProduct.ppkDistribution,
-                  name_organization: clientCompanyTitle,
-                  position_director: clientDirectorInitials,
-                  signature_director: clientSignature,
-              })
+                documentPrefix: documentNumber.prefix,
+                documentCounter: documentNumber.counter.toString(),
+                participants: state.participantProduct.ppkDistribution,
+                name_organization: clientCompanyTitle,
+                position_director: clientDirectorInitials,
+                signature_director: clientSignature,
+            })
             : undefined;
+
 
     try {
         const sendData = {
@@ -167,6 +172,8 @@ export const documentGenerate = createAsyncThunk<
             clientType: clientType,
             contractType: contractType,
             dealId: dealId,
+            companyName,
+            companyId,
             header: header,
             paragraph: paragraph,
             totalSum: totalSum,
@@ -194,9 +201,10 @@ export const documentGenerate = createAsyncThunk<
             },
             seminarParticipantsCount: `${productsCount}`,
             ppkApplicationData,
-            edoComment
+            edoComment,
+
         } as IRequestDocumentGenerateType;
-        debugger;
+
         const response = await service.push(sendData);
     } catch (error) {
         // Используем централизованную обработку ошибок

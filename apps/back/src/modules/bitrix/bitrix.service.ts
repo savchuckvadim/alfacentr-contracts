@@ -30,6 +30,12 @@ import { BxRpaItemBatchService } from './domain/rpa/item/services/bx-rpa-item.ba
 import { BxFileService } from './domain/file/bx-file.service';
 import { ActivityService } from './domain/activity/services/bx-activity.service';
 import { BxActivityBatchService } from './domain/activity/services/bx-activity.batch.service';
+import { BxUserService } from './domain/user/services/bx-user.service';
+import {
+    BxDiskFileService,
+    BxDiskFolderService,
+    BxDiskStorageService,
+} from './domain';
 
 // @Injectable()
 export class BitrixService {
@@ -49,6 +55,12 @@ export class BitrixService {
     public smartType: BxSmartTypeService;
     public rpaItem: BxRpaItemService;
     public file: BxFileService;
+    public user: BxUserService;
+    public disk: {
+        file: BxDiskFileService;
+        storage: BxDiskStorageService;
+        folder: BxDiskFolderService;
+    };
 
     public batch = {
         activity: null as unknown as BxActivityBatchService,
@@ -84,6 +96,8 @@ export class BitrixService {
         this.initRpaItem();
         this.initFile();
         this.initActivity();
+        this.initUser();
+        this.initDisk();
     }
 
     private initDeal() {
@@ -157,5 +171,15 @@ export class BitrixService {
             BxActivityBatchService,
             this.api,
         );
+    }
+    private initUser() {
+        this.user = this.cloner.clone(BxUserService, this.api);
+    }
+    private initDisk() {
+        this.disk = {
+            file: this.cloner.clone(BxDiskFileService, this.api),
+            storage: this.cloner.clone(BxDiskStorageService, this.api),
+            folder: this.cloner.clone(BxDiskFolderService, this.api),
+        };
     }
 }
