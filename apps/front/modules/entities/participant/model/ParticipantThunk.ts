@@ -1,17 +1,12 @@
-import { bitrixInit } from '@/modules/app/lib/bitrix-init/bitrix-init.util';
 import {
-    AlfaParticipantSmartItemUserFieldsEnum,
-    EntityTypeIdEnum,
     getParticipant,
     IAlfaParticipantSmartItem,
     IParticipant,
-    IParticipantField,
 } from '@alfa/entities';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { validateApiResponse } from '@/modules/app/lib/thunk-error-handler';
 import { Bitrix } from '@bitrix/bitrix';
-import { IBXItem } from '@bitrix/domain/crm/item/interface/item.interface';
 import {
     AppDispatch,
     RootState,
@@ -91,7 +86,7 @@ export const updateParticipant = createAsyncThunk<
         state: RootState;
         extra: ThunkExtraArgument;
     }
->('participant/updateParticipant', async (_, { dispatch, getState, extra }) => {
+>('participant/updateParticipant', async (_, { getState }) => {
     try {
         // const { participantId, fields } = payload;
         const editable = getState().participant.editable;
@@ -102,7 +97,10 @@ export const updateParticipant = createAsyncThunk<
         const participantId = editable.id;
         const fields = editable.fields;
         const service = new BxItemParticipantService();
-        const itemFields = {} as { [key: string]: any };
+        const itemFields: Record<
+            string,
+            string | string[] | boolean | number | null
+        > = {};
 
         for (const field of fields) {
             itemFields[field.bitrixId] = field.value;
@@ -139,10 +137,10 @@ export const deleteParticipant = createAsyncThunk<
     }
 >(
     'participant/deleteParticipant',
-    async (participantId, { dispatch, getState, extra }) => {
+    async participantId => {
         try {
             const service = new BxItemParticipantService();
-            const bxResult = await service.deleteParticipant(participantId);
+            await service.deleteParticipant(participantId);
 
             return participantId;
         } catch (error) {
@@ -157,7 +155,7 @@ export const deleteParticipant = createAsyncThunk<
 
 export const addParticipant = createAsyncThunk<
     IParticipant,
-    Partial<IParticipantField<AlfaParticipantSmartItemUserFieldsEnum>>,
+    void,
     {
         dispatch: AppDispatch;
         state: RootState;
@@ -165,14 +163,35 @@ export const addParticipant = createAsyncThunk<
     }
 >(
     'participant/addParticipant',
-    async (fields, { dispatch, getState, extra }) => {
+    async (_, { getState }) => {
         try {
+            const state = getState();
+            const editable = state.participant.editable;
+            const dealId = state.app.bitrix.deal?.ID;
+            
+            if (!dealId) {
+                throw new Error('Нет данных для создания участника');
+            }
+
+            if (!editable) {
+                throw new Error('Нет данных для создания участника');
+            }
+
             const service = new BxItemParticipantService();
-            const bxResult = await service.addParticipant(fields);
+            const itemFields: Record<
+                string,
+                string | string[] | boolean | number | null
+            > = {};
+
+            for (const field of editable.fields) {
+                itemFields[field.bitrixId] = field.value;
+            }
+            itemFields.parentId2 = dealId; //2 значит сделка
+            const bxResult = await service.addParticipant(itemFields);
             const addedItem = getParticipant(
                 bxResult as IAlfaParticipantSmartItem,
             );
-
+            debugger
             return addedItem;
         } catch (error) {
             throw new Error(

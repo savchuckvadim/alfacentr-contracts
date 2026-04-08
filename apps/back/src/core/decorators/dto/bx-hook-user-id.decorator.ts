@@ -18,11 +18,31 @@ import {
  */
 export function IsBxHookUserId(validationOptions?: ValidationOptions) {
     return applyDecorators(
-        Transform(({ value }) => {
+        Transform(({ value, obj, key }) => {
             if (value === null || value === undefined || value === '') {
                 return value as string;
             }
-            const splitedValue = (value as string).split('_')[1];
+
+            if (typeof value === 'number') {
+                if (Number.isFinite(value)) {
+                    return value;
+                }
+                // With enableImplicitConversion query "user_123" may become NaN.
+                // Recover original raw value from source object and parse it.
+                const source = obj as Record<string, unknown> | undefined;
+                const rawValue = source?.[String(key)];
+                if (typeof rawValue === 'string') {
+                    const restored = Number(rawValue.split('_')[1]);
+                    return Number.isNaN(restored) ? value : restored;
+                }
+                return Number.isNaN(value) ? undefined : value;
+            }
+
+            if (typeof value !== 'string') {
+                return undefined;
+            }
+
+            const splitedValue = value.split('_')[1];
             if (
                 splitedValue === null ||
                 splitedValue === undefined ||

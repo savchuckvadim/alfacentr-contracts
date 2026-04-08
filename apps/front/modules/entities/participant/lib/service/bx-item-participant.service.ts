@@ -1,8 +1,6 @@
 import {
     AlfaParticipantSmartItemUserFieldsEnum,
-    BxParticipantsData,
     EntityTypeIdEnum,
-    IParticipant,
 } from '@alfa/entities';
 import { Bitrix } from '@bitrix/bitrix';
 import { BitrixService } from '@bitrix/bitrix.service';
@@ -51,10 +49,11 @@ export class BxItemParticipantService {
 
     public async addParticipant(
         fields: Partial<IBXItem>,
-    ): Promise<IBXItem | null> {
-        return await this.bitrix.item.add(
+    ): Promise<IBXItem | undefined> {
+        const response = await this.bitrix.item.add(
             EntityTypeIdEnum.PARTICIPANT as unknown as string,
             fields,
         );
+        return response?.item
     }
 }

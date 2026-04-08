@@ -26,6 +26,10 @@ const initialState = {
         base: null as EvsRqItem | null,
         address: null as AddressRqItem | null,
         bank: null as BankRqItem | null,
+        simpleBankComment: '',
+    },
+    settings: {
+        isSimpleBankCommentMode: true,
     },
     errors: null as null | { [key: string]: string },
     push: {
@@ -175,6 +179,19 @@ export const bxrqSlice = createSlice({
         },
         cancelBaseCreating: (state: BXRQState) => {
             state.creating.base = null;
+            state.creating.simpleBankComment = '';
+        },
+        setSimpleBankCommentMode: (
+            state: BXRQState,
+            action: PayloadAction<{ enabled: boolean }>,
+        ) => {
+            state.settings.isSimpleBankCommentMode = action.payload.enabled;
+        },
+        setSimpleBankComment: (
+            state: BXRQState,
+            action: PayloadAction<{ value: string }>,
+        ) => {
+            state.creating.simpleBankComment = action.payload.value;
         },
         initAddressCreating: (
             state: BXRQState,
@@ -429,6 +446,8 @@ export const {
     initBaseCreating,
     saveBaseCreating,
     cancelBaseCreating,
+    setSimpleBankCommentMode,
+    setSimpleBankComment,
     initAddressCreating,
     initCopyAddressCreating,
     saveAddressCreating,

@@ -1,9 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
 import {
-    AlfaParticipantSmartItemUserFieldsEnum,
     BxParticipantsDataKeys,
-    IParticipant,
-    IParticipantField,
 } from '@alfa/entities';
 import {
     getParticipantEmail,
@@ -44,12 +41,8 @@ export const useParticipant = (id?: number) => {
     const deleteParticipant = (participantId: number) => {
         dispatch(deleteBxParticipant(participantId));
     };
-    const addParticipant = (
-        fields: Partial<
-            IParticipantField<AlfaParticipantSmartItemUserFieldsEnum>
-        >,
-    ) => {
-        dispatch(addBxParticipant(fields));
+    const addParticipant = () => {
+        dispatch(addBxParticipant());
     };
 
     const name = participant ? getParticipantName(participant) : '';

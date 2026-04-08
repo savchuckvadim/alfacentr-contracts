@@ -7,12 +7,11 @@ import { RootState, AppDispatch } from '@/modules/app/model/store';
 import { ParticipantPpkListInfo } from '@/modules/widgetes/Participant';
 import { ParticipantStatistics } from '../../entities/participant/ui/components/ParticipantStatistics';
 import { useApp } from '@/modules/app';
+import { ParticipantAddInitButton } from '@/modules/features';
 
 export function ParticipantsPage() {
     const dispatch = useDispatch<AppDispatch>();
     const {
-        items: participants,
-        loading,
         error,
     } = useSelector((state: RootState) => state.participant);
     const { deal } = useSelector((state: RootState) => state.app.bitrix);
@@ -21,11 +20,7 @@ export function ParticipantsPage() {
     if (!isClient) {
         return null;
     }
-    const handleAddNew = () => {
-        console.log('Добавление нового участника');
-        // Здесь будет логика открытия модального окна добавления
-        alert('Добавление нового участника');
-    };
+
 
     return (
         <div className="space-y-6">
@@ -39,25 +34,7 @@ export function ParticipantsPage() {
                         Управление участниками проекта
                     </p>
                 </div>
-                <Button
-                    onClick={handleAddNew}
-                    className="flex items-center space-x-2"
-                >
-                    <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                        />
-                    </svg>
-                    <span>Добавить участника</span>
-                </Button>
+                <ParticipantAddInitButton />
             </div>
             {/* Статистика */}
             <ParticipantStatistics />

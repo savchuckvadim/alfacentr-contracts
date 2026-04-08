@@ -37,6 +37,10 @@ interface BxRqEditModalProps {
     onCancel: () => void;
     onFieldChange: (code: string, value: string) => void;
     onFieldBlur?: (code: string, value: string) => void;
+    isSimpleBankCommentMode?: boolean;
+    simpleBankCommentValue?: string;
+    onSimpleBankCommentChange?: (value: string) => void;
+    submitError?: string | null;
 }
 
 export const BxRqEditModal = ({
@@ -49,6 +53,10 @@ export const BxRqEditModal = ({
     onCancel,
     onFieldChange,
     onFieldBlur,
+    isSimpleBankCommentMode = false,
+    simpleBankCommentValue = '',
+    onSimpleBankCommentChange,
+    submitError = null,
 }: BxRqEditModalProps) => {
     const [localValues, setLocalValues] = useState<Record<string, string>>({});
     const [validationErrors, setValidationErrors] = useState<
@@ -81,6 +89,14 @@ export const BxRqEditModal = ({
 
     const validateBeforeSave = () => {
         const nextErrors: Record<string, string> = {};
+
+        const innField = fields.find(field => field.code === 'inn');
+        if (innField) {
+            const innValue = getFieldValue(innField).trim();
+            if (innValue && innValue.length > 15) {
+                nextErrors[innField.code] = 'ИНН не должен быть длиннее 15 символов';
+            }
+        }
 
         if (type === 'bank') {
             const bankNameField = fields.find(
@@ -238,9 +254,9 @@ export const BxRqEditModal = ({
                 );
         }
     };
-    const modalRoot = document.getElementById('modal-root');
+    const modalRoot =
+        document.getElementById('modal-root') || document.body;
 
-    if (!modalRoot) return null; // safety check
     if (!isOpen) return null;
     return createPortal(
         <>
@@ -259,7 +275,29 @@ export const BxRqEditModal = ({
 
                             <div className="space-y-4">
                                 {fields.map(renderField)}
+                                {type === 'base' && isSimpleBankCommentMode && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="simple_bank_comment">
+                                            Комментарий к банковским реквизитам
+                                        </Label>
+                                        <Textarea
+                                            id="simple_bank_comment"
+                                            value={simpleBankCommentValue}
+                                            onChange={e =>
+                                                onSimpleBankCommentChange?.(
+                                                    e.target.value,
+                                                )
+                                            }
+                                            placeholder="Введите комментарий к банковским реквизитам"
+                                        />
+                                    </div>
+                                )}
                             </div>
+                            {submitError && (
+                                <div className="mt-3 text-sm text-red-600">
+                                    {submitError}
+                                </div>
+                            )}
                         </>
                     )}
                     <DialogFooter>

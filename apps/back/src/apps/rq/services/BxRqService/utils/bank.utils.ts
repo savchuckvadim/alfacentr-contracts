@@ -53,6 +53,8 @@ export const addMissingBank = (requisite: any): void => {
 export const prepareBankForSave = (bank: Bank): Bank => {
     if (bank.ID === -1 || bank.ID === null || bank.ID === undefined) {
         bank.ID = null;
+        const bankName = bank.RQ_BANK_NAME?.trim();
+        bank.RQ_BANK_NAME = bankName || 'Банк';
         bank.NAME = bank.RQ_BANK_NAME;
     }
     return bank;

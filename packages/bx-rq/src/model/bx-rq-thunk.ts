@@ -4,13 +4,14 @@ import {
     AddressRqItem,
     EvsResponse,
     EvsRqItem,
-    getEntityTypeId,
     ResolvedRQType,
 } from '../type/evs-rq-type';
 import { filterFieldItems, getFullName } from '../lib/field-items-util';
 
 import { getResolvedType } from '../lib/rq-util';
 import {
+    cleanError,
+    setError,
     setLoading,
     setFetched,
     setFetchedStatus,
@@ -27,12 +28,76 @@ import {
 } from './bx-rq-slice';
 import { AppThunkDispatch, AppThunkGetState } from './bx-rq-thunk-types';
 import {
-    CONTRACT_LTYPE,
+    BANK_RQ_ITEM_CODE,
     RQ_ITEM_CODE,
     RQ_TYPE,
-    SupplyTypesType,
+    RqItem,
 } from '../type/input-type';
 import { BX_ADDRESS_TYPE } from '../type/evs-address-type';
+import { BankRqItem } from '../type/evs-rq-type';
+
+const updateBankFieldValue = (
+    fields: RqItem[],
+    code: string,
+    value: string,
+): RqItem[] => {
+    return fields.map(field => {
+        if (field.code === code && field.type !== 'select' && field.type !== 'file') {
+            return {
+                ...field,
+                value,
+            };
+        }
+        return field;
+    });
+};
+
+const getSaveErrorMessage = (error: unknown): string => {
+    const fallback = 'Ошибка сохранения реквизитов';
+    if (!error) return fallback;
+
+    const message =
+        error instanceof Error
+            ? error.message
+            : typeof error === 'string'
+              ? error
+              : JSON.stringify(error);
+
+    const normalized = message.toLowerCase();
+    if (normalized.includes('инн') || normalized.includes('inn')) {
+        if (
+            normalized.includes('длин') ||
+            normalized.includes('символ') ||
+            normalized.includes('length')
+        ) {
+            return 'Ошибка сохранения ИНН: превышена допустимая длина';
+        }
+        return 'Ошибка сохранения ИНН';
+    }
+
+    return message || fallback;
+};
+
+const getApiErrorMessage = (result: unknown): string | null => {
+    if (!result || typeof result !== 'object') {
+        return null;
+    }
+    const response = result as { resultCode?: number; message?: string };
+    if (response.resultCode === 1) {
+        return response.message || 'Ошибка сохранения реквизитов';
+    }
+    return null;
+};
+
+const getStoredRqId = (result: unknown): number | null => {
+    if (!result || typeof result !== 'object') {
+        return null;
+    }
+
+    const maybeWithData = result as { data?: { bx_id?: number } };
+    const bxId = maybeWithData.data?.bx_id;
+    return typeof bxId === 'number' ? bxId : null;
+};
 
 export const fetchBXRQ =
     (domain: string, companyId: number, currentRqId?: number) =>
@@ -81,19 +146,23 @@ export const saveBXRQ =
         // supplyType: SupplyTypesType,
     ) =>
         async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
-            const state = getState();
-
-            const rqsState = state.bxrq as BXRQState;
-
-            const rqCreatingBase = rqsState.creating.base;
-            const resolvedType = getResolvedType(
-                currentClientType,
-            ) as ResolvedRQType;
-
+            dispatch(cleanError({ code: 'save' }));
             dispatch(setCreatingLoadingStatus(true));
             dispatch(setRequiredUnderstand({ status: false }));
+            try {
+                const state = getState();
 
-            if (rqsState && rqsState.rqs && rqCreatingBase) {
+                const rqsState = state.bxrq as BXRQState;
+
+                const rqCreatingBase = rqsState.creating.base;
+                const resolvedType = getResolvedType(
+                    currentClientType,
+                ) as ResolvedRQType;
+
+                if (!(rqsState && rqsState.rqs && rqCreatingBase)) {
+                    dispatch(setCreatingLoadingStatus(false));
+                    return;
+                }
                 const fields = filterFieldItems(
                     rqCreatingBase.fields,
                     currentClientType,
@@ -119,10 +188,18 @@ export const saveBXRQ =
                     API_METHOD.POST,
                     data,
                 )) as RQStore | null;
+                const apiError = getApiErrorMessage(result);
+                if (apiError) {
+                    throw new Error(apiError);
+                }
+                if (!result) {
+                    throw new Error('Ошибка сохранения реквизитов');
+                }
 
                 let rq_id = rqCreatingBase.bx_id;
-                if (result && result.data.bx_id) {
-                    rq_id = result.data.bx_id;
+                const storedRqId = getStoredRqId(result);
+                if (storedRqId && storedRqId > 0) {
+                    rq_id = storedRqId;
                 }
 
                 const currentItem = {
@@ -145,6 +222,7 @@ export const saveBXRQ =
                     creating: {
                         ...rqsState.creating,
                         base: null,
+                        simpleBankComment: '',
                     },
                     current: {
                         ...rqsState.current,
@@ -160,8 +238,111 @@ export const saveBXRQ =
                     },
                 } as BXRQState;
 
-                dispatch(setCreatingLoadingStatus(false));
+                const simpleBankComment =
+                    rqsState.creating.simpleBankComment?.trim();
+                const isSimpleBankCommentMode =
+                    rqsState.settings?.isSimpleBankCommentMode ?? false;
+
+                if (isSimpleBankCommentMode && simpleBankComment) {
+                    const currentBank =
+                        currentItem.bank?.current || currentItem.bank?.items?.[0];
+
+                    const sourceBankFields = currentBank?.fields || [];
+                    let bankFieldsWithComment = updateBankFieldValue(
+                        sourceBankFields,
+                        BANK_RQ_ITEM_CODE.BANK_COMMENTS,
+                        simpleBankComment,
+                    );
+
+                    const bankNameField = bankFieldsWithComment.find(
+                        field => field.code === BANK_RQ_ITEM_CODE.BANK_NAME,
+                    );
+                    if (
+                        bankNameField &&
+                        bankNameField.type !== 'select' &&
+                        bankNameField.type !== 'file' &&
+                        !(bankNameField.value || '').trim()
+                    ) {
+                        bankFieldsWithComment = updateBankFieldValue(
+                            bankFieldsWithComment,
+                            BANK_RQ_ITEM_CODE.BANK_NAME,
+                            'Банк',
+                        );
+                    }
+
+                    const bankPayload: BankRqItem = {
+                        id:
+                            currentBank && currentBank.id > 0
+                                ? currentBank.id
+                                : -1,
+                        fields: bankFieldsWithComment,
+                    };
+
+                    const bankResult = (await eventServiceAPI.service(
+                        EVS_ENDPOINT.STORE_RQ,
+                        API_METHOD.POST,
+                        {
+                            domain,
+                            company_id: companyId,
+                            bx_id: rq_id,
+                            bank: bankPayload,
+                            iswait: true,
+                        },
+                    )) as { data: number } | null;
+                    const bankApiError = getApiErrorMessage(bankResult);
+                    if (bankApiError) {
+                        throw new Error(bankApiError);
+                    }
+                    if (!bankResult) {
+                        throw new Error('Ошибка сохранения банковских реквизитов');
+                    }
+
+                    const newBankId = bankResult?.data || bankPayload.id;
+                    const updatedBank = {
+                        ...bankPayload,
+                        id: newBankId,
+                    };
+
+                    updatedState.current.item = {
+                        ...updatedState.current.item!,
+                        bank: {
+                            ...updatedState.current.item!.bank,
+                            items: [updatedBank],
+                            current: updatedBank,
+                            fields: updatedBank.fields,
+                        },
+                    };
+
+                    updatedState.current.items = updatedState.current.items.map(
+                        item => {
+                            if (item.bx_id === updatedState.current.item!.bx_id) {
+                                return updatedState.current.item!;
+                            }
+                            return item;
+                        },
+                    );
+
+                    const currentRqs = updatedState.rqs!;
+                    updatedState.rqs = {
+                        ...currentRqs,
+                        [resolvedType]: {
+                            ...currentRqs[resolvedType],
+                            items: updatedState.current.items,
+                        },
+                    };
+                }
+
                 dispatch(saveBaseCreating({ updatedState }));
+                dispatch(setCreatingLoadingStatus(false));
+            }
+            catch (error) {
+                dispatch(
+                    setError({
+                        code: 'save',
+                        value: getSaveErrorMessage(error),
+                    }),
+                );
+                dispatch(setCreatingLoadingStatus(false));
             }
         };
 
@@ -173,6 +354,7 @@ export const saveAddress =
         typeId: BX_ADDRESS_TYPE,
     ) =>
         async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
+            dispatch(cleanError({ code: 'save' }));
             const state = getState();
             // const domain = state.app.domain;
             // const companyId = state.app.company;
@@ -190,6 +372,7 @@ export const saveAddress =
             const rq = rqsState.current.item;
 
             if (rqsState && rqsState.rqs && addressCreating && rq) {
+                try {
                 const rq_id = rq.bx_id;
                 const data = {
                     domain,
@@ -206,6 +389,13 @@ export const saveAddress =
                     API_METHOD.POST,
                     data,
                 )) as RQStore | null;
+                const apiError = getApiErrorMessage(result);
+                if (apiError) {
+                    throw new Error(apiError);
+                }
+                if (!result) {
+                    throw new Error('Ошибка сохранения адреса');
+                }
 
                 let address_id = addressCreating.id;
                 // if (result && result.data.id) {
@@ -264,10 +454,19 @@ export const saveAddress =
                     rqs: updatedRqs,
                 } as BXRQState;
 
-                dispatch(setCreatingLoadingStatus(false));
                 dispatch(
                     saveAddressCreating({ typeId, clientType: currentClientType }),
                 );
+                dispatch(setCreatingLoadingStatus(false));
+                } catch (error) {
+                    dispatch(
+                        setError({
+                            code: 'save',
+                            value: getSaveErrorMessage(error),
+                        }),
+                    );
+                    dispatch(setCreatingLoadingStatus(false));
+                }
             }
         };
 
@@ -278,6 +477,7 @@ export const saveBank =
         // bankId: number,
     ) =>
         async (dispatch: AppThunkDispatch, getState: AppThunkGetState) => {
+            dispatch(cleanError({ code: 'save' }));
             const state = getState();
             // const domain = state.app.domain;
             // const companyId = state.app.company;
@@ -289,6 +489,7 @@ export const saveBank =
             const rq = rqsState.current.item;
 
             if (rqsState && rqsState.rqs && bankCreating && rq) {
+                try {
                 const rq_id = rq.bx_id;
                 const data = {
                     domain,
@@ -305,6 +506,13 @@ export const saveBank =
                     API_METHOD.POST,
                     data,
                 )) as { data: number } | null;
+                const apiError = getApiErrorMessage(result);
+                if (apiError) {
+                    throw new Error(apiError);
+                }
+                if (!result) {
+                    throw new Error('Ошибка сохранения банковских реквизитов');
+                }
 
                 let newBankId = result?.data || bankCreating.id;
 
@@ -361,13 +569,22 @@ export const saveBank =
                     },
                 } as BXRQState;
 
-                dispatch(setCreatingLoadingStatus(false));
                 dispatch(
                     saveBankCreating({
                         bankId: newBankId,
                         clientType: RQ_TYPE.ORGANIZATION,
                     }),
                 );
+                dispatch(setCreatingLoadingStatus(false));
+                } catch (error) {
+                    dispatch(
+                        setError({
+                            code: 'save',
+                            value: getSaveErrorMessage(error),
+                        }),
+                    );
+                    dispatch(setCreatingLoadingStatus(false));
+                }
             }
         };
 

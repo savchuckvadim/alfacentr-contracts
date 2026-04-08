@@ -8,6 +8,8 @@ import {
     setError,
     setCurrentItem,
     initBaseCreating,
+    setSimpleBankComment,
+    setSimpleBankCommentMode,
     setBankProp,
     setAddressProp,
     cancelBaseCreating,
@@ -31,11 +33,13 @@ import { BankRqItem, EvsRqItem } from '../type/evs-rq-type';
 import { RQ_TYPE } from '../type/input-type';
 import { AddressTypeId, BX_ADDRESS_TYPE } from '../type/evs-address-type';
 import { AddressRqItem } from '../type/evs-rq-type';
+
 import {
     getAddressFillPercent,
     getBankFillPercent,
     getRqFillPercent,
 } from '../lib/rq-util';
+import { getBankCommentValue } from '../lib/get-bank-comment-value-util';
 
 // // Хук для получения всего состояния
 export const useBXRQState = () => {
@@ -101,18 +105,18 @@ export const useBxRq = () => {
         ) => {
             dispatch(saveBXRQ(domain, companyId, currentClientType));
         },
-        saveAddress: async (typeId: any, fields: any[]) => {
-            console.log('saveAddress called with:', typeId, fields);
-            // TODO: Реализовать сохранение адреса
-        },
-        saveBank: async (bankId: number, fields: any[]) => {
-            console.log('saveBank called with:', bankId, fields);
-            // TODO: Реализовать сохранение банковских реквизитов
-        },
-        copyAddress: async (fromTypeId: any, toTypeId: any) => {
-            console.log('copyAddress called with:', fromTypeId, toTypeId);
-            // TODO: Реализовать копирование адреса
-        },
+        // saveAddress: async (typeId: any, fields: any[]) => {
+        //     console.log('saveAddress called with:', typeId, fields);
+        //     // TODO: Реализовать сохранение адреса
+        // },
+        // saveBank: async (bankId: number, fields: any[]) => {
+        //     console.log('saveBank called with:', bankId, fields);
+        //     // TODO: Реализовать сохранение банковских реквизитов
+        // },
+        // copyAddress: async (fromTypeId: any, toTypeId: any) => {
+        //     console.log('copyAddress called with:', fromTypeId, toTypeId);
+        //     // TODO: Реализовать копирование адреса
+        // },
         getRqFillPercent: (rq: EvsRqItem | null, clientType: RQ_TYPE) =>
             getRqFillPercent(rq, clientType),
     };
@@ -127,13 +131,22 @@ export const useBxRqEditBase = () => {
     const caseLoading = state.caseLoading;
     // const actions = useBXRQActions();
 
+
     return {
         caseLoading,
         creating: creating.base,
         isCreatingLoading,
+        saveError: state.errors?.save || null,
+        simpleBankComment: state.creating.simpleBankComment,
+        isSimpleBankCommentMode: state.settings?.isSimpleBankCommentMode ?? false,
+        getBankCommentValue,
         initBaseCreating: (currentClientType: RQ_TYPE) =>
             dispatch(initBaseCreating({ currentClientType })),
         cancelBaseCreating: () => dispatch(cancelBaseCreating()),
+        setSimpleBankCommentMode: (enabled: boolean) =>
+            dispatch(setSimpleBankCommentMode({ enabled })),
+        setSimpleBankComment: (value: string) =>
+            dispatch(setSimpleBankComment({ value })),
         saveBase: async (
             domain: string,
             companyId: number,

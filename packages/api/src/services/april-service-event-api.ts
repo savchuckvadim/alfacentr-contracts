@@ -1,5 +1,5 @@
 import { API_METHOD } from '../type/type';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // const prod = `https://event.april-app.ru/api/v1/event/`;
 // const prod = `http://localhost:8000/api/v1/event/`;
@@ -27,6 +27,14 @@ interface EVSResponse {
         resultCode: 1 | 0;
         result: any;
     };
+}
+
+interface EVSErrorResponse {
+    resultCode?: 0 | 1;
+    message?: string;
+    error?: string;
+    error_description?: string;
+    errors?: string[];
 }
 
 const evsHeaders = {
@@ -58,7 +66,19 @@ export const eventServiceAPI = {
             })) as EVSResponse;
             console.log(response);
         } catch (error) {
-            return result;
+            const axiosError = error as AxiosError<EVSErrorResponse>;
+            const errorData = axiosError.response?.data;
+            const message =
+                errorData?.error_description ||
+                errorData?.message ||
+                errorData?.errors?.[0] ||
+                axiosError.message ||
+                'Request failed';
+
+            return {
+                resultCode: 1,
+                message,
+            };
         }
 
         if (response && response !== undefined) {

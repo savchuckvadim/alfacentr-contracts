@@ -9,10 +9,16 @@ import {
 import { Button } from '@workspace/ui/components/button';
 import { Badge } from '@workspace/ui/components/badge';
 import { BxRqEditModal } from './BxRqEditModal';
-import { EvsRqItem, RqItem, useBxRqEditBase, useBxRq } from '@workspace/bx-rq';
+import {
+    EvsRqItem,
+    RqItem,
+    useBxRqEditBase,
+    useBxRq,
+} from '@workspace/bx-rq';
 import { Edit2,  } from 'lucide-react';
 import { useApp } from '@/modules/app';
 import { useClientType } from '@/modules/features/client-type/hook/useClientType';
+import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
 
 interface BxRqBaseEditProps {
     rq: EvsRqItem;
@@ -39,6 +45,7 @@ export const BxRqBaseEdit = ({
     // onCancel,
     // isLoading = false
 }: BxRqBaseEditProps) => {
+
     const {
         creating,
         isCreatingLoading,
@@ -47,16 +54,24 @@ export const BxRqBaseEdit = ({
         saveBase,
         setBaseProp,
         blurCase,
-        setAddressProp,
-        setBankProp,
-        setError,
+        getBankCommentValue,
     } = useBxRqEditBase();
     // const [isEditMode, setIsEditMode] = useState(false)
 
     const { domain, companyId } = useApp();
+    const dispatch = useAppDispatch();
     const { clientType } = useClientType();
+    const bxrqState = useAppSelector(
+        state =>
+            state.bxrq,
+    );
+    const simpleBankComment = bxrqState.creating?.simpleBankComment ?? '';
+    const isSimpleBankCommentMode =
+        bxrqState.settings?.isSimpleBankCommentMode ?? false;
+    const saveError = bxrqState.errors?.save ?? null;
 
     const { isLoading, current } = useBxRq();
+    const bankCommentValue = getBankCommentValue(current.item);
     // const [editedFields, setEditedFields] = useState<RqItem[]>(creating.fields)
     // const handleFieldChange = (code: string, value: string) => {
     //   setEditedFields(prev =>
@@ -77,12 +92,20 @@ export const BxRqBaseEdit = ({
     };
 
     const handleCancel = () => {
+        dispatch({
+            type: 'bxrq/setSimpleBankComment',
+            payload: { value: bankCommentValue },
+        });
         cancelBaseCreating();
         // setIsEditMode(false)
     };
 
     const handleEdit = () => {
         // setIsEditMode(true)
+        dispatch({
+            type: 'bxrq/setSimpleBankComment',
+            payload: { value: bankCommentValue },
+        });
         initBaseCreating(clientType);
     };
 
@@ -138,6 +161,20 @@ export const BxRqBaseEdit = ({
                                     </div>
                                 </div>
                             ))}
+                            {isSimpleBankCommentMode && (
+                                <div className="space-y-1">
+                                    <label className="text-sm text-muted-foreground">
+                                        Прочие реквизиты
+                                    </label>
+                                    <div className="text-sm font-medium whitespace-pre-wrap break-words">
+                                        {bankCommentValue || (
+                                            <span className="text-muted-foreground">
+                                                Не заполнено
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="text-center p-6">
@@ -170,6 +207,15 @@ export const BxRqBaseEdit = ({
                     onFieldChange={setBaseProp}
                     onFieldBlur={blurCase}
                     type="base"
+                    isSimpleBankCommentMode={isSimpleBankCommentMode}
+                    simpleBankCommentValue={simpleBankComment}
+                    onSimpleBankCommentChange={value =>
+                        dispatch({
+                            type: 'bxrq/setSimpleBankComment',
+                            payload: { value },
+                        })
+                    }
+                    submitError={saveError}
                 />
             )}
         </>

@@ -5,10 +5,13 @@ import { XCircle, Users } from 'lucide-react';
 import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts';
 import { PagePreloader } from '@/modules/shared';
 import { ParticipantInfoCard } from '../ParticipantInfoCard/ui/ParticipantInfoCard';
+import { useEditParticipant } from '../ParticipantEdit/hook/useParticipantEdit';
+import { ParticipalEditModal } from '../ParticipantEdit/ui/ParticipalEditModal';
 
 export const ParticipantPpkListInfo = () => {
     const { participants, loading, error } = useParticipant();
     const { loading: loadingProducts } = useAlfaProducts();
+    const { editable } = useEditParticipant(0);
 
     if (loading || loadingProducts) {
         return <PagePreloader text="Загрузка участников..." />;
@@ -86,6 +89,9 @@ export const ParticipantPpkListInfo = () => {
                     </Card>
                 )}
             </div>
+            {editable && (
+                <ParticipalEditModal isActive={!!editable} editable={editable} />
+            )}
         </>
     );
 };

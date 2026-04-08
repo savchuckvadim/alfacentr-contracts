@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Query } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DocumentEmailDto, DocumentEmailQueryDto } from '../dtos/document-email.dto';
 import { BxWebHookDto } from '@/modules/bitrix';
 import { QueueDispatcherService } from '@/modules/queue/dispatch/queue-dispatcher.service';
@@ -19,7 +19,6 @@ export class DocumentEmailController {
     @Post('send-document-email')
     @ApiOperation({ summary: 'Send document email' })
     @ApiBody({ type: BxWebHookDto })
-    @ApiQuery({ type: DocumentEmailQueryDto, name: 'query' })
     @ApiResponse({
         status: 200,
         description: 'Document email sent',
@@ -32,7 +31,7 @@ export class DocumentEmailController {
         } as DocumentEmailDto;
         // const result = await this.documentEmailService.sendDocumentEmail(dto);
         // return result;
-
+        console.log('Controller dto', dto);
         await this.job.dispatch(
             QueueNames.DOCUMENT_EMAIL,
             JobNames.DOCUMENT_EMAIL_SEND,

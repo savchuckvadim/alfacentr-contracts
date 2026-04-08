@@ -25,7 +25,7 @@ export class EmailDocumentFlowService {
         private readonly bitrix: BitrixService,
         private readonly bxTimelineService: BxTimelineService,
         private readonly dealId: number,
-    ) {}
+    ) { }
 
     async flow(dto: EmailDocumentFlowDto) {
         const dealService = new BxDealStageFlowService(
@@ -37,6 +37,9 @@ export class EmailDocumentFlowService {
             '⌛ Отправка email...',
             'email',
         ));
+        console.log('EmailDocumentFlowService')
+
+        console.log('dto.userId', dto.userId);
 
         const emailService = new EmailService(
             this.bitrix,
@@ -54,6 +57,7 @@ export class EmailDocumentFlowService {
         );
         let result = null;
         try {
+            await delay(300);
             await emailService.send();
 
             await delay(1100);
@@ -67,20 +71,20 @@ export class EmailDocumentFlowService {
         }
 
         try {
-            await delay(400);
-            await emailService.sendForEdoEmployee();
+            // await delay(1100);
+            // await emailService.sendForEdoEmployee();
         } catch (error) {
             console.error('error', error);
             const errorString: string = getStringError(error);
-                // error instanceof Error
-                //     ? error.message
-                //     : typeof error === 'string'
-                //       ? error
-                //       : Array.isArray(error)
-                //         ? error.join(', ')
-                //         : typeof error === 'object'
-                //           ? JSON.stringify(error)
-                //           : 'Неизвестная ошибка';
+            // error instanceof Error
+            //     ? error.message
+            //     : typeof error === 'string'
+            //       ? error
+            //       : Array.isArray(error)
+            //         ? error.join(', ')
+            //         : typeof error === 'object'
+            //           ? JSON.stringify(error)
+            //           : 'Неизвестная ошибка';
 
             void (await this.bxTimelineService.send(
                 `❌ Ошибка при отправке email сотруднику ЭДО: ${errorString}`,

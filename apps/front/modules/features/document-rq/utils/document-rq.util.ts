@@ -11,6 +11,43 @@ import {
     EnumOrganizationRqFields,
 } from '../type/document-rq.type';
 
+export type DocumentPreviewLineKey =
+    | 'fullname'
+    | 'inn'
+    | 'kpp'
+    | 'address'
+    | 'phone'
+    | 'other';
+
+export type DocumentPreviewSection = 'base' | 'address' | 'bankComment';
+
+export interface DocumentPreviewLine {
+    key: DocumentPreviewLineKey;
+    label: string;
+    value: string;
+    isEmpty: boolean;
+    section: DocumentPreviewSection;
+    canEdit: boolean;
+    tooltip: string;
+}
+
+const EMPTY_LINE = '________________________________________';
+
+const isEmptyValue = (value: string): boolean => {
+    const normalized = value.trim();
+    if (!normalized) return true;
+    if (/^_+$/.test(normalized)) return true;
+    if (normalized.includes(EMPTY_LINE)) return true;
+    return false;
+};
+
+const getTooltip = (canEdit: boolean, isEmpty: boolean): string => {
+    if (!canEdit) {
+        return 'Создайте реквизиты чтобы заполнить адрес';
+    }
+    return isEmpty ? 'Нажмите чтобы добавить' : 'Нажмите чтобы изменить';
+};
+
 export const getForDocumentItems = (
     client: DocumentRqAgent<RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION> | null,
     clientType: RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION,
@@ -67,7 +104,7 @@ export const getForDocumentItems = (
         })
         .filter(value => value !== null && value !== "" && value !== undefined);
     const normalizedClientValues = clientValues
-        .flatMap((item, itemIndex) =>
+        .flatMap(item =>
             splitRqValueToLines(item)
         )
         .filter(value => value !== null && value !== "" && value !== undefined);
@@ -93,6 +130,91 @@ export const getForDocumentItems = (
         client: normalizedClientValues,
         provider: providerValues,
     };
+};
+
+export const getClientPreviewLines = (
+    client: DocumentRqAgent<RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION> | null,
+    clientType: RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION,
+    isBaseCreated: boolean,
+): DocumentPreviewLine[] => {
+    if (!client) return [];
+
+    const fullname =
+        clientType === RQ_TYPE.ORGANIZATION
+            ? (client as DocumentOrganizationRqAgent).fullname || EMPTY_LINE
+            : (client as DocumentFizRqAgent).name || EMPTY_LINE;
+    const inn = (client as DocumentOrganizationRqAgent).inn || EMPTY_LINE;
+    const kpp =
+        clientType === RQ_TYPE.ORGANIZATION
+            ? (client as DocumentOrganizationRqAgent).kpp || EMPTY_LINE
+            : EMPTY_LINE;
+    const address =
+        (client as DocumentOrganizationRqAgent).address || EMPTY_LINE;
+    const phone = (client as DocumentOrganizationRqAgent).phone || EMPTY_LINE;
+    const other = (client as DocumentOrganizationRqAgent).other || EMPTY_LINE;
+
+    const lines: DocumentPreviewLine[] = [
+        {
+            key: 'fullname',
+            label: 'Наименование',
+            value: fullname,
+            isEmpty: isEmptyValue(fullname),
+            section: 'base',
+            canEdit: true,
+            tooltip: getTooltip(true, isEmptyValue(fullname)),
+        },
+        {
+            key: 'inn',
+            label: 'ИНН',
+            value: inn,
+            isEmpty: isEmptyValue(inn),
+            section: 'base',
+            canEdit: true,
+            tooltip: getTooltip(true, isEmptyValue(inn)),
+        },
+        {
+            key: 'kpp',
+            label: 'КПП',
+            value: kpp,
+            isEmpty: isEmptyValue(kpp),
+            section: 'base',
+            canEdit: true,
+            tooltip: getTooltip(true, isEmptyValue(kpp)),
+        },
+        {
+            key: 'address',
+            label: 'Юридический адрес',
+            value: address,
+            isEmpty: isEmptyValue(address),
+            section: 'address',
+            canEdit: isBaseCreated,
+            tooltip: getTooltip(isBaseCreated, isEmptyValue(address)),
+        },
+        {
+            key: 'phone',
+            label: 'Телефон',
+            value: phone,
+            isEmpty: isEmptyValue(phone),
+            section: 'base',
+            canEdit: true,
+            tooltip: getTooltip(true, isEmptyValue(phone)),
+        },
+        {
+            key: 'other',
+            label: 'Прочие реквизиты',
+            value: other,
+            isEmpty: isEmptyValue(other),
+            section: 'bankComment',
+            canEdit: true,
+            tooltip: getTooltip(true, isEmptyValue(other)),
+        },
+    ];
+
+    if (clientType !== RQ_TYPE.ORGANIZATION) {
+        return lines.filter(line => line.key !== 'kpp');
+    }
+
+    return lines;
 };
 
 // Функция для сортировки по порядку элементов в enum

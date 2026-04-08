@@ -63,6 +63,8 @@ export class DocumentEmailService {
                 '⌛ Подготовка к отправке email клиенту',
                 'waiting',
             ));
+            console.log('dto', dto);
+            console.log('userId', userId);
 
             // await this.init();
             // const edoComment = documentFields[EnumDealDocumentFieldCode.COMMENT_FOR_OD].bitrixId;
@@ -108,7 +110,8 @@ export class DocumentEmailService {
                 userId: Number(userId),
             });
             const contactId = contactResult.contactId;
-
+            console.log('contactResult', contactResult);
+            console.log('contactId', contactId);
 
             const emailDocumentFlowService = new EmailDocumentFlowService(
                 bitrix,
@@ -128,7 +131,7 @@ export class DocumentEmailService {
                 name,
                 phone,
                 documentPrefixNumber,
-                contactId: 0,
+                contactId: Number(contactId),
                 edoComment,
                 needEdoEmail,
                 companyName,
@@ -193,7 +196,7 @@ export class DocumentEmailService {
 
         //филды связанные с документом
         const documentDealData = documentFields
-   
+
         //комментарий для сотрудника ОДО
         const commentForEdoBitrixId =
             documentDealData[EnumDealDocumentFieldCode.COMMENT_FOR_OD].bitrixId as string;

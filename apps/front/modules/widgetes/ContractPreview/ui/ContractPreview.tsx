@@ -7,10 +7,13 @@ import {
     useDocumentRq,
 } from '@/modules/features/document-rq';
 import { useDocumentParagraph } from '@/modules/features/document-paragraph';
-import { SimpleCard } from '@/modules/shared';
+import { ComponentPreloader, SimpleCard } from '@/modules/shared';
 import { Dot } from 'lucide-react';
+import { useBXRQ } from '@workspace/bx-rq';
 
 export const ContractPreview = () => {
+    const { isLoading } = useBXRQ()
+
     const { header } = useDocumentRq();
 
     const { totalSum, paragraphItems } = useDocumentParagraph();
@@ -19,6 +22,11 @@ export const ContractPreview = () => {
             ? 'Пункты 1.1.2 Консультационных семинарах : \n '
             : 'Пункт 1.1.2 Консультационном семинаре : \n  ';
 
+    if (isLoading) {
+        return <div className="flex justify-center items-center h-full">
+            <ComponentPreloader text="Загрузка..." />
+        </div>
+    }
     return (
         <div className="flex flex-col gap-4">
             <SimpleCard withCollapse={true} title="Шапка договора">

@@ -1,7 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { filterFieldItems, getRqShowName, useBxRq } from '@workspace/bx-rq';
+import { useEffect, useState } from 'react';
+import {
+    filterFieldItems,
+    getRqShowName,
+    useBxRq,
+} from '@workspace/bx-rq';
 
 import {
     RQ_TYPE,
@@ -37,6 +41,7 @@ import {
 
 import { useClientType } from '@/modules/features/client-type/hook/useClientType';
 import { useApp, useAppSelector } from '@/modules/app';
+import { useAppDispatch } from '@/modules/app/lib/hooks/redux';
 import { PagePreloader } from '@/modules/shared';
 import {
     BxRqAddressEdit,
@@ -50,12 +55,14 @@ interface BxRqPageProps {
     supplyType?: SupplyTypesType;
     onSave?: () => void;
     onCancel?: () => void;
+    isSimpleBankCommentMode?: boolean;
 }
 
 export const BxRqPage = ({
     onSave, //для сохранения текущих реквизитов в карточку сделки
     onCancel,
 }: BxRqPageProps) => {
+    const dispatch = useAppDispatch();
     const {
         rqs,
         isLoading,
@@ -72,6 +79,8 @@ export const BxRqPage = ({
     const [isSaving, setIsSaving] = useState(false);
     const { clientType } = useClientType();
     const { isClient } = useApp();
+
+
     if (!isClient) {
         return null;
     }

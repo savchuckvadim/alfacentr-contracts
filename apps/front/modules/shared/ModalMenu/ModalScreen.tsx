@@ -33,8 +33,8 @@ export const ModalScreen: FC<IModalScreenProps> = ({
         //     title="Редактирование участника"
         //     description="Вы уверены, что хотите изменить данные участника?"
         // >
-        <div className="fixed h-screen w-screen inset-0 bg-background/10 backdrop-blur-xs flex items-center justify-center z-50">
-            <div className="relative bg-card rounded-lg p-6 w-3/4 min-h-[80vh]  mx-4 flex flex-col justify-start items-center z-150 shadow-xl scrollbar-hide">
+        <div className="fixed h-screen w-screen inset-0 bg-background/10 backdrop-blur-xs flex items-center justify-center z-50 ">
+            <div className="relative bg-card rounded-lg p-6 w-3/4 min-h-[80vh] mx-4 flex flex-col justify-start items-stretch z-150 shadow-xl scrollbar-hide">
                 <div className="header flex flex-row gap-2 justify-between items-start w-full mb-4  ">
                     <div className="flex flex-col gap-2 justify-start items-start w-1/2 ">
                         <h1 className="text-2xl font-bold">{title}</h1>
@@ -56,7 +56,7 @@ export const ModalScreen: FC<IModalScreenProps> = ({
                     </div>
                 </div>
 
-                <div className="flex items-center space-x-3 mb-4  max-h-[80vh] overflow-y-auto">
+                <div className="w-full mb-4 max-h-[80vh] overflow-y-auto overflow-x-hidden">
                     {children}
                 </div>
                 {FooterComponent ? (

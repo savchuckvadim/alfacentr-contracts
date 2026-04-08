@@ -1,6 +1,6 @@
 import { FilterTabs, SimpleCard } from '@/modules/shared';
 import { CheckCircle, Package, Users } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ParticipantsTableWidget } from '@/modules/widgetes/Participant/ParticipantsTable/ParticipantsTableWidget';
 import { ContractPreview, ProductsTableWidget } from '@/modules/widgetes';
 import { useIsUpContractType } from '@/modules/features';

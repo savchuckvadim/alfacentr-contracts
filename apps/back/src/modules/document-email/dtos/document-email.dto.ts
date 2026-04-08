@@ -1,4 +1,4 @@
-import { IsBxHookUserIdCustom } from '@/core/decorators/dto/bx-hook-user-id.decorator';
+import { IsBxHookUserId } from '@/core/decorators/dto/bx-hook-user-id.decorator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
@@ -8,19 +8,19 @@ export class DocumentEmailQueryDto {
     dealId: number;
 
     @ApiProperty({ example: 123456 })
-    @IsBxHookUserIdCustom()
-    userId: string;
+    @IsBxHookUserId()
+    userId: number;
 
-    @ApiProperty({ example: 'test@example.com' })
+    @ApiProperty({ example: 'Иван' })
     @IsString()
     userName: string;
 
-    @ApiProperty({ example: 'test@example.com' })
+    @ApiProperty({ example: 'Иван Петров' })
     @IsString()
     userFio: string;
 
 
-    @ApiProperty({ example: 'test@example.com' })
+    @ApiProperty({ example: '12345' })
     @IsString()
     companyId: string;
 

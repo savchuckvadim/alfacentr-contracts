@@ -7,6 +7,7 @@ export enum EBxNamespace {
     DISK = 'disk',
     CATALOG = 'catalog',
     RPA = 'rpa',
+    BIZPROC = 'bizproc',
 }
 
 export enum EBxMethod {
@@ -49,4 +50,5 @@ export enum EBxMethod {
     SHARE_TO_USER = 'sharetouser',
     DELETE_TREE = 'deletetree',
     PIN = 'pin',
+    START = 'start',
 }

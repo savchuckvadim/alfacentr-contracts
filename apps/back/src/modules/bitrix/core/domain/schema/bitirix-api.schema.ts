@@ -30,6 +30,7 @@ import {
 
 import { BxSmartTypeSchema } from '@/modules/bitrix/domain/crm/smart-type';
 import { UserSchema } from '@/modules/bitrix/domain/user';
+import { BxBizprocWorkflowSchema } from '@/modules/bitrix/domain/bizproc/workflow/schema/bx-bizproc-workflow.schema';
 // import { FieldsEnumerationSchema } from "src/modules/bitrix/domain/crm";
 
 export type BXApiSchema = {
@@ -69,5 +70,8 @@ export type BXApiSchema = {
     };
     [EBxNamespace.CATALOG]: {
         [EBXEntity.PRODUCT]: BxCatalogSchema;
+    };
+    [EBxNamespace.BIZPROC]: {
+        [EBXEntity.WORKFLOW]: BxBizprocWorkflowSchema;
     };
 };

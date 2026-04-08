@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
-    AlfaParticipantSmartItemUserFieldsEnum,
     BxParticipantsDataKeys,
     IParticipant,
 } from '@alfa/entities';
@@ -197,6 +196,7 @@ const participantSlice = createSlice({
             (state: IParticipantState, action: PayloadAction<IParticipant>) => {
                 state.items.push(action.payload);
                 state.editLoading = false;
+                state.editable = null;
                 state.error = null;
             },
         );

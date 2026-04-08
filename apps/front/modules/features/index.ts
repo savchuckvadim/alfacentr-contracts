@@ -7,3 +7,4 @@ export * from './seminar-days-select';
 export * from './communications';
 export * from './deal-act-date';
 export * from './deal-edo-comment';
+export * from './participant-add';

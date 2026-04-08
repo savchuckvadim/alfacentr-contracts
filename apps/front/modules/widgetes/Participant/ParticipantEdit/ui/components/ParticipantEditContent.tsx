@@ -22,6 +22,7 @@ import {
 } from '@workspace/ui/components/card';
 import { ParticipantProductPpkSelect } from './ParticipantProductPpkSelect';
 import { ParticipantDaysSelect } from './ParticipantDaysSelect';
+import { useProductType } from '@/modules/entities/product/hook/useProductType';
 
 export interface ParticipantEditContentProps {
     editable: IParticipant;
@@ -48,13 +49,32 @@ export const ppkProgramCodes = [
 export const ParticipantEditContent = ({
     editable,
 }: ParticipantEditContentProps) => {
+    const [partsCount, setPartsCount] = useState(3);
+    const { hasPpk, hasSeminar } = useProductType();
+    const isCreating = editable.id === 0;
+
+    useEffect(() => {
+        let count = 2;
+        if (hasPpk || isCreating) {
+            count -= 1;
+        }
+        if (hasSeminar) {
+            count++;
+        }
+        setPartsCount(count);
+    }, [hasPpk, hasSeminar]);
+
+    const gridColsClass =
+        partsCount === 1
+            ? 'lg:grid-cols-1 xl:grid-cols-1'
+            : partsCount === 2
+                ? 'lg:grid-cols-2 xl:grid-cols-2'
+                : 'lg:grid-cols-2 xl:grid-cols-3';
+    const containerWidthClass =
+        partsCount === 1 ? 'w-full xl:w-2/3 xl:mx-auto' : 'w-full';
     const {
-        cancelEditable,
         changeEditable,
         editParticipantTopic,
-        updateParticipant,
-        name,
-        isEditLoading,
     } = useEditParticipant(editable.id);
     const [isPpk, setIsPpk] = useState(false);
 
@@ -74,13 +94,27 @@ export const ParticipantEditContent = ({
         });
     }, [editable]);
 
+    useEffect(() => {
+        if (!isCreating || hasPpk) {
+            return;
+        }
+
+        const isPpkField = editable.fields.find(
+            field => field.code === BxParticipantsDataKeys.is_ppk,
+        );
+
+        if (isPpkField && isPpkField.value !== 'N') {
+            changeEditable(BxParticipantsDataKeys.is_ppk, 'N');
+        }
+    }, [isCreating, hasPpk, editable.fields, changeEditable]);
+
     const renderField = (field: any) => {
         const isSelect =
             field.code === BxParticipantsDataKeys.format ||
             field.code === BxParticipantsDataKeys.is_ppk;
         const selectOptions = isSelect ? getParticipantSelect(field.code) : [];
 
- 
+
         return (
             <div key={field.bitrixId} className="space-y-2">
                 <Label className="text-sm font-medium text-foreground">
@@ -153,7 +187,9 @@ export const ParticipantEditContent = ({
     };
 
     return (
-        <>
+        <div
+            className={`${containerWidthClass} grid grid-cols-1 ${gridColsClass} gap-6 h-[77vh]`}
+        >
             <Card className="h-fit">
                 <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-lg">
@@ -174,7 +210,7 @@ export const ParticipantEditContent = ({
             </Card>
 
             {/* Семинары */}
-            <Card className="h-fit">
+            {hasSeminar && <Card className="h-fit">
                 <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-lg">
                         <GraduationCapIcon className="w-5 h-5 text-primary" />
@@ -192,10 +228,10 @@ export const ParticipantEditContent = ({
                         .map(renderPpkField)} */}
                     <ParticipantDaysSelect editable={editable} />
                 </CardContent>
-            </Card>
+            </Card>}
 
             {/* ППК программы */}
-            <Card className={`h-fit transition-all duration-300 ease-in-out `}>
+            {(hasPpk || !isCreating) && <Card className={`h-fit transition-all duration-300 ease-in-out `}>
                 <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-lg">
                         <BookOpenIcon className="w-5 h-5 text-primary" />
@@ -212,11 +248,10 @@ export const ParticipantEditContent = ({
                         )
                         .map(renderPpkField)}
                     <div
-                        className={`${
-                            isPpk
+                        className={`${isPpk
                                 ? 'opacity-100 scale-100 translate-x-0'
                                 : 'opacity-0 scale-95 translate-x-4 pointer-events-none'
-                        }`}
+                            }`}
                     >
                         {editable.fields
                             .filter(field =>
@@ -239,7 +274,7 @@ export const ParticipantEditContent = ({
                             ))}
                     </div>
                 </CardContent>
-            </Card>
-        </>
+            </Card>}
+        </div>
     );
 };

@@ -3,13 +3,14 @@ import { ComponentPreloader } from '@/modules/shared';
 import { useEditParticipant } from '../hook/useParticipantEdit';
 import {
     BxParticipantsDataKeys,
-    getParticipantSelectItemByValue,
     IParticipant,
 } from '@alfa/entities';
 import { Button } from '@workspace/ui/components/button';
-import { useEffect, useState } from 'react';
 import { ModalScreen } from '@/modules/shared';
 import { ParticipantEditContent } from './components/ParticipantEditContent';
+import { useParticipant } from '@/modules/entities';
+import { useEffect, useState } from 'react';
+import { useProductType } from '@/modules/entities/product/hook/useProductType';
 
 interface ParticipalEditModalProps {
     isActive: boolean;
@@ -29,49 +30,73 @@ export const ParticipalEditModal = ({
     isActive,
     editable,
 }: ParticipalEditModalProps) => {
+
+
     const { cancelEditable, updateParticipant, name, isEditLoading } =
         useEditParticipant(editable.id);
-    const [isPpk, setIsPpk] = useState(false);
+    const { addParticipant } = useParticipant();
+    const isCreating = editable.id === 0;
+    const participantName =
+        (editable.fields.find(field => field.code === BxParticipantsDataKeys.name)
+            ?.value as string) || '';
+    const isNameValid = participantName.trim().length > 0;
 
-    useEffect(() => {
-        editable.fields.forEach(field => {
-            if (field.code === BxParticipantsDataKeys.is_ppk) {
-                const value = getParticipantSelectItemByValue(
-                    field.code,
-                    field.value as string,
-                );
-                if (value?.code === 'yes') {
-                    setIsPpk(true);
-                } else {
-                    setIsPpk(false);
-                }
+    const handleSubmit = () => {
+        if (isCreating) {
+            if (!isNameValid) {
+                return;
             }
-        });
-    }, [editable]);
+            addParticipant();
+            return;
+        }
+        updateParticipant();
+    };
 
     return (
         <ModalScreen
             isActive={isActive}
-            title="Редактирование участника"
-            description={`Редактирование данных участника ${name}`}
+            title={isCreating ? 'Добавление участника' : 'Редактирование участника'}
+            description={
+                isCreating
+                    ? 'Заполните данные нового участника'
+                    : `Редактирование данных участника ${name}`
+            }
             onClose={cancelEditable}
             FooterComponent={
-                <div className="flex justify-end gap-3 w-full">
-                    <Button variant="outline" onClick={cancelEditable}>
-                        Отмена
-                    </Button>
-                    <Button onClick={updateParticipant}>
-                        Сохранить изменения
-                    </Button>
+                <div className="flex items-center justify-between gap-3 w-full">
+                    <div className="text-sm text-destructive">
+                        {isCreating && !isNameValid
+                            ? 'Поле "ФИО" обязательно для заполнения'
+                            : null}
+                    </div>
+                    <div className="flex justify-end gap-3">
+                        <Button variant="outline" onClick={cancelEditable}>
+                            Отмена
+                        </Button>
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={isCreating && !isNameValid}
+                        >
+                            {isCreating
+                                ? 'Добавить участника'
+                                : 'Сохранить изменения'}
+                        </Button>
+                    </div>
                 </div>
             }
         >
             {isEditLoading ? (
                 <div className="flex items-center justify-center h-[77vh] w-full">
-                    <ComponentPreloader text="Обновление участника..." />
+                    <ComponentPreloader
+                        text={
+                            isCreating
+                                ? 'Добавление участника...'
+                                : 'Обновление участника...'
+                        }
+                    />
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 h-[77vh] overflow-y-auto p-1">
+                <div className="w-full h-[77vh]">
                     <ParticipantEditContent editable={editable} />
                 </div>
             )}

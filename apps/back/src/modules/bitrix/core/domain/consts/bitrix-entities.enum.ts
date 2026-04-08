@@ -22,4 +22,5 @@ export enum EBXEntity {
     PRODUCT = 'product',
     RPA = 'rpa',
     USER = 'user',
+    WORKFLOW = 'workflow',
 }
