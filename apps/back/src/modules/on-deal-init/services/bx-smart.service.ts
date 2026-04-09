@@ -2,7 +2,7 @@ import { BitrixService } from 'src/modules/bitrix';
 import { DealValue } from '../../../lib/deal-helper/deal-values-helper.service';
 import { EntityTypeIdEnum, IAlfaParticipantSmartItem } from '@alfa/entities';
 import { getParticipantValuesFromDeal } from '../../../lib/deal-helper/get-participant-product-values-from-deal.helepr';
-import { delay } from '@/lib';
+
 
 export class BxSmartService {
     private bitrix: BitrixService;

@@ -71,20 +71,11 @@ export class EmailDocumentFlowService {
         }
 
         try {
-            // await delay(1100);
-            // await emailService.sendForEdoEmployee();
+            await delay(1100);
+            await emailService.sendForEdoEmployee();
         } catch (error) {
             console.error('error', error);
             const errorString: string = getStringError(error);
-            // error instanceof Error
-            //     ? error.message
-            //     : typeof error === 'string'
-            //       ? error
-            //       : Array.isArray(error)
-            //         ? error.join(', ')
-            //         : typeof error === 'object'
-            //           ? JSON.stringify(error)
-            //           : 'Неизвестная ошибка';
 
             void (await this.bxTimelineService.send(
                 `❌ Ошибка при отправке email сотруднику ЭДО: ${errorString}`,

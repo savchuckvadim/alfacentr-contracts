@@ -15,10 +15,6 @@ import { WsModule } from './core/ws/ws.module';
 import { BitrixModule } from './modules/bitrix/bitrix.module';
 import { PortalModule } from './modules/portal/portal.module';
 import { AlfaActivityModule } from './modules/hooks/alfa/alfa-activity.module';
-// import { EventServiceModule } from './apps/event-service/event-service.module';
-// import { KonstructorModule } from './apps/konstructor/konstructor.module';
-// import { MetricsModule } from './core/metrics/metrics.module';
-// import { AlfaModule } from './apps/alfa/alfa.module';
 
 import { StorageModule } from './core/storage/storage.module';
 import { FileLinkModule } from './core/file-link/file-link.module';
@@ -30,14 +26,13 @@ import { OnDealInitModule } from './modules/on-deal-init/on-deal-init.module';
 import { AlfaProductsModule } from './modules/alfa-products';
 import { AlfaFieldsModule } from './modules/alfa-fields';
 import { FieldsModule } from './commands/fields/fields.module';
-import { AlfaActivityCommandsModule } from './commands/alfa/alfa-activity.module';
+
 import { DocumentGenerateModule } from './modules/document-generate/document-generate.module';
 import { DocumentNumberModule } from './modules/document-number/document-number.module';
 import { ValidateCheckModule } from './modules/validate-check/validate-check.module';
 import { RqModule } from './apps/rq/rq.module';
 import { CaseModule } from './apps/case/case.module';
 import { CategoryModule } from './commands/category/category.module';
-import { DiskCommandsModule } from './commands/disk/commands-disk.module';
 import { DocumentEmailModule } from './modules/document-email/document-email.module';
 import { EmployeeEdoModule } from './common/employee-edo/employee-edo.module';
 
@@ -84,7 +79,7 @@ import { EmployeeEdoModule } from './common/employee-edo/employee-edo.module';
         // GarantPricesModule,
         // GsrModule,
         FieldsModule,
-        DiskCommandsModule,
+        // DiskCommandsModule,
         // AlfaActivityCommandsModule, //для собирания компаний из активностей юрфорум
         // CategoryModule,
         // ChangeDealCategoryModule,

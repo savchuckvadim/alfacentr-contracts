@@ -1,6 +1,5 @@
 import { DealValue } from '@/lib/deal-helper/deal-values-helper.service';
 import { getIsNotEmptyParticipant } from '@/lib/deal-helper/get-participant-product-values-from-deal.helepr';
-import { BitrixService } from '@/modules/bitrix';
 import { BxDealDataKeys } from '@alfa/entities';
 
 export enum GetDealBidItemsType {
@@ -34,6 +33,34 @@ export class BidInfoLayoutService {
         }
 
         return comment;
+    }
+
+    public getInfoLines(dealValues: DealValue[]): string[] {
+        const lines: string[] = [];
+
+        const bidType = dealValues.find(
+            value => value.code === BxDealDataKeys.bid_type,
+        );
+        if (bidType?.value) {
+            lines.push(
+                `Тип заявки: ${this.formatDealValueToText(bidType.value)}`,
+            );
+        }
+
+        dealValues.forEach(value => {
+            if (
+                !value.name.includes('Участник') &&
+                !value.name.toLowerCase().includes('скрытое') &&
+                value.code !== BxDealDataKeys.bid_type &&
+                value.value
+            ) {
+                lines.push(
+                    `${value.name}: ${this.formatDealValueToText(value.value)}`,
+                );
+            }
+        });
+
+        return lines;
     }
     private getParticipants(dealValues: DealValue[]) {
         let participants = {} as Record<string, string>;
