@@ -2,11 +2,14 @@ services:
 
 
   front-alfacentr:
+    image: alfacentr-front:prod
     build:
       context: .
       dockerfile: docker/Dockerfile.front
       args:
         APP: front
+      cache_from:
+        - alfacentr-front:prod
     container_name: front-alfacentr-prod
     ports:
       - "${PORT_ALFA}:3000"         # API доступен снаружи
@@ -23,11 +26,14 @@ services:
 
 
   api-alfacentr:
+    image: alfacentr-api:prod
     build:
       context: .
       dockerfile: docker/Dockerfile.back
       args:
         APP: back
+      cache_from:
+        - alfacentr-api:prod
 
     container_name: nest-api-alfacentr
     ports:
