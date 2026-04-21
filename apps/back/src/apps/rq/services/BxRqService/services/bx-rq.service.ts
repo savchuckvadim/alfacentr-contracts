@@ -84,9 +84,9 @@ export class BxRqService {
 
         // Добавляем недостающие адреса и банки
         for (const requisite of rq) {
-            const anchorId = Number(companyId) ?? -1;
+            const anchorId = Number(companyId) || -1;
 
-            const entityId = Number(requisite?.ID) ?? -1;
+            const entityId = Number(requisite?.ID) || -1;
 
             this.addressService.ensureRequiredAddresses(
                 requisite,

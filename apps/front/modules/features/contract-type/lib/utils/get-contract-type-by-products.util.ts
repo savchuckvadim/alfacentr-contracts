@@ -3,6 +3,7 @@ import {
     getHasSeminar,
     getHasSeminarPpk,
     getHasUpComplect,
+    getHasUpSpecial,
     getHasUpVideo,
     IAlfaProduct,
 } from '@/modules/entities/product';
@@ -17,6 +18,7 @@ export const getContractTypeByProducts = (
     const hasSeminarPpk = getHasSeminarPpk(products);
     const hasUpComplect = getHasUpComplect(products);
     const hasUpVideo = getHasUpVideo(products);
+    const hasUpSpecial = getHasUpSpecial(products);
 
     if (hasSeminarPpk) {
         return EContractType.seminar_ppk;
@@ -32,6 +34,9 @@ export const getContractTypeByProducts = (
     }
     if (hasUpVideo) {
         return EContractType.up_video;
+    }
+    if (hasUpSpecial) {
+        return EContractType.up_special;
     }
     return EContractType.seminar;
 };

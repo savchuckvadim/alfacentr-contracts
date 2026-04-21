@@ -17,13 +17,13 @@ export const DealInfo = () => {
                 {dealData?.map(field => {
                     const group = field.group
 
-                    if(group === 'up' && !isUp) {
+                    if (group === 'up' && !isUp) {
                         return null;
                     }
-                    if(group === 'seminar' && isUp) {
+                    if (group === 'seminar' && isUp) {
                         return null;
                     }
-                    debugger
+
                     let value = getBooleanFieldValue(field.value);
                     if (
                         !Array.isArray(field.value) &&

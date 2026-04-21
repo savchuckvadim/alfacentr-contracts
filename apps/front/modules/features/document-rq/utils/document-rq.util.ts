@@ -17,7 +17,8 @@ export type DocumentPreviewLineKey =
     | 'kpp'
     | 'address'
     | 'phone'
-    | 'other';
+    | 'other'
+    | 'base_other';
 
 export type DocumentPreviewSection = 'base' | 'address' | 'bankComment';
 
@@ -41,11 +42,11 @@ const isEmptyValue = (value: string): boolean => {
     return false;
 };
 
-const getTooltip = (canEdit: boolean, isEmpty: boolean): string => {
+const getTooltip = (label: string, canEdit: boolean, isEmpty: boolean): string => {
     if (!canEdit) {
-        return 'Создайте реквизиты чтобы заполнить адрес';
+        return `Создайте реквизиты чтобы заполнить ${label}`;
     }
-    return isEmpty ? 'Нажмите чтобы добавить' : 'Нажмите чтобы изменить';
+    return isEmpty ? `Нажмите чтобы добавить ${label}` : `Нажмите чтобы изменить ${label}`;
 };
 
 export const getForDocumentItems = (
@@ -108,7 +109,7 @@ export const getForDocumentItems = (
             splitRqValueToLines(item)
         )
         .filter(value => value !== null && value !== "" && value !== undefined);
-    
+
     const providerValues = sortedProviderKeys
         .map(key => {
             if (
@@ -137,6 +138,7 @@ export const getClientPreviewLines = (
     clientType: RQ_TYPE.FIZ | RQ_TYPE.ORGANIZATION,
     isBaseCreated: boolean,
 ): DocumentPreviewLine[] => {
+
     if (!client) return [];
 
     const fullname =
@@ -152,7 +154,7 @@ export const getClientPreviewLines = (
         (client as DocumentOrganizationRqAgent).address || EMPTY_LINE;
     const phone = (client as DocumentOrganizationRqAgent).phone || EMPTY_LINE;
     const other = (client as DocumentOrganizationRqAgent).other || EMPTY_LINE;
-
+    const baseOther = (client as DocumentOrganizationRqAgent).base_other || EMPTY_LINE;
     const lines: DocumentPreviewLine[] = [
         {
             key: 'fullname',
@@ -161,7 +163,7 @@ export const getClientPreviewLines = (
             isEmpty: isEmptyValue(fullname),
             section: 'base',
             canEdit: true,
-            tooltip: getTooltip(true, isEmptyValue(fullname)),
+            tooltip: getTooltip('наименование', true, isEmptyValue(fullname)),
         },
         {
             key: 'inn',
@@ -170,7 +172,7 @@ export const getClientPreviewLines = (
             isEmpty: isEmptyValue(inn),
             section: 'base',
             canEdit: true,
-            tooltip: getTooltip(true, isEmptyValue(inn)),
+            tooltip: getTooltip('ИНН', true, isEmptyValue(inn)),
         },
         {
             key: 'kpp',
@@ -179,7 +181,7 @@ export const getClientPreviewLines = (
             isEmpty: isEmptyValue(kpp),
             section: 'base',
             canEdit: true,
-            tooltip: getTooltip(true, isEmptyValue(kpp)),
+            tooltip: getTooltip('КПП', true, isEmptyValue(kpp)),
         },
         {
             key: 'address',
@@ -188,7 +190,7 @@ export const getClientPreviewLines = (
             isEmpty: isEmptyValue(address),
             section: 'address',
             canEdit: isBaseCreated,
-            tooltip: getTooltip(isBaseCreated, isEmptyValue(address)),
+            tooltip: getTooltip('юридический адрес', isBaseCreated, isEmptyValue(address)),
         },
         {
             key: 'phone',
@@ -197,7 +199,16 @@ export const getClientPreviewLines = (
             isEmpty: isEmptyValue(phone),
             section: 'base',
             canEdit: true,
-            tooltip: getTooltip(true, isEmptyValue(phone)),
+            tooltip: getTooltip('телефон', true, isEmptyValue(phone)),
+        },
+        {
+            key: 'base_other',
+            label: 'Дополнительные реквизиты',
+            value: baseOther,
+            isEmpty: isEmptyValue(baseOther),
+            section: 'base',
+            canEdit: true,
+            tooltip: getTooltip('дополнительные реквизиты', true, isEmptyValue(baseOther)),
         },
         {
             key: 'other',
@@ -206,14 +217,13 @@ export const getClientPreviewLines = (
             isEmpty: isEmptyValue(other),
             section: 'bankComment',
             canEdit: true,
-            tooltip: getTooltip(true, isEmptyValue(other)),
+            tooltip: getTooltip('прочие реквизиты', true, isEmptyValue(other)),
         },
     ];
 
     if (clientType !== RQ_TYPE.ORGANIZATION) {
         return lines.filter(line => line.key !== 'kpp');
     }
-
     return lines;
 };
 

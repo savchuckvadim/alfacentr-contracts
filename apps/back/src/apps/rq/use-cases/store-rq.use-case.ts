@@ -4,7 +4,6 @@ import { ERQItem } from '../dto/erq-item.dto';
 import { RequisiteService } from '../services/requisite.service';
 import { RequisiteUpdateService } from '../services/requisite-update.service';
 import { ErrorMessage } from '../enums/error-message.enum';
-import { PortalModel } from '@/modules/portal/services/portal.model';
 import { PBXService } from '@/modules/pbx';
 
 @Injectable()

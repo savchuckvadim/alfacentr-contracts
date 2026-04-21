@@ -4,6 +4,7 @@ import {
     DocumentContractSeminarDealFieldsType,
     DocumentContractSeminarPpkFieldsType,
     DocumentContractUPComplectFieldsType,
+    DocumentContractUPSpecialFieldsType,
     DocumentContractUPVideoFieldsType,
     DocumentGenerateFieldTemplateCode,
     DocumentGenerateTemplatesType,
@@ -71,19 +72,22 @@ export class DocumentContractFieldsService {
         | typeof DocumentGenerateTemplatesType.PPK_DEAL
         | typeof DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS
         | typeof DocumentGenerateTemplatesType.UP_COMPLECT
-        | typeof DocumentGenerateTemplatesType.UP_VIDEO {
+        | typeof DocumentGenerateTemplatesType.UP_VIDEO
+        | typeof DocumentGenerateTemplatesType.UP_SPECIAL {
         const templateType =
             contractType === EContractType.seminar_ppk
                 ? DocumentGenerateTemplatesType.SEMINAR_PPK_DEAL
                 : contractType === EContractType.seminar
-                  ? DocumentGenerateTemplatesType.SEMINAR_DEAL
-                  : contractType === EContractType.ppk
-                    ? DocumentGenerateTemplatesType.PPK_DEAL
-                    : contractType === EContractType.up_complect
-                      ? DocumentGenerateTemplatesType.UP_COMPLECT
-                      : contractType === EContractType.up_video
-                        ? DocumentGenerateTemplatesType.UP_VIDEO
-                        : DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS;
+                    ? DocumentGenerateTemplatesType.SEMINAR_DEAL
+                    : contractType === EContractType.ppk
+                        ? DocumentGenerateTemplatesType.PPK_DEAL
+                        : contractType === EContractType.up_complect
+                            ? DocumentGenerateTemplatesType.UP_COMPLECT
+                            : contractType === EContractType.up_video
+                                ? DocumentGenerateTemplatesType.UP_VIDEO
+                                : contractType === EContractType.up_special
+                                    ? DocumentGenerateTemplatesType.UP_SPECIAL
+                                    : DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS;
         return templateType;
     }
     private getTemplateId(
@@ -100,14 +104,16 @@ export class DocumentContractFieldsService {
             | typeof DocumentGenerateTemplatesType.PPK_DEAL
             | typeof DocumentGenerateTemplatesType.INVOISE_WITH_STAMPS
             | typeof DocumentGenerateTemplatesType.UP_COMPLECT
-            | typeof DocumentGenerateTemplatesType.UP_VIDEO,
+            | typeof DocumentGenerateTemplatesType.UP_VIDEO
+            | typeof DocumentGenerateTemplatesType.UP_SPECIAL,
     ):
         | DocumentContractSeminarPpkFieldsType
         | DocumentContractSeminarDealFieldsType
         | DocumentContractPpkDealFieldsType
         | DocumentContractInvoiceWithStampsFieldsType
         | DocumentContractUPComplectFieldsType
-        | DocumentContractUPVideoFieldsType {
+        | DocumentContractUPVideoFieldsType
+        | DocumentContractUPSpecialFieldsType {
         return templateType.fields;
     }
 
@@ -128,7 +134,8 @@ export class DocumentContractFieldsService {
             | DocumentContractPpkDealFieldsType
             | DocumentContractInvoiceWithStampsFieldsType
             | DocumentContractUPComplectFieldsType
-            | DocumentContractUPVideoFieldsType,
+            | DocumentContractUPVideoFieldsType
+            | typeof DocumentGenerateTemplatesType.UP_SPECIAL.fields,
     ) {
         const fields = {} as { [key: string]: string | string[] };
 

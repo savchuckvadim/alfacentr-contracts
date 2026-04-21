@@ -54,9 +54,9 @@ export const ParticipantEditContent = ({
     const isCreating = editable.id === 0;
 
     useEffect(() => {
-        let count = 2;
-        if (hasPpk || isCreating) {
-            count -= 1;
+        let count = 1;
+        if (hasPpk) {
+            count += 1;
         }
         if (hasSeminar) {
             count++;
@@ -231,7 +231,7 @@ export const ParticipantEditContent = ({
             </Card>}
 
             {/* ППК программы */}
-            {(hasPpk || !isCreating) && <Card className={`h-fit transition-all duration-300 ease-in-out `}>
+            {(hasPpk) && <Card className={`h-fit transition-all duration-300 ease-in-out `}>
                 <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-lg">
                         <BookOpenIcon className="w-5 h-5 text-primary" />

@@ -76,7 +76,7 @@ export const Programs = ({
                                             {program.value}
                                         </p>
                                     </div>
-                                    <Button
+                                    {/* <Button
                                         variant="ghost"
                                         size="sm"
                                         onClick={() =>
@@ -85,7 +85,7 @@ export const Programs = ({
                                         className="text-destructive hover:text-destructive"
                                     >
                                         <Trash2 className="h-4 w-4" />
-                                    </Button>
+                                    </Button> */}
                                 </div>
                             ))}
                         </div>

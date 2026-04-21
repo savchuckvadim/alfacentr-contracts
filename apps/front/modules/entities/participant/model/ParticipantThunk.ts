@@ -168,7 +168,7 @@ export const addParticipant = createAsyncThunk<
             const state = getState();
             const editable = state.participant.editable;
             const dealId = state.app.bitrix.deal?.ID;
-            
+
             if (!dealId) {
                 throw new Error('Нет данных для создания участника');
             }
@@ -191,7 +191,7 @@ export const addParticipant = createAsyncThunk<
             const addedItem = getParticipant(
                 bxResult as IAlfaParticipantSmartItem,
             );
-            debugger
+
             return addedItem;
         } catch (error) {
             throw new Error(

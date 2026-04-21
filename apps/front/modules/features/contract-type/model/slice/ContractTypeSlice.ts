@@ -16,6 +16,7 @@ export enum EContractType {
     seminar_ppk = 'seminar_ppk',
     up_complect = 'up_complect',
     up_video = 'up_video',
+    up_special = 'up_special',
 }
 export enum EContractName {
     seminar = 'Семинар',
@@ -23,6 +24,7 @@ export enum EContractName {
     seminar_ppk = 'Семинар ППК',
     up_complect = 'УП комплектом',
     up_video = 'УП видеозапись',
+    up_special = 'Спецпродукт',
 }
 
 export interface EContractTypeField {
@@ -57,6 +59,11 @@ const initialState: IContractTypeState = {
             code: EContractType.up_video,
             name: EContractName.up_video,
             id: 4,
+        },
+        {
+            code: EContractType.up_special,
+            name: EContractName.up_special,
+            id: 5,
         },
     ],
     current: null as null | EContractTypeField,

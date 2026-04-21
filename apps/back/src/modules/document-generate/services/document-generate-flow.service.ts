@@ -20,16 +20,13 @@ import { BxDealStageFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-
 import { EmailDocumentFlowService } from '@/modules/flow/email-flow/email-document-flow.service';
 import { BxDealContactFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-contact-flow.service';
 import { IRequestDocumentGenerateResponse } from '../type/request-document-generate.type';
-import { BitrixService } from '@/modules/bitrix';
 import { BxDiskFlowService } from '@/modules/flow/disk-flow/bx-disk-flow.service';
 import { delay } from '@/lib';
 
 export class DocumentGenerateFlowService {
-    private bitrix: BitrixService;
-    private dealId: number;
+
     private filesForSend: [string, string][] = [];
     private userId: number;
-    private companyName: string = 'Компания без названия';
     private bxTimelineService: BxTimelineService;
     private bxDocumentSendService: BxBatchDocumentSendService;
     private documentGenerateDocService: DocumentGenerateDocService;
@@ -44,10 +41,7 @@ export class DocumentGenerateFlowService {
 
     async generateDocument(dto: DocumentGenerateDto) {
         const { bitrix } = await this.pbxService.init('alfacentr.bitrix24.ru');
-        this.companyName = dto.companyName || 'Компания без названия';
-        this.bitrix = bitrix;
         const dealId = Number(dto.dealId);
-        this.dealId = dealId;
         const dealService = new BxDealStageFlowService(bitrix, dealId);
         const contactService = new BxDealContactFlowService(bitrix, dealId);
         const bxDiskFlowService = new BxDiskFlowService(bitrix, dealId);

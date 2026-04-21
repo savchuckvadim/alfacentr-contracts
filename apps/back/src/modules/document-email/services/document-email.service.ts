@@ -27,7 +27,6 @@ interface IDealData {
     documentPrefixNumber: string;
     edoComment: string;
     needEdoEmail: boolean;
-    companyName: string;
 }
 interface IBitrixIdsForDeal {
     emailBitrixId: string;
@@ -48,7 +47,7 @@ export class DocumentEmailService {
     ) { }
 
     async sendDocumentEmail(dto: DocumentEmailDto) {
-        const { dealId, userId: userIdString, userName, domain } = dto;
+        const { dealId, userId: userIdString, userName, domain, companyName } = dto;
         const userId = Number(userIdString);
         const { bitrix } = await this.pbxService.init(domain);
 
@@ -93,7 +92,6 @@ export class DocumentEmailService {
                 name,
                 phone,
                 documentPrefixNumber,
-                companyName,
                 needEdoEmail,
                 edoComment,
 
@@ -175,7 +173,6 @@ export class DocumentEmailService {
             phone: deal[phoneBitrixId] as string,
             edoComment: deal[edoCommentBitrixId] as string,
             documentPrefixNumber: `${deal[documentPrefixBitrixId] as string} ${deal[documentNumberBitrixId] as string}`,
-            companyName: deal['COMPANY_NAME'] as string,
             needEdoEmail: false,
 
         } as IDealData;

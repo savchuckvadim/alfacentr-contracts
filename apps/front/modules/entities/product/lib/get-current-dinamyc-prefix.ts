@@ -2,8 +2,7 @@ import { IAlfaProduct } from '../model/ProductSlice';
 import {
     getHasPpk,
     getHasSeminar,
-    getHasUpComplect,
-    getHasUpVideo,
+    getHasUp,
     getIsPpkProduct,
     getIsSeminarProduct,
     getIsUpProduct,
@@ -14,9 +13,7 @@ export const getCurrentDinamycPrefix = (products: IAlfaProduct[]) => {
     let prefix = '';
     const hasSeminar = getHasSeminar(products);
     const hasPpk = getHasPpk(products);
-    const hasUpComplect = getHasUpComplect(products);
-    const hasUpVideo = getHasUpVideo(products);
-    const hasUp = hasUpComplect || hasUpVideo;
+    const hasUp = getHasUp(products);
     if (hasSeminar) {
         const firstSeminarProduct = products.find(product =>
             getIsSeminarProduct(product),

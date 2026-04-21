@@ -16,7 +16,7 @@ export enum EnumFizRqFields {
     DEP_CODE = 'depCode',
 
     OTHER = 'other',
-
+    BASE_OTHER = 'base_other',
     TYPE = 'type',
 }
 
@@ -49,7 +49,7 @@ export enum EnumOrganizationRqFields {
 
     ACCOUNTANT = 'accountant',
     OTHER = 'other',
-
+    BASE_OTHER = 'base_other',
     TYPE = 'type',
 }
 
@@ -71,7 +71,7 @@ export enum EnumDocumentFizRqFields {
     DEP_CODE = 'depCode',
 
     OTHER = 'other',
-
+    BASE_OTHER = 'base_other',
     TYPE = 'type',
 }
 
@@ -99,6 +99,6 @@ export enum EnumDocumentOrganizationRqFields {
 
     // ACCOUNTANT = 'accountant',
     OTHER = 'other',
-
+    BASE_OTHER = 'base_other',
     // TYPE = 'type',
 }

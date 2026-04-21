@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { documentGenerate } from './DocumentThunk';
+import { documentGenerate } from '../thunk/DocumentThunk';
 
 export interface IDocumentState {
     document: {

@@ -17,10 +17,11 @@ import { PresetId } from '../enums/preset-id.enum';
 import { BitrixOwnerTypeId } from '@/commands/category/dto/category-response.dto';
 import { PortalModel } from '@/modules/portal/services/portal.model';
 import { getPresetConfig, PresetConfig } from './BxRqService';
+import { mutateCustomFieldXmlIdByName } from '../shared/';
 
 @Injectable()
 export class RequisiteUpdateService {
-    constructor(private readonly requisiteService: RequisiteService) {}
+    constructor(private readonly requisiteService: RequisiteService) { }
 
     async updateRequisite(
         erqItem: ERQItem,
@@ -59,10 +60,16 @@ export class RequisiteUpdateService {
             // Обновляем customFields
             if (updateRq.customFields) {
                 for (const customField of updateRq.customFields) {
+                    // if(customField.FIELD_NAME?.includes('1773131028')) {
+                    //     customField.XML_ID = "base_other";
+                    // }
+                    mutateCustomFieldXmlIdByName(customField);
                     const customXmlId = customField.XML_ID?.trim() || '';
                     if (customXmlId === eventRequisite.code) {
                         customField.value = eventRequisite.value;
                     }
+
+
                 }
             }
         }
@@ -89,9 +96,10 @@ export class RequisiteUpdateService {
                     updateRq,
                     domain,
                     erqItem.preset_id!,
-                );
+                ) as number;
                 return new ERQItem({ bx_id: bx_id });
             } catch (error) {
+                console.log('error', error);
                 throw new BadRequestException(ErrorMessage.NOT_FULL_DATA);
             }
 

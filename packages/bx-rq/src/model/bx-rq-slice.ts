@@ -119,8 +119,8 @@ export const bxrqSlice = createSlice({
             const item: EvsRqItem = current
                 ? current
                 : items.length > 0
-                  ? items[0]!
-                  : rqData.default!;
+                    ? items[0]!
+                    : rqData.default!;
 
             state.current.items = items;
             state.current.item = item;
@@ -157,16 +157,19 @@ export const bxrqSlice = createSlice({
                 // supplyType: SupplyTypesType;
             }>,
         ) => {
+
             if (state.current.item) {
                 const base = { ...state.current.item };
-                base.fields = base.fields
+                const baseFields = base.fields
                     ? filterFieldItems(
-                          base.fields,
-                          action.payload.currentClientType,
-                          // action.payload.contractType,
-                          // action.payload.supplyType,
-                      )
+                        base.fields,
+                        action.payload.currentClientType,
+                        // action.payload.contractType,
+                        // action.payload.supplyType,
+                    )
                     : base.fields;
+
+                base.fields = baseFields
 
                 state.creating.base = base;
             }

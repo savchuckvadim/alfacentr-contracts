@@ -239,21 +239,31 @@ export const saveBXRQ =
                 } as BXRQState;
 
                 const simpleBankComment =
-                    rqsState.creating.simpleBankComment?.trim();
+                    rqsState.creating.simpleBankComment?.trim() ?? '';
                 const isSimpleBankCommentMode =
                     rqsState.settings?.isSimpleBankCommentMode ?? false;
-
-                if (isSimpleBankCommentMode && simpleBankComment) {
-                    const currentBank =
-                        currentItem.bank?.current || currentItem.bank?.items?.[0];
-
+                const currentBank =
+                    currentItem.bank?.current || currentItem.bank?.items?.[0];
+                const currentBankComment = (
+                    currentBank?.fields?.find(
+                        field => field.code === BANK_RQ_ITEM_CODE.BANK_COMMENTS,
+                    )?.value || ''
+                )
+                    .toString()
+                    .trim();
+                const shouldSaveSimpleBankComment =
+                    isSimpleBankCommentMode &&
+                    (Boolean(simpleBankComment) ||
+                        simpleBankComment !== currentBankComment);
+debugger
+                if (shouldSaveSimpleBankComment) {
                     const sourceBankFields = currentBank?.fields || [];
                     let bankFieldsWithComment = updateBankFieldValue(
                         sourceBankFields,
                         BANK_RQ_ITEM_CODE.BANK_COMMENTS,
                         simpleBankComment,
                     );
-
+                    debugger
                     const bankNameField = bankFieldsWithComment.find(
                         field => field.code === BANK_RQ_ITEM_CODE.BANK_NAME,
                     );

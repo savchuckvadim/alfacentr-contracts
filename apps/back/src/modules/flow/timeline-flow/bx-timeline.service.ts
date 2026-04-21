@@ -1,5 +1,5 @@
 import { delay } from '@/lib';
-import { BitrixOwnerTypeId, BitrixService, IBXTimelineComment } from '@/modules/bitrix';
+import {  BitrixService, IBXTimelineComment } from '@/modules/bitrix';
 import { documentFields, EnumDealDocumentFieldCode } from '@alfa/entities';
 
 export class BxTimelineService {
@@ -48,7 +48,7 @@ export class BxTimelineService {
         const documentDealData = documentFields
         const pinedField = documentDealData[EnumDealDocumentFieldCode.TIMELINE_DOCUMENT_PIN];
         const pinedFieldBitrixId = pinedField.bitrixId;
-   
+
         await delay(1300)
         const dealResponse = await this.bitrix.deal.get(this.entityId, [pinedFieldBitrixId]);
         const deal = dealResponse.result;

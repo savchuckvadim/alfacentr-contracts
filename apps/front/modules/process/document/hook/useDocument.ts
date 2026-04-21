@@ -1,6 +1,6 @@
 'use client';
 import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
-import { documentGenerate } from '../model/DocumentThunk';
+import { documentGenerate } from '../model/thunk/DocumentThunk';
 import { useEffect, useState } from 'react';
 
 export const useDocument = () => {

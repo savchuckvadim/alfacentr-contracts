@@ -3,8 +3,6 @@ import {
     BxParticipantsDataKeys,
     bxProductData,
     IParticipant,
-    IParticipantField,
-    AlfaParticipantSmartItemUserFieldsEnum,
 } from '@alfa/entities';
 import { getProductsByType } from './product.util';
 import {
@@ -298,7 +296,7 @@ export const getParicipantSeminarTopicsStats = (
                 product: null,
                 potintialProduct: topic.products[0] ?? null,
             });
-      
+
         }
     });
 

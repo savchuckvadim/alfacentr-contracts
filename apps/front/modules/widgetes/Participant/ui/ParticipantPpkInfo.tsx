@@ -77,7 +77,7 @@ export const ParticipantPpkInfo = ({
 
     let missingProducts: string[] = [];
     // const [hasProblems, setHasProblems] = useState(false)
-    const { hasProblems, problems, isParticipantPpkLoading } =
+    const { hasProblems } =
         useParticipantInfo(participant.id);
     const { activateEditable, editable } = useEditParticipant(participant.id);
     const onEdit = (participantId: number) => {
@@ -408,7 +408,7 @@ export const ParticipantPpkInfo = ({
             />
 
             {/* Действия */}
-            <Card>
+            {/* <Card>
                 <CardContent className="pt-6">
                     <div className="flex gap-3">
                         <Button className="flex-1" variant="outline">
@@ -421,7 +421,7 @@ export const ParticipantPpkInfo = ({
                         </Button>
                     </div>
                 </CardContent>
-            </Card>
+            </Card> */}
             {editable && (
                 <ParticipalEditModal
                     isActive={!!editable}

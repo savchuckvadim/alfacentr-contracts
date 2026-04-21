@@ -8,7 +8,6 @@ import { DealValue } from '../../../lib/deal-helper/deal-values-helper.service';
 import { BxDealDataKeys, getProductTypeByProductName } from '@alfa/entities';
 import { bxProductData } from '@alfa/entities';
 import { BitrixOwnerType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
-import { ListProductRowDto } from '@/modules/bitrix/domain/crm/product-row/dto/list-product-row.sto';
 import { BxParticipantsDataKeys } from '@alfa/entities';
 import { delay } from '@/lib';
 
@@ -41,50 +40,6 @@ const select = [
 export class AlfaProductService {
     constructor(private readonly bitrix: BitrixService) {}
 
-    //TODO: убрать вообще этот метод уп товары не добавляем
-
-    // async addUpProducts(dealId: number, dealValues: DealValue[]) {
-    //     const products: IBXProduct[] = [];
-    //     const productsWithoutPrefix: IBXProduct[] = [];
-    //     const prefix = dealValues.find(
-    //         (value) => value.code === BxDealDataKeys.prefix,
-    //     )?.value as string;
-    //     const value = (dealValues.find(
-    //         (value) => value.code === BxDealDataKeys.seminar_up_packet,
-    //     ) as DealValue)?.value as string | undefined;
-
-    //     if (
-    //         value &&
-    //         typeof value === 'string'
-    //     ) {
-
-    //             const filter = {
-    //                 // "=active": "Y",
-    //                 iblockId: 24,
-    //                 '=name': value as string,
-
-    //             };
-
-    //             const response = await this.bitrix.product.getList(
-    //                 filter,
-    //                 select,
-    //             );
-    //             await delay(1000);
-    //             response.result.products.map((product) => {
-    //                 productsWithoutPrefix.push(product);
-
-    //                 products.push(product);
-
-    //             });
-
-    //     }
-
-    //     if (products.length > 0) {
-
-    //         void await this.setProductsInDeal(dealId, products);
-    //     }
-    //     return products;
-    // }
 
     async addPpkProducts(dealId: number, dealValues: DealValue[]) {
         const products: IBXProduct[] = [];

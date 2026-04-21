@@ -1,7 +1,6 @@
 import { IAlfaProduct } from '@/modules/entities';
 import {
-    getPrefixByProductName,
-    getProductTypeByProductName,
+        getProductTypeByProductName,
     ProductType,
 } from '@alfa/entities';
 // import { bxProductData } from '@alfa/entities';
@@ -20,8 +19,12 @@ export const getProductTypeName = (product: IAlfaProduct): string => {
         case 'ppk':
             type = 'ппк';
             break;
-        case 'up':
+        case 'up_video':
+        case 'up_complect':
             type = 'уп';
+            break;
+        case 'up_special':
+            type = 'спецпродукт';
             break;
         default:
             type = 'N/A';
@@ -44,50 +47,67 @@ export const getIsSeminarProduct = (product: IAlfaProduct): boolean => {
 export const getIsSeminarPpkProduct = (products: IAlfaProduct[]): boolean => {
     return getHasSeminarPpk(products);
 };
-export const getIsUpProduct = (product: IAlfaProduct): boolean => {
-    return getProductType(product) === 'up';
+
+export const getIsUpSpecialProduct = (product: IAlfaProduct): boolean => {
+    const type = getProductType(product);
+    return type === 'up_special';
+};
+export const getIsUpVideoProduct = (product: IAlfaProduct): boolean => {
+    const type = getProductType(product);
+    return type === 'up_video';
+};
+export const getIsUpComplectProduct = (product: IAlfaProduct): boolean => {
+    const type = getProductType(product);
+    return type === 'up_complect';
 };
 
-// export function getPrefixByProductName(productName: string): string {
-//     const match = productName.match(/\[\]\s*(.*)/);
-//     return match ? (match[1] as string) : '';
-// }
-// export const getProductTypeByProductName = (
-//     productName: string,
-// ): ProductType => {
-//     const prefix = getPrefixByProductName(productName);
+export const getIsUpProduct = (product: IAlfaProduct): boolean => {
 
-//     if (prefix.includes('СР') || prefix.includes('СН')) {
-//         return 'seminar' as ProductType;
-//     } else if (prefix.includes('ППК')) {
-//         return 'ppk' as ProductType;
-//     } else {
-//         return 'up' as ProductType;
-//     }
-// };
+    const result = getIsUpComplectProduct(product) ||
+        getIsUpVideoProduct(product) ||
+        getIsUpSpecialProduct(product);
+
+    return result;
+};
+
+
 export const getHasPpk = (products: IAlfaProduct[]): boolean => {
-    return products.some(product =>
-        getPrefixByProductName(product.productName || '').includes('ППК'),
-    );
+    return products.some(product => getIsPpkProduct(product));
+    // return products.some(product =>
+    //     getPrefixByProductName(product.productName || '').includes('ППК'),
+    // );
 };
 
 export const getHasSeminar = (products: IAlfaProduct[]): boolean => {
-    return products.some(
-        product =>
-            getPrefixByProductName(product.productName || '').includes('СР') ||
-            getPrefixByProductName(product.productName || '').includes('СН'),
-    );
+    return products.some(product => getIsSeminarProduct(product));
+    // return products.some(
+    //     product =>
+    //         getPrefixByProductName(product.productName || '').includes('СР') ||
+    //         getPrefixByProductName(product.productName || '').includes('СН'),
+    // );
 };
 export const getHasSeminarPpk = (products: IAlfaProduct[]): boolean => {
     return getHasPpk(products) && getHasSeminar(products);
 };
 export const getHasUpComplect = (products: IAlfaProduct[]): boolean => {
-    return products.some(product =>
-        getPrefixByProductName(product.productName || '').includes('УП'),
-    );
+    return products.some(product => getIsUpComplectProduct(product));
+    // return products.some(product =>
+    //     getPrefixByProductName(product.productName || '').includes('УП'),
+    // );
 };
 export const getHasUpVideo = (products: IAlfaProduct[]): boolean => {
-    return products.some(product =>
-        getPrefixByProductName(product.productName || '').includes('УВ'),
-    );
+    return products.some(product => getIsUpVideoProduct(product));
+    // return products.some(product =>
+    //     getPrefixByProductName(product.productName || '').includes('УВ'),
+    // );
+};
+export const getHasUpSpecial = (products: IAlfaProduct[]): boolean => {
+    return products.some(product => getIsUpSpecialProduct(product));
+    // return products.some(product =>
+    //     getPrefixByProductName(product.productName || '').includes('УС'),
+    // );
+};
+
+export const getHasUp = (products: IAlfaProduct[]): boolean => {
+    return getHasUpComplect(products) || getHasUpVideo(products) || getHasUpSpecial(products);
 };

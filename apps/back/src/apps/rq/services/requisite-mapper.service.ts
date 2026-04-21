@@ -18,7 +18,7 @@ import { RQ_TYPE } from '@alfa/entities';
 
 @Injectable()
 export class RequisiteMapperService {
-    constructor(private readonly pbxService: PBXService) {}
+    constructor(private readonly pbxService: PBXService) { }
 
     async mapBxRequisitesToErqDto(
         bxRqs: BXRequisiteDTO[],
@@ -144,18 +144,21 @@ export class RequisiteMapperService {
             if (code.code.includes('address') || code.code.includes('bank')) {
                 continue;
             }
+            const field = new ERQField({
+                type: code.type,
+                name: code.name,
+                value: value,
+                code: code.code,
+                includes: code.includes.map((inc: any) =>
+                    typeof inc === 'string'
+                        ? inc
+                        : inc.value || inc,
+                ),
+                order: code.order,
+            })
 
             eventRequisiteDto.push(
-                new ERQField({
-                    type: code.type,
-                    name: code.name,
-                    value: value,
-                    code: code.code,
-                    includes: code.includes.map((inc: any) =>
-                        typeof inc === 'string' ? inc : inc.value || inc,
-                    ),
-                    order: code.order,
-                }),
+                field,
             );
         }
 

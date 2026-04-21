@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { GetRqRequestDto } from '../dto/request.dto';
 import { ERQDTO } from '../dto/erq-item.dto';
-import { RequisiteService } from '../services/requisite.service';
+// import { RequisiteService } from '../services/requisite.service';
 import { RequisiteMapperService } from '../services/requisite-mapper.service';
-import { PBXService } from '@/modules/pbx/pbx.servise';
+// import { PBXService } from '@/modules/pbx/pbx.servise';
 import { BxRqService } from '../services/BxRqService';
 
 @Injectable()
 export class GetRqUseCase {
     constructor(
-        private readonly requisiteService: RequisiteService,
+        // private readonly requisiteService: RequisiteService,
         private readonly requisiteMapperService: RequisiteMapperService,
-        private readonly pbxService: PBXService,
+        // private readonly pbxService: PBXService,
         private readonly bxRqService: BxRqService,
     ) {}
 

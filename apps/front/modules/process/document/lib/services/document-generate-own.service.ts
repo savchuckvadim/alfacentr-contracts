@@ -7,10 +7,10 @@ import {
 import { IRequestDocumentGenerateType } from '@alfa/entities';
 import { WSClient } from '@workspace/ws';
 import { registerWSHandler } from '@/modules/shared/Websocket/ws-handlers-registry';
-import { documentGenerateDone } from '../../model/DocumentThunk';
+import { documentGenerateDone } from '../../model/thunk/DocumentThunk';
 
 export class DocumentGenerateOwnService {
-    constructor() {}
+    constructor() { }
 
     async push(dto: IRequestDocumentGenerateType) {
         const response = await backAPI.service(
@@ -21,8 +21,8 @@ export class DocumentGenerateOwnService {
         if (response.resultCode !== EResultCode.SUCCESS) {
             throw new Error(
                 response?.errors?.join(', ') ||
-                    response.message ||
-                    'Error generating document',
+                response.message ||
+                'Error generating document',
             );
         }
         return response.data;

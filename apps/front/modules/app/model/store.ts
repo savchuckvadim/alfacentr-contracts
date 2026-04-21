@@ -30,7 +30,7 @@ import { documentRqReducer } from '@/modules/features/document-rq';
 import { WSClient } from '@/modules/shared/Websocket/ws-client';
 import { WSClient as WSClientWorkspace } from '@workspace/ws';
 
-import { documentReducer } from '@/modules/process/document/model/DocumentSlice';
+import { documentReducer } from '@/modules/process/document/';
 
 export const listenerMiddleware = createListenerMiddleware();
 
@@ -51,7 +51,7 @@ const rootReducer = combineReducers({
     communications: communicationsReducer,
     dealActDate: dealActDateReducer,
     dealEdoComment: dealEdoCommentReducer,
-    
+
     //process
     document: documentReducer,
 });

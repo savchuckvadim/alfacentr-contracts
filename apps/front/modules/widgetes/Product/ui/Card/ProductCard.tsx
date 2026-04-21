@@ -6,13 +6,13 @@ import {
     getIsSeminarProduct,
     getProductTypeName,
     getIsUpProduct,
+    getIsUpSpecialProduct,
 } from '@/modules/entities/product/lib/get-product-type.util';
 import {
     getProductFormat,
     getProductPrefix,
 } from '@/modules/entities/product/lib/get-product-format.util';
 import { useParticipantPpk } from '@/modules/features/participant-product';
-import { getParticipantName } from '@/modules/entities/participant/ui/utils/participant.utils';
 import {
     Card,
     CardContent,
@@ -23,26 +23,15 @@ import {
 import { Badge } from '@workspace/ui/components/badge';
 
 import {
-    Users,
     Package,
     Hash,
-    TrendingUp,
-    AlertTriangle,
-    CheckCircle,
-    ChevronDown,
-    ChevronUp,
     Monitor,
     MapPin,
-    CreditCard,
 } from 'lucide-react';
-import { useState } from 'react';
 import Link from 'next/link';
-import {
-    filterProductFieldsForDetails,
-    getProductFieldValue,
-} from '@/modules/entities/product';
+
 import { cn } from '@workspace/ui/lib/utils';
-import { LinkBadge, Tooltip } from '@/modules/shared';
+import { Tooltip } from '@/modules/shared';
 import { ProductInfo } from './components/ProductInfo';
 import { ProductStatistics } from './components/ProductStatistics';
 
@@ -56,6 +45,7 @@ export const ProductCard = ({ product }: IProductCardProps) => {
 
     const isSeminar = getIsSeminarProduct(product);
     const isUp = getIsUpProduct(product);
+    const isUpSpecial = getIsUpSpecialProduct(product);
     const { productToParticipants } = useParticipantPpk();
 
     // Получаем количество назначенных участников
@@ -68,37 +58,38 @@ export const ProductCard = ({ product }: IProductCardProps) => {
     const getTypeBadgeColor = () => {
         if (isPpk) return 'bg-foreground text-background' as const;
         if (isSeminar) return 'bg-foreground text-background' as const;
-        if (isUp) return 'bg-orange-700 text-zinc-50' as const;
+        if(isUpSpecial) return 'bg-violet-500 text-zinc-50' as const;
+        if (isUp) return 'bg-orange-500 text-zinc-50' as const;
         return 'bg-secondary' as const;
     };
 
     // Определяем статус заполненности для ППК продуктов
-    const getAvailabilityStatus = () => {
-        if (!isPpk || !product) return null;
+    // const getAvailabilityStatus = () => {
+    //     if (!isPpk || !product) return null;
 
-        // const { needed, available, diff } = productStats
-        const diff = (product.quantity || 0) - assignedCount;
+    //     // const { needed, available, diff } = productStats
+    //     const diff = (product.quantity || 0) - assignedCount;
 
-        if (diff < 0)
-            return {
-                status: 'deficit',
-                message: `Слишком много участников: ${Math.abs(diff)} мест`,
-                variant: 'destructive' as const,
-            };
-        if (diff > 0)
-            return {
-                status: 'surplus',
-                message: `Слишком мало участников: ${diff} свободных мест`,
-                variant: 'destructive' as const,
-            };
-        return {
-            status: 'balanced',
-            message: 'Мест достаточно',
-            variant: 'default' as const,
-        };
-    };
+    //     if (diff < 0)
+    //         return {
+    //             status: 'deficit',
+    //             message: `Слишком много участников: ${Math.abs(diff)} мест`,
+    //             variant: 'destructive' as const,
+    //         };
+    //     if (diff > 0)
+    //         return {
+    //             status: 'surplus',
+    //             message: `Слишком мало участников: ${diff} свободных мест`,
+    //             variant: 'destructive' as const,
+    //         };
+    //     return {
+    //         status: 'balanced',
+    //         message: 'Мест достаточно',
+    //         variant: 'default' as const,
+    //     };
+    // };
 
-    const availabilityStatus = getAvailabilityStatus();
+    // const availabilityStatus = getAvailabilityStatus();
 
     return (
         <Card className="w-full hover:shadow-md transition-shadow">

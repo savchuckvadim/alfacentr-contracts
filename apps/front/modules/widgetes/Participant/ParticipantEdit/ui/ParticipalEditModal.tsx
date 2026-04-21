@@ -9,8 +9,7 @@ import { Button } from '@workspace/ui/components/button';
 import { ModalScreen } from '@/modules/shared';
 import { ParticipantEditContent } from './components/ParticipantEditContent';
 import { useParticipant } from '@/modules/entities';
-import { useEffect, useState } from 'react';
-import { useProductType } from '@/modules/entities/product/hook/useProductType';
+
 
 interface ParticipalEditModalProps {
     isActive: boolean;

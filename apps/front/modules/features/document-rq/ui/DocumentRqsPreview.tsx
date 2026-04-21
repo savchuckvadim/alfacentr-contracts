@@ -11,8 +11,9 @@ import {
 import { useApp } from '@/modules/app';
 import { useClientType } from '@/modules/features/client-type/hook/useClientType';
 import { BxRqEditModal } from '@/modules/entities/bx-rq';
-import { Tooltip } from '@/modules/shared';
 import { type DocumentPreviewLineKey } from '../utils/document-rq.util';
+import { ClientRqHeader } from './rqs-preview/components/ClientRqHeader';
+import { ClientRqViewLines } from './rqs-preview/components/ClientRqViewLines';
 
 export const DocumentRqsPreview = () => {
     const { client, provider, clientPreviewLines } = useDocumentRq();
@@ -48,6 +49,7 @@ export const DocumentRqsPreview = () => {
 
     const getFilteredBaseFields = () => {
         if (!creating?.fields) return [];
+
         if (!isRqCreated || !activeKey) return creating.fields;
 
         if (activeKey === 'other') return [];
@@ -57,11 +59,14 @@ export const DocumentRqsPreview = () => {
             kpp: RQ_ITEM_CODE.KPP,
             phone: RQ_ITEM_CODE.PHONE,
             fullname: RQ_ITEM_CODE.FULLNAME,
+            base_other: RQ_ITEM_CODE.BASE_OTHER,
         };
 
         const fieldCode = codeByKey[activeKey];
         if (!fieldCode) return creating.fields;
-        return creating.fields.filter(field => field.code === fieldCode);
+        const filteredFields = creating.fields.filter(field => field.code === fieldCode);
+
+        return filteredFields;
     };
 
     const handleClientLineClick = (line: {
@@ -73,7 +78,9 @@ export const DocumentRqsPreview = () => {
         console.log('clientType', clientType);
         console.log('line.canEdit', line.canEdit);
 
-        if (!clientType || !line.canEdit) return;
+        if (!clientType || !line.canEdit) {
+            return;
+        }
         setActiveKey(line.key);
 
         if (line.section === 'address') {
@@ -95,6 +102,12 @@ export const DocumentRqsPreview = () => {
         initBaseCreating(clientType);
     };
 
+    const handleClickEditOrCreateBaseRq = () => {
+        if (!clientType) {
+            return;
+        }
+        initBaseCreating(clientType);
+    }
     if (!client || !provider) {
         return null;
     }
@@ -102,32 +115,22 @@ export const DocumentRqsPreview = () => {
     return (
         <div className="flex flex-row justify-between gap-4">
             <div className="w-1/2">
-                <h2>Поставщик</h2>
+                <h2 className='pb-3'>Поставщик</h2>
                 {provider.map((item, index) => {
                     return <p key={`provider-rq-item-${index}`}>{item}</p>;
                 })}
             </div>
             <div className="w-1/2">
-                <h2>Заказчик</h2>
-                {clientPreviewLines.map((line, index) => {
-                    return (
-                        <Tooltip
-                            key={`client-rq-item-${index}`}
-                            content={line.tooltip}
-                        >
-                            <p
-                                className={
-                                    line.canEdit
-                                        ? 'cursor-pointer hover:text-primary whitespace-pre-wrap'
-                                        : 'cursor-not-allowed text-muted-foreground whitespace-pre-wrap'
-                                }
-                                onClick={() => handleClientLineClick(line)}
-                            >
-                                {line.value}
-                            </p>
-                        </Tooltip>
-                    );
-                })}
+                <ClientRqHeader
+                    handleClickEditOrCreateBaseRq={handleClickEditOrCreateBaseRq}
+                    hasRq={isRqCreated}
+                />
+
+                <ClientRqViewLines
+                    lines={clientPreviewLines}
+                    handleClientLineClick={handleClientLineClick}
+                />
+
             </div>
             {creating && creating.fields && (
                 <BxRqEditModal

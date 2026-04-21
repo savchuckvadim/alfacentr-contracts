@@ -17,7 +17,7 @@ export class RequisiteService {
     constructor(private readonly pbxService: PBXService) {}
 
     async getRq(companyId: number, domain: string): Promise<BXRequisiteDTO[]> {
-        const { bitrix, portal, PortalModel } =
+        const { bitrix,  PortalModel } =
             await this.pbxService.init(domain);
 
         const presetOrg = PortalModel.getPresetForName(PresetCode.ORG);
@@ -174,6 +174,8 @@ export class RequisiteService {
                             bxRq.RQ_BASED_CASE = custom.value;
                         } else if (customXmlId === 'director_case') {
                             bxRq.RQ_DIRECTOR_CASE = custom.value;
+                        } else if (customXmlId === 'base_other') {
+                            bxRq.RQ_BASE_OTHER = custom.value;
                         }
                     }
                 }
@@ -373,7 +375,7 @@ export class RequisiteService {
         domain: string,
         presetId: number,
     ): Promise<any> {
-        const { bitrix, portal, PortalModel } =
+        const { bitrix, PortalModel } =
             await this.pbxService.init(domain);
 
         const presetOrg = PortalModel.getPresetForName(PresetCode.ORG);
@@ -537,6 +539,7 @@ export class RequisiteService {
     }
 
     async updateBank(domain: string, bxBank: Bank): Promise<number> {
+        console.log('updateBank bxBank', bxBank);
         const { bitrix } = await this.pbxService.init(domain);
 
         if (bxBank.ID === -1 || bxBank.ID === null || bxBank.ID === undefined) {
@@ -546,10 +549,13 @@ export class RequisiteService {
 
         const updateBank: Record<string, any> = {};
         for (const [key, value] of Object.entries(bxBank)) {
-            if (value !== null && value !== undefined && value !== '') {
+
+            if (value !== null && value !== undefined) {
                 updateBank[key] = value;
             }
+
         }
+
         let bxId = Number(bxBank.ID);
         if (!bxId) {
             const result = await bitrix.api.call(

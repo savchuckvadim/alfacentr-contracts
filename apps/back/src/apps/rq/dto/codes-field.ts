@@ -81,6 +81,14 @@ export class CodesField {
         order: 107,
     });
 
+    static RQ_BASE_OTHER = new Names({ //1773131028
+        name: 'Дополнительные реквизиты',
+        type: 'string',
+        code: 'base_other',
+        includes: [IncludesEnum.org, IncludesEnum.ip, IncludesEnum.fiz],
+        order: 110,
+    });
+
     static RQ_LAST_NAME = new Names({
         name: 'Фамилия',
         type: 'string',

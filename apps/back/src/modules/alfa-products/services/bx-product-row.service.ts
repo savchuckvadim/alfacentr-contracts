@@ -2,7 +2,6 @@ import { BitrixService, IBXProduct } from '@/modules/bitrix';
 import { ListProductRowDto } from '@/modules/bitrix/domain/crm/product-row/dto/list-product-row.sto';
 import { bxProductData } from '@alfa/entities';
 import { BitrixOwnerType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
-import { IBitrixBatchResponseResult } from '@/modules/bitrix/core/interface/bitrix-api.intterface';
 import { IBXProductRowRow } from '@/modules/bitrix/domain/crm/product-row/interface/bx-product-row.interface';
 import { delay } from '@/lib/utils/delay.util';
 
@@ -57,6 +56,7 @@ export class BxProductRowService {
             );
             const resultRow = {
                 ...row,
+                productName: product.name,
                 product: product,
             } as BxProductRowWithProduct;
             products.push(product);
@@ -65,18 +65,7 @@ export class BxProductRowService {
             await delay(300);
         }
 
-        // productRows.forEach((row, index) => {
-        //     this.getProduct(
-        //         row.productId as number,
-        //         row.id?.toString() || index.toString(),
-        //     );
-        // });
-        // const response = await this.bitrix.api.callBatchWithConcurrency(1);
 
-        // const rowsWithProducts = this.prepareRowToRowWithProduct(
-        //     productRows,
-        //     response,
-        // );
         return { rowsWithProducts };
     }
     // private prepareResponses(responses: IBitrixBatchResponseResult<IBitrixBatchResponseResultProduct>[]): IBXProduct[] {

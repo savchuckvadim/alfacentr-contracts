@@ -70,6 +70,9 @@ export const applyCustomFieldsToRequisite = (
             case 'director_case':
                 requisite.RQ_DIRECTOR_CASE = custom.value;
                 break;
+            case 'base_other':
+                requisite.RQ_BASE_OTHER = custom.value;
+                break;
         }
     }
 };

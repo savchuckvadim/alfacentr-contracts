@@ -4,6 +4,7 @@ export enum EContractType {
     seminar_ppk = 'seminar_ppk',
     up_complect = 'up_complect',
     up_video = 'up_video',
+    up_special = 'up_special',
 }
 export enum EContractName {
     seminar = 'Семинар',
@@ -11,6 +12,7 @@ export enum EContractName {
     seminar_ppk = 'Семинар ППК',
     up_complect = 'УП комплектом',
     up_video = 'УП видеозапись',
+    up_special = 'Спецпродукт',
 }
 export enum DocumentGenerateFieldTemplateCode {
     ACT_DATE = 'DateAct',
@@ -63,6 +65,9 @@ export type DocumentContractUPComplectFieldsType =
     typeof DocumentGenerateTemplatesType.UP_COMPLECT.fields;
 export type DocumentContractUPVideoFieldsType =
     typeof DocumentGenerateTemplatesType.UP_VIDEO.fields;
+
+export type DocumentContractUPSpecialFieldsType =
+    typeof DocumentGenerateTemplatesType.UP_SPECIAL.fields;
 export const DocumentGenerateTemplatesType = {
     SEMINAR_PPK_DEAL: {
         id: 134,
@@ -372,9 +377,61 @@ export const DocumentGenerateTemplatesType = {
                 type: 'string',
             },
         ],
-        forContract: [EContractType.ppk] as EContractType[],
+        forContract: [EContractType.up_video] as EContractType[],
     } as const,
+    UP_SPECIAL: {
+        id: 248,
+        name: 'Договор УП Спецпродукт СДЕЛКА',
+        code: 'ContractUPSpecialDeal',
+        fields: [
+            {
+                name: 'Клиент',
 
+                code: DocumentGenerateFieldTemplateCode.ClientRq,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientRq,
+                type: 'string',
+            },
+            {
+                name: 'Шапка договора',
+                code: DocumentGenerateFieldTemplateCode.Header,
+                templateCode: DocumentGenerateFieldTemplateCode.Header,
+                type: 'string',
+            },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+            {
+                name: 'Если в течение 5-ти дней с момента направления документов ЗАКАЗЧИК не подписал акт и не направил мотивированный отказ от подписания акта, услуга считается оказанной, принятой в полном объеме и подлежит оплате. 3.3. {UfCrm8PaymentPoitDoc}',
+                code: DocumentGenerateFieldTemplateCode.Paragraph3,
+                templateCode: DocumentGenerateFieldTemplateCode.Paragraph3,
+                type: 'string',
+            },
+            {
+                name: 'Номер документа',
+                code: DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentPrefixNumber,
+                type: 'string',
+            },
+            {
+                name: 'Номер документа счетчик',
+                code: DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
+                templateCode:
+                    DocumentGenerateFieldTemplateCode.DocumentNumberCounter,
+                type: 'string',
+            },
+            {
+                name: 'Подпись клиента',
+                code: DocumentGenerateFieldTemplateCode.ClientSignature,
+                templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
+                type: 'string',
+            },
+        ],
+        forContract: [EContractType.up_special] as EContractType[],
+    } as const,
     INVOISE_WITH_STAMPS: {
         id: 136,
         name: 'Счет с печатью СЕМИНАРЫ СДЕЛКА',

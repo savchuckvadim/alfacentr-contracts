@@ -17,11 +17,11 @@ export interface IBXField {
         CAPTION_NO_VALUE: string;
         SHOW_NO_VALUE: 'Y' | 'N';
     };
-    EDIT_FORM_LABEL: BitrixLangMap;
-    LIST_COLUMN_LABEL: BitrixLangMap;
-    LIST_FILTER_LABEL: BitrixLangMap;
-    ERROR_MESSAGE: BitrixLangMapNullable;
-    HELP_MESSAGE: BitrixLangMapNullable;
+    EDIT_FORM_LABEL: BitrixLangMap | string;
+    LIST_COLUMN_LABEL: BitrixLangMap | string;
+    LIST_FILTER_LABEL: BitrixLangMap | string;
+    ERROR_MESSAGE: BitrixLangMapNullable | string;
+    HELP_MESSAGE: BitrixLangMapNullable | string;
     LIST?: BitrixEnumerationOption[];
 }
 

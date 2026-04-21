@@ -41,6 +41,7 @@ export class BxClientRqService {
             [EnumFizRqFields.INN]: '',
 
             [EnumFizRqFields.OTHER]: '',
+            [EnumFizRqFields.BASE_OTHER]: '',
             [EnumFizRqFields.ADDRESS]: '',
             [EnumFizRqFields.PRIMARY_ADDRESS]: '',
             [EnumFizRqFields.BANK]: '',
@@ -105,13 +106,19 @@ export class BxClientRqService {
         result.depCode = depCode;
 
 
-        // let phone = '_____________________________';
-        // const phoneValue = clientRq.fields.find(
-        //     fld => fld.code === RQ_ITEM_CODE.PHONE,
-        // )?.value;
-        // phone = `Телефон: ${phoneValue || phone}`;
-        // result.phone = phone;
-
+        let phone = '_____________________________';
+        const phoneValue = clientRq.fields.find(
+            fld => fld.code === RQ_ITEM_CODE.PHONE,
+        )?.value;
+        phone = `Телефон: ${phoneValue || phone}`;
+        result.phone = phone;
+        let baseOther = '';
+        const baseOtherValue = this.findFieldByCode(
+            clientRq,
+            RQ_ITEM_CODE.BASE_OTHER,
+        );
+        baseOther = baseOtherValue ? baseOtherValue : `${baseOther}`;
+        result.base_other = baseOther;
 
         let address = this.getAddressString(
             clientRq,
@@ -152,6 +159,7 @@ export class BxClientRqService {
             [EnumOrganizationRqFields.INN]: '',
             [EnumOrganizationRqFields.KPP]: '',
             [EnumOrganizationRqFields.OTHER]: '',
+            [EnumOrganizationRqFields.BASE_OTHER]: '',
             [EnumOrganizationRqFields.ADDRESS]: '',
             [EnumOrganizationRqFields.BANK]: '',
             [EnumOrganizationRqFields.PHONE]: '',
@@ -238,6 +246,15 @@ export class BxClientRqService {
         );
         result.address = address;
 
+        let baseOther = '';
+        const baseOtherValue = this.findFieldByCode(
+            clientRq,
+            RQ_ITEM_CODE.BASE_OTHER,
+        );
+
+        baseOther = baseOtherValue ? baseOtherValue : `${baseOther}`;
+        result.base_other = baseOther;
+
         const { bankComments } = this.getBankRqs(clientRq.bank.current || null);
         result.other = bankComments;
         //Почтовый адрес не добавляем в результат
@@ -259,16 +276,16 @@ export class BxClientRqService {
     }
 
     public prepareClientOrgShortRq(clientRq: EvsRqItem): string {
-        const shortRqCodes: EnumOrganizationRqFields[] = [
-            EnumOrganizationRqFields.NAME,
-            EnumOrganizationRqFields.FULLNAME,
-            EnumOrganizationRqFields.INN,
-            EnumOrganizationRqFields.KPP,
-            EnumOrganizationRqFields.PRIMARY_ADDRESS,
-            EnumOrganizationRqFields.DIRECTOR_NAME,
-            EnumOrganizationRqFields.DIRECTOR_FIO,
-            EnumOrganizationRqFields.DIRECTOR_POSITION,
-        ];
+        // const shortRqCodes: EnumOrganizationRqFields[] = [
+        //     EnumOrganizationRqFields.NAME,
+        //     EnumOrganizationRqFields.FULLNAME,
+        //     EnumOrganizationRqFields.INN,
+        //     EnumOrganizationRqFields.KPP,
+        //     EnumOrganizationRqFields.PRIMARY_ADDRESS,
+        //     EnumOrganizationRqFields.DIRECTOR_NAME,
+        //     EnumOrganizationRqFields.DIRECTOR_FIO,
+        //     EnumOrganizationRqFields.DIRECTOR_POSITION,
+        // ];
 
         let result: string = '';
 
@@ -324,21 +341,21 @@ export class BxClientRqService {
         return result;
     }
     public prepareClientFizShortRq(clientRq: EvsRqItem): string {
-        const result: EnumFizRqFields[] = [
-            EnumFizRqFields.NAME,
+        // const result: EnumFizRqFields[] = [
+        //     EnumFizRqFields.NAME,
 
-            EnumFizRqFields.DOCUMENT_TYPE,
-            EnumFizRqFields.DOC_SERIES,
-            EnumFizRqFields.DOC_NUMBER,
-            EnumFizRqFields.DOC_DATE,
-            EnumFizRqFields.DEP_CODE,
+        //     EnumFizRqFields.DOCUMENT_TYPE,
+        //     EnumFizRqFields.DOC_SERIES,
+        //     EnumFizRqFields.DOC_NUMBER,
+        //     EnumFizRqFields.DOC_DATE,
+        //     EnumFizRqFields.DEP_CODE,
 
-            EnumFizRqFields.INN,
+        //     EnumFizRqFields.INN,
 
-            EnumFizRqFields.OTHER,
-            EnumFizRqFields.ADDRESS,
-            EnumFizRqFields.PRIMARY_ADDRESS,
-        ];
+        //     EnumFizRqFields.OTHER,
+        //     EnumFizRqFields.ADDRESS,
+        //     EnumFizRqFields.PRIMARY_ADDRESS,
+        // ];
         let fullname = '________________________________________';
         let inn = '';
 
@@ -392,6 +409,8 @@ export class BxClientRqService {
         )?.value;
         depCode = `Код подразделения: ${depCodeValue || depCode}`;
 
+
+
         let addressResult = 'Адрес: ________________________________________';
         let address = this.getAddressString(
             clientRq,
@@ -415,6 +434,9 @@ export class BxClientRqService {
         return `${fullname}`;
     }
     private findFieldByCode(clientRq: EvsRqItem, code: RQ_ITEM_CODE) {
+        if (code === RQ_ITEM_CODE.BASE_OTHER) {
+
+        }
         return clientRq.fields.find(fld => fld.code === code)?.value as string;
     }
 
@@ -764,7 +786,12 @@ export class BxClientRqService {
         const person = this.splitFullName(fullname);
         const first = person.first?.[0]?.toUpperCase() || '';
         const middle = person.middle?.[0]?.toUpperCase() || '';
-        const shortName = `${person.last} ${first}.${middle}.`;
+        let shortName = `${person.last}`;
+        if (first) {
+            shortName = `${person.last} ${first}.`;
+        } else {
+            shortName = `${person.last} ${middle}.`;
+        }
         return shortName;
     }
 

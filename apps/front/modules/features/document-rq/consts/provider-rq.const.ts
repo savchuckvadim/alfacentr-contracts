@@ -56,5 +56,6 @@ export const Provider: DocumentRqAgent<RQ_TYPE.ORGANIZATION> = {
     [EnumOrganizationRqFields.DIRECTOR_CASE]: PROVIDER_RQ_CONST.directorCase,
     [EnumOrganizationRqFields.ACCOUNTANT]: PROVIDER_RQ_CONST.accountant,
     [EnumOrganizationRqFields.OTHER]: '',
+    [EnumOrganizationRqFields.BASE_OTHER]: '',
     [EnumOrganizationRqFields.TYPE]: RQ_TYPE.ORGANIZATION,
 };

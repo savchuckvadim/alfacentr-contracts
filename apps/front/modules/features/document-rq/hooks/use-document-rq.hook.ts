@@ -23,7 +23,6 @@ export const useDocumentRq = () => {
         isBaseCreated,
     );
 
-
     return {
         client: client,
         header: rqs.general.header,

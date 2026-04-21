@@ -6,7 +6,6 @@ import {
 } from '@alfa/entities';
 import { getProductsByType } from '../utils/product.util';
 import {
-    IParicipantPpkThemesStats,
     IParticipantPpkMap,
     IParticipantPpkTopicsStats,
     ITopicStat,

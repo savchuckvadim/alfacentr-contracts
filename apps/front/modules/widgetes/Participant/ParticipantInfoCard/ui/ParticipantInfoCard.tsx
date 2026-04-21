@@ -5,7 +5,7 @@ import { ExternalLink } from 'lucide-react';
 
 import { IParticipant } from '@alfa/entities';
 
-import { ComponentPreloader, Tooltip } from '@/modules/shared';
+import { ComponentPreloader } from '@/modules/shared';
 import Link from 'next/link';
 import { useParticipantInfo } from '../hook/useParticipantInfo';
 

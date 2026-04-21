@@ -38,7 +38,8 @@ export const useIsUpContractType = () => {
     const currentCode = сontractType?.current?.code;
     const isUp =
         currentCode === EContractType.up_complect ||
-        currentCode === EContractType.up_video;
+        currentCode === EContractType.up_video ||
+        currentCode === EContractType.up_special;
 
     return {
         isUp,

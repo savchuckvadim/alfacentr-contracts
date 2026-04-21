@@ -2,6 +2,7 @@ import {
     getIsPpkProduct,
     getIsSeminarProduct,
     getIsUpProduct,
+    getIsUpSpecialProduct,
     getProductTypeName,
 } from '@/modules/entities/product/lib/get-product-type.util';
 import { useParticipantPpk } from './useParticipantPpk';
@@ -13,6 +14,7 @@ export const useProductPpk = (product: IAlfaProduct) => {
     const isPpk = getIsPpkProduct(product);
     const isSeminar = getIsSeminarProduct(product);
     const isUp = getIsUpProduct(product);
+    const isUpSpecial = getIsUpSpecialProduct(product);
     const {
         topicStats,
 
@@ -37,7 +39,8 @@ export const useProductPpk = (product: IAlfaProduct) => {
     const getTypeBadgeColor = () => {
         if (isPpk) return 'bg-indigo-700 text-zinc-50' as const;
         if (isSeminar) return 'bg-foreground text-background' as const;
-        if (isUp) return 'bg-orange-700 text-zinc-50' as const;
+        if(isUpSpecial) return 'bg-violet-500 text-zinc-50' as const;
+        if (isUp) return 'bg-orange-500 text-zinc-50' as const;
         return 'bg-secondary' as const;
     };
 

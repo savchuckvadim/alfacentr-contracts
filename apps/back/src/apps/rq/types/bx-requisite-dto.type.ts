@@ -32,6 +32,7 @@ export class BXRequisiteDTO {
     RQ_POSITION_CASE?: string | null;
     RQ_BASED?: string | null;
     RQ_BASED_CASE?: string | null;
+    RQ_BASE_OTHER: string | null;
     RQ_ACCOUNTANT?: string | null;
     RQ_CEO_NAME?: string | null;
     RQ_CEO_WORK_POS?: string | null;
@@ -117,6 +118,9 @@ export class BXRequisiteDTO {
         this.RQ_POSITION_CASE = data.RQ_POSITION_CASE ?? '';
         this.RQ_BASED = data.RQ_BASED ?? '';
         this.RQ_BASED_CASE = data.RQ_BASED_CASE ?? '';
+        this.RQ_BASE_OTHER = data.RQ_BASE_OTHER ?? '';  // Дополнительные реквизиты кастомное поле
+        // this['1773131028'] = data['1773131028'] ?? '';  // Дополнительные реквизиты кастомное поле
+
         this.RQ_ACCOUNTANT = data.RQ_ACCOUNTANT ?? '';
         this.RQ_CEO_NAME = data.RQ_CEO_NAME ?? '';
         this.RQ_CEO_WORK_POS = data.RQ_CEO_WORK_POS ?? '';

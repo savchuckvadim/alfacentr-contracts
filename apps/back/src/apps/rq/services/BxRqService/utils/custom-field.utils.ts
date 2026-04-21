@@ -1,4 +1,6 @@
+import { mutateCustomFieldXmlIdByName } from '@/apps/rq/shared';
 import { CustomField } from '@/apps/rq/types/bx-custom-field.type';
+import { IBXField } from '@/modules/bitrix';
 
 /**
  * Утилиты для работы с пользовательскими полями
@@ -37,7 +39,14 @@ export const processCustomFieldResult = (
         customField.EDIT_FORM_LABEL?.ru || customField.EDIT_FORM_LABEL;
     customField.value = fieldValue;
 
-    return new CustomField(customField);
+
+    // if ((customField as IBXField).FIELD_NAME?.includes('1773131028')) {
+    //     console.log('customField', customField);
+    //     customField.XML_ID = "base_other";
+    // }
+    mutateCustomFieldXmlIdByName(customField as Partial<CustomField>);
+
+    return new CustomField(customField as Partial<CustomField>);
 };
 
 /**
