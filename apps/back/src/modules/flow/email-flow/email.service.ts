@@ -97,9 +97,11 @@ export class EmailService {
             VALUE: isForEdo ? this.employeeEdoInfo.email : this.email,
         } as BXActivityCommunication;
 
-        const employeeEdoName = isForEdo ? this.userName || this.employeeEdoInfo.name : this.employeeEdoInfo.name;
+        // const employeeEdoName = isForEdo ? this.userName || this.employeeEdoInfo.name : this.employeeEdoInfo.name;
+        const employeeEdoName = this.employeeEdoInfo.name; // оставляем всегда  н чхркн
+
         const settings = {
-            MESSAGE_FROM: `Альфацентр ${employeeEdoName} <no-reply@alfacentr.bitrix24.ru>`,
+            MESSAGE_FROM: `Альфацентр ${employeeEdoName} <ppk@alfasibir.ru>`, //no-reply@alfacentr.bitrix24.ru
 
 
         };

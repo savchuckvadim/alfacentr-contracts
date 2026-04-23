@@ -18,7 +18,7 @@ export const renderDocumentLetterInnerHtml = (params: {
 ${paragraph(
     `<em style="color:${EMAIL_STYLES.muted};font-size:13px;line-height:1.5;">Письмо сформировано автоматически. При ответе, просто нажмите&nbsp;<strong>«ОТВЕТИТЬ»</strong>&nbsp;или введите ${link('mailto:ppk@alfasibir.ru', '<strong><em>ppk@alfasibir.ru</em></strong>')} в строке «Адрес получателя/Кому».</em>`,
 )}
-${paragraph(`Добрый день${namePart}!<br>Во вложении -&nbsp;<strong>Договор</strong>,&nbsp;<strong>Счет </strong>и <strong>Акт </strong>на согласование.`)}
+${paragraph(`Добрый день${namePart}!<br>Во вложении -&nbsp;<strong>Договор</strong>,&nbsp;<strong>Счет </strong>и <strong>УПД </strong>на согласование.`)}
 ${paragraph('Пожалуйста, проверьте <strong>реквизиты</strong>, а также <strong>текст документов</strong>.')}
 <ul style="margin:0 0 20px;padding-left:22px;font-family:${EMAIL_STYLES.font};font-size:15px;line-height:1.55;color:${EMAIL_STYLES.text};">
 <li style="margin:0 0 12px;"><strong>Если документы соответствуют требованиям Вашего учреждения</strong> - подпишите, пожалуйста, его в системе ЭДО. Если Ваше учреждение не использует систему ЭДО, то направьте нам ответным e-mail скан Договора, заверенного с Вашей стороны печатью и подписью руководителя.<br>Наш<strong>&nbsp;СБИС&nbsp;ID: 2BEbe3508291e7a494ca4d051e2230821b1 </strong>(Оператор&nbsp;ООО "Компания "Тензор")</li>

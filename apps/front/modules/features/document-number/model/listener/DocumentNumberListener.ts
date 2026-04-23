@@ -45,6 +45,7 @@ export function setupDocumentNumberListener(
                     '🔧 document-number:done handler called with data:',
                     data,
                 );
+                debugger
                 dispatch(
                     documentNumberDone(
                         data as IDocumentNumberUpdateDoneResponse,

@@ -5,7 +5,7 @@ import {
 
 export class CounterGetBxListDto implements ICounterGetBxList {
     IBLOCK_TYPE_ID: 'lists';
-
+    ID: number;
     NAME: string;
     PROPERTY_190: { [key: string]: string };
     PROPERTY_188: { [key: string]: string };

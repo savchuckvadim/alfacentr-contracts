@@ -42,11 +42,18 @@ export class DocumentNumberByPrefixQueueProcessor {
             );
         } catch (error) {
             console.error('❌ Error in document number generation:', error);
-
+            const result = {
+                // get: CounterGetBxListDto | undefined;
+                // add: number;
+                // updated: number;
+                prefix: dto.dinamycPrefix || dto.prefix,
+                counter: 334
+            }
             // Отправляем событие ошибки
             this.wsEvents.emit(
                 WsEvents.DocumentNumberGenerated,
                 {
+                    ...result,
                     message:
                         error.message || 'Failed to generate document number',
                 },

@@ -45,8 +45,8 @@ export const updateDocumentNumber = createAsyncThunk<
 
             const { number, prefix } = getCurrentDocumentNumber(deal);
             const newDinamyc = getCurrentDinamycPrefix(state.product.items);
-            const newDinamycPrefix = `ТЕСТ PREFIX ${newDinamyc}`;
-
+            // const newDinamycPrefix = `ТЕСТ PREFIX ${newDinamyc}`;
+            const newDinamycPrefix = newDinamyc;
             //если динамический префикс изменился или номер не установлен
             // отправляем запрашиваем у бэка новый номер
             // надо обновить в битрикс и в текущей сделке
@@ -57,7 +57,7 @@ export const updateDocumentNumber = createAsyncThunk<
                     dinamycPrefix: newDinamycPrefix,
                     socketId,
                 } as IDocumentNumberUpdateRequest;
-
+debugger;
                 const response = await backAPI.service(
                     EBACK_ENDPOINT.DOCUMENT_NUMBER,
                     API_METHOD.POST,
@@ -66,6 +66,7 @@ export const updateDocumentNumber = createAsyncThunk<
 
                 return void 0;
             } else {
+                debugger
                 dispatch(
                     documentNumberSliceActions.setDocumentNumber({
                         prefix: newDinamycPrefix,
@@ -104,7 +105,7 @@ export const documentNumberDone = createAsyncThunk<
             if (!dealId) {
                 return rejectWithValue('Deal not found');
             }
-
+            debugger
             await updateBxDeal(dealId, data.prefix, data.counter);
 
             return {

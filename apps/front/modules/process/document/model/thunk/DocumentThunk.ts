@@ -188,7 +188,7 @@ const getGenerateDocumentData = (
         },
     } as IRequestDocumentGenerateFieldsType;
 
-
+debugger;
     const ppkApplicationData =
         contractType === EContractType.seminar_ppk ||
             contractType === EContractType.ppk

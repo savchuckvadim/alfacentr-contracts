@@ -5,15 +5,14 @@ import {
     CounterAddBxListDto,
     CounterGetBxListDto,
 } from '../dto/add-counter-bx-list.dto';
-import { ICounterGetBxList } from '../type/counter-bx-list.type';
 
 @Injectable()
 export class DocumentNumberByPrefixUseCase {
-    constructor(private readonly pbxService: PBXService) {}
+    constructor(private readonly pbxService: PBXService) { }
 
     async execute(dto: DocumentNumberByPrefixDto) {
         // try {
-
+        console.log('✅DocumentNumberByPrefixUseCase  dto', dto);
         const { bitrix, PortalModel } = await this.pbxService.init(
             'alfacentr.bitrix24.ru',
         );
@@ -24,14 +23,19 @@ export class DocumentNumberByPrefixUseCase {
         const listCode = list.CODE;
         const prefix = dto.prefix;
         let counter = 0;
-        const elementResponse = await bitrix.api.call('lists.element.get', {
-            IBLOCK_TYPE_ID: 'lists',
-            IBLOCK_ID: listId,
-            // ELEMENT_CODE//
-            FILTER: {
-                NAME: prefix,
-            },
-        });
+        let elementResponse;
+        try {
+            elementResponse = await bitrix.api.call('lists.element.get', {
+                IBLOCK_TYPE_ID: 'lists',
+                IBLOCK_ID: listId,
+                // ELEMENT_CODE//
+                FILTER: {
+                    NAME: prefix,
+                },
+            });
+        } catch (error) {
+            console.error('❌ Error in document number by prefix:', error);
+        }
 
         const addData: CounterAddBxListDto = {
             IBLOCK_TYPE_ID: 'lists',
@@ -46,30 +50,41 @@ export class DocumentNumberByPrefixUseCase {
                 PROPERTY_188: '156',
             },
         };
-        const get = elementResponse.result[0] as
+        const get = elementResponse?.result?.[0] as
             | CounterGetBxListDto
             | undefined;
         let add = 0;
         let updated = 0;
+        // console.log('✅ get elementAddResponse', elementResponse);
         if (!get) {
+            // console.log('✅ try to add elementAddResponse', addData);
             const elementAddResponse = await bitrix.api.call(
                 'lists.element.add',
                 addData,
             );
+            // console.log('✅ add elementAddResponse', elementAddResponse);
             add = elementAddResponse.result;
             counter = 1;
         } else {
             counter = this.getCounter(get);
+            // console.log('✅ try to update elementUpdateResponse', addData);
+            const updateData = {
+                ELEMENT_ID: get?.ID || 0,
+                IBLOCK_TYPE_ID: 'lists',
+                IBLOCK_ID: 46,
+                FIELDS: {
+                    NAME: prefix,
+                    PROPERTY_188: '156', //created by
+                    PROPERTY_190: counter,
+                    CODE: this.transliterate(prefix),
+                },
+            }
+            // console.log('✅ try to update elementUpdateResponse', updateData);
             const elementUpdateResponse = await bitrix.api.call(
                 'lists.element.update',
-                {
-                    ...addData,
-                    FIELDS: {
-                        ...get,
-                        PROPERTY_190: counter,
-                    },
-                },
+                updateData,
             );
+            // console.log('✅ update elementUpdateResponse', elementUpdateResponse);
             updated = elementUpdateResponse.result;
         }
 

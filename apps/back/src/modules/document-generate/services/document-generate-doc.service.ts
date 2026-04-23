@@ -59,7 +59,8 @@ export class DocumentGenerateDocService {
 
                 DocumentPrefixNumber: dto.documentPrefixNumber,
                 DocumentNumberCounter: dto.documentCounter,
-                DocumentTitle: `Счет №${dto.documentCounter} к Договору №${dto.documentPrefixNumber}`,
+                // DocumentTitle: `Счет №${dto.documentCounter} к Договору №${dto.documentPrefixNumber}`,
+                DocumentTitle: `Счет №${dto.documentPrefixNumber}`,
             } as Record<string, string>,
         });
         // const result = await this.bitrix.api.callBatchWithConcurrency(1);
