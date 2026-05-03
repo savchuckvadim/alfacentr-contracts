@@ -27,8 +27,8 @@ export class BxDealContactFlowService {
             const contactAddResponse = await this.bitrix.contact.set({
                 RESPONSIBLE_ID: dto.userId,
                 NAME: dto.name || '',
-                EMAIL: [{ VALUE: dto.email || '', TYPE: 'WORK' }],
-                PHONE: [{ VALUE: dto.phone || '', TYPE: 'WORK' }],
+                EMAIL: [{ VALUE: dto.email || '', TYPE: 'WORK' }], //MAILING
+                PHONE: [{ VALUE: dto.phone || '', TYPE: 'WORK' }], //MAILING
                 DEAL_ID: this.dealId,
             });
             const createdContactId = contactAddResponse.result;
