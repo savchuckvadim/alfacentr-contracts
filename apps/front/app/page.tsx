@@ -1,7 +1,9 @@
 import { Button } from '@workspace/ui/components/button';
 import Link from 'next/link';
 
-export default function Page() {
+import type { ReactElement } from 'react';
+
+export default function Page(): ReactElement  {
     return (
         <div className="min-h-screen bg-gradient-to-br from-background to-primary/30  flex items-center justify-center p-4">
             <Link href="/bitrix/main">

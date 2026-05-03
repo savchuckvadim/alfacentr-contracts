@@ -1,6 +1,8 @@
 'use client';
 import { MainPage } from '@/modules/pages';
 
-export default function AlfaMainPage() {
+import type { ReactElement } from 'react';
+
+export default function AlfaMainPage(): ReactElement  {
     return <MainPage />;
 }

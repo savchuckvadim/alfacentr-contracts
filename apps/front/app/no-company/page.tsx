@@ -4,7 +4,9 @@ import React from 'react';
 import { Button } from '@workspace/ui/components/button';
 import { BackButton } from '@/modules/shared/BackButton';
 
-export default function NoCompanyPage() {
+import type { ReactElement } from 'react';
+
+export default function NoCompanyPage(): ReactElement  {
     return (
         <div className="min-h-screen bg-background flex flex-col">
             {/* Хедер с кнопкой назад */}

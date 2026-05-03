@@ -2,7 +2,9 @@
 
 import { ParticipantsPage } from '@/modules/pages';
 
-export default function Participants() {
+import type { ReactElement } from 'react';
+
+export default function Participants(): ReactElement  {
     return (
         <div className="container mx-auto px-4 py-6">
             <ParticipantsPage />

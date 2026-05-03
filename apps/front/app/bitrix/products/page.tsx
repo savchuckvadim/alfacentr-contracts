@@ -1,6 +1,8 @@
 'use client';
 import { ProductPage } from '@/modules/pages';
 
-export default function ProductsPage() {
+import type { ReactElement } from 'react';
+
+export default function ProductsPage(): ReactElement  {
     return <ProductPage />;
 }
