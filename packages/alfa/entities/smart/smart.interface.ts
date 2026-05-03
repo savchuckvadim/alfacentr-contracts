@@ -62,7 +62,7 @@ export interface IAlfaParticipantSmartItem {
     [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Comment]?: string;
     [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12IsPpk]?: string;
     [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Name]?: string;
-    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12DealId]: string;
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12DealId]?: string;
     assignedById: number;
     lastActivityBy: number;
     lastActivityTime: string;
