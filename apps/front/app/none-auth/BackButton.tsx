@@ -1,9 +1,10 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { Button } from '@workspace/ui/components/button';
 import { ArrowLeft } from 'lucide-react';
 
-export function BackButton() {
+export function BackButton(): ReactNode {
     const handleGoBack = () => {
         if (typeof window !== 'undefined') {
             window.history.back();
