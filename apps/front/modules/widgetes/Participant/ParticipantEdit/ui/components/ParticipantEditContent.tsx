@@ -64,14 +64,14 @@ export const ParticipantEditContent = ({
         setPartsCount(count);
     }, [hasPpk, hasSeminar]);
 
-    const gridColsClass =
-        partsCount === 1
-            ? 'lg:grid-cols-1 xl:grid-cols-1'
-            : partsCount === 2
-                ? 'lg:grid-cols-2 xl:grid-cols-2'
-                : 'lg:grid-cols-2 xl:grid-cols-3';
-    const containerWidthClass =
-        partsCount === 1 ? 'w-full xl:w-2/3 xl:mx-auto' : 'w-full';
+    const gridColsClass = 'lg:grid-cols-2 xl:grid-cols-3'
+    // partsCount === 1
+    //     ? 'lg:grid-cols-1 xl:grid-cols-1'
+    //     : partsCount === 2
+    //         ? 'lg:grid-cols-2 xl:grid-cols-2'
+    //         : 'lg:grid-cols-2 xl:grid-cols-3';
+    const containerWidthClass = 'w-full'
+    // partsCount === 1 ? 'w-full xl:w-2/3 xl:mx-auto' : 'w-full';
     const {
         changeEditable,
         editParticipantTopic,
@@ -231,7 +231,7 @@ export const ParticipantEditContent = ({
             </Card>}
 
             {/* ППК программы */}
-            {(hasPpk) && <Card className={`h-fit transition-all duration-300 ease-in-out `}>
+            <Card className={`h-fit transition-all duration-300 ease-in-out `}>
                 <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-lg">
                         <BookOpenIcon className="w-5 h-5 text-primary" />
@@ -249,8 +249,8 @@ export const ParticipantEditContent = ({
                         .map(renderPpkField)}
                     <div
                         className={`${isPpk
-                                ? 'opacity-100 scale-100 translate-x-0'
-                                : 'opacity-0 scale-95 translate-x-4 pointer-events-none'
+                            ? 'opacity-100 scale-100 translate-x-0'
+                            : 'opacity-0 scale-95 translate-x-4 pointer-events-none'
                             }`}
                     >
                         {editable.fields
@@ -274,7 +274,7 @@ export const ParticipantEditContent = ({
                             ))}
                     </div>
                 </CardContent>
-            </Card>}
+            </Card>
         </div>
     );
 };

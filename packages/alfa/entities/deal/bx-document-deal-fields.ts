@@ -305,7 +305,27 @@ export const documentFields = {
         multiple: false,
         mandatory: false,
     },
+    [EnumDealDocumentFieldCode.CONTACT_ID_FOR_SEND_EMAIL]: {
+        id: 'undefined-1',
+        bitrixId: 'UF_CRM_1777795494',
+        type: 'string',
+        name: 'Id контакта для отправки email contactId (for seminar contracts)',
+        code: EnumDealDocumentFieldCode.CONTACT_ID_FOR_SEND_EMAIL,
+        multiple: false,
+        mandatory: false,
+    },
 } as const;
+
+export type DocumentFieldContactIdForSendEmailRow =
+    (typeof documentFields)['contact_id_for_send_email'];
+
+/** Row for contact UF used before sending document email — exported so apps avoid fragile enum-index on `documentFields`. */
+export const documentFieldContactIdForSendEmail: DocumentFieldContactIdForSendEmailRow =
+    documentFields[EnumDealDocumentFieldCode.CONTACT_ID_FOR_SEND_EMAIL];
+
+/** UF code string only — use in Nest services to avoid `no-unsafe-*` when project service mis-resolves the row object from `@alfa/entities`. */
+export const DOCUMENT_FIELD_CONTACT_ID_FOR_SEND_EMAIL_BITRIX_ID: DocumentFieldContactIdForSendEmailRow['bitrixId'] =
+    documentFieldContactIdForSendEmail.bitrixId;
 
 export const currentDocumentFields = {
     [EnumDealCurrentDocumentFieldCode.CURRENT_APPLICATION_URL]: {
@@ -381,4 +401,5 @@ export const currentDocumentFields = {
         multiple: false,
         mandatory: false,
     },
+
 } as const;

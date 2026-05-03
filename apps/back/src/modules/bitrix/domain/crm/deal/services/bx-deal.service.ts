@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { BxDealRepository } from '../repository/bx-deal.repository';
 import { BitrixBaseApi } from 'src/modules/bitrix/core/base/bitrix-base-api';
 import { IBXDeal } from '../interface/bx-deal.interface';

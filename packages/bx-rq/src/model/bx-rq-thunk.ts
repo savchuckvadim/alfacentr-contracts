@@ -255,7 +255,7 @@ export const saveBXRQ =
                     isSimpleBankCommentMode &&
                     (Boolean(simpleBankComment) ||
                         simpleBankComment !== currentBankComment);
-debugger
+
                 if (shouldSaveSimpleBankComment) {
                     const sourceBankFields = currentBank?.fields || [];
                     let bankFieldsWithComment = updateBankFieldValue(
@@ -263,7 +263,7 @@ debugger
                         BANK_RQ_ITEM_CODE.BANK_COMMENTS,
                         simpleBankComment,
                     );
-                    debugger
+                  
                     const bankNameField = bankFieldsWithComment.find(
                         field => field.code === BANK_RQ_ITEM_CODE.BANK_NAME,
                     );

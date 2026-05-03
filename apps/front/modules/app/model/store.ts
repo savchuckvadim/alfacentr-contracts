@@ -31,6 +31,7 @@ import { WSClient } from '@/modules/shared/Websocket/ws-client';
 import { WSClient as WSClientWorkspace } from '@workspace/ws';
 
 import { documentReducer } from '@/modules/process/document/';
+import { dealEmailSubjectReducer } from '@/modules/features/deal-email-subject/';
 
 export const listenerMiddleware = createListenerMiddleware();
 
@@ -51,6 +52,7 @@ const rootReducer = combineReducers({
     communications: communicationsReducer,
     dealActDate: dealActDateReducer,
     dealEdoComment: dealEdoCommentReducer,
+    dealEmailSubject: dealEmailSubjectReducer,
 
     //process
     document: documentReducer,

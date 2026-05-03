@@ -89,8 +89,9 @@ export const updateParticipant = createAsyncThunk<
 >('participant/updateParticipant', async (_, { getState }) => {
     try {
         // const { participantId, fields } = payload;
-        const editable = getState().participant.editable;
-
+        const state = getState();
+        const editable = state.participant.editable;
+        const dealId = state.app.bitrix.deal?.ID;
         if (!editable) {
             throw new Error('Нет данных для редактирования участника');
         }
@@ -104,6 +105,10 @@ export const updateParticipant = createAsyncThunk<
 
         for (const field of fields) {
             itemFields[field.bitrixId] = field.value;
+        }
+        if(dealId){
+
+            itemFields['ufCrm12DealId'] = dealId;
         }
 
         const bxResult = await service.updateParticipant(
@@ -186,7 +191,9 @@ export const addParticipant = createAsyncThunk<
             for (const field of editable.fields) {
                 itemFields[field.bitrixId] = field.value;
             }
+            itemFields.title = ''
             itemFields.parentId2 = dealId; //2 значит сделка
+            itemFields['ufCrm12DealId'] = dealId;
             const bxResult = await service.addParticipant(itemFields);
             const addedItem = getParticipant(
                 bxResult as IAlfaParticipantSmartItem,

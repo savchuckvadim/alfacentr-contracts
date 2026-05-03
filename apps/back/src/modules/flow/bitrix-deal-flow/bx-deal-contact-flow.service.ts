@@ -1,5 +1,6 @@
 import { delay } from '@/lib';
 import { BitrixService, IBXContact } from '@/modules/bitrix';
+import { DOCUMENT_FIELD_CONTACT_ID_FOR_SEND_EMAIL_BITRIX_ID } from '@alfa/entities';
 
 export class BxDealContactFlowDto {
     email: string;
@@ -36,7 +37,9 @@ export class BxDealContactFlowService {
         } else {
             contactId = Number(contact?.ID ?? 0);
         }
-        await this.bitrix.deal.contactItemsGet(this.dealId);
+        await this.bitrix.deal.update(this.dealId, {
+            [DOCUMENT_FIELD_CONTACT_ID_FOR_SEND_EMAIL_BITRIX_ID]: contactId,
+        });
         await this.bitrix.deal.contactItemsSet(this.dealId, [contactId]);
         await delay(200);
         return {

@@ -28,4 +28,5 @@ export enum EnumDealDocumentFieldCode {
     POTENTIAL_COMPANIES = 'potential_companies',
     CURRENT_RQ = 'current_rq',
     TIMELINE_DOCUMENT_PIN='timeline_document_pin',
+    CONTACT_ID_FOR_SEND_EMAIL = 'contact_id_for_send_email',
 }

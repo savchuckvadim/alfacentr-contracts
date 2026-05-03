@@ -123,7 +123,7 @@ export class DocumentEmailService {
             );
             const filesForSend = await diskFlowService.get();
 
-            const emailResult = await emailDocumentFlowService.flow({
+            const emailResult = await emailDocumentFlowService.flowWithServerSend({
                 filesForSend: filesForSend.files,
                 email,
                 name,

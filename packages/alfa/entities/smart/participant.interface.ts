@@ -14,6 +14,8 @@ export enum AlfaParticipantSmartItemUserFieldsEnum {
     ufCrm12IsPpk = 'ufCrm12IsPpk',
     ufCrm12Name = 'ufCrm12Name',
     ufCrm12Corruption = 'ufCrm12Corruption',
+    ufCrm12ContactId = 'ufCrm12ContactId',
+    ufCrm12DealId = 'ufCrm12DealId',
 }
 
 export enum BxParticipantsDataKeys {

@@ -3,6 +3,7 @@ import { updateDeal } from '../lib/service/deal-update.service';
 import { IDealFieldsData } from '../type/deal-field.type';
 import { BxDealDataKeys } from '@alfa/entities';
 import { RootState } from '@/modules/app/model/store';
+import { Bitrix } from '@bitrix/index';
 
 export interface UpdateDealFieldPayload {
     dealId?: number;
@@ -30,6 +31,33 @@ export const updateDealField = createAsyncThunk(
                 fieldKey: payload.fieldKey,
                 value: payload.value,
             };
+        } catch (error) {
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : 'Неизвестная ошибка при обновлении поля сделки';
+            return rejectWithValue(errorMessage);
+        }
+    },
+);
+
+export const updateOnlyBitrixDealField = createAsyncThunk(
+    'deal/updateOnlyBitrixDealField',
+
+    async (payload: { value: string | number, fieldBitrixId: string }, { rejectWithValue, getState }) => {
+        try {
+            const { value, fieldBitrixId } = payload;
+            const state = getState() as RootState;
+            const dealId = state.app.bitrix.deal?.ID;
+            if (!dealId) {
+                return rejectWithValue('Deal ID is required');
+            }
+            const bitrix = Bitrix.getService();
+            await bitrix.deal.update(dealId, {
+                [fieldBitrixId]: value,
+            });
+
+            // не возвращаем данные для обновления состояния
         } catch (error) {
             const errorMessage =
                 error instanceof Error

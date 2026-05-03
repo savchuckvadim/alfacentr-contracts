@@ -20,7 +20,7 @@ import { BxDealStageFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-
 import { EmailDocumentFlowService } from '@/modules/flow/email-flow/email-document-flow.service';
 import { BxDealContactFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-contact-flow.service';
 import { IRequestDocumentGenerateResponse } from '../type/request-document-generate.type';
-import { BxDiskFlowService } from '@/modules/flow/disk-flow/bx-disk-flow.service';
+// import { BxDiskFlowService } from '@/modules/flow/disk-flow/bx-disk-flow.service';
 import { delay } from '@/lib';
 
 export class DocumentGenerateFlowService {
@@ -44,8 +44,9 @@ export class DocumentGenerateFlowService {
         const dealId = Number(dto.dealId);
         const dealService = new BxDealStageFlowService(bitrix, dealId);
         const contactService = new BxDealContactFlowService(bitrix, dealId);
-        const bxDiskFlowService = new BxDiskFlowService(bitrix, dealId);
-        // this.bitrix = bitrix;
+        //пока что диск не используем так как он для отправки email своим сервером
+        // const bxDiskFlowService = new BxDiskFlowService(bitrix, dealId);
+
         this.userId = dto.userId;
 
         const contactResult = await contactService.flow({
@@ -54,7 +55,7 @@ export class DocumentGenerateFlowService {
             phone: dto.email.phone || '',
             userId: dto.userId,
         });
-        const contactId = contactResult.contactId;
+        // const contactId = contactResult.contactId;
 
         const entityId = Number(dto.dealId);
         this.bxTimelineService = new BxTimelineService(
@@ -138,13 +139,15 @@ export class DocumentGenerateFlowService {
         void (await dealService.changeStageFromDocument());
 
         //test upload files to bitrix disk
-        const { folderUrl } = await bxDiskFlowService.upload(this.filesForSend);
+        //загрузка в диск нужна для отправки документов с помощью email server
+        // сейчас пока что отключаем загрузку в диск
+        // const { folderUrl } = await bxDiskFlowService.upload(this.filesForSend);
 
-        if (folderUrl) {
-            await delay(500)
-            await this.bxTimelineService.setTimelineDocumentPin(folderUrl);
+        // if (folderUrl) {
+        //     await delay(500)
+        //     await this.bxTimelineService.setTimelineDocumentPin(folderUrl);
 
-        }
+        // }
 
 
 
@@ -156,21 +159,21 @@ export class DocumentGenerateFlowService {
                 this.bxTimelineService,
                 Number(dealId),
             );
-            const emailDocumentFlowResult = await emailDocumentFlowService.flow(
-                {
-                    filesForSend: this.filesForSend,
-                    email: dto.email.email,
-                    name: dto.email.name || '',
-                    phone: dto.email.phone || '',
-                    documentPrefixNumber: dto.documentPrefixNumber,
-                    userName: dto.userName || '',
-                    userId: dto.userId.toString(),
-                    companyName: dto.companyName || '',
-                    contactId: contactId,
-                    edoComment: dto.edoComment || '',
-                    needEdoEmail: true,
-                },
-            );
+            // const emailServerSendDocumentFlowDto: EmailDocumentFlowDto = {
+            //     filesForSend: this.filesForSend,
+            //     email: dto.email.email,
+            //     name: dto.email.name || '',
+            //     phone: dto.email.phone || '',
+            //     documentPrefixNumber: dto.documentPrefixNumber,
+            //     userName: dto.userName || '',
+            //     userId: dto.userId.toString(),
+            //     companyName: dto.companyName || '',
+            //     contactId: contactId,
+            //     edoComment: dto.edoComment || '',
+            //     needEdoEmail: true,
+            // };
+            const emailDocumentFlowResult = await emailDocumentFlowService.flow(); //только переводит стадию. отправка бизнес процессом
+            //чтобы отправлять сервером заменить emailDocumentFlowService.flow() на emailDocumentFlowService.flowWithServerSend(emailServerSendDocumentFlowDto);
             mailResult = emailDocumentFlowResult;
         } else {
             void (await this.bxTimelineService.send(

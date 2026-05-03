@@ -57,7 +57,7 @@ export const updateDocumentNumber = createAsyncThunk<
                     dinamycPrefix: newDinamycPrefix,
                     socketId,
                 } as IDocumentNumberUpdateRequest;
-debugger;
+
                 const response = await backAPI.service(
                     EBACK_ENDPOINT.DOCUMENT_NUMBER,
                     API_METHOD.POST,
@@ -66,7 +66,7 @@ debugger;
 
                 return void 0;
             } else {
-                debugger
+
                 dispatch(
                     documentNumberSliceActions.setDocumentNumber({
                         prefix: newDinamycPrefix,
@@ -105,7 +105,7 @@ export const documentNumberDone = createAsyncThunk<
             if (!dealId) {
                 return rejectWithValue('Deal not found');
             }
-            debugger
+            
             await updateBxDeal(dealId, data.prefix, data.counter);
 
             return {

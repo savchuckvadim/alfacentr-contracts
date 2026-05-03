@@ -6,9 +6,9 @@ import { getParticipantValuesFromDeal } from '../../../lib/deal-helper/get-parti
 
 export class BxSmartService {
     private bitrix: BitrixService;
-    private smart: IAlfaParticipantSmartItem;
+    // private smart: IAlfaParticipantSmartItem;
     private entityTypeId: EntityTypeIdEnum = EntityTypeIdEnum.PARTICIPANT;
-    constructor() {}
+    constructor() { }
 
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;
@@ -20,7 +20,11 @@ export class BxSmartService {
     ) {
         const participants = getParticipantValuesFromDeal(dealValues, dealId);
         for (const participant of participants) {
-            await this.add(this.entityTypeId, participant);
+            await this.add(this.entityTypeId, {
+                ...participant,
+                ufCrm12DealId: dealId.toString(),
+            } as IAlfaParticipantSmartItem,
+            );
         }
     }
 
@@ -30,7 +34,7 @@ export class BxSmartService {
         return smarts;
     }
 
-    public async add(
+    private async add(
         entityTypeId: EntityTypeIdEnum,
         item: IAlfaParticipantSmartItem,
     ) {

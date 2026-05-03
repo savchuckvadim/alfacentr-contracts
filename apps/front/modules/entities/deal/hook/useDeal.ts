@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '@/modules/app/model/store';
 import {
     setDealData,
@@ -9,7 +9,7 @@ import {
     clearError,
 } from '../model/DealSlice';
 import { updateDealField, UpdateDealFieldPayload } from '../model/DealThunk';
-import { TDealData, BxDealDataKeys } from '@alfa/entities';
+import { BxDealDataKeys } from '@alfa/entities';
 import { IDealFieldsData } from '../type/deal-field.type';
 import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
 

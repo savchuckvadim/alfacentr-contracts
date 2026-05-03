@@ -17,6 +17,7 @@ import { getDealClientType } from "@/modules/entities/deal/lib/utils/get-deal-cl
 import { getDocumentHeader, getDocumentRqs } from "@/modules/features/document-rq/model/selectors/get-document-rqs.selector";
 import { BxDealDataKeys, DocumentGenerateFieldTemplateCode, EContractType, IRequestDocumentGenerateFieldsType, IRequestDocumentGenerateType } from "@alfa/entities";
 import { getDocumentPpkApplicationData } from "../../lib/utils/document-participant.util";
+import { saveCurrentContact } from '@/modules/features/communications/model/thunk/SaveCurrentContactThunk';
 
 
 export const documentGenerate = createAsyncThunk<
@@ -29,6 +30,7 @@ export const documentGenerate = createAsyncThunk<
     }
 >('document/generate', async (_, { dispatch, getState, extra }) => {
     // Получаем dispatch и state из деструктуризации
+
     const state = getState();
     const { isConfirmed } = state.communications.confirm;
 
@@ -40,6 +42,7 @@ export const documentGenerate = createAsyncThunk<
     dispatch(communicationsActions.setEmailConfirmConfirmed(false));
     const { getWSClient } = extra;
 
+    dispatch(saveCurrentContact()); //сохраняем контакт в bitrix и его id в специальное поле сделки для отправки на него email
 
     const socketId = getWSClient().id;
 
@@ -188,7 +191,7 @@ const getGenerateDocumentData = (
         },
     } as IRequestDocumentGenerateFieldsType;
 
-debugger;
+
     const ppkApplicationData =
         contractType === EContractType.seminar_ppk ||
             contractType === EContractType.ppk

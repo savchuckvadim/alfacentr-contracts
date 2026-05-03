@@ -16,6 +16,11 @@ import {
 } from '@alfa/entities';
 
 export class SmartItemDto implements IAlfaParticipantSmartItem {
+    @ApiProperty({ name: 'ufCrm12DealId', example: 'Test' })
+    @IsOptional()
+    @IsString()
+    ufCrm12DealId: string;
+
     @IsOptional()
     @IsNumber()
     id?: number;

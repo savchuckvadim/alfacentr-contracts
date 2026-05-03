@@ -1,4 +1,4 @@
-import { TDealData, TFieldSelect, TField } from '@alfa/entities';
+import { TFieldSelect, TField } from '@alfa/entities';
 
 type IDealField = TFieldSelect | TField;
 

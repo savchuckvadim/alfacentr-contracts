@@ -26,8 +26,24 @@ export class EmailDocumentFlowService {
         private readonly bxTimelineService: BxTimelineService,
         private readonly dealId: number,
     ) { }
+    async flow() {
+        try {
+            await delay(400);
+            const dealService = new BxDealStageFlowService(
+                this.bitrix,
+                Number(this.dealId),
+            );
 
-    async flow(dto: EmailDocumentFlowDto) {
+            void (await dealService.changeStageFromEmailSent());
+        } catch (error) {
+            console.error('error', error);
+            void (await this.bxTimelineService.send(
+                '❌ Ошибка при отправке email клиенту',
+                'email',
+            ));
+        }
+    }
+    async flowWithServerSend(dto: EmailDocumentFlowDto) {
         const dealService = new BxDealStageFlowService(
             this.bitrix,
             Number(this.dealId),

@@ -9,7 +9,9 @@ import { setupDocumentNumberListener } from '@/modules/features/document-number/
 import { setupWsInitListener } from '@/modules/app/model/queue-ws-ping-test/QueueWsPingListener';
 import {
     setupAppDealEdoCommentListener,
+    setupAppDealEmailSubjectListener,
     setupCommunicationsDealListener,
+    setupDocumentNumberDealEmailSubjectListener,
     setupParticipantSeminarDaysListener,
 } from '@/modules/features';
 import { setupDocumentDealListener } from '@/modules/process/document/model/listeners/DealListener';
@@ -37,4 +39,6 @@ export function startStoreListeners(
     setupCommunicationsDealListener(listenerMiddleware);
     setupAppDealActDateListener(listenerMiddleware);
     setupAppDealEdoCommentListener(listenerMiddleware);
+    setupAppDealEmailSubjectListener(listenerMiddleware);
+    setupDocumentNumberDealEmailSubjectListener(listenerMiddleware);
 }

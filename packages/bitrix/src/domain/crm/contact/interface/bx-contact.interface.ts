@@ -1,6 +1,7 @@
 export interface IBXContact {
     ID?: number | string;
     ASSIGNED_BY_ID?: string | number;
+    RESPONSIBLE_ID?: string | number;
     COMPANY_ID?: string | number;
     NAME?: string;
     LAST_NAME?: string;
@@ -12,7 +13,7 @@ export interface IBXContact {
     EMAIL?: {
         VALUE: string;
         TYPE: string;
-    }[];
+    }[] | string;
     POST?: string;
     COMMENTS?: string;
 

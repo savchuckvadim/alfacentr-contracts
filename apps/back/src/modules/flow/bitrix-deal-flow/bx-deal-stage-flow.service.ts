@@ -12,7 +12,7 @@ export class BxDealStageFlowService {
     }
 
     async changeStageFromDocument() {
-        await delay(1000);
+        await delay(400);
         const categoryId = String(DEAL_CATEGORY_ID);
         const emailSentStageId = String(BX_DEAL_STAGES_DATA.DOCUMENTS.statusId);
         await this.sendChanges({
@@ -22,7 +22,6 @@ export class BxDealStageFlowService {
     }
 
     async changeStageFromEmailSent() {
-        await delay(1000);
         const categoryId = String(DEAL_CATEGORY_ID);
         const emailSentStageId = String(
             BX_DEAL_STAGES_DATA.EMAIL_SENT.statusId,
@@ -35,7 +34,7 @@ export class BxDealStageFlowService {
     }
 
     private async sendChanges(data: Partial<IBXDeal>) {
-  
+
         await this.bitrix.deal.update(this.dealId, data);
     }
 }

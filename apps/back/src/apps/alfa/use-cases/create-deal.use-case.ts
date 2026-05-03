@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateDealDto } from '../dto/create-deal.dto';
 import { BxDealService } from '../services/bx-deal.service';
 import { BxFieldsService } from '../services/bx-field.service';
@@ -23,28 +23,24 @@ export class CreateDealUseCase {
         const { bitrix } = await this.pbx.init(domain);
         const bxDealService = new BxDealService();
         const bxFieldsService = new BxFieldsService();
-        const bxSmartService = new BxSmartService();
+        // const bxSmartService = new BxSmartService();
         const bxCompanyService = new BxCompanyService(bitrix);
         const bxProductService = new BxProductService(bitrix);
         await bxDealService.init(bitrix);
         await bxFieldsService.init(bitrix);
-        await bxSmartService.init(bitrix);
+        // await bxSmartService.init(bitrix);
 
         return {
-            bitrix,
             bxDealService,
             bxFieldsService,
-            bxSmartService,
             bxCompanyService,
             bxProductService,
         };
     }
     async onDealCreate(data: CreateDealDto) {
         const {
-            bitrix,
             bxDealService,
             bxFieldsService,
-            bxSmartService,
             bxCompanyService,
             bxProductService,
         } = await this.init(data.auth.domain);

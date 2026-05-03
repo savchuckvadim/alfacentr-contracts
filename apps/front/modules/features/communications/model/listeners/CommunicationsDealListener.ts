@@ -11,7 +11,7 @@ export function setupCommunicationsDealListener(
         matcher: isAnyOf(setDealData, updateDealField.fulfilled),
         effect: async (action, listenerApi) => {
             const dispatch = listenerApi.dispatch as AppDispatch;
-
+         
             // if (updateDealField.fulfilled.match(action)) {
             //     // вот здесь у тебя результат санки
             //     const payload = action.payload;

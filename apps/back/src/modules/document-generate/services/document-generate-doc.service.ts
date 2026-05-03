@@ -12,7 +12,7 @@ import { BxBatchDocumentSendService } from './bx-document-send.service';
 export class DocumentGenerateDocService {
     constructor(
         private readonly bxDocumentSendService: BxBatchDocumentSendService,
-    ) {}
+    ) { }
 
     async generateDocumentsBtch(
         dto: DocumentGenerateDto,
@@ -52,15 +52,15 @@ export class DocumentGenerateDocService {
         //     currentDocumentFields[
         //         EnumDealCurrentDocumentFieldCode.CURRENT_APPLICATION_DOC
         //     ].bitrixId;
-
+        const invoiceNumber = dto.documentPrefixNumber || '1';
         await this.getInvoicesFiles(dto.clientType, {
             fields: {
                 ShortClientRq: dto.clientShortRq,
 
-                DocumentPrefixNumber: dto.documentPrefixNumber,
-                DocumentNumberCounter: dto.documentCounter,
+                DocumentPrefixNumber: dto.documentPrefixNumber, //номер договора с префиксом для упоминания догвора
+                DocumentNumberCounter: invoiceNumber,
                 // DocumentTitle: `Счет №${dto.documentCounter} к Договору №${dto.documentPrefixNumber}`,
-                DocumentTitle: `Счет №${dto.documentPrefixNumber}`,
+                DocumentTitle: `Счет №${invoiceNumber}`,
             } as Record<string, string>,
         });
         // const result = await this.bitrix.api.callBatchWithConcurrency(1);
