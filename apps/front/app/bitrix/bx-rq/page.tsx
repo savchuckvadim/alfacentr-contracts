@@ -1,12 +1,11 @@
 'use client';
 import { BxRqPage } from '@/modules/pages/';
+import type { ReactElement } from 'react';
 
-function Page() {
+export default function Page(): ReactElement  {
     return (
         <div>
             <BxRqPage />
         </div>
     );
 }
-
-export default Page;
