@@ -12,6 +12,14 @@ import {
     SmartStageEnum,
 } from '../smart.interface';
 
+type FieldTypesKey = keyof typeof fieldTypes;
+
+function isFieldTypesKey(
+    k: AlfaParticipantSmartItemUserFieldsEnum,
+): k is FieldTypesKey {
+    return k in fieldTypes;
+}
+
 export const getParticipant = (
     smart: IAlfaParticipantSmartItem,
 ): IParticipant => {
@@ -23,14 +31,17 @@ export const getParticipant = (
         ).find(enumValue => enumValue === key);
         if (fieldInEnum) {
             const targetKey = key as AlfaParticipantSmartItemUserFieldsEnum;
+            if (!isFieldTypesKey(targetKey)) {
+                continue;
+            }
+            const meta = fieldTypes[targetKey];
             const fieldValue =
                 smart[targetKey as keyof IAlfaParticipantSmartItem];
-            // const test = getNameBySmartFieldBxId(targetKey)
             const field = {
                 bitrixId: targetKey,
-                code: fieldTypes[targetKey]?.code,
-                name: fieldTypes[targetKey]?.name,
-                type: fieldTypes[targetKey]?.type,
+                code: meta.code,
+                name: meta.name,
+                type: meta.type,
                 value: fieldValue,
             } as IParticipantField<typeof targetKey>;
             participantFields.push(field);
