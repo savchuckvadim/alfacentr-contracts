@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from 'next/font/google';
+import type { ReactNode } from 'react';
 
 import '@workspace/ui/globals.css';
 import { Providers } from '@/components/providers';
@@ -14,13 +15,11 @@ const fontMono = Geist_Mono({
     variable: '--font-mono',
 });
 
-import type { ReactElement } from 'react';
-
 export default function RootLayout({
     children,
 }: Readonly<{
-    children: ReactElement;
-}>): ReactElement  {
+    children: ReactNode;
+}>): ReactNode {
     return (
         <html lang="en" className="scrollbar-hide" suppressHydrationWarning>
             <body

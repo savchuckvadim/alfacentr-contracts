@@ -4,13 +4,13 @@ import { Header } from '@/modules/widgetes/Header/Header';
 import { CompanyBrand } from '@/modules/entities/company';
 import { App } from '@/modules/app';
 
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
 export default function RootLayout({
     children,
 }: Readonly<{
-    children: React.ReactNode;
-}>): ReactElement  {
+    children: ReactNode;
+}>): ReactNode {
     return (
         <div>
             <Header brandComponent={<CompanyBrand />} />
