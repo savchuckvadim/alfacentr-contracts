@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function LoadingTest() {
+import type { ReactElement } from 'react';
+
+export default function LoadingTest(): ReactElement  {
     const [isDone, setIsDone] = useState(false);
 
     useEffect(() => {

@@ -2,7 +2,7 @@
 
 import { cn } from '@workspace/ui/lib/utils';
 import { useState, useEffect } from 'react';
-
+import type { ReactElement } from 'react';
 export const MicroPreloader = ({
     fullWidth = false,
 }: {
@@ -135,7 +135,9 @@ export function ShimmerText({
 }
 
 // Demo component showing all loaders in context
-export default function MicropreloaderDemo() {
+
+
+export default function MicropreloaderDemo(): ReactElement  {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

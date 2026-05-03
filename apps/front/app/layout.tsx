@@ -14,11 +14,13 @@ const fontMono = Geist_Mono({
     variable: '--font-mono',
 });
 
+import type { ReactElement } from 'react';
+
 export default function RootLayout({
     children,
 }: Readonly<{
-    children: React.ReactNode;
-}>) {
+    children: ReactElement;
+}>): ReactElement  {
     return (
         <html lang="en" className="scrollbar-hide" suppressHydrationWarning>
             <body

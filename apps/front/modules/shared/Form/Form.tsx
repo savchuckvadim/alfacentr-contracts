@@ -1,12 +1,11 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
 import { Label } from '@workspace/ui/components/label';
 import { Checkbox } from '@workspace/ui/components/checkbox';
 import { Input } from '@workspace/ui/components/input';
 import { Button } from '@workspace/ui/components/button';
-
+import type { ReactElement } from 'react';
 type FormValues = {
     name: string;
     email: string;
@@ -14,7 +13,9 @@ type FormValues = {
     extra: boolean;
 };
 
-export default function Form() {
+
+
+export default function Form(): ReactElement  {
     const { register, handleSubmit, watch } = useForm<FormValues>();
     const onSubmit = (data: FormValues) => console.log(data);
 
