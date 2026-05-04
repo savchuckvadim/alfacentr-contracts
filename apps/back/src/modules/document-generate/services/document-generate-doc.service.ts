@@ -52,7 +52,7 @@ export class DocumentGenerateDocService {
         //     currentDocumentFields[
         //         EnumDealCurrentDocumentFieldCode.CURRENT_APPLICATION_DOC
         //     ].bitrixId;
-        const invoiceNumber = dto.documentPrefixNumber || '1';
+        const invoiceNumber = dto.documentCounter || '1';
         await this.getInvoicesFiles(dto.clientType, {
             fields: {
                 ShortClientRq: dto.clientShortRq,

@@ -43,18 +43,19 @@ export class DocumentGenerateFlowService {
         const { bitrix } = await this.pbxService.init('alfacentr.bitrix24.ru');
         const dealId = Number(dto.dealId);
         const dealService = new BxDealStageFlowService(bitrix, dealId);
-        const contactService = new BxDealContactFlowService(bitrix, dealId);
+        // const contactService = new BxDealContactFlowService(bitrix, dealId);
         //пока что диск не используем так как он для отправки email своим сервером
         // const bxDiskFlowService = new BxDiskFlowService(bitrix, dealId);
 
+
         this.userId = dto.userId;
 
-        const contactResult = await contactService.flow({
-            email: dto.email.email || '',
-            name: dto.email.name || '',
-            phone: dto.email.phone || '',
-            userId: dto.userId,
-        });
+        // const contactResult = await contactService.flow({
+        //     email: dto.email.email || '',
+        //     name: dto.email.name || '',
+        //     phone: dto.email.phone || '',
+        //     userId: dto.userId,
+        // });
         // const contactId = contactResult.contactId;
 
         const entityId = Number(dto.dealId);
@@ -85,6 +86,11 @@ export class DocumentGenerateFlowService {
             this.filesForSend,
         );
 
+        //обновление стадии сделки
+
+        void (await dealService.changeStageFromDocument());
+
+
         const contractTemplateContentData =
             this.documentContractFieldsService.getContractFields(
                 dto.clientType,
@@ -100,6 +106,11 @@ export class DocumentGenerateFlowService {
                 dto.email.email,
                 dto.seminarParticipantsCount,
             );
+        await delay(200)
+        void (await this.bxTimelineService.send(
+            '⌛ Ожидание генерации документов ...',
+            'waiting',
+        ));
         void (await this.documentGenerateDocService.generateDocumentsBtch(
             dto,
             contractTemplateContentData.templateId,
@@ -134,9 +145,8 @@ export class DocumentGenerateFlowService {
             '✅ Документы сгенерированы',
             'success',
         ));
-        await delay(1000)
-        //обновление стадии сделки
-        void (await dealService.changeStageFromDocument());
+
+
 
         //test upload files to bitrix disk
         //загрузка в диск нужна для отправки документов с помощью email server
@@ -153,7 +163,7 @@ export class DocumentGenerateFlowService {
 
         let mailResult: any = null;
         if (dto.email.needEmail && dto.email.email) {
-            await delay(1000)
+            await delay(100)
             const emailDocumentFlowService = new EmailDocumentFlowService(
                 bitrix,
                 this.bxTimelineService,

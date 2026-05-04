@@ -101,6 +101,12 @@ export function ParticipantsTable() {
                 <p className="text-gray-500">
                     Добавьте первого участника для начала работы
                 </p>
+                {editable && (
+                <ParticipalEditModal
+                    isActive={!!editable}
+                    editable={editable}
+                />
+            )}
             </div>
         );
     }
