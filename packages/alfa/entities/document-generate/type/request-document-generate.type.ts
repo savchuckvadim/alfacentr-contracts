@@ -1,4 +1,4 @@
-import { ALFA_RQ_DATA } from 'entities/own-bank/own-bank-rq.data';
+import { ALFA_RQ_DATA } from '../../own-bank/own-bank-rq.data';
 import { EContractType } from './document-generate.type';
 //todo вынести в пакет переиспользуемый и для фронта и для бэка
 export interface IRequestDocumentGenerateType {
