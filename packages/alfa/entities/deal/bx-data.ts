@@ -545,6 +545,7 @@ export type TFieldItem = {
     bitrixId: string;
     name: string;
     sort: string;
+    code?: string;
 };
 export type TField = {
     id?: string;
