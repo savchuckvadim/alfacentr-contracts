@@ -13,6 +13,7 @@ export interface IBXContact {
     EMAIL?: {
         VALUE: string;
         TYPE: string;
+        VALUE_TYPE?: string;
     }[] | string;
     POST?: string;
     COMMENTS?: string;

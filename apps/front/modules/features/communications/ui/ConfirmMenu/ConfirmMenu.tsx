@@ -7,6 +7,7 @@ import { Label } from '@workspace/ui/components/label';
 import useCommunications from '../../hook/useCommunications';
 import { Checkbox } from '@workspace/ui/components/checkbox';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
     DealActDateField,
@@ -15,6 +16,8 @@ import {
 import { useDealEdoComment } from '@/modules/features/deal-edo-comment';
 import { DealEdoCommentName } from '@/modules/features/deal-edo-comment/type/deal-edo-comment.type';
 import { Textarea } from '@workspace/ui/components/textarea';
+import { OwnBankSelect, useOwnBank } from '@/modules/features/own-bank';
+import { useEffect } from 'react';
 
 export type FormValues = {
     date: string;
@@ -42,6 +45,15 @@ export const CommunicationsConfirmMenu = () => {
 
     const { dealActDate } = useDealActDate();
     const { comment, update: updateComment } = useDealEdoComment();
+    const { ownBank } = useOwnBank();
+    const [bankError, setBankError] = useState(false);
+
+    useEffect(() => {
+        if (ownBank.bank) {
+            setBankError(false);
+        }
+    }, [ownBank.bank])
+
     const {
         control,
         register,
@@ -59,6 +71,11 @@ export const CommunicationsConfirmMenu = () => {
     });
 
     const onSubmit = (data: FormValues) => {
+        if (!ownBank.bank) {
+            setBankError(true);
+            return;
+        }
+        setBankError(false);
         setEmailConfirmConfirmed();
         generateDocument();
 
@@ -98,6 +115,13 @@ export const CommunicationsConfirmMenu = () => {
                     }}
                     className={errors.name ? 'border-red-500' : ''}
                 />
+                <div className="flex flex-row gap-2 items-center">
+                    <Label>Банк</Label>
+                    {bankError && (
+                        <Label className="text-red-500">Банк не заполнен</Label>
+                    )}
+                </div>
+                <OwnBankSelect />
 
                 {/* name */}
                 <div className="flex flex-row gap-2 items-center">
@@ -169,7 +193,7 @@ export const CommunicationsConfirmMenu = () => {
                     {...register('phone', {
                         required: 'Телефон обязателен',
                         pattern: {
-                            value: /^(\+7|8)?[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/,
+                            value: /^(\+7|8|7)?[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/,
                             message: 'Некорректный номер',
                         },
                         onBlur: e => {

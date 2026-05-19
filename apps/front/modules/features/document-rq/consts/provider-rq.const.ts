@@ -3,19 +3,19 @@ import { DocumentRqAgent } from '../model/slice/DocumentRqSlice';
 import { EnumOrganizationRqFields } from '../type/document-rq.type';
 
 export const PROVIDER_RQ_CONST = {
-    shortName: 'ООО Альфацентр',
-    fullname: 'Общество с ограниченной ответственностью "Альфацентр"',
+    shortName: 'ООО АЛЬФАЦЕНТР',
+    fullname: 'Общество с ограниченной ответственностью "АЛЬФАЦЕНТР"',
     inn: '5404519376',
     kpp: '540401001',
     address: '630054, г.  Новосибирск, Ул. Крашенинникова, д. 2, кв. 22',
     primaryAddress: '630073, Россия,  г. Новосибирск, а/я 202 ',
     phone: '8(383)209-32-15',
     email: 'providerRq.email',
-    bank: 'ООО "Банк Точка" ',
-    bankAddress: 'г. Москва',
-    bik: '044525104',
-    rs: '40702810704500008836',
-    ks: '30101810745374525104',
+    // bank: '__________________',
+    // bankAddress: 'г. Москва',
+    // bik: '044525104',
+    // rs: '40702810704500008836',
+    // ks: '30101810745374525104',
     ogrn: '1145476103915',
     edo: 'ООО "Компания "Тензор"',
     sbisId: '2BEbe3508291e7a494ca4d051e2230821b1',
@@ -28,7 +28,7 @@ export const PROVIDER_RQ_CONST = {
     accountant: 'Управляющий',
 };
 
-export const Provider: DocumentRqAgent<RQ_TYPE.ORGANIZATION> = {
+export const Provider: Partial<DocumentRqAgent<RQ_TYPE.ORGANIZATION>> = {
     [EnumOrganizationRqFields.NAME]: PROVIDER_RQ_CONST.shortName,
     [EnumOrganizationRqFields.FULLNAME]: PROVIDER_RQ_CONST.fullname,
     [EnumOrganizationRqFields.INN]: `ИНН: ${PROVIDER_RQ_CONST.inn}`,
@@ -36,11 +36,11 @@ export const Provider: DocumentRqAgent<RQ_TYPE.ORGANIZATION> = {
     [EnumOrganizationRqFields.PRIMARY_ADDRESS]: `Почтовый адрес: ${PROVIDER_RQ_CONST.primaryAddress}`,
     [EnumOrganizationRqFields.PHONE]: `Телефон: ${PROVIDER_RQ_CONST.phone}`,
     [EnumOrganizationRqFields.EMAIL]: `Эл. почта: ${PROVIDER_RQ_CONST.email}`,
-    [EnumOrganizationRqFields.BANK]: `в Банке: ${PROVIDER_RQ_CONST.bank} ${PROVIDER_RQ_CONST.bankAddress}`,
-    [EnumOrganizationRqFields.BANK_ADDRESS]: ` ${PROVIDER_RQ_CONST.bankAddress}`,
-    [EnumOrganizationRqFields.BIK]: `БИК: ${PROVIDER_RQ_CONST.bik}`,
-    [EnumOrganizationRqFields.RS]: `р/с: ${PROVIDER_RQ_CONST.rs}`,
-    [EnumOrganizationRqFields.KS]: `к/с: ${PROVIDER_RQ_CONST.ks}`,
+    // [EnumOrganizationRqFields.BANK]: `в Банке: ${PROVIDER_RQ_CONST.bank} ${PROVIDER_RQ_CONST.bankAddress}`,
+    // [EnumOrganizationRqFields.BANK_ADDRESS]: ` ${PROVIDER_RQ_CONST.bankAddress}`,
+    // [EnumOrganizationRqFields.BIK]: `БИК: ${PROVIDER_RQ_CONST.bik}`,
+    // [EnumOrganizationRqFields.RS]: `р/с: ${PROVIDER_RQ_CONST.rs}`,
+    // [EnumOrganizationRqFields.KS]: `к/с: ${PROVIDER_RQ_CONST.ks}`,
     [EnumOrganizationRqFields.OGRN]: `ОГРН: ${PROVIDER_RQ_CONST.ogrn}`,
     [EnumOrganizationRqFields.EDO]: `Оператор ЭДО: ${PROVIDER_RQ_CONST.edo}`,
     [EnumOrganizationRqFields.SBIS_ID]: `СБИС ID: ${PROVIDER_RQ_CONST.sbisId}`,

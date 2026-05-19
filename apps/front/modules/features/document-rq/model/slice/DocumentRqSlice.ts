@@ -26,7 +26,9 @@ export type DocumentFizRqAgent = {
 export interface DocumentRqState {
     general: DocumentRqGeneral;
     client: DocumentOrganizationRqAgent | DocumentFizRqAgent | null;
-    provider: DocumentOrganizationRqAgent | DocumentFizRqAgent | null;
+    // provider: DocumentOrganizationRqAgent | DocumentFizRqAgent | null;
+    provider: Partial<DocumentOrganizationRqAgent> | null;
+
     clientShortRq: string;
     clientUpdShortRq: string;
     clientUpdAddress: string;

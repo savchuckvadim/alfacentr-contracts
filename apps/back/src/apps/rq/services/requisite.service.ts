@@ -11,6 +11,7 @@ import { CustomField } from '../types/bx-custom-field.type';
 import { IBitrixResponse } from '@/modules/bitrix/core/interface/bitrix-api.intterface';
 import { PresetCode } from '../enums/preset-code.enum';
 import { NameUtil } from '@/lib/utils/name';
+import { WordUtil } from '@/lib';
 
 @Injectable()
 export class RequisiteService {
@@ -84,7 +85,7 @@ export class RequisiteService {
                     }
                 }
 
-                const batches = await bitrix.api.callBatchWithConcurrency(5);
+                const batches = await bitrix.api.callBatchWithConcurrency(1);
 
                 for (const batch of batches) {
                     if (!batch?.result) continue;
@@ -189,16 +190,15 @@ export class RequisiteService {
                     // TODO: Implement decline_word function if needed
                     // bxRq.RQ_BASED_CASE = declineWord(bxRq.RQ_BASED);
                 }
-
+                console.log('bxRq RQ_POSITION_CASE', bxRq.RQ_POSITION_CASE);
+                console.log('bxRq RQ_POSITION', bxRq.RQ_POSITION);
                 if (preset) {
                     if (bxRq.PRESET_ID === preset.org) {
                         if (
                             bxRq.RQ_DIRECTOR &&
                             !bxRq.RQ_DIRECTOR_CASE?.trim()
                         ) {
-                            // TODO: Implement decline_word function
-                            // const rqDirectorCase = bxRq.RQ_DIRECTOR.split(' ');
-                            // bxRq.RQ_DIRECTOR_CASE = rqDirectorCase.map(declineWord).join(' ');
+
                             const caseValue = NameUtil.declineWord(
                                 bxRq.RQ_DIRECTOR,
                             );
@@ -206,6 +206,21 @@ export class RequisiteService {
                                 bxRq.RQ_DIRECTOR_CASE = caseValue;
                             }
                         }
+
+                        // if (
+                        //     bxRq.RQ_POSITION &&
+                        //     !bxRq.RQ_POSITION_CASE?.trim()
+                        // ) {
+
+                        //     const caseValue = WordUtil.declineWord(
+                        //         bxRq.RQ_POSITION,
+                        //     );
+                        //     console.log('RQ_POSITION_CASE', caseValue);
+                        //     if (caseValue) {
+                        //         bxRq.RQ_POSITION_CASE = caseValue;
+                        //     }
+                        // }
+
                         if (
                             bxRq.RQ_COMPANY_NAME &&
                             !bxRq.RQ_COMPANY_NAME.trim()

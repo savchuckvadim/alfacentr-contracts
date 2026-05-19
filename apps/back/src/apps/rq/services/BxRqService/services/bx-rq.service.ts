@@ -20,7 +20,6 @@ import {
     mergeCustomFields,
 } from '../utils/requisite.utils';
 import { PresetConfig } from '../consts/preset.consts';
-import { BitrixOwnerTypeId } from '@/modules/bitrix';
 import { PortalModel } from '@/modules/portal/services/portal.model';
 
 /**

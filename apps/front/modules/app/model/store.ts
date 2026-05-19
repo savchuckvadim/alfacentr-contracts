@@ -32,6 +32,7 @@ import { WSClient as WSClientWorkspace } from '@workspace/ws';
 
 import { documentReducer } from '@/modules/process/document/';
 import { dealEmailSubjectReducer } from '@/modules/features/deal-email-subject/';
+import { ownBankReducer } from '@/modules/features/own-bank';
 
 export const listenerMiddleware = createListenerMiddleware();
 
@@ -53,7 +54,7 @@ const rootReducer = combineReducers({
     dealActDate: dealActDateReducer,
     dealEdoComment: dealEdoCommentReducer,
     dealEmailSubject: dealEmailSubjectReducer,
-
+    ownBank: ownBankReducer,
     //process
     document: documentReducer,
 });

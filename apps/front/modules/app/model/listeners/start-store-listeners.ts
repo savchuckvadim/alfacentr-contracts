@@ -20,6 +20,7 @@ import {
     setupRqAppListener,
 } from '@/modules/entities/bx-rq';
 import { setupAppDealActDateListener } from '@/modules/features/deal-act-date/model/listener/app.deal-act-date.listener';
+import { setupOwnBankDealListener } from '@/modules/features/own-bank';
 
 export function startStoreListeners(
     listenerMiddleware: ListenerMiddlewareInstance,
@@ -41,4 +42,5 @@ export function startStoreListeners(
     setupAppDealEdoCommentListener(listenerMiddleware);
     setupAppDealEmailSubjectListener(listenerMiddleware);
     setupDocumentNumberDealEmailSubjectListener(listenerMiddleware);
+    setupOwnBankDealListener(listenerMiddleware);
 }

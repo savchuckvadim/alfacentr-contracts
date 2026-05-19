@@ -35,6 +35,10 @@ export enum DocumentGenerateFieldTemplateCode {
     //seminars
     DocumentParticipantsCount = 'DocumentParticipantsCount',
     DocumentContractEndDate = 'DocumentContractEndDate',
+    MyCompanyBankDetailRqAccNum = 'MyCompanyBankDetailRqAccNum',
+    MyCompanyBankDetailRqBankName = 'MyCompanyBankDetailRqBankName',
+    MyCompanyBankDetailRqBik = 'MyCompanyBankDetailRqBik',
+    MyCompanyBankDetailRqCorAccNum = 'MyCompanyBankDetailRqCorAccNum',
 }
 export type DocumentGenerateFieldTemplateType = {
     id: number;
@@ -68,6 +72,33 @@ export type DocumentContractUPVideoFieldsType =
 
 export type DocumentContractUPSpecialFieldsType =
     typeof DocumentGenerateTemplatesType.UP_SPECIAL.fields;
+
+export const OwnBankFields = [
+    {
+        name: 'Реквизиты банка р/с',
+        code: DocumentGenerateFieldTemplateCode.MyCompanyBankDetailRqAccNum,
+        templateCode: DocumentGenerateFieldTemplateCode.MyCompanyBankDetailRqAccNum,
+        type: 'string',
+    },
+    {
+        name: 'Реквизиты банка наименование банка',
+        code: DocumentGenerateFieldTemplateCode.MyCompanyBankDetailRqBankName,
+        templateCode: DocumentGenerateFieldTemplateCode.MyCompanyBankDetailRqBankName,
+        type: 'string',
+    },
+    {
+        name: 'Реквизиты банка БИК',
+        code: DocumentGenerateFieldTemplateCode.MyCompanyBankDetailRqBik,
+        templateCode: DocumentGenerateFieldTemplateCode.MyCompanyBankDetailRqBik,
+        type: 'string',
+    },
+    {
+        name: 'Реквизиты банка к/с',
+        code: DocumentGenerateFieldTemplateCode.MyCompanyBankDetailRqCorAccNum,
+        templateCode: DocumentGenerateFieldTemplateCode.MyCompanyBankDetailRqCorAccNum,
+        type: 'string',
+    },
+];
 export const DocumentGenerateTemplatesType = {
     SEMINAR_PPK_DEAL: {
         id: 134,
@@ -133,6 +164,7 @@ export const DocumentGenerateTemplatesType = {
                     DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
                 type: 'string',
             },
+            ...OwnBankFields,
         ] as const,
         forContract: [EContractType.seminar_ppk] as EContractType[],
     } as const,
@@ -216,6 +248,7 @@ export const DocumentGenerateTemplatesType = {
                     DocumentGenerateFieldTemplateCode.UfCrm8EmailContactForDor,
                 type: 'string',
             },
+            ...OwnBankFields,
         ],
         forContract: [EContractType.seminar] as EContractType[],
     } as const,
@@ -269,6 +302,7 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
                 type: 'string',
             },
+            ...OwnBankFields,
         ],
         forContract: [EContractType.ppk] as EContractType[],
     } as const,
@@ -323,6 +357,7 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
                 type: 'string',
             },
+            ...OwnBankFields,
         ],
         forContract: [EContractType.ppk] as EContractType[],
     } as const,
@@ -376,6 +411,7 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
                 type: 'string',
             },
+            ...OwnBankFields,
         ],
         forContract: [EContractType.up_video] as EContractType[],
     } as const,
@@ -429,6 +465,7 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: DocumentGenerateFieldTemplateCode.ClientSignature,
                 type: 'string',
             },
+            ...OwnBankFields,
         ],
         forContract: [EContractType.up_special] as EContractType[],
     } as const,
@@ -443,6 +480,7 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: 'InvoiceRq',
                 type: 'string',
             },
+            ...OwnBankFields,
         ],
         forContract: [
             EContractType.seminar,
@@ -463,6 +501,7 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: 'InvoiceRq',
                 type: 'string',
             },
+            ...OwnBankFields,
         ],
         forContract: [
             EContractType.seminar,
@@ -484,6 +523,7 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: 'InvoiceRq',
                 type: 'string',
             },
+            ...OwnBankFields,
         ],
         forContract: [
             EContractType.seminar,
@@ -504,6 +544,7 @@ export const DocumentGenerateTemplatesType = {
                 templateCode: 'InvoiceRq',
                 type: 'string',
             },
+            ...OwnBankFields,
         ],
         forContract: [
             EContractType.seminar,
@@ -553,6 +594,7 @@ export const DocumentGenerateTemplatesType = {
                     DocumentGenerateFieldTemplateCode.CLIENT_SHORT_NAME,
                 type: 'string',
             },
+            ...OwnBankFields,
         ],
         forContract: [
             EContractType.seminar,

@@ -4,7 +4,6 @@ import type { FioT } from 'lvovich/lib/gender';
 export class NameUtil {
     /**
      * Склоняет слово в родительный падеж (genitive)
-     * Аналогично функции decline_word из Python (pymorphy2)
      * @param word - слово для склонения
      * @returns склоненное слово
      */

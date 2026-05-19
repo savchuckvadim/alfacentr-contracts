@@ -37,6 +37,7 @@ export class BxBatchDocumentSendService {
             },
         };
 
+
         this.bitrix.api.addCmdBatch(
             documentCode,
             'crm.documentgenerator.document.add',

@@ -18,16 +18,18 @@ export class DocumentGenerateDocService {
         dto: DocumentGenerateDto,
         templateId: number,
         fields: Record<string, string | string[]>,
+        ownBankFields: Record<string, string | string[]>,
     ): Promise<void> {
         void (await this.bxDocumentSendService.add(
             0,
-            fields as Record<string, string>,
+            { ...fields, ...ownBankFields } as Record<string, string>,
             Number(templateId),
             EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITHOUT_PT,
         ));
 
         await this.getActFile({
             fields: {
+                ...ownBankFields,
                 UfCrm8ShotReqClient: dto.clientShortRq,
                 ShortClientRq: dto.clientShortRq,
                 // убираем кастомный нумератор, чтобы использовать битриксовский
@@ -55,8 +57,9 @@ export class DocumentGenerateDocService {
         const invoiceNumber = dto.documentCounter || '1';
         await this.getInvoicesFiles(dto.clientType, {
             fields: {
+                ...ownBankFields,
                 ShortClientRq: dto.clientShortRq,
-
+                UfCrm8ShotReqClient: dto.clientShortRq,
                 DocumentPrefixNumber: dto.documentPrefixNumber, //номер договора с префиксом для упоминания догвора
                 DocumentNumberCounter: invoiceNumber,
                 // DocumentTitle: `Счет №${dto.documentCounter} к Договору №${dto.documentPrefixNumber}`,

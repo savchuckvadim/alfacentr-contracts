@@ -3,6 +3,7 @@ import { PresetId } from '@/apps/rq/enums/preset-id.enum';
 import { PresetConfig } from '../consts/preset.consts';
 import { BXRequisiteDTO } from '@/apps/rq/types/bx-requisite-dto.type';
 import { NameUtil } from '@/lib/utils/name';
+import { WordUtil } from '@/lib';
 
 /**
  * Утилиты для работы с реквизитами
@@ -105,6 +106,13 @@ export const processOrganizationRequisite = (
     if (requisite.RQ_DIRECTOR && !requisite.RQ_DIRECTOR_CASE?.trim()) {
         requisite.RQ_DIRECTOR_CASE = NameUtil.declineWord(
             requisite.RQ_DIRECTOR,
+        );
+    }
+
+
+    if (requisite.RQ_POSITION && !requisite.RQ_POSITION_CASE?.trim()) {
+        requisite.RQ_POSITION_CASE = WordUtil.declineWord(
+            requisite.RQ_POSITION,
         );
     }
 

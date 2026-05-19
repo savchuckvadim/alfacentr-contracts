@@ -24,7 +24,7 @@ export enum E_REQUIRED_DOCUMENT_RQ_ITEM_CODE {
     // OKVED_DESCRIPTION = 'okved_description',
     // OKVED_DESCRIPTION_CASE = 'okved_description_case',
 
-    PHONE = 'phone',
+    // PHONE = 'phone',
     DOCUMENT = 'document',
     DOCUMENT_DATE = 'docDate',
     DOCUMENT_SERIES = 'docSer',

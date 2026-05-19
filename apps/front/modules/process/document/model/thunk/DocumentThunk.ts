@@ -18,6 +18,8 @@ import { getDocumentHeader, getDocumentRqs } from "@/modules/features/document-r
 import { BxDealDataKeys, DocumentGenerateFieldTemplateCode, EContractType, IRequestDocumentGenerateFieldsType, IRequestDocumentGenerateType } from "@alfa/entities";
 import { getDocumentPpkApplicationData } from "../../lib/utils/document-participant.util";
 import { saveCurrentContact } from '@/modules/features/communications/model/thunk/SaveCurrentContactThunk';
+import { getDefaultBank } from '@/modules/features/own-bank';
+import { TOwnBankValue } from '@/modules/features/own-bank/type/save.type';
 
 
 export const documentGenerate = createAsyncThunk<
@@ -53,6 +55,7 @@ export const documentGenerate = createAsyncThunk<
 
         const sendData = getGenerateDocumentData(state, socketId || '');
         await service.push(sendData);
+        debugger
     } catch (error) {
         // Используем централизованную обработку ошибок
         const errorMessage =
@@ -67,7 +70,7 @@ export const documentGenerate = createAsyncThunk<
         throw error;
     }
 
-    await delay(5000);
+    await delay(7000);
     getRedirect(state, dispatch);
     // const redirectLink = `https://alfacentr.bitrix24.ru/crm/deal/details/${dealId}/`;
     // IS_PROD
@@ -205,7 +208,7 @@ const getGenerateDocumentData = (
             })
             : undefined;
 
-
+    const ownBank: TOwnBankValue  = state.ownBank.bank ||  getDefaultBank();
     const sendData = {
         domain,
         userId,
@@ -245,8 +248,10 @@ const getGenerateDocumentData = (
         seminarParticipantsCount: `${productsCount}`,
         ppkApplicationData,
         edoComment,
+        ownBank
 
     } as IRequestDocumentGenerateType;
+    console.log('sendData', sendData);
     return sendData;
 };
 

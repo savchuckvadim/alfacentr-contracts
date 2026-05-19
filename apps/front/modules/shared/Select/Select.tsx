@@ -5,6 +5,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@workspace/ui/components/select';
+import { cn } from '@workspace/ui/lib/utils';
 
 export interface ISelectItem {
     id?: string;
@@ -19,7 +20,9 @@ export const Select = ({
     options,
     placeholder,
     onValueChange,
+    className,
 }: {
+    className?: string;
     placeholder?: string;
     currentValue: string;
     onValueChange: (value: string) => void;
@@ -27,12 +30,12 @@ export const Select = ({
 }) => {
     return (
         <SelectPrimitive value={currentValue} onValueChange={onValueChange}>
-            <SelectTrigger className="w-full max-w-[500px] ">
+            <SelectTrigger size="sm" className={cn("h-5 border-primary/30 text-primary w-full max-w-[500px] h-9 cursor-pointer ", className)}>
                 <SelectValue placeholder={placeholder || 'Выберите значение'} />
             </SelectTrigger>
-            <SelectContent className="w-full max-w-[500px] ">
+            <SelectContent className="w-full max-w-[500px] cursor-pointer ">
                 {options.map(option => (
-                    <SelectItem key={option.code} value={String(option.value)}>
+                    <SelectItem className="text-primary cursor-pointer" key={option.code} value={String(option.value)}>
                         {option.label}
                     </SelectItem>
                 ))}

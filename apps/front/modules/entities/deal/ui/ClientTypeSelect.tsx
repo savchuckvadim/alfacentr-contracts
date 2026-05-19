@@ -57,6 +57,7 @@ export const ClientTypeSelect = () => {
                     >
                         {clientTypeList?.map(item => (
                             <SelectItem
+                                className="text-primary cursor-pointer"
                                 key={item.bitrixId}
                                 value={item.bitrixId}
                             >

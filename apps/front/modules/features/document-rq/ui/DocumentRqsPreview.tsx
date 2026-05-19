@@ -14,12 +14,14 @@ import { BxRqEditModal } from '@/modules/entities/bx-rq';
 import { type DocumentPreviewLineKey } from '../utils/document-rq.util';
 import { ClientRqHeader } from './rqs-preview/components/ClientRqHeader';
 import { ClientRqViewLines } from './rqs-preview/components/ClientRqViewLines';
+import { useOwnBank } from '../../own-bank/';
 
 export const DocumentRqsPreview = () => {
     const { client, provider, clientPreviewLines } = useDocumentRq();
     const { domain, companyId } = useApp();
     const { clientType } = useClientType();
     const { current, errors } = useBxRq();
+    const { ownBankString, ownBank } = useOwnBank()
     const {
         creating,
         isCreatingLoading,
@@ -119,6 +121,16 @@ export const DocumentRqsPreview = () => {
                 {provider.map((item, index) => {
                     return <p key={`provider-rq-item-${index}`}>{item}</p>;
                 })}
+                Банковские реквизиты:
+                {ownBank && ownBank.bank && (
+                    <>
+                        <p>р/с: {ownBank.bank.rs} </p>
+                        <p>в банке {ownBank.bank.bankName} {ownBank.bank.bankAddress}</p>
+                        <p>БИК: {ownBank.bank.bik} </p>
+                        <p>к/с: {ownBank.bank.ks} </p>
+                    </>
+
+                )}
             </div>
             <div className="w-1/2">
                 <ClientRqHeader

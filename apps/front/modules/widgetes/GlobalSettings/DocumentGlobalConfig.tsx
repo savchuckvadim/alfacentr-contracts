@@ -2,6 +2,7 @@
 import { ClientTypeSelect } from '@/modules/entities/deal/ui/ClientTypeSelect';
 import { ContractType } from '@/modules/features/contract-type/ui/ContractType';
 import { DocumentNumber } from '@/modules/features/document-number';
+import { OwnBankSelect } from '@/modules/features/own-bank';
 import { ReloadApp, BackButton } from '@/modules/shared';
 import { ThemeToggler } from '@workspace/theme';
 import { useEffect, useState } from 'react';
@@ -23,15 +24,20 @@ export const DocumentGlobalConfig = () => {
                         className="text-muted-foreground hover:text-foreground"
                     />
                 </div>
+                <div>
+                    <OwnBankSelect />
+                </div>
                 <div className="w-[200px]">
                     <ClientTypeSelect />
+                </div>
+
+                <div>
+                    <DocumentNumber />
                 </div>
                 <div>
                     <ContractType />
                 </div>
-                <div>
-                    <DocumentNumber />
-                </div>
+
             </div>
 
             <div className="flex items-center space-x-2 mr-5">

@@ -3,6 +3,7 @@ import {
     EContractType,
     IPpkDocumentApplicationData,
     IRequestDocumentGenerateEmail,
+    IROwnBank,
 } from '@alfa/entities';
 import { IsStringOrArrayString } from '@/core/decorators/dto/string-or-array-string.decorator';
 import {
@@ -13,7 +14,6 @@ import {
     IsObject,
     IsString,
     IsOptional,
-    IsBoolean,
 } from 'class-validator';
 import {
     IRequestDocumentGenerateFieldsType,
@@ -41,6 +41,44 @@ class DocumentGenerateFieldsDto implements IRequestDocumentGenerateFieldsType {
     [key: string]: DocumentGenerateFieldValueDto;
 }
 
+export class DocumentGenerateOwnBankDto implements IROwnBank {
+    @ApiProperty({
+        description: 'Наименование банка',
+        example: 'АЛЬФА-БАНК',
+    })
+    @IsString()
+    name: string;
+    @ApiProperty({
+        description: 'Наименование банка',
+        example: 'АЛЬФА-БАНК',
+    })
+    @IsString()
+    bankName: string;
+    @ApiProperty({
+        description: 'БИК',
+        example: '045004774',
+    })
+    @IsString()
+    bik: string;
+    @ApiProperty({
+        description: 'Р/с',
+        example: '123',
+    })
+    @IsString()
+    rs: string;
+    @ApiProperty({
+        description: 'к/с',
+        example: '123',
+    })
+    @IsString()
+    ks: string;
+    @ApiProperty({
+        description: 'Адрес банка',
+        example: 'г. Москва',
+    })
+    @IsString()
+    bankAddress: string;
+}
 export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @ApiProperty({
         description: 'Дата акта',
@@ -315,38 +353,23 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @IsOptional()
     @IsString()
     edoComment?: string;
+
+    @ApiProperty({
+        description: 'Реквизиты банка',
+        example: {
+            name: 'АЛЬФА-БАНК',
+            bankName: 'АЛЬФА-БАНК',
+            bik: '045004774',
+            rs: '123',
+            ks: '123',
+            bankAddress: 'г. Москва',
+        },
+    })
+    @IsNotEmpty()
+    @IsObject()
+    ownBank: DocumentGenerateOwnBankDto;
 }
 
-// export class DocumentGenerateEmailDto implements IRequestDocumentGenerateEmail {
-//     @ApiProperty({
-//         description: 'Нужно ли отправлять email',
-//         example: true,
-//     })
-//     @IsOptional()
-//     @IsBoolean()
-//     needEmail?: boolean;
-
-//     @ApiProperty({
-//         description: 'Email',
-//         example: 'test@test.com',
-//     })
-//     @IsOptional()
-//     @IsString()
-//     email: string;
-
-//     @ApiProperty({
-//         description: 'Телефон',
-//         example: '+79999999999',
-//     })
-//     @IsOptional()
-//     @IsString()
-//     phone?: string;
-
-//     @ApiProperty({
-//         description: 'Имя',
-//         example: 'test',
-//     })
-//     @IsOptional()
-//     @IsString()
-//     name?: string;
-// }
+// р/с {MyCompanyBankDetailRqAccNum}
+// в банке {MyCompanyBankDetailRqBankName},
+// БИК {MyCompanyBankDetailRqBik}, к/с {MyCompanyBankDetailRqCorAccNum}

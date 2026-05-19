@@ -126,16 +126,19 @@ export const documentFields = {
                 bitrixId: '19958',
                 name: 'Сбер',
                 sort: '10',
+                code: 'sber'
             },
             {
                 bitrixId: '19960',
                 name: 'Точка 39 (НСК+Запад)',
                 sort: '20',
+                code: 'point39'
             },
             {
                 bitrixId: '19962',
                 name: 'Точка 36 (Регионы)',
                 sort: '30',
+                code: 'point36'
             },
         ],
         name: 'Банковские реквизиты Альфацентра для договора',

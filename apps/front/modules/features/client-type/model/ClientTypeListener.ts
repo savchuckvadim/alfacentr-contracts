@@ -2,7 +2,7 @@ import { RootState } from '@/modules/app/model/store';
 import { updateFieldValue } from '@/modules/entities/deal/model/DealSlice';
 import { isAnyOf, ListenerMiddlewareInstance } from '@reduxjs/toolkit';
 import {
-    getFieldValuByCode,
+
     setCurrentRqItems,
     setFetched,
 } from '@workspace/bx-rq';

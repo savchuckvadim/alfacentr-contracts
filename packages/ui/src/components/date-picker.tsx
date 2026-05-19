@@ -96,12 +96,15 @@ export function DatePickerInput({
         : uncontrolledValue;
     const currentDate = isControlled ? controlledDate : uncontrolledDate;
 
-    // Синхронизируем month с текущей датой без лишних setState (иначе возможен update loop).
+    // Синхронизируем month только при изменении currentDate.
+    // month НЕ должен быть в зависимостях — иначе навигация по годам/месяцам
+    // сбрасывается обратно к выбранной дате при каждом шаге.
     React.useEffect(() => {
-        if (currentDate && month?.getTime() !== currentDate.getTime()) {
+        if (currentDate) {
             setMonth(currentDate);
         }
-    }, [currentDate, month]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentDate]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;

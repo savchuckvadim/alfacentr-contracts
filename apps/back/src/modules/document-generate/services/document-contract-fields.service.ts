@@ -9,13 +9,14 @@ import {
     DocumentGenerateFieldTemplateCode,
     DocumentGenerateTemplatesType,
     EContractType,
+    IROwnBank,
     RQ_TYPE,
 } from '@alfa/entities';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DocumentContractFieldsService {
-    constructor() {}
+    constructor() { }
 
     getContractFields(
         clientType: RQ_TYPE,
@@ -58,10 +59,25 @@ export class DocumentContractFieldsService {
             emailForDoc,
             templateFields,
         );
+
         return {
             templateId,
             fields,
         };
+    }
+    public getOwnBankFields(
+
+        ownBank: IROwnBank,
+
+    ): Record<string, string | string[]> {
+        const fields = {} as { [key: string]: string | string[] };
+        if (ownBank) {
+            fields['MyCompanyBankDetailRqAccNum'] = ownBank.rs;
+            fields['MyCompanyBankDetailRqBankName'] = `${ownBank.bankName}, ${ownBank.bankAddress}`;
+            fields['MyCompanyBankDetailRqBik'] = ownBank.bik;
+            fields['MyCompanyBankDetailRqCorAccNum'] = ownBank.ks;
+        }
+        return fields;
     }
 
     private getTemplateType(

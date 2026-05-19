@@ -18,7 +18,6 @@ import { StorageService } from '@/core/storage';
 import { IBitrixBatchResponseResult } from '@/modules/bitrix/core/interface/bitrix-api.intterface';
 import { BxDealStageFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-stage-flow.service';
 import { EmailDocumentFlowService } from '@/modules/flow/email-flow/email-document-flow.service';
-import { BxDealContactFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-contact-flow.service';
 import { IRequestDocumentGenerateResponse } from '../type/request-document-generate.type';
 // import { BxDiskFlowService } from '@/modules/flow/disk-flow/bx-disk-flow.service';
 import { delay } from '@/lib';
@@ -106,6 +105,7 @@ export class DocumentGenerateFlowService {
                 dto.email.email,
                 dto.seminarParticipantsCount,
             );
+        const ownBankFields = this.documentContractFieldsService.getOwnBankFields(dto.ownBank);
         await delay(200)
         void (await this.bxTimelineService.send(
             '⌛ Ожидание генерации документов ...',
@@ -115,6 +115,7 @@ export class DocumentGenerateFlowService {
             dto,
             contractTemplateContentData.templateId,
             contractTemplateContentData.fields,
+            ownBankFields,
         ));
 
         const currentPpkApplicationBitrixId =
@@ -187,7 +188,7 @@ export class DocumentGenerateFlowService {
             mailResult = emailDocumentFlowResult;
         } else {
             void (await this.bxTimelineService.send(
-                '📄 Email не будет отправлен. Только формирование документов',
+                '📄 Пакет документов сформирован и готов к отправке клиенту.',
                 'email',
             ));
         }
