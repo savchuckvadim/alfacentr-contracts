@@ -3,7 +3,7 @@ import { Placement } from '@workspace/bx';
 
 const isProd = process.env.NEXT_PUBLIC_NODE_MODE !== 'development';
 console.log('🔧 IS_PROD ', isProd);
-export const IS_PROD = isProd;
+export const IS_PROD = true;
 
 export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru' as string;
 export const TESTING_USER = {

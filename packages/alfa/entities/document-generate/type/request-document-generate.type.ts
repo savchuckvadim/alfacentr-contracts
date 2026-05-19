@@ -31,9 +31,17 @@ export interface IRequestDocumentGenerateType {
     userEmail: string;
     userId: number;
     edoComment?: string;
-    ownBank: IROwnBank;
+    ownBank: IROwnBankBase;
 }
-export type  IROwnBank = (typeof ALFA_RQ_DATA)[keyof typeof ALFA_RQ_DATA];
+export interface IROwnBankBase {
+    name: string;
+    bankName: string;
+    bik: string;
+    rs: string;
+    ks: string;
+    bankAddress: string;
+    code: string;
+}
 
 export enum EnumPpkApplicationFieldCode {
     prefix = 'prefix',

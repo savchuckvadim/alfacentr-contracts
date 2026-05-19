@@ -3,7 +3,6 @@ import {
     EContractType,
     IPpkDocumentApplicationData,
     IRequestDocumentGenerateEmail,
-    IROwnBank,
 } from '@alfa/entities';
 import { IsStringOrArrayString } from '@/core/decorators/dto/string-or-array-string.decorator';
 import {
@@ -19,6 +18,7 @@ import {
     IRequestDocumentGenerateFieldsType,
     IRequestDocumentGenerateFieldValueType,
     IRequestDocumentGenerateType,
+    IROwnBankBase,
     RQ_TYPE,
 } from '@alfa/entities';
 
@@ -41,7 +41,7 @@ class DocumentGenerateFieldsDto implements IRequestDocumentGenerateFieldsType {
     [key: string]: DocumentGenerateFieldValueDto;
 }
 
-export class DocumentGenerateOwnBankDto implements IROwnBank {
+export class DocumentGenerateOwnBankDto implements IROwnBankBase {
     @ApiProperty({
         description: 'Наименование банка',
         example: 'АЛЬФА-БАНК',
@@ -78,6 +78,12 @@ export class DocumentGenerateOwnBankDto implements IROwnBank {
     })
     @IsString()
     bankAddress: string;
+    @ApiProperty({
+        description: 'Код банка',
+        example: 'alfa',
+    })
+    @IsString()
+    code: string;
 }
 export class DocumentGenerateDto implements IRequestDocumentGenerateType {
     @ApiProperty({

@@ -9,7 +9,7 @@ import {
     DocumentGenerateFieldTemplateCode,
     DocumentGenerateTemplatesType,
     EContractType,
-    IROwnBank,
+    IROwnBankBase,
     RQ_TYPE,
 } from '@alfa/entities';
 import { Injectable } from '@nestjs/common';
@@ -67,7 +67,7 @@ export class DocumentContractFieldsService {
     }
     public getOwnBankFields(
 
-        ownBank: IROwnBank,
+        ownBank: IROwnBankBase,
 
     ): Record<string, string | string[]> {
         const fields = {} as { [key: string]: string | string[] };
