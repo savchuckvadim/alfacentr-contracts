@@ -1,16 +1,19 @@
 import { DialogFooter } from '@workspace/ui/components/dialog';
 import { Button } from '@workspace/ui/components/button';
 import { FC } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export const ModalMenu: FC<{
     title?: string;
     submitName?: string;
+    isSubmitting?: boolean;
     cancelName?: string;
     description?: string;
     children: React.ReactNode;
     footer?: React.ReactNode;
     isOpen?: boolean;
     submitDisabled?: boolean;
+    withoutCancel?: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit?: () => void;
 }> = ({
@@ -21,7 +24,9 @@ export const ModalMenu: FC<{
     children,
     footer,
     isOpen,
+    isSubmitting,
     submitDisabled,
+    withoutCancel,
     onOpenChange,
     onSubmit,
 }) => {
@@ -80,19 +85,20 @@ export const ModalMenu: FC<{
 
                 <DialogFooter>
                     {/* <div> */}
-                    <Button
+                    {!withoutCancel && <Button
                         variant="outline"
                         onClick={() => onOpenChange(false)}
                     >
                         {cancelName ? cancelName : 'Отмена'}
-                    </Button>
+                    </Button>}
                     {onSubmit && (
                         <Button
                             onClick={onSubmit}
                             variant="default"
-                            disabled={submitDisabled}
+                            disabled={submitDisabled || isSubmitting}
                         >
-                            {submitName ? submitName : 'Отправить'}
+                            {!isSubmitting && (submitName ? submitName : 'Отправить')}
+                            {isSubmitting && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
                         </Button>
                     )}
                     {/* </div> */}

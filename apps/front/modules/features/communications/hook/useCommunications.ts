@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
 import { useEffect, useState } from 'react';
 import { documentGenerate } from '@/modules/process';
 import { communicationsActions } from '../model/slice/CommunicationsSlice';
+import { saveCurrentContact } from '../model/thunk/SaveCurrentContactThunk';
 import { BxDealDataKeys } from '@alfa/entities';
 import { useDeal } from '@/modules/entities';
 
@@ -18,7 +19,9 @@ export const useCommunications = () => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const { confirm, errors } = useAppSelector(state => state.communications);
+    const { confirm, errors, contactSync } = useAppSelector(
+        state => state.communications,
+    );
 
     useEffect(() => {
         setIsLoading(confirm.isActive);
@@ -62,6 +65,15 @@ export const useCommunications = () => {
         },
         setNeedEmail: (needEmail: boolean) => {
             dispatch(communicationsActions.setNeedEmail(needEmail));
+        },
+        contactSync,
+        saveContact: () => {
+            dispatch(saveCurrentContact());
+        },
+        cancelContactSync: () => {
+            dispatch(
+                communicationsActions.setContactSyncConfirmActive(false),
+            );
         },
         updateField,
         updateFieldWithAPI,

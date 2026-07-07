@@ -4,7 +4,14 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { BxDealCurrentContactService } from "../../services/bx-deal-contact-flow.service";
 
 const getSaveContactDataByState = (state: RootState):
- { dealId: number; email: string; name: string; phone: string; userId: number } | null => {
+ {
+    dealId: number;
+    email: string;
+    name: string;
+    phone: string;
+    userId: number;
+    dealFields: Record<string, string | number>;
+} | null => {
     const currentDeal = state.app.bitrix.deal;
 
     const dealIdRaw = currentDeal?.ID;
@@ -30,7 +37,14 @@ const getSaveContactDataByState = (state: RootState):
     const phone = phoneData.value as string;
     const userIdNum = Number(userId);
 
-    return { dealId, email, name, phone, userId: userIdNum };
+    // актуальный email сделки — уходит в bitrix тем же deal.update,
+    // которым привязывается контакт; name/phone обновляются в сделке
+    // сразу при своём изменении (CommunicationsDealListener)
+    const dealFields: Record<string, string | number> = {
+        [emailData.bitrixId]: email,
+    };
+
+    return { dealId, email, name, phone, userId: userIdNum, dealFields };
 };
 export const saveCurrentContact = createAsyncThunk<
     { email: string; name: string; phone: string; userId: number },
@@ -48,7 +62,8 @@ export const saveCurrentContact = createAsyncThunk<
         if (!saveContactData) {
             return rejectWithValue('Contact data is not defined');
         }
-        const { dealId, email, name, phone, userId } = saveContactData;
+        const { dealId, email, name, phone, userId, dealFields } =
+            saveContactData;
 
         const currentContactService = new BxDealCurrentContactService();
 
@@ -58,6 +73,7 @@ export const saveCurrentContact = createAsyncThunk<
             name,
             phone,
             userId,
+            dealFields,
         });
         return { email, name, phone, userId };
     },

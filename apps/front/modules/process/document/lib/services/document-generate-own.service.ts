@@ -4,8 +4,7 @@ import {
     EBACK_ENDPOINT,
     EResultCode,
 } from '@workspace/api';
-import { IRequestDocumentGenerateType } from '@alfa/entities';
-import { WSClient } from '@workspace/ws';
+import { EContractType, IRequestDocumentGenerateType } from '@alfa/entities';
 import { registerWSHandler } from '@/modules/shared/Websocket/ws-handlers-registry';
 import { documentGenerateDone } from '../../model/thunk/DocumentThunk';
 
@@ -26,6 +25,25 @@ export class DocumentGenerateOwnService {
             );
         }
         return response.data;
+    }
+
+    /**
+     * Проверяет на бэке, что все обязательные (по типу договора)
+     * поля сделки с документами заполнены
+     */
+    async isDealReadyForSend(
+        dealId: number,
+        contractType?: EContractType,
+    ): Promise<boolean> {
+        const response = await backAPI.service<boolean>(
+            EBACK_ENDPOINT.DOCUMENT_IS_DEAL_READY_FOR_SEND,
+            API_METHOD.POST,
+            { dealId, contractType },
+        );
+        if (response?.resultCode !== EResultCode.SUCCESS) {
+            return false;
+        }
+        return response.data === true;
     }
 
     // async wsListener(socketId: string, wsClient: WSClient) {

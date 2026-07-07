@@ -13,5 +13,6 @@ export * from './entities/document-generate/type/request-document-generate.type'
 export type * from './entities/product/product.type';
 export * from './entities/product/product.util';
 export * from './entities/deal/bx-deal-stages.data';
+export * from './entities/deal/deal-document-readiness';
 
 export * from './entities/own-bank/own-bank-rq.data';

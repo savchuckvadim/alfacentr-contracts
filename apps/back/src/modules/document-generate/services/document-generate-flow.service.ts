@@ -15,6 +15,7 @@ import { BxBatchDocumentSendService } from './bx-document-send.service';
 import { DocumentGenerateDocService } from './document-generate-doc.service';
 import { DocumentGeneratePdfService } from './document-generate-pdf.service';
 import { StorageService } from '@/core/storage';
+import { DealDocumentReadyService } from './deal-document-ready.service';
 import { IBitrixBatchResponseResult } from '@/modules/bitrix/core/interface/bitrix-api.intterface';
 import { BxDealStageFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-stage-flow.service';
 import { EmailDocumentFlowService } from '@/modules/flow/email-flow/email-document-flow.service';
@@ -31,6 +32,7 @@ export class DocumentGenerateFlowService {
     private documentGenerateDocService: DocumentGenerateDocService;
     private documentGeneratePdfService: DocumentGeneratePdfService;
     private ppkApplicationGenerateService: PpkApplicationGenerateService;
+    private dealDocumentReadyService: DealDocumentReadyService;
     constructor(
         private readonly storageService: StorageService,
         private readonly pbxService: PBXService,
@@ -76,7 +78,6 @@ export class DocumentGenerateFlowService {
             bitrix,
             this.bxTimelineService,
             this.filesForSend,
-            this.tgBot,
         );
         this.ppkApplicationGenerateService = new PpkApplicationGenerateService(
             this.storageService,
@@ -84,10 +85,18 @@ export class DocumentGenerateFlowService {
             bitrix,
             this.filesForSend,
         );
+        this.dealDocumentReadyService = new DealDocumentReadyService(bitrix);
 
         //обновление стадии сделки
 
         void (await dealService.changeStageFromDocument());
+
+        //очищаем поля сделки, которые должны содержать документы,
+        //чтобы после генерации проверить что они заполнены заново
+        void (await this.dealDocumentReadyService.clearDocumentFields(
+            entityId,
+            dto.contractType,
+        ));
 
 
         const contractTemplateContentData =
@@ -140,6 +149,36 @@ export class DocumentGenerateFlowService {
                 currentPpkApplicationBitrixId,
                 dto.ppkApplicationData,
             ));
+        }
+
+        //повторно берем сделку и проверяем, что все обязательные
+        //поля с документами заполнены — иначе дальше не работаем
+        const missingDocumentFields =
+            await this.dealDocumentReadyService.getMissingDocumentFields(
+                entityId,
+                dto.contractType,
+            );
+
+        if (missingDocumentFields.length > 0) {
+            const missingNames = missingDocumentFields
+                .map((field) => field.name)
+                .join(', ');
+
+            void (await this.bxTimelineService.send(
+                `❌ Не все документы сформированы в сделке. Не заполнены поля: ${missingNames}. Отправка документов не выполнена.`,
+                'error',
+            ));
+
+            await this.tgBot.sendMessage(
+                `ALFA DOCUMENT GENERATE: deal ${entityId} — не заполнены поля документов: ${missingNames}`,
+            );
+
+            return {
+                result,
+                filesCount: this.filesForSend.length,
+                files: this.filesForSend,
+                mailResult: null,
+            };
         }
 
         void (await this.bxTimelineService.send(

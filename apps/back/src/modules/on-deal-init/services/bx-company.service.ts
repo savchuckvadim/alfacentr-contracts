@@ -1,14 +1,15 @@
-import { BitrixService, IBXCompany } from '@/modules/bitrix';
+import { BitrixService, IBXCompany, IBXDeal } from '@/modules/bitrix';
 import { BxCompanyData } from '@alfa/entities';
 import { BitrixEntityType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 
 export class BxCompanyService {
-    constructor(private readonly bitrix: BitrixService) {}
+    constructor(private readonly bitrix: BitrixService) { }
 
     public async searchCompany(
-        dealId: number,
+        deal: IBXDeal,
         inn: string,
     ): Promise<IBXCompany[] | null> {
+        const dealId = Number(deal.ID);
         console.log('dealId', dealId);
         const innFieldId = BxCompanyData.inn.bitrixId;
         let comment = '❌ ИНН не указан';
@@ -23,6 +24,8 @@ export class BxCompanyService {
             companies = response.result;
             if (companies.length > 0) {
                 comment = this.getComment(companies, inn);
+
+                await this.updateDealCompanyId(deal, Number(companies[0].ID));
             } else {
                 comment = `❌ Не найдены компании по ИНН: ${inn}`;
             }
@@ -30,6 +33,13 @@ export class BxCompanyService {
 
         await this.setTimelineComment(dealId, comment);
         return companies;
+    }
+    protected async updateDealCompanyId(deal: IBXDeal, companyId: number) {
+        if (deal && !deal.COMPANY_ID) {
+            await this.bitrix.deal.update(deal.ID, {
+                COMPANY_ID: String(companyId),
+            })
+        }
     }
     protected getComment(companies: IBXCompany[], inn: string) {
         let info = '';

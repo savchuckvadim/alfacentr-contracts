@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { DocumentGenerateController } from './controllers/document-generate.controller';
 import { QueueModule } from '@/modules/queue/queue.module';
 import { DocumentBitrixGenerateUseCase } from './use-cases/document-bitrix-generate.use-case';
+import { IsDealReadyForSendUseCase } from './use-cases/is-deal-ready-for-send.use-case';
 import { DocumentGenerateQueueProcessor } from './processors/document.processor';
 import { PBXModule } from '../pbx';
 import { DocumentContractFieldsService } from './services/document-contract-fields.service';
@@ -14,6 +15,7 @@ import { GetDealBidItemsUseCase } from '../on-deal-init/use-cases/get-deal-bid-i
     controllers: [DocumentGenerateController],
     providers: [
         DocumentBitrixGenerateUseCase,
+        IsDealReadyForSendUseCase,
 
         DocumentGenerateQueueProcessor,
         DocumentContractFieldsService,

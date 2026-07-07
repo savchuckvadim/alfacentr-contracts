@@ -1,11 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { validateEmailAndPhone } from '../thunk/CommunicationsThunk';
+import { saveCurrentContact } from '../thunk/SaveCurrentContactThunk';
 
 export interface ICommunicationsState {
     confirm: {
         isActive: boolean;
         isConfirmed: boolean;
         needEmail: boolean;
+    };
+    contactSync: {
+        isChangeContactNeedConfirm: boolean;
+        isConfirmActive: boolean;
+        isSaving: boolean;
     };
     errors: {
         email: string;
@@ -19,6 +25,11 @@ const initialState: ICommunicationsState = {
         isActive: false,
         isConfirmed: false,
         needEmail: true,
+    },
+    contactSync: {
+        isChangeContactNeedConfirm: true,
+        isConfirmActive: false,
+        isSaving: false,
     },
     errors: {
         email: '',
@@ -68,6 +79,18 @@ export const communicationsSlice = createSlice({
         ) => {
             state.confirm.needEmail = action.payload;
         },
+        setChangeContactNeedConfirm: (
+            state: ICommunicationsState,
+            action: PayloadAction<boolean>,
+        ) => {
+            state.contactSync.isChangeContactNeedConfirm = action.payload;
+        },
+        setContactSyncConfirmActive: (
+            state: ICommunicationsState,
+            action: PayloadAction<boolean>,
+        ) => {
+            state.contactSync.isConfirmActive = action.payload;
+        },
     },
     extraReducers: builder => {
         //check email and phone
@@ -86,6 +109,27 @@ export const communicationsSlice = createSlice({
             validateEmailAndPhone.pending,
             (state: ICommunicationsState, action) => {
                 state.validateLoading = true;
+            },
+        );
+        //save current contact in deal
+        builder.addCase(
+            saveCurrentContact.pending,
+            (state: ICommunicationsState) => {
+                state.contactSync.isSaving = true;
+            },
+        );
+        builder.addCase(
+            saveCurrentContact.fulfilled,
+            (state: ICommunicationsState) => {
+                state.contactSync.isSaving = false;
+                state.contactSync.isConfirmActive = false;
+            },
+        );
+        builder.addCase(
+            saveCurrentContact.rejected,
+            (state: ICommunicationsState) => {
+                state.contactSync.isSaving = false;
+                state.contactSync.isConfirmActive = false;
             },
         );
     },

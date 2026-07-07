@@ -9,6 +9,7 @@ const url = prod;
 export enum EBACK_ENDPOINT {
     DEPARTMENT = 'bitrix/department/sales',
     DOCUMENT_GENERATE = 'document-generate',
+    DOCUMENT_IS_DEAL_READY_FOR_SEND = 'document-generate/is-deal-ready-for-send',
 
     QUEUE_PING = 'queue/ping',
 

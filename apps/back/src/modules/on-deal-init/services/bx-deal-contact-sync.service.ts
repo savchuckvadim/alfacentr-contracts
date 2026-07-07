@@ -1,7 +1,7 @@
+import { BitrixService, IBXContact } from '@/modules/bitrix';
 import { DOCUMENT_FIELD_CONTACT_ID_FOR_SEND_EMAIL_BITRIX_ID } from '@alfa/entities';
-import { Bitrix, BitrixService, IBXContact } from '@bitrix/index';
 
-export interface IBxDealContactFlowDto {
+export interface IBxDealContactSyncDto {
     dealId: number;
     email: string;
     name: string;
@@ -10,8 +10,10 @@ export interface IBxDealContactFlowDto {
     dealFields?: Record<string, string | number>;
 }
 const EMAIL_VALUE_TYPE = 'WORK'; // 'MAILING';
-export class BxDealCurrentContactService {
-    private bitrix!: BitrixService;
+
+//порт актуальной фронтовой логики
+//apps/front/modules/features/communications/services/bx-deal-contact-flow.service.ts
+export class BxDealContactSyncService {
     private email!: string;
     private name!: string;
     private phone!: string;
@@ -19,9 +21,10 @@ export class BxDealCurrentContactService {
     private dealId!: number;
     private dealFields!: Record<string, string | number>;
 
-    async flow(dto: IBxDealContactFlowDto) {
+    constructor(private readonly bitrix: BitrixService) {}
+
+    async flow(dto: IBxDealContactSyncDto) {
         this.init(dto);
-        this.bitrix = Bitrix.getService();
 
         const contacts = await this.getContactList();
 
@@ -30,7 +33,6 @@ export class BxDealCurrentContactService {
         let contactId = null as number | null;
 
         if (!contact) {
-
             contactId = await this.addContact();
         } else {
             contactId = Number(contact?.ID ?? 0);
@@ -42,7 +44,7 @@ export class BxDealCurrentContactService {
             contactId,
         };
     }
-    protected init(dto: IBxDealContactFlowDto) {
+    protected init(dto: IBxDealContactSyncDto) {
         this.email = dto.email || '';
         this.name = dto.name || '';
         this.phone = dto.phone || '';
@@ -51,16 +53,18 @@ export class BxDealCurrentContactService {
         this.dealFields = dto.dealFields || {};
     }
     protected async getContactList(): Promise<IBXContact[]> {
-        const contactResponse = await this.bitrix.contact.getList({
-            EMAIL: this.email || '',
-        }, ['ID', 'NAME', 'EMAIL', 'PHONE']);
+        const contactResponse = await this.bitrix.contact.getList(
+            {
+                EMAIL: this.email || '',
+            },
+            ['ID', 'NAME', 'EMAIL', 'PHONE'],
+        );
         return contactResponse.result || [];
     }
 
     protected async getContactByEmailType(
-        contacts: IBXContact[]
+        contacts: IBXContact[],
     ): Promise<IBXContact | null> {
-
         if (!contacts || contacts.length === 0) {
             return null;
         }
@@ -69,12 +73,15 @@ export class BxDealCurrentContactService {
             if (!Array.isArray(emails)) {
                 return false;
             }
-            return emails.some((entry) => entry.VALUE_TYPE === EMAIL_VALUE_TYPE);
+            return emails.some(
+                (entry) =>
+                    (entry as { VALUE_TYPE?: string }).VALUE_TYPE ===
+                    EMAIL_VALUE_TYPE,
+            );
         });
         if (contacts && contacts.length > 0 && contacts[0] && !contact) {
             contact = contacts[0];
             await this.updateContactEmail(contact);
-
         }
         return contact ?? null;
     }
@@ -91,7 +98,7 @@ export class BxDealCurrentContactService {
             EMAIL: [{ VALUE: this.email || '', TYPE: EMAIL_VALUE_TYPE }],
             PHONE: [{ VALUE: this.phone || '', TYPE: EMAIL_VALUE_TYPE }],
         });
-        return contactAddResponse.result;
+        return Number(contactAddResponse.result);
     }
 
     protected async updateDealContact(dealId: number, contactId: number) {

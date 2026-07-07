@@ -55,7 +55,7 @@ export const documentGenerate = createAsyncThunk<
 
         const sendData = getGenerateDocumentData(state, socketId || '');
         await service.push(sendData);
-        debugger
+        
     } catch (error) {
         // Используем централизованную обработку ошибок
         const errorMessage =

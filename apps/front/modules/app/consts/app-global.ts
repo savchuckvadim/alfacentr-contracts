@@ -3,7 +3,7 @@ import { Placement } from '@workspace/bx';
 
 const isProd = process.env.NEXT_PUBLIC_NODE_MODE !== 'development';
 console.log('🔧 IS_PROD ', isProd);
-export const IS_PROD = true;
+export const IS_PROD = isProd;
 
 export const TESTING_DOMAIN = 'alfacentr.bitrix24.ru' as string;
 export const TESTING_USER = {
@@ -36,9 +36,9 @@ export const TESTING_USER = {
 } as IBXUser;
 
 // export const IS_REMEMBER_DEV = true;
-export const TESTING_DEAL_ID = 113856 // 106514 // 104744; //11311
+export const TESTING_DEAL_ID = 170742 // 106514 // 104744; //11311
 // export const TESTING_COMPANY_ID = 158587 as number; // 158479
-export const DEV_CURRENT_USER_ID = 1;
+export const DEV_CURRENT_USER_ID = 856;
 
 export const TESTING_PLACEMENT = {
     placement: 'CRM_DEAL_DETAIL_TAB',
