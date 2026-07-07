@@ -15,10 +15,16 @@ export interface IDealRequiredDocumentField {
 }
 
 /**
+ * Коды, для которых есть описание поля в currentDocumentFields
+ * (не все члены enum имеют запись в объекте)
+ */
+type TCurrentDocumentFieldCode = keyof typeof currentDocumentFields;
+
+/**
  * Поля сделки, которые должны содержать документы после генерации
  * для любого типа договора
  */
-const BASE_REQUIRED_DOCUMENT_FIELD_CODES: EnumDealCurrentDocumentFieldCode[] = [
+const BASE_REQUIRED_DOCUMENT_FIELD_CODES: TCurrentDocumentFieldCode[] = [
     EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITHOUT_PT,
     EnumDealCurrentDocumentFieldCode.CURRENT_ACT_WITH_PT,
     EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITH_PT,
@@ -29,7 +35,7 @@ const BASE_REQUIRED_DOCUMENT_FIELD_CODES: EnumDealCurrentDocumentFieldCode[] = [
  * Для ППК и Семинар+ППК помимо обычных документов
  * обязательно Приложение ППК
  */
-const PPK_REQUIRED_DOCUMENT_FIELD_CODES: EnumDealCurrentDocumentFieldCode[] = [
+const PPK_REQUIRED_DOCUMENT_FIELD_CODES: TCurrentDocumentFieldCode[] = [
     EnumDealCurrentDocumentFieldCode.CURRENT_APPLICATION_DOC,
 ];
 

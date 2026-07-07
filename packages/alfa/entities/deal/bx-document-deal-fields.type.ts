@@ -3,7 +3,6 @@ export enum EnumDealCurrentDocumentFieldCode {
     CURRENT_APPLICATION_DOC = 'current_application_doc',
     CURRENT_APPLICATION_PDF = 'current_application_pdf',
     CURRENT_ACT_WITH_PT = 'current_act_with_pt',
-    CURRENT_ACT_WITHOUT_PT = 'current_act_without_pt',
     CURRENT_CONTRACT_WITH_PT = 'current_contract_with_pt',
     CURRENT_CONTRACT_WITHOUT_PT = 'current_contract_without_pt',
     CURRENT_INVOICES_WITH_PT = 'current_invoices_with_pt',
