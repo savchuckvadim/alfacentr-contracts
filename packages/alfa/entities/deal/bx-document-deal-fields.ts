@@ -317,6 +317,20 @@ export const documentFields = {
         multiple: false,
         mandatory: false,
     },
+    /**
+     * Сколько компаний нашлось по ИНН при инициации сделки.
+     * Заполняется в on-deal-init, нужно чтобы в списке сделок фильтровать
+     * те, где совпадений больше одного (привязывается всегда одна)
+     */
+    [EnumDealDocumentFieldCode.FOUND_COMPANIES_COUNT]: {
+        id: 'undefined-2',
+        bitrixId: 'UF_CRM_1786296629',
+        type: 'integer',
+        name: 'Количество найденных компаний',
+        code: EnumDealDocumentFieldCode.FOUND_COMPANIES_COUNT,
+        multiple: false,
+        mandatory: false,
+    },
 } as const;
 
 export type DocumentFieldContactIdForSendEmailRow =
@@ -329,6 +343,17 @@ export const documentFieldContactIdForSendEmail: DocumentFieldContactIdForSendEm
 /** UF code string only — use in Nest services to avoid `no-unsafe-*` when project service mis-resolves the row object from `@alfa/entities`. */
 export const DOCUMENT_FIELD_CONTACT_ID_FOR_SEND_EMAIL_BITRIX_ID: DocumentFieldContactIdForSendEmailRow['bitrixId'] =
     documentFieldContactIdForSendEmail.bitrixId;
+
+export type DealFoundCompaniesCountRow =
+    (typeof documentFields)['found_companies_count'];
+
+/** Row for the deal UF holding how many companies matched the INN on deal init. */
+export const dealFoundCompaniesCountField: DealFoundCompaniesCountRow =
+    documentFields[EnumDealDocumentFieldCode.FOUND_COMPANIES_COUNT];
+
+/** UF code string only — see the note above for why the plain string is exported too. */
+export const DEAL_FOUND_COMPANIES_COUNT_BITRIX_ID: DealFoundCompaniesCountRow['bitrixId'] =
+    dealFoundCompaniesCountField.bitrixId;
 
 export const currentDocumentFields = {
     [EnumDealCurrentDocumentFieldCode.CURRENT_APPLICATION_URL]: {

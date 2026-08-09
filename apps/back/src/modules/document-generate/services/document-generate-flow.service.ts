@@ -134,10 +134,11 @@ export class DocumentGenerateFlowService {
 
         const result = await bitrix.api.callBatchWithConcurrency(1);
         this.prepareResult(result);
-        void (await this.documentGeneratePdfService.pdfGenerate(
-            result,
-            entityId,
-        ));
+        const isPdfWaitExhausted =
+            await this.documentGeneratePdfService.pdfGenerate(
+                result,
+                entityId,
+            );
 
         if (
             (dto.contractType === EContractType.seminar_ppk ||
@@ -152,11 +153,22 @@ export class DocumentGenerateFlowService {
         }
 
         //повторно берем сделку и проверяем, что все обязательные
-        //поля с документами заполнены — иначе дальше не работаем
+        //поля с документами заполнены — иначе дальше не работаем.
+        //битрикс дописывает файлы в сделку не мгновенно, поэтому опрашиваем
+        //ее в течение бюджета ожидания, а не один раз
         const missingDocumentFields =
-            await this.dealDocumentReadyService.getMissingDocumentFields(
+            await this.dealDocumentReadyService.waitForDocumentFields(
                 entityId,
                 dto.contractType,
+                async () => {
+                    void (await this.bxTimelineService.send(
+                        '⌛ Документы еще формируются, ожидаем ...',
+                        'waiting',
+                    ));
+                },
+                //бюджет ожидания pdf уже исчерпан — поле счета не заполнится,
+                //поэтому проверяем один раз и не ждем впустую еще раз
+                isPdfWaitExhausted ? 0 : undefined,
             );
 
         if (missingDocumentFields.length > 0) {

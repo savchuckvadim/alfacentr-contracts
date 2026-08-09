@@ -1,5 +1,5 @@
 import { BitrixService, IBXCompany, IBXDeal } from '@/modules/bitrix';
-import { BxCompanyData } from '@alfa/entities';
+import { BxCompanyData, DEAL_FOUND_COMPANIES_COUNT_BITRIX_ID } from '@alfa/entities';
 import { BitrixEntityType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 
 export class BxCompanyService {
@@ -24,22 +24,36 @@ export class BxCompanyService {
             companies = response.result;
             if (companies.length > 0) {
                 comment = this.getComment(companies, inn);
-
-                await this.updateDealCompanyId(deal, Number(companies[0].ID));
             } else {
                 comment = `❌ Не найдены компании по ИНН: ${inn}`;
             }
         }
 
+        //счетчик пишем всегда, в том числе 0 — по нему в списке сделок
+        //фильтруются как ненайденные, так и неоднозначные (больше одной) компании
+        await this.updateDealCompany(deal, companies);
         await this.setTimelineComment(dealId, comment);
         return companies;
     }
-    protected async updateDealCompanyId(deal: IBXDeal, companyId: number) {
-        if (deal && !deal.COMPANY_ID) {
-            await this.bitrix.deal.update(deal.ID, {
-                COMPANY_ID: String(companyId),
-            })
+
+    /**
+     * Пишет в сделку количество найденных по ИНН компаний и,
+     * если сделка еще без компании, привязывает первую из найденных
+     */
+    protected async updateDealCompany(deal: IBXDeal, companies: IBXCompany[]) {
+        if (!deal) {
+            return;
         }
+
+        const dealFields: Record<string, string | number> = {
+            [DEAL_FOUND_COMPANIES_COUNT_BITRIX_ID]: companies.length,
+        };
+
+        if (companies.length > 0 && !deal.COMPANY_ID) {
+            dealFields.COMPANY_ID = String(companies[0].ID);
+        }
+
+        await this.bitrix.deal.update(deal.ID, dealFields);
     }
     protected getComment(companies: IBXCompany[], inn: string) {
         let info = '';

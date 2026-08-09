@@ -17,8 +17,23 @@ export type DocumentPreviewLineKey =
     | 'kpp'
     | 'address'
     | 'phone'
+    //паспортные данные — только для физлица
+    | 'documentType'
+    | 'docSeries'
+    | 'docNumber'
+    | 'docDate'
+    | 'depCode'
     | 'other'
     | 'base_other';
+
+//ключи, которые показываем только физлицу
+const FIZ_ONLY_KEYS: DocumentPreviewLineKey[] = [
+    'documentType',
+    'docSeries',
+    'docNumber',
+    'docDate',
+    'depCode',
+];
 
 export type DocumentPreviewSection = 'base' | 'address' | 'bankComment';
 
@@ -39,6 +54,8 @@ const isEmptyValue = (value: string): boolean => {
     if (!normalized) return true;
     if (/^_+$/.test(normalized)) return true;
     if (normalized.includes(EMPTY_LINE)) return true;
+    //значения вида «Серия: ______» — сервис отдает их с подписью и прочерком
+    if (/^[^:]*:\s*_+$/.test(normalized)) return true;
     return false;
 };
 
@@ -155,6 +172,16 @@ export const getClientPreviewLines = (
     const phone = (client as DocumentOrganizationRqAgent).phone || EMPTY_LINE;
     const other = (client as DocumentOrganizationRqAgent).other || EMPTY_LINE;
     const baseOther = (client as DocumentOrganizationRqAgent).base_other || EMPTY_LINE;
+
+    //паспортные данные физлица — значения уже приходят с подписями
+    //(«Серия: 1234», «Документ выдан: 01.01.2020, ОУФМС ...») из BxClientRqService
+    const fizClient = client as DocumentFizRqAgent;
+    const documentType = fizClient.documentType || EMPTY_LINE;
+    const docSeries = fizClient.docSeries || EMPTY_LINE;
+    const docNumber = fizClient.docNumber || EMPTY_LINE;
+    const docDate = fizClient.docDate || EMPTY_LINE;
+    const depCode = fizClient.depCode || EMPTY_LINE;
+
     const lines: DocumentPreviewLine[] = [
         {
             key: 'fullname',
@@ -202,6 +229,55 @@ export const getClientPreviewLines = (
             tooltip: getTooltip('телефон', true, isEmptyValue(phone)),
         },
         {
+            key: 'documentType',
+            label: 'Вид документа',
+            value: documentType,
+            isEmpty: isEmptyValue(documentType),
+            section: 'base',
+            canEdit: true,
+            tooltip: getTooltip('вид документа', true, isEmptyValue(documentType)),
+        },
+        {
+            key: 'docSeries',
+            label: 'Серия документа',
+            value: docSeries,
+            isEmpty: isEmptyValue(docSeries),
+            section: 'base',
+            canEdit: true,
+            tooltip: getTooltip('серию документа', true, isEmptyValue(docSeries)),
+        },
+        {
+            key: 'docNumber',
+            label: 'Номер документа',
+            value: docNumber,
+            isEmpty: isEmptyValue(docNumber),
+            section: 'base',
+            canEdit: true,
+            tooltip: getTooltip('номер документа', true, isEmptyValue(docNumber)),
+        },
+        {
+            key: 'docDate',
+            label: 'Кем и когда выдан документ',
+            value: docDate,
+            isEmpty: isEmptyValue(docDate),
+            section: 'base',
+            canEdit: true,
+            tooltip: getTooltip(
+                'дату выдачи и кем выдан документ',
+                true,
+                isEmptyValue(docDate),
+            ),
+        },
+        {
+            key: 'depCode',
+            label: 'Код подразделения',
+            value: depCode,
+            isEmpty: isEmptyValue(depCode),
+            section: 'base',
+            canEdit: true,
+            tooltip: getTooltip('код подразделения', true, isEmptyValue(depCode)),
+        },
+        {
             key: 'base_other',
             label: 'Дополнительные реквизиты',
             value: baseOther,
@@ -221,10 +297,11 @@ export const getClientPreviewLines = (
         },
     ];
 
+    //физлицу не показываем КПП, всем остальным — паспортные данные
     if (clientType !== RQ_TYPE.ORGANIZATION) {
         return lines.filter(line => line.key !== 'kpp');
     }
-    return lines;
+    return lines.filter(line => !FIZ_ONLY_KEYS.includes(line.key));
 };
 
 // Функция для сортировки по порядку элементов в enum

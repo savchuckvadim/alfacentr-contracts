@@ -6,6 +6,11 @@ import {
     getRequiredDocumentFields,
     IDealRequiredDocumentField,
 } from '@alfa/entities';
+import { delay } from '@/lib';
+import {
+    DOCUMENT_WAIT_INTERVAL_MS,
+    DOCUMENT_WAIT_TIMEOUT_MS,
+} from '../const/document-wait.const';
 
 /**
  * Работа с полями сделки, которые должны содержать сгенерированные документы:
@@ -52,6 +57,34 @@ export class DealDocumentReadyService {
         const dealData = deal.result as unknown as Record<string, unknown>;
 
         return getMissingDocumentFields(dealData, contractType);
+    }
+
+    /**
+     * Ждет, пока битрикс дозаполнит поля сделки документами.
+     * Опрашивает сделку до истечения бюджета и возвращает последний список
+     * незаполненных полей (пустой — значит все готово).
+     * onWaitStart вызывается один раз, только если пришлось реально ждать
+     */
+    async waitForDocumentFields(
+        dealId: number,
+        contractType?: EContractType | null,
+        onWaitStart?: () => Promise<void>,
+        timeoutMs: number = DOCUMENT_WAIT_TIMEOUT_MS,
+        intervalMs: number = DOCUMENT_WAIT_INTERVAL_MS,
+    ): Promise<IDealRequiredDocumentField[]> {
+        const deadline = Date.now() + timeoutMs;
+        let missing = await this.getMissingDocumentFields(dealId, contractType);
+
+        if (missing.length > 0 && onWaitStart) {
+            await onWaitStart();
+        }
+
+        while (missing.length > 0 && Date.now() + intervalMs <= deadline) {
+            await delay(intervalMs);
+            missing = await this.getMissingDocumentFields(dealId, contractType);
+        }
+
+        return missing;
     }
 
     async isDealReadyForSend(

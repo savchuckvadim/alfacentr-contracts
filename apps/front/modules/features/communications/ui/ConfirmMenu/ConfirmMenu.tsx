@@ -1,6 +1,6 @@
 'use client';
 
-import { ModalMenu } from '@/modules/shared';
+import { ModalMenu, normalizeEmail, normalizePhone } from '@/modules/shared';
 import { BxDealDataKeys } from '@alfa/entities';
 import { Input } from '@workspace/ui/components/input';
 import { Label } from '@workspace/ui/components/label';
@@ -58,17 +58,35 @@ export const CommunicationsConfirmMenu = () => {
         control,
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm<FormValues>({
         mode: 'onChange',
         defaultValues: {
             date: dealActDate || '',
             name: (name?.value as string) || '',
-            email: (email?.value as string) || '',
-            phone: (phone?.value as string) || '',
+            //чистим значения из битрикса — туда могли попасть невидимые символы
+            email: normalizeEmail((email?.value as string) || ''),
+            phone: normalizePhone((phone?.value as string) || ''),
             comment: comment || '',
         },
     });
+
+    /**
+     * Чистит вставленное/введенное значение прямо в поле, чтобы пробелы,
+     * переносы и невидимые спецсимволы не доходили до валидации и до битрикса
+     */
+    const normalizeOnChange = (
+        field: 'email' | 'phone',
+        value: string,
+    ): string => {
+        const normalized =
+            field === 'email' ? normalizeEmail(value) : normalizePhone(value);
+        if (normalized !== value) {
+            setValue(field, normalized, { shouldValidate: true });
+        }
+        return normalized;
+    };
 
     const onSubmit = (data: FormValues) => {
         if (!ownBank.bank) {
@@ -81,8 +99,14 @@ export const CommunicationsConfirmMenu = () => {
 
         // можно пушить изменения и в deal API
         updateFieldWithAPI(BxDealDataKeys.exchange_doc_name, data.name);
-        updateFieldWithAPI(BxDealDataKeys.exchange_doc_email, data.email);
-        updateFieldWithAPI(BxDealDataKeys.exchange_doc_phone, data.phone);
+        updateFieldWithAPI(
+            BxDealDataKeys.exchange_doc_email,
+            normalizeEmail(data.email),
+        );
+        updateFieldWithAPI(
+            BxDealDataKeys.exchange_doc_phone,
+            normalizePhone(data.phone),
+        );
     };
 
     return (
@@ -166,10 +190,13 @@ export const CommunicationsConfirmMenu = () => {
                             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                             message: 'Некорректный email',
                         },
+                        onChange: e => {
+                            normalizeOnChange('email', e.target.value);
+                        },
                         onBlur: e => {
                             updateField(
                                 BxDealDataKeys.exchange_doc_email,
-                                e.target.value,
+                                normalizeOnChange('email', e.target.value),
                             );
                             // updateFieldWithAPI(
                             //     BxDealDataKeys.exchange_doc_email,
@@ -196,10 +223,13 @@ export const CommunicationsConfirmMenu = () => {
                             value: /^(\+7|8|7)?[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/,
                             message: 'Некорректный номер',
                         },
+                        onChange: e => {
+                            normalizeOnChange('phone', e.target.value);
+                        },
                         onBlur: e => {
                             updateField(
                                 BxDealDataKeys.exchange_doc_phone,
-                                e.target.value,
+                                normalizeOnChange('phone', e.target.value),
                             );
                             // updateFieldWithAPI(
                             //     BxDealDataKeys.exchange_doc_phone,

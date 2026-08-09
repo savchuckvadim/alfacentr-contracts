@@ -8,6 +8,11 @@ import { BitrixService } from '@/modules/bitrix/';
 
 import { IBitrixBatchResponseResult } from '@/modules/bitrix/core/interface/bitrix-api.intterface';
 import { BxTimelineService } from '../../flow/timeline-flow/bx-timeline.service';
+import {
+    DOCUMENT_WAIT_ERROR_INTERVAL_MS,
+    DOCUMENT_WAIT_INTERVAL_MS,
+    DOCUMENT_WAIT_TIMEOUT_MS,
+} from '../const/document-wait.const';
 
 export class DocumentGeneratePdfService {
     // private filesForSend: [string, string][] = [];
@@ -19,11 +24,19 @@ export class DocumentGeneratePdfService {
         private filesForSend: [string, string][] = [],
     ) { }
 
-    async pdfGenerate(dto: IBitrixBatchResponseResult[], entityId: number) {
+    /**
+     * Возвращает true, если бюджет ожидания pdf был исчерпан — тогда
+     * поле сделки останется пустым и ждать его заполнения дальше бессмысленно
+     */
+    async pdfGenerate(
+        dto: IBitrixBatchResponseResult[],
+        entityId: number,
+    ): Promise<boolean> {
         void (await this.timelineService.send(
             '⌛ Ожидание генерации PDF ...',
             'waiting',
         ));
+        let isPdfWaitExhausted = false;
 
         const currentContractWithoutPtBitrixId =
             currentDocumentFields[
@@ -100,6 +113,16 @@ export class DocumentGeneratePdfService {
                         const invoicePdf = await this.expectPdfFile(
                             document.id,
                         );
+                        //pdf не появился за отведенное время — поле сделки
+                        //останется пустым, это поймает проверка готовности
+                        if (!invoicePdf) {
+                            isPdfWaitExhausted = true;
+                            void (await this.timelineService.send(
+                                '⚠️ Битрикс не сформировал pdf счета с печатью за отведенное время',
+                                'error',
+                            ));
+                            break;
+                        }
                         const pdfInvoiceFileData =
                             await this.getPdfFileData(invoicePdf);
                         dealFields[`${currentInvoicesBitrixId}`].fileData =
@@ -138,6 +161,8 @@ export class DocumentGeneratePdfService {
             '📜 PDF сгенерирован',
             'document',
         ));
+
+        return isPdfWaitExhausted;
     }
 
     private async getPdfFileData(
@@ -149,11 +174,18 @@ export class DocumentGeneratePdfService {
             );
         return file;
     }
-    private async expectPdfFile(fileId: number) {
-        let count = 0;
+    /**
+     * Ждет, пока битрикс сформирует pdf, но не дольше бюджета ожидания.
+     * Возвращает null, если pdf так и не появился — раньше цикл висел вечно
+     */
+    private async expectPdfFile(
+        fileId: number,
+    ): Promise<IRequestDocumentGenerateResponse | null> {
+        const deadline = Date.now() + DOCUMENT_WAIT_TIMEOUT_MS;
         let result: IRequestDocumentGenerateResponse | null = null;
-        while (!result) {
-            await delay(15000);
+
+        while (!result && Date.now() < deadline) {
+            await delay(DOCUMENT_WAIT_INTERVAL_MS);
             try {
                 const readonly = await this.bitrix.api.call<number>(
                     'crm.documentgenerator.document.get',
@@ -164,17 +196,16 @@ export class DocumentGeneratePdfService {
                 const document = readonly.result
                     .document as IRequestDocumentGenerateResponse;
 
-                count++;
-
                 if (document.pdfUrlMachine) {
                     result = document;
                 }
             } catch (error) {
                 console.error(error);
                 //не кидаем ошибку в timeline — просто ждем и пробуем снова
-                await delay(10000);
+                await delay(DOCUMENT_WAIT_ERROR_INTERVAL_MS);
             }
         }
+
         return result;
     }
 }

@@ -4,6 +4,7 @@ import { useDocumentRq } from '../hooks/use-document-rq.hook';
 import {
     BX_ADDRESS_TYPE,
     RQ_ITEM_CODE,
+    RQ_TYPE,
     useBxRq,
     useBxRqEditAddress,
     useBxRqEditBase,
@@ -56,17 +57,30 @@ export const DocumentRqsPreview = () => {
 
         if (activeKey === 'other') return [];
 
-        const codeByKey: Partial<Record<DocumentPreviewLineKey, string>> = {
-            inn: RQ_ITEM_CODE.INN,
-            kpp: RQ_ITEM_CODE.KPP,
-            phone: RQ_ITEM_CODE.PHONE,
-            fullname: RQ_ITEM_CODE.FULLNAME,
-            base_other: RQ_ITEM_CODE.BASE_OTHER,
+        //одной строке предпросмотра может соответствовать несколько полей
+        //(«кем и когда выдан» — это дата выдачи + подразделение)
+        const codesByKey: Partial<Record<DocumentPreviewLineKey, string[]>> = {
+            inn: [RQ_ITEM_CODE.INN],
+            kpp: [RQ_ITEM_CODE.KPP],
+            phone: [RQ_ITEM_CODE.PHONE],
+            //у физлица имя лежит в personName, а не в fullname
+            fullname:
+                clientType === RQ_TYPE.FIZ
+                    ? [RQ_ITEM_CODE.PERSON_NAME]
+                    : [RQ_ITEM_CODE.FULLNAME],
+            base_other: [RQ_ITEM_CODE.BASE_OTHER],
+            documentType: [RQ_ITEM_CODE.DOCUMENT],
+            docSeries: [RQ_ITEM_CODE.DOCUMENT_SERIES],
+            docNumber: [RQ_ITEM_CODE.DOCUMENT_NUMBER],
+            docDate: [RQ_ITEM_CODE.DOCUMENT_DATE, RQ_ITEM_CODE.ISSUED_BY],
+            depCode: [RQ_ITEM_CODE.DEPARTMENT_CODE],
         };
 
-        const fieldCode = codeByKey[activeKey];
-        if (!fieldCode) return creating.fields;
-        const filteredFields = creating.fields.filter(field => field.code === fieldCode);
+        const fieldCodes = codesByKey[activeKey];
+        if (!fieldCodes) return creating.fields;
+        const filteredFields = creating.fields.filter(field =>
+            fieldCodes.includes(field.code),
+        );
 
         return filteredFields;
     };

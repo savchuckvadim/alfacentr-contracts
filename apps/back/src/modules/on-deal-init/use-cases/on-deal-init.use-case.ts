@@ -65,6 +65,8 @@ export class OnDealInitUseCase {
         const deal = await bxDealService.getDeal(data.dealId, [
             ...bxFieldsIds,
             'ASSIGNED_BY_ID',
+            //без этого поля нельзя понять, привязана ли уже компания к сделке
+            'COMPANY_ID',
         ]);
         const dealValues = DealFieldValuesHelperService.getDealValues(
             deal,
