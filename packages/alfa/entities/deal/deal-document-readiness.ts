@@ -9,7 +9,7 @@ import {
 } from '../document-generate/type/document-generate.type';
 
 export interface IDealRequiredDocumentField {
-    code: EnumDealCurrentDocumentFieldCode;
+    code: EnumDealCurrentDocumentFieldCode | EnumDealDocumentFieldCode;
     bitrixId: string;
     name: string;
 }
@@ -39,6 +39,24 @@ const PPK_REQUIRED_DOCUMENT_FIELD_CODES: TCurrentDocumentFieldCode[] = [
     EnumDealCurrentDocumentFieldCode.CURRENT_APPLICATION_DOC,
 ];
 
+/**
+ * Поле сделки "Тема письма" — бизнес-процесс отправки документов
+ * не отправит письмо, пока оно не заполнено
+ */
+export const dealEmailSubjectField =
+    documentFields[EnumDealDocumentFieldCode.SUBJECT_FOR_SEND_MESSAGE];
+
+/**
+ * Тема письма для отправки документов клиенту.
+ * Формат должен совпадать с getDealSubject на фронте
+ * (apps/front/modules/features/deal-email-subject)
+ */
+export const getDealEmailSubject = (
+    prefix: string,
+    counter: string | number,
+): string =>
+    `Документы на согласование Договор №${prefix}-${counter} от ООО "Альфацентр"`;
+
 const CONTRACT_TYPE_BY_NAME: Record<string, EContractType> = {
     [EContractName.seminar]: EContractType.seminar,
     [EContractName.ppk]: EContractType.ppk,
@@ -64,7 +82,7 @@ export const getRequiredDocumentFields = (
           ]
         : BASE_REQUIRED_DOCUMENT_FIELD_CODES;
 
-    return codes.map((code) => {
+    const fields: IDealRequiredDocumentField[] = codes.map((code) => {
         const field = currentDocumentFields[code];
         return {
             code,
@@ -72,6 +90,16 @@ export const getRequiredDocumentFields = (
             name: field.name,
         };
     });
+
+    //тема письма обязательна для любого типа договора:
+    //бизнес-процесс отправки проверяет ее вместе с файлами документов
+    fields.push({
+        code: dealEmailSubjectField.code,
+        bitrixId: dealEmailSubjectField.bitrixId,
+        name: dealEmailSubjectField.name,
+    });
+
+    return fields;
 };
 
 export const getRequiredDocumentFieldBitrixIds = (

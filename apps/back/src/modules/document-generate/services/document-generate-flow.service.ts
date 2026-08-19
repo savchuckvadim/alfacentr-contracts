@@ -22,6 +22,7 @@ import { EmailDocumentFlowService } from '@/modules/flow/email-flow/email-docume
 import { IRequestDocumentGenerateResponse } from '../type/request-document-generate.type';
 // import { BxDiskFlowService } from '@/modules/flow/disk-flow/bx-disk-flow.service';
 import { delay } from '@/lib';
+const DEFAULT_DOMAIN = 'alfacentr.bitrix24.ru';
 
 export class DocumentGenerateFlowService {
 
@@ -41,7 +42,7 @@ export class DocumentGenerateFlowService {
     ) { }
 
     async generateDocument(dto: DocumentGenerateDto) {
-        const { bitrix } = await this.pbxService.init('alfacentr.bitrix24.ru');
+        const { bitrix } = await this.pbxService.init(DEFAULT_DOMAIN);
         const dealId = Number(dto.dealId);
         const dealService = new BxDealStageFlowService(bitrix, dealId);
         // const contactService = new BxDealContactFlowService(bitrix, dealId);
@@ -96,6 +97,14 @@ export class DocumentGenerateFlowService {
         void (await this.dealDocumentReadyService.clearDocumentFields(
             entityId,
             dto.contractType,
+        ));
+
+        //тема письма входит в условие бизнес-процесса отправки —
+        //заполняем ее на бэке, не полагаясь на запрос из браузера менеджера
+        void (await this.dealDocumentReadyService.fillEmailSubject(
+            entityId,
+            dto.documentPrefixNumber,
+            dto.documentCounter,
         ));
 
 

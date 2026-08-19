@@ -1,7 +1,9 @@
 import { BitrixService } from '@/modules/bitrix';
 import {
     dealContractTypeField,
+    dealEmailSubjectField,
     EContractType,
+    getDealEmailSubject,
     getMissingDocumentFields,
     getRequiredDocumentFields,
     IDealRequiredDocumentField,
@@ -34,6 +36,24 @@ export class DealDocumentReadyService {
         }, {});
 
         void (await this.bitrix.deal.update(dealId, data));
+    }
+
+    /**
+     * Заполняет в сделке тему письма — она входит в условие
+     * бизнес-процесса отправки документов и должна быть заполнена
+     * до перевода сделки в стадию отправки
+     */
+    async fillEmailSubject(
+        dealId: number,
+        prefix: string,
+        counter: string | number,
+    ): Promise<void> {
+        void (await this.bitrix.deal.update(dealId, {
+            [dealEmailSubjectField.bitrixId]: getDealEmailSubject(
+                prefix,
+                counter,
+            ),
+        }));
     }
 
     /**
