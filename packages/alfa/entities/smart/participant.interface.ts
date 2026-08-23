@@ -33,7 +33,46 @@ export enum BxParticipantsDataKeys {
     kadry = 'kadry',
     corruption = 'corruption',
     days = 'days',
+    //поля выбора семинара из форм по отделам (участники 1-4).
+    //суффикс — идентификатор поля формы, понятия «отдел» в логике нет
+    days_nsk = 'days_nsk',
+    days_region = 'days_region',
+    days_west = 'days_west',
 }
+
+/**
+ * Поля выбора семинара из новых форм (по одному на форму отдела).
+ * Значения этих полей на приеме заявки схлопываются в одно поле days
+ */
+export const NEW_SEMINAR_DAY_FIELD_CODES: BxParticipantsDataKeys[] = [
+    BxParticipantsDataKeys.days_nsk,
+    BxParticipantsDataKeys.days_region,
+    BxParticipantsDataKeys.days_west,
+];
+
+/** Все поля с выбранными семинарами: новые формы + легаси «Дни участия» */
+export const SEMINAR_DAY_FIELD_CODES: BxParticipantsDataKeys[] = [
+    BxParticipantsDataKeys.days,
+    ...NEW_SEMINAR_DAY_FIELD_CODES,
+];
+
+/**
+ * Поля участника с программами повышения квалификации.
+ * Заявка может состоять только из них — без единого дня семинара (чистая ППК)
+ */
+export const PARTICIPANT_PPK_PROGRAM_CODES: BxParticipantsDataKeys[] = [
+    BxParticipantsDataKeys.accountant_gos,
+    BxParticipantsDataKeys.accountant_medical,
+    BxParticipantsDataKeys.zakupki,
+    BxParticipantsDataKeys.kadry,
+    BxParticipantsDataKeys.corruption,
+];
+
+export const isPpkProgramCode = (code?: string | null): boolean =>
+    !!code && (PARTICIPANT_PPK_PROGRAM_CODES as string[]).includes(code);
+
+export const isSeminarDayCode = (code?: string | null): boolean =>
+    !!code && (SEMINAR_DAY_FIELD_CODES as string[]).includes(code);
 
 export enum BxParticipantsFieldNameEnum {
     name = 'ФИО',

@@ -1,5 +1,76 @@
 import { BxParticipantsDataKeys } from '../smart/participant.interface';
 
+/**
+ * Поля «Выберите семинар {Отдел} Участник {N}» из форм по отделам.
+ * Заведены только для участников 1-4 (в новых формах участников не больше четырех).
+ * Значения (элементы списков) в коде НЕ храним — подставляются в рантайме
+ * из crm.deal.fields, см. DealFieldHelperService.updateFields
+ */
+const SEMINAR_DAY_UF = {
+    1: {
+        nsk: { id: '13322', bitrixId: 'UF_CRM_1787112025' },
+        region: { id: '13324', bitrixId: 'UF_CRM_1787112682' },
+        west: { id: '13326', bitrixId: 'UF_CRM_1787115171' },
+    },
+    2: {
+        nsk: { id: '13386', bitrixId: 'UF_CRM_1787209397' },
+        region: { id: '13392', bitrixId: 'UF_CRM_1787209908' },
+        west: { id: '13398', bitrixId: 'UF_CRM_1787210743' },
+    },
+    3: {
+        nsk: { id: '13388', bitrixId: 'UF_CRM_1787209754' },
+        region: { id: '13394', bitrixId: 'UF_CRM_1787209993' },
+        west: { id: '13400', bitrixId: 'UF_CRM_1787210844' },
+    },
+    4: {
+        nsk: { id: '13390', bitrixId: 'UF_CRM_1787209822' },
+        region: { id: '13396', bitrixId: 'UF_CRM_1787210057' },
+        west: { id: '13402', bitrixId: 'UF_CRM_1787210873' },
+    },
+} as const;
+
+//имена полей должны побайтно совпадать с именами в битриксе:
+//по подстроке «Участник N» идет сопоставление поля с участником
+const SEMINAR_DAY_DEPARTMENT_NAME = {
+    nsk: 'НСК',
+    region: 'Регион',
+    west: 'Запад',
+} as const;
+
+const getSeminarDayFields = (participantNumber: 1 | 2 | 3 | 4) => {
+    const uf = SEMINAR_DAY_UF[participantNumber];
+
+    const field = (
+        key: 'nsk' | 'region' | 'west',
+        code: BxParticipantsDataKeys,
+    ) => ({
+        id: uf[key].id,
+        bitrixId: uf[key].bitrixId,
+        type: 'enumeration',
+        multiple: true,
+        name: `Выберите семинар ${SEMINAR_DAY_DEPARTMENT_NAME[key]} Участник ${participantNumber}`,
+        code,
+        mandatory: false,
+        list: [],
+        group: 'seminar',
+    });
+
+    return {
+        [BxParticipantsDataKeys.days_nsk]: field(
+            'nsk',
+            BxParticipantsDataKeys.days_nsk,
+        ),
+        [BxParticipantsDataKeys.days_region]: field(
+            'region',
+            BxParticipantsDataKeys.days_region,
+        ),
+        [BxParticipantsDataKeys.days_west]: field(
+            'west',
+            BxParticipantsDataKeys.days_west,
+        ),
+    };
+};
+
 const participant_1 = {
     [BxParticipantsDataKeys.name]: {
         id: '8234',
@@ -274,6 +345,7 @@ const participant_1 = {
         ],
         group: 'seminar',
     },
+    ...getSeminarDayFields(1),
 };
 
 const participant_2 = {
@@ -545,6 +617,7 @@ const participant_2 = {
         mandatory: false,
         group: 'seminar',
     },
+    ...getSeminarDayFields(2),
 };
 
 const participant_3 = {
@@ -810,6 +883,7 @@ const participant_3 = {
         mandatory: false,
         group: 'seminar',
     },
+    ...getSeminarDayFields(3),
 };
 
 const participant_4 = {
@@ -1076,6 +1150,7 @@ const participant_4 = {
         mandatory: false,
         group: 'seminar',
     },
+    ...getSeminarDayFields(4),
 };
 
 const participant_5 = {

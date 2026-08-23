@@ -8,7 +8,7 @@ import { DealValue } from '../../../lib/deal-helper/deal-values-helper.service';
 import { BxDealDataKeys, getProductTypeByProductName } from '@alfa/entities';
 import { bxProductData } from '@alfa/entities';
 import { BitrixOwnerType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
-import { BxParticipantsDataKeys } from '@alfa/entities';
+import { BxParticipantsDataKeys, isPpkProgramCode } from '@alfa/entities';
 import { delay } from '@/lib';
 
 const select = [
@@ -37,49 +37,63 @@ const select = [
     bxProductData.SEMINAR_TOPIC.bitrixId,
     bxProductData.NAME_BID.bitrixId,
 ];
+/** Откуда пришло название, по которому искали товар */
+export type ProductResolveIssueSource = 'days' | 'ppk';
+
+/**
+ * Проблема подбора товара по названию из заявки:
+ * ничего не нашли или нашли несколько и не смогли выбрать
+ */
+export interface ProductResolveIssue {
+    kind: 'not_found' | 'ambiguous';
+    source: ProductResolveIssueSource;
+    /** имя поля сделки, например «Участник 2 Дни участия» */
+    fieldName: string;
+    /** текст, по которому искали товар */
+    query: string;
+    candidates: { id: string | number; name: string; nameBid: string }[];
+}
+
+export interface AddProductsResult {
+    products: IBXProduct[];
+    issues: ProductResolveIssue[];
+}
+
 export class AlfaProductService {
     constructor(private readonly bitrix: BitrixService) {}
 
-
-    async addPpkProducts(dealId: number, dealValues: DealValue[]) {
+    async addPpkProducts(
+        dealId: number,
+        dealValues: DealValue[],
+    ): Promise<AddProductsResult> {
         const products: IBXProduct[] = [];
-        const productsWithoutPrefix: IBXProduct[] = [];
+        const issues: ProductResolveIssue[] = [];
         const prefix = dealValues.find(
             (value) => value.code === BxDealDataKeys.prefix,
         )?.value as string;
 
         for (const value of dealValues) {
-            if (
-                value.code === BxParticipantsDataKeys.accountant_gos ||
-                value.code === BxParticipantsDataKeys.accountant_medical ||
-                value.code === BxParticipantsDataKeys.zakupki ||
-                value.code === BxParticipantsDataKeys.kadry ||
-                value.code === BxParticipantsDataKeys.corruption
-            ) {
+            if (isPpkProgramCode(value.code)) {
                 if (value.value) {
+                    const query = value.value as string;
                     const filter = {
-                        // "=active": "Y",
                         iblockId: 24,
                         '%name': prefix,
-                        // [`=${bxProductData.SEMINAR_TOPIC.bitrixId}`]:
-                        //     value.value as string,
-                        [`%${bxProductData.NAME_BID.bitrixId}`]:
-                            value.value as string,
-                        // '%detailText': value.value as string
-                        // '%detailText': value.value as string
-                        // [`=${bxProductData.PREFIX.bitrixId}`]: (prefix as string)
-                        // 'property172': prefix
+                        [`%${bxProductData.NAME_BID.bitrixId}`]: query,
                     };
 
                     const response = await this.bitrix.product.getList(
                         filter,
                         select,
                     );
-                    response.result.products.map((product) => {
-                        productsWithoutPrefix.push(product);
-
-                        products.push(product);
-                    });
+                    const resolved = this.resolveSingleProduct(
+                        response.result.products,
+                        query,
+                        value.name,
+                        'ppk',
+                    );
+                    if (resolved.product) products.push(resolved.product);
+                    if (resolved.issue) issues.push(resolved.issue);
                 }
             } else if (value.code === BxParticipantsDataKeys.days) {
                 if (
@@ -88,17 +102,10 @@ export class AlfaProductService {
                     value.value.length > 0
                 ) {
                     for (const item of value.value) {
+                        const query = item as string;
                         const filter = {
-                            // "=active": "Y",
                             iblockId: 24,
-                            // '%name': prefix as string,
-                            // [`=${bxProductData.SEMINAR_TOPIC.bitrixId}`]:
-                            //     value.value as string,
-                            // '%detailText': item as string
-                            [`%${bxProductData.NAME_BID.bitrixId}`]:
-                                item as string,
-                            // [`=${bxProductData.PREFIX.bitrixId}`]: (prefix as string)
-                            // 'property172': prefix
+                            [`%${bxProductData.NAME_BID.bitrixId}`]: query,
                         };
 
                         const response = await this.bitrix.product.getList(
@@ -106,11 +113,14 @@ export class AlfaProductService {
                             select,
                         );
                         await delay(1000);
-                        response.result.products.map((product) => {
-                            productsWithoutPrefix.push(product);
-
-                            products.push(product);
-                        });
+                        const resolved = this.resolveSingleProduct(
+                            response.result.products,
+                            query,
+                            value.name,
+                            'days',
+                        );
+                        if (resolved.product) products.push(resolved.product);
+                        if (resolved.issue) issues.push(resolved.issue);
                     }
                 }
             }
@@ -129,7 +139,75 @@ export class AlfaProductService {
                 ordredBySeminarFurstProducts,
             ));
         }
-        return products;
+        return { products, issues };
+    }
+
+    /**
+     * Выбирает ровно один товар из найденных.
+     *
+     * Поиск идет через LIKE по «Названию в заявке» (%property402), потому что
+     * значения элементов списков в битриксе обрезаются, а название товара полное.
+     * Поэтому совпадений может быть несколько — раньше в сделку молча уходили все.
+     */
+    private resolveSingleProduct(
+        found: IBXProduct[],
+        query: string,
+        fieldName: string,
+        source: ProductResolveIssueSource,
+    ): { product: IBXProduct | null; issue: ProductResolveIssue | null } {
+        const candidates = found || [];
+
+        if (!candidates.length) {
+            return {
+                product: null,
+                issue: {
+                    kind: 'not_found',
+                    source,
+                    fieldName,
+                    query,
+                    candidates: [],
+                },
+            };
+        }
+
+        if (candidates.length === 1) {
+            return { product: candidates[0], issue: null };
+        }
+
+        //точное совпадение названия — берем без предупреждения
+        const exact = candidates.filter(
+            (product) => this.getProductNameBid(product) === query,
+        );
+        if (exact.length === 1) return { product: exact[0], issue: null };
+
+        //название товара начинается с запроса — это обрезанное значение списка
+        const byPrefix = candidates.filter((product) =>
+            this.getProductNameBid(product).startsWith(query),
+        );
+        if (byPrefix.length === 1) return { product: byPrefix[0], issue: null };
+
+        //разобрать не смогли: в сделку не вставляем, зовем человека
+        return {
+            product: null,
+            issue: {
+                kind: 'ambiguous',
+                source,
+                fieldName,
+                query,
+                candidates: candidates.map((product) => ({
+                    id: product.id,
+                    name: product.name,
+                    nameBid: this.getProductNameBid(product),
+                })),
+            },
+        };
+    }
+
+    private getProductNameBid(product: IBXProduct): string {
+        const property = product[bxProductData.NAME_BID.bitrixId] as
+            | { value?: string }
+            | undefined;
+        return String(property?.value ?? '');
     }
 
     private async setProductsInDeal(dealId: number, products: IBXProduct[]) {

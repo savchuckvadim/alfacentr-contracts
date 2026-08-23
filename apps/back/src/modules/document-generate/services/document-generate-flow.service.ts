@@ -100,10 +100,12 @@ export class DocumentGenerateFlowService {
         ));
 
         //тема письма входит в условие бизнес-процесса отправки —
-        //заполняем ее на бэке, не полагаясь на запрос из браузера менеджера
+        //заполняем ее на бэке, не полагаясь на запрос из браузера менеджера.
+        //documentPrefix — чистый префикс; documentPrefixNumber не подходит,
+        //это уже полный номер вида "УПЗ26-138"
         void (await this.dealDocumentReadyService.fillEmailSubject(
             entityId,
-            dto.documentPrefixNumber,
+            dto.documentPrefix,
             dto.documentCounter,
         ));
 

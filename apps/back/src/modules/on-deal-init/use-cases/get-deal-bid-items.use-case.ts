@@ -1,5 +1,6 @@
 import { BxDealService } from '../services/bx-deal.service';
 import { DealFieldValuesHelperService } from '../../../lib/deal-helper/deal-values-helper.service';
+import { normalizeSeminarDayValues } from '../../../lib/deal-helper/normalize-seminar-days.helper';
 
 import { AlfaFieldsService } from '@/modules/alfa-fields';
 import { BitrixService } from '@/modules/bitrix';
@@ -190,9 +191,9 @@ export class GetDealBidItemsUseCase {
             : [];
 
         const deal = await bxDealService.getDeal(dealId, bxFieldsIds);
-        const dealValues = DealFieldValuesHelperService.getDealValues(
-            deal,
-            fieldData,
+        //нормализуем поля семинаров так же, как на приеме заявки
+        const dealValues = normalizeSeminarDayValues(
+            DealFieldValuesHelperService.getDealValues(deal, fieldData),
         );
         const bidInfoLayoutService = new BidInfoLayoutService(
             GetDealBidItemsType.HTML,
@@ -221,9 +222,9 @@ export class GetDealBidItemsUseCase {
             await alfaFieldService.getDealFieldsDataWithIds();
 
         const deal = await bxDealService.getDeal(dealId, bxFieldsIds);
-        const dealValues = DealFieldValuesHelperService.getDealValues(
-            deal,
-            fieldData,
+        //нормализуем поля семинаров так же, как на приеме заявки
+        const dealValues = normalizeSeminarDayValues(
+            DealFieldValuesHelperService.getDealValues(deal, fieldData),
         );
         const bidInfoLayoutService = new BidInfoLayoutService(
             GetDealBidItemsType.HTML,

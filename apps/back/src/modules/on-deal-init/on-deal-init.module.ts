@@ -6,10 +6,11 @@ import { FrontDealUseCase } from './use-cases/front-deal.use-case';
 import { RedisModule } from '@/core/redis/redis.module';
 import { GetDealBidItemsUseCase } from './use-cases/get-deal-bid-items.use-case';
 import { InitialBidTypeService } from '../../lib/deal-helper/initial-contract-type.service';
+import { TelegramModule } from '../telegram/telegram.module';
 
 @Module({
     controllers: [OnDealInitController],
-    imports: [PBXModule, RedisModule],
+    imports: [PBXModule, RedisModule, TelegramModule],
     providers: [
         OnDealInitUseCase,
         FrontDealUseCase,

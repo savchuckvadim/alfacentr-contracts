@@ -621,6 +621,10 @@ export interface TParticipantData {
     [BxParticipantsDataKeys.kadry]?: TField;
     [BxParticipantsDataKeys.corruption]?: TField;
     [BxParticipantsDataKeys.days]?: TField;
+    //поля выбора семинара из форм по отделам — только у участников 1-4
+    [BxParticipantsDataKeys.days_nsk]?: TField;
+    [BxParticipantsDataKeys.days_region]?: TField;
+    [BxParticipantsDataKeys.days_west]?: TField;
 }
 
 // Example usage:

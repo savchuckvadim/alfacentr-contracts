@@ -6,12 +6,22 @@ import { DealFieldValuesHelperService } from '../../../lib/deal-helper/deal-valu
 import { PBXService } from '@/modules/pbx';
 import { BxSmartService } from '../services/bx-smart.service';
 import { BxCompanyService } from '../services/bx-company.service';
-import { BxDealDataKeys } from '@alfa/entities';
+import { BxDealDataKeys, BxParticipantsDataKeys } from '@alfa/entities';
 import { AlfaProductService } from '@/modules/alfa-products';
 import { AlfaFieldsService } from '@/modules/alfa-fields';
 import { InitialBidTypeService } from '../../../lib/deal-helper/initial-contract-type.service';
 import { BxDealContactSyncService } from '../services/bx-deal-contact-sync.service';
 import { DealValue } from '../../../lib/deal-helper/deal-values-helper.service';
+import {
+    hasParticipantProductSelection,
+    normalizeSeminarDayValues,
+} from '../../../lib/deal-helper/normalize-seminar-days.helper';
+import { TelegramService } from '@/modules/telegram/telegram.service';
+import {
+    renderIssuesForTelegram,
+    renderIssuesForTimeline,
+} from '@/modules/alfa-products/services/product-resolve-issue.util';
+import { ProductResolveIssue } from '@/modules/alfa-products/services/alfa-product.service';
 import { IBXDeal } from '@/modules/bitrix';
 
 export enum BitrixEntityType {
@@ -25,6 +35,7 @@ export class OnDealInitUseCase {
     constructor(
         private readonly pbx: PBXService,
         private readonly initialContractTypeService: InitialBidTypeService,
+        private readonly telegram: TelegramService,
     ) {}
     async init(domain: string) {
         const { bitrix } = await this.pbx.init(domain);
@@ -68,9 +79,10 @@ export class OnDealInitUseCase {
             //без этого поля нельзя понять, привязана ли уже компания к сделке
             'COMPANY_ID',
         ]);
-        const dealValues = DealFieldValuesHelperService.getDealValues(
-            deal,
-            fieldData,
+        //поля выбора семинара из трех форм по отделам схлопываем в одно
+        //поле дней участника — вся цепочка ниже написана под него
+        const dealValues = normalizeSeminarDayValues(
+            DealFieldValuesHelperService.getDealValues(deal, fieldData),
         );
         await bxDealService.setTimelineInitProccess(data.dealId);
         const contractType =
@@ -92,10 +104,23 @@ export class OnDealInitUseCase {
                 // );
             } else {
                 //если Семинары то добавляем продукты связанные с Семинарами
-                void (await bxProductService.addPpkProducts(
+                const { issues } = await bxProductService.addPpkProducts(
                     dealId,
                     dealValues,
-                ));
+                );
+                //в заявке может не быть ни одного дня семинара — это
+                //штатная чистая ППК-заявка. Тревожим, только если не
+                //выбрано вообще ничего: ни семинаров, ни программ
+                if (!hasParticipantProductSelection(dealValues)) {
+                    issues.push({
+                        kind: 'not_found',
+                        source: 'days',
+                        fieldName: 'Семинары и программы ППК',
+                        query: '',
+                        candidates: [],
+                    });
+                }
+                await this.notifyProductIssues(bxDealService, dealId, issues);
                 //добавляем участников
                 await bxSmartService.setParticipantsSmarts(dealValues, dealId);
             }
@@ -157,6 +182,36 @@ export class OnDealInitUseCase {
         } catch (error) {
             //инициация сделки не должна падать из-за синхронизации контакта
             console.error('syncDealContact error', error);
+        }
+    }
+
+    /**
+     * Сообщает о товарах, которые не удалось подобрать по заявке:
+     * комментарием в сделку — для менеджера, в телеграм — для нас.
+     * Упавшее уведомление не должно ронять прием заявки
+     */
+    private async notifyProductIssues(
+        bxDealService: BxDealService,
+        dealId: number,
+        issues: ProductResolveIssue[],
+    ) {
+        if (!issues.length) return;
+
+        try {
+            await bxDealService.setTimelineComment(
+                dealId,
+                renderIssuesForTimeline(issues),
+            );
+        } catch (error) {
+            console.error('notifyProductIssues timeline', error);
+        }
+
+        try {
+            await this.telegram.sendMessage(
+                renderIssuesForTelegram(dealId, issues),
+            );
+        } catch (error) {
+            console.error('notifyProductIssues telegram', error);
         }
     }
 }

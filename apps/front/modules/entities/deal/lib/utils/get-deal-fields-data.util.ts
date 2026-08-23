@@ -7,6 +7,7 @@ import {
     TFieldItem,
     TFieldSelect,
     TParticipantData,
+    isSeminarDayCode,
 } from '@alfa/entities';
 import { IBXDeal } from '@bitrix/index';
 import { IDealFieldsData } from '../../type/deal-field.type';
@@ -122,7 +123,7 @@ export const getDealFieldsData = async (
                     );
 
                     if (fldWithValue) {
-                        if (fldWithValue.code === BxParticipantsDataKeys.days) {
+                        if (isSeminarDayCode(fldWithValue.code)) {
                             (field as TFieldSelect).list =
                                 (fldWithValue as DealValue)?.listItem &&
                                 Array.isArray(

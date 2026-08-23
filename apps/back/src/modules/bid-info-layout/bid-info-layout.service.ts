@@ -319,6 +319,15 @@ export class BidInfoLayoutService {
                 new RegExp(`^Участник\\s+${participantNumber}\\s*`, 'i'),
                 '',
             )
+            //в новых полях «Участник N» стоит в конце имени:
+            //«Выберите семинар НСК Участник 1»
+            .replace(
+                new RegExp(
+                    `\\s*Участник\\s+${participantNumber}\\s*$`,
+                    'i',
+                ),
+                '',
+            )
             .trim();
     }
 }
