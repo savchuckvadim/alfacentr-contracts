@@ -18,14 +18,22 @@ export const PartisipantCardStatus: FC<PartisipantCardStatusProps> = ({
         problems,
         isParticipantPpkLoading,
         participantToProducts,
+        participantToSeminars,
     } = useParticipantInfo(participant.id);
     if (isParticipantPpkLoading) {
         return <MicroPreloader />;
     }
 
-    const withoutProduct =
+    //товары участника живут в двух распределениях: программы ППК и семинары.
+    //участник только с семинарами (без единой программы) — штатный случай,
+    //ошибку показываем, лишь когда пусто в обоих
+    const withoutPpkProduct =
         !participantToProducts[participant.id] ||
         participantToProducts[participant.id]?.length === 0;
+    const withoutSeminar =
+        !participantToSeminars[participant.id] ||
+        participantToSeminars[participant.id]?.length === 0;
+    const withoutProduct = withoutPpkProduct && withoutSeminar;
 
     if (hasProblems && problems.length > 0) {
         let isProblen = false;
