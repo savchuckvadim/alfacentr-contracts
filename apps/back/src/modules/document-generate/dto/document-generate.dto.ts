@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { DocumentGeneratePpkApplicationDataDto } from './ppk-application.dto';
 import {
     EContractType,
     IPpkDocumentApplicationData,
@@ -13,6 +15,7 @@ import {
     IsObject,
     IsString,
     IsOptional,
+    ValidateNested,
 } from 'class-validator';
 import {
     IRequestDocumentGenerateFieldsType,
@@ -349,7 +352,10 @@ export class DocumentGenerateDto implements IRequestDocumentGenerateType {
         },
     })
     @IsOptional()
-    @IsObject()
+    //без ValidateNested содержимое приложения не проверялось вообще:
+    //пустые даты и отсутствующие поля доезжали до генерации молча
+    @ValidateNested()
+    @Type(() => DocumentGeneratePpkApplicationDataDto)
     ppkApplicationData?: IPpkDocumentApplicationData;
 
     @ApiProperty({

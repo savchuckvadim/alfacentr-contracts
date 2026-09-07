@@ -3,11 +3,14 @@ import {
     getProductFieldByCodeValue,
     IAlfaProduct,
 } from '@/modules/entities';
+import { getParticipantFieldValue } from '@/modules/entities/participant/ui/utils/participant.utils';
 import {
     IParticipantPpk,
     ITopicStat,
 } from '@/modules/features/participant-product/type/participant-ppk.type';
 import {
+    AlfaParticipantSmartItemUserFieldsEnum,
+    parsePpkEvents,
     EnumPpkApplicationFieldCode,
     EnumPpkApplicationParticipantFieldCode,
     IParticipant,
@@ -22,6 +25,12 @@ export interface GetDocumentPpkApplicationData {
     documentCounter: string;
 
     participants: IParticipantPpk;
+    /**
+     * Актуальный список участников. Распределение держит снимок объектов,
+     * сделанный при его расчете, поэтому даты, сохраненные перед отправкой,
+     * нужно читать отсюда — иначе в документ уйдут прежние значения
+     */
+    allParticipants: IParticipant[];
     name_organization: string;
     position_director: string;
     signature_director: string;
@@ -44,6 +53,7 @@ export const getDocumentPpkApplicationData = (
         [EnumPpkApplicationFieldCode.year]: year,
         [EnumPpkApplicationFieldCode.participants]: getDocumentParticipants(
             dto.participants,
+            dto.allParticipants,
         ),
         [EnumPpkApplicationFieldCode.name_organization]: dto.name_organization,
         [EnumPpkApplicationFieldCode.position_director]: dto.position_director,
@@ -54,14 +64,19 @@ export const getDocumentPpkApplicationData = (
 
 const getDocumentParticipants = (
     participants: IParticipantPpk,
+    allParticipants: IParticipant[],
 ): IPpkApplicationParticipant[] => {
     const result = [] as IPpkApplicationParticipant[];
     let count = 1;
     for (const topic of Object.values(participants.topicStats)) {
         for (const participant of topic.participants) {
+            //актуальная версия участника: в ней лежат только что сохраненные даты
+            const actual =
+                allParticipants.find(p => p.id === participant.id) ||
+                participant;
             const participantData = getDocumentParticipant(
                 count,
-                participant,
+                actual,
                 topic,
             ) as IPpkApplicationParticipant;
             result.push(participantData);
@@ -80,13 +95,40 @@ const getDocumentParticipant = (
     const dateStart = getProductDate(topic.products, 'start');
     const dateEnd = getProductDate(topic.products, 'end');
 
+    //даты участия у каждого свои: берем сохраненные по этой программе,
+    //а если их нет — откатываемся на даты товара, как было раньше
+    const savedEvents = parsePpkEvents(
+        participant.fields.find(
+            field =>
+                field.bitrixId ===
+                AlfaParticipantSmartItemUserFieldsEnum.ufCrm12PpkEvents,
+        )?.value as string,
+    );
+    const savedEvent = savedEvents.find(
+        event => event.topic === (topic.topic || '').trim(),
+    );
+
     return {
         [EnumPpkApplicationParticipantFieldCode.index]: index.toString(),
         [EnumPpkApplicationParticipantFieldCode.fio]:
             getParticipantName(participant),
         [EnumPpkApplicationParticipantFieldCode.topic]: topic.topic,
-        [EnumPpkApplicationParticipantFieldCode.date_start]: dateStart,
-        [EnumPpkApplicationParticipantFieldCode.date_end]: dateEnd,
+        [EnumPpkApplicationParticipantFieldCode.date_start]:
+            savedEvent?.dateFrom || dateStart,
+        [EnumPpkApplicationParticipantFieldCode.date_end]:
+            savedEvent?.dateTo || dateEnd,
+        [EnumPpkApplicationParticipantFieldCode.email]:
+            (getParticipantFieldValue(
+                participant,
+                AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Email,
+            ) as string) || '',
+        [EnumPpkApplicationParticipantFieldCode.phone]:
+            (getParticipantFieldValue(
+                participant,
+                AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Phone,
+            ) as string) || '',
+        [EnumPpkApplicationParticipantFieldCode.participant_id]:
+            participant.id?.toString() || '',
     } as IPpkApplicationParticipant;
 };
 

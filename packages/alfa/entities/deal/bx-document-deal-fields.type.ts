@@ -29,4 +29,6 @@ export enum EnumDealDocumentFieldCode {
     TIMELINE_DOCUMENT_PIN='timeline_document_pin',
     CONTACT_ID_FOR_SEND_EMAIL = 'contact_id_for_send_email',
     FOUND_COMPANIES_COUNT = 'found_companies_count',
+    //признак, что прием заявки нашим кодом дошел до конца
+    INIT_PROCESSED_AT = 'init_processed_at',
 }

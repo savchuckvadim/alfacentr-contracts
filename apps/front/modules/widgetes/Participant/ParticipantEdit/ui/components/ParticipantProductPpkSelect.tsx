@@ -11,6 +11,7 @@ import { Button } from '@workspace/ui/components/button';
 import { Edit2Icon, Trash2Icon, PackageIcon } from 'lucide-react';
 import { Textarea } from '@workspace/ui/components/textarea';
 import { Card, CardContent } from '@workspace/ui/components/card';
+import { ParticipantPpkEventDates } from './ParticipantPpkEventDates';
 
 export const ParticipantProductPpkSelect = ({
     field,
@@ -103,6 +104,9 @@ export const ParticipantProductPpkSelect = ({
                                             Нажмите кнопку редактирования для
                                             изменения
                                         </div>
+                                        <ParticipantPpkEventDates
+                                            topic={field.value as string}
+                                        />
                                     </div>
                                 ) : (
                                     <div className="flex items-center justify-center h-20 bg-muted/20 rounded-md border-2 border-dashed border-muted-foreground/20">

@@ -123,6 +123,18 @@ export class BxDealRepository {
             { id: dealId, fields: data },
         );
     }
+    /**
+     * crm.deal.fields — все поля сделки одним вызовом, вместе с названиями
+     * и элементами списков. Нужен, потому что userfield.list названий не отдает
+     */
+    async getFields() {
+        return await this.bxApi.callType(
+            EBxNamespace.CRM,
+            EBXEntity.DEAL,
+            EBxMethod.FIELDS,
+            {},
+        );
+    }
     async getFieldList(filter: { [key: string]: any }, select?: string[]) {
         return await this.bxApi.callType(
             EBxNamespace.CRM,

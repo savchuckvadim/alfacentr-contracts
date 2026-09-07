@@ -61,6 +61,10 @@ export enum EnumPpkApplicationParticipantFieldCode {
     topic = 'topic',
     date_start = 'date_start',
     date_end = 'date_end',
+    email = 'email',
+    phone = 'phone',
+    //id участника — чтобы строку можно было связать с источником
+    participant_id = 'participant_id',
 }
 
 export interface IPpkApplicationParticipant {
@@ -69,6 +73,9 @@ export interface IPpkApplicationParticipant {
     [EnumPpkApplicationParticipantFieldCode.topic]: string;
     [EnumPpkApplicationParticipantFieldCode.date_start]: string;
     [EnumPpkApplicationParticipantFieldCode.date_end]: string;
+    [EnumPpkApplicationParticipantFieldCode.email]: string;
+    [EnumPpkApplicationParticipantFieldCode.phone]: string;
+    [EnumPpkApplicationParticipantFieldCode.participant_id]: string;
 }
 
 export interface IPpkDocumentApplicationData {

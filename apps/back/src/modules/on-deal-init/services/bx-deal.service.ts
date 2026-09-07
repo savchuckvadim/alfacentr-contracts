@@ -1,4 +1,4 @@
-import { BitrixService } from 'src/modules/bitrix';
+import { BitrixService, IBXDeal } from 'src/modules/bitrix';
 import { DealValue } from '../../../lib/deal-helper/deal-values-helper.service';
 import { BitrixEntityType } from '@/modules/bitrix/domain/enums/bitrix-constants.enum';
 import {
@@ -20,6 +20,9 @@ export class BxDealService {
         const deal = response.result;
 
         return deal;
+    }
+    async update(dealId: number, fields: Partial<IBXDeal>) {
+        return await this.bitrix.deal.update(dealId, fields);
     }
     async setTimelineInitProccess(dealId: number) {
         const comment = '🤖 [B]Начало обработки заявки...[/B] \n';

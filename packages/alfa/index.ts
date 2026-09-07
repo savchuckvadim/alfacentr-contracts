@@ -1,6 +1,7 @@
 export * from './entities/smart/smart.entities';
 export * from './entities/smart/smart.interface';
 export * from './entities/smart/utils/participant-smart.util';
+export * from './entities/smart/utils/ppk-events.util';
 export * from './entities/smart/participant.interface';
 export * from './entities/deal/bx-data';
 export * from './entities/deal/bx-participants-data';

@@ -17,6 +17,7 @@ import { TelegramModule } from '../telegram/telegram.module';
         GetDealBidItemsUseCase,
         InitialBidTypeService,
     ],
-    exports: [GetDealBidItemsUseCase],
+    //OnDealInitUseCase нужен подстраховочному крону — той же точке входа, что и вебхук
+    exports: [GetDealBidItemsUseCase, OnDealInitUseCase],
 })
 export class OnDealInitModule {}

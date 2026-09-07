@@ -40,6 +40,8 @@ export type CrmItemListRequestType<T extends BitrixOwnerTypeId | string> = {
     entityTypeId: T;
     filter?: Partial<T>;
     select?: string[];
+    //смещение страницы: crm.item.list отдает по 50 записей за вызов
+    start?: number;
 };
 
 export type CrmItemGetRequestType<T extends BitrixOwnerTypeId | string> = {

@@ -16,6 +16,10 @@ export enum AlfaParticipantSmartItemUserFieldsEnum {
     ufCrm12Corruption = 'ufCrm12Corruption',
     // ufCrm12ContactId = 'ufCrm12ContactId',
     ufCrm12DealId = 'ufCrm12DealId',
+    //даты участия по каждой программе ППК, JSON
+    ufCrm12PpkEvents = 'ufCrm12PpkEvents',
+    //ближайшая дата начала, пересчитывает крон — витрина для фильтров CRM
+    ufCrm12NextEventDate = 'ufCrm12NextEventDate',
 }
 
 export enum BxParticipantsDataKeys {
@@ -38,6 +42,8 @@ export enum BxParticipantsDataKeys {
     days_nsk = 'days_nsk',
     days_region = 'days_region',
     days_west = 'days_west',
+    ppk_events = 'ppk_events',
+    next_event_date = 'next_event_date',
 }
 
 /**
@@ -89,6 +95,8 @@ export enum BxParticipantsFieldNameEnum {
     kadry = 'Программы повышения квалификации для специалистов по кадрам',
     corruption = 'Программы повышения квалификации для специалистов по антикоррупционной деятельности',
     days = 'Дни участия',
+    ppk_events = 'Мероприятия ППК',
+    next_event_date = 'Дата начала следующего мероприятия',
 }
 
 export class IParticipantBaseField {
@@ -185,7 +193,32 @@ export class IParticipantDaysField extends IParticipantBaseField {
     name!: BxParticipantsFieldNameEnum.days;
     type!: 'multiple';
 }
+export class IParticipantPpkEventsField extends IParticipantBaseField {
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12PpkEvents;
+    code!: BxParticipantsDataKeys.ppk_events;
+    name!: BxParticipantsFieldNameEnum.ppk_events;
+    type!: 'string';
+}
+
+export class IParticipantNextEventDateField extends IParticipantBaseField {
+    bitrixId!: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12NextEventDate;
+    code!: BxParticipantsDataKeys.next_event_date;
+    name!: BxParticipantsFieldNameEnum.next_event_date;
+    type!: 'string';
+}
 export const fieldTypes = {
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12PpkEvents]: {
+        name: BxParticipantsFieldNameEnum.ppk_events,
+        code: BxParticipantsDataKeys.ppk_events,
+        bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12PpkEvents,
+        type: 'string',
+    },
+    [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12NextEventDate]: {
+        name: BxParticipantsFieldNameEnum.next_event_date,
+        code: BxParticipantsDataKeys.next_event_date,
+        bitrixId: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12NextEventDate,
+        type: 'string',
+    },
     [AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Days]: {
         name: BxParticipantsFieldNameEnum.days,
         code: BxParticipantsDataKeys.days,
@@ -295,7 +328,11 @@ export type IParticipantField<
                           ? IParticipantCorruptionField
                           : T extends AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Days
                             ? IParticipantDaysField
-                            : never;
+                            : T extends AlfaParticipantSmartItemUserFieldsEnum.ufCrm12PpkEvents
+                              ? IParticipantPpkEventsField
+                              : T extends AlfaParticipantSmartItemUserFieldsEnum.ufCrm12NextEventDate
+                                ? IParticipantNextEventDateField
+                                : never;
 
 export interface IParticipant {
     id: number;

@@ -31,6 +31,9 @@ export class BxDealService {
     async update(dealId: number | string, data: Partial<IBXDeal>) {
         return await this.repo.update(dealId, data);
     }
+    async getFields() {
+        return await this.repo.getFields();
+    }
     async getFieldsList(filter: { [key: string]: any }, select?: string[]) {
         return await this.repo.getFieldList(filter, select);
     }

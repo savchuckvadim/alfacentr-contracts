@@ -43,6 +43,18 @@ export class DocumentGeneratePpkApplicationParticipantDto
     })
     @IsString()
     date_end: string;
+
+    @ApiProperty({ description: 'E-mail участника' })
+    @IsString()
+    email: string;
+
+    @ApiProperty({ description: 'Телефон участника' })
+    @IsString()
+    phone: string;
+
+    @ApiProperty({ description: 'Id участника — для трассировки строки' })
+    @IsString()
+    participant_id: string;
 }
 
 export class DocumentGeneratePpkApplicationDataDto

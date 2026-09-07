@@ -36,6 +36,21 @@ export type DealSchema = {
         request: { id: number | string };
         response: { CONTACT_ID: string | number }[];
     };
+    [EBxMethod.FIELDS]: {
+        request: Record<string, never>;
+        //ключ — имя поля, значение — описание с названием и элементами списка
+        response: Record<
+            string,
+            {
+                type?: string;
+                isMultiple?: boolean;
+                title?: string;
+                formLabel?: string;
+                listLabel?: string;
+                items?: { ID: string; VALUE: string }[];
+            }
+        >;
+    };
     [EBxMethod.USER_FIELD_LIST]: {
         request: {
             filter: { [key: string]: any };

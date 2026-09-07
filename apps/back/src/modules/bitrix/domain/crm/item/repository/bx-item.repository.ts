@@ -39,16 +39,21 @@ export class BxItemRepository {
         );
     }
 
+    /**
+     * crm.item.list отдает по 50 записей за вызов.
+     * start — смещение страницы: без него обработается только первая
+     */
     async list(
         entityTypeId: string,
         filter?: Partial<IBXItem>,
         select?: string[],
+        start?: number,
     ) {
         return this.bxApi.callType(
             EBxNamespace.CRM,
             EBXEntity.ITEM,
             EBxMethod.LIST,
-            { entityTypeId, filter, select },
+            { entityTypeId, filter, select, start },
         );
     }
 

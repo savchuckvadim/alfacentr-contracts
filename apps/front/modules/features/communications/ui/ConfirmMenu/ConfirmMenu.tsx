@@ -17,6 +17,8 @@ import { useDealEdoComment } from '@/modules/features/deal-edo-comment';
 import { DealEdoCommentName } from '@/modules/features/deal-edo-comment/type/deal-edo-comment.type';
 import { Textarea } from '@workspace/ui/components/textarea';
 import { OwnBankSelect, useOwnBank } from '@/modules/features/own-bank';
+import { PpkApplicationConfirmSection } from './PpkApplicationConfirmSection';
+import { usePpkApplicationConfirm } from '../../hook/usePpkApplicationConfirm';
 import { useEffect } from 'react';
 
 export type FormValues = {
@@ -47,6 +49,12 @@ export const CommunicationsConfirmMenu = () => {
     const { comment, update: updateComment } = useDealEdoComment();
     const { ownBank } = useOwnBank();
     const [bankError, setBankError] = useState(false);
+    //приложение ППК: даты и контакты участников заполняются здесь же
+    const {
+        isPpkContract,
+        isReady: isPpkReady,
+        saveEdits: savePpkEdits,
+    } = usePpkApplicationConfirm();
 
     useEffect(() => {
         if (ownBank.bank) {
@@ -88,12 +96,22 @@ export const CommunicationsConfirmMenu = () => {
         return normalized;
     };
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = async (data: FormValues) => {
         if (!ownBank.bank) {
             setBankError(true);
             return;
         }
         setBankError(false);
+
+        //сначала сохраняем даты и контакты участников: приложение ППК
+        //собирается уже из них, поэтому генерация идет только после записи
+        try {
+            await savePpkEdits();
+        } catch (error) {
+            console.error('Не удалось сохранить данные приложения ППК', error);
+            return;
+        }
+
         setEmailConfirmConfirmed();
         generateDocument();
 
@@ -121,13 +139,15 @@ export const CommunicationsConfirmMenu = () => {
                     ? 'Подтвердите email для получения документов'
                     : 'Сделать документы и НЕ отправлять email'
             }
-            submitDisabled={!canSend}
+            submitDisabled={!canSend || !isPpkReady}
+            contentClassName={isPpkContract ? 'max-w-3xl' : 'max-w-md'}
         >
 
 
 
             <div className="flex flex-col gap-4">
 
+                {isPpkContract && <PpkApplicationConfirmSection />}
 
                 {/* Дата акта */}
 

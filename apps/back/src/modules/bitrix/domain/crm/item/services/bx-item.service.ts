@@ -25,8 +25,13 @@ export class BxItemService {
         return this.repo.update(id, entityTypeId, data);
     }
 
-    list(entityTypeId: string, filter?: Partial<IBXItem>, select?: string[]) {
-        return this.repo.list(entityTypeId, filter, select);
+    list(
+        entityTypeId: string,
+        filter?: Partial<IBXItem>,
+        select?: string[],
+        start?: number,
+    ) {
+        return this.repo.list(entityTypeId, filter, select, start);
     }
 
     get(id: number | string, entityTypeId: string, select?: string[]) {

@@ -209,3 +209,41 @@ export const addParticipant = createAsyncThunk<
         }
     },
 );
+
+/**
+ * Точечно обновляет поля смарт-элемента участника.
+ *
+ * В отличие от updateParticipant не трогает состояние редактирования:
+ * нужен там, где правки идут не из карточки, а из модалки перед отправкой
+ */
+export const updateParticipantFields = createAsyncThunk<
+    { participantId: number },
+    { participantId: number; fields: Record<string, string> },
+    { state: RootState; rejectValue: string }
+>(
+    'participant/updateParticipantFields',
+    async ({ participantId, fields }, { rejectWithValue, getState }) => {
+        try {
+            const state = getState();
+            const dealId = state.app.bitrix.deal?.ID;
+
+            const service = new BxItemParticipantService();
+            await service.updateParticipant(participantId, {
+                ...fields,
+                ...(dealId
+                    ? {
+                          ufCrm12DealId: dealId.toString(),
+                      }
+                    : {}),
+            });
+
+            return { participantId };
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Не удалось сохранить данные участника';
+            return rejectWithValue(message);
+        }
+    },
+);

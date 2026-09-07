@@ -11,13 +11,15 @@ export class PpkApplicationGenerateService {
         private readonly bxTimelineService: BxTimelineService,
         private readonly bitrix: BitrixService,
         private readonly filesForSend: [string, string][] = [],
-    ) { }
+    ) {}
 
     public async getPpkApplicationFile(
         entityId: number,
         currentPpkApplicationBitrixId: string,
         ppkApplicationData: IPpkDocumentApplicationData,
-    ): Promise<void> {
+        //возвращаем причину ошибки: молча терять приложение нельзя,
+        //флоу отправит ее в служебный канал
+    ): Promise<string | null> {
         void (await this.bxTimelineService.send(
             '⏳ Ожидание генерации приложения ППК...',
             'waiting',
@@ -36,6 +38,7 @@ export class PpkApplicationGenerateService {
                 //     `${currentPpkApplicationBitrixId}`,
                 // ]);
                 this.filesForSend.push(ppkApplicationFileData);
+                return null;
 
                 // const url = (
                 //     updtdDeal.result[
@@ -59,14 +62,20 @@ export class PpkApplicationGenerateService {
                     '❌ Произошла ошибка: Приложение ППК не сгенерировано',
                     'error',
                 ));
+                return 'нет данных для приложения ППК';
             }
         } catch (error) {
             console.error(error);
+            const reason =
+                error instanceof Error ? error.message : String(error);
             void (await this.bxTimelineService.send(
-                '❌ Произошла ошибка: Приложение ППК не сгенерировано',
+                `❌ Произошла ошибка: Приложение ППК не сгенерировано. ${reason}`,
                 'error',
             ));
+            return reason;
         }
+
+        return null;
     }
     async generateDocxBase64(
         documentData: IPpkDocumentApplicationData,

@@ -202,6 +202,7 @@ const getGenerateDocumentData = (
                 documentPrefix: documentNumber.prefix,
                 documentCounter: documentNumber.counter.toString(),
                 participants: state.participantProduct.ppkDistribution,
+                allParticipants: state.participant.items,
                 name_organization: clientCompanyTitle,
                 position_director: clientDirectorInitials,
                 signature_director: clientSignature,

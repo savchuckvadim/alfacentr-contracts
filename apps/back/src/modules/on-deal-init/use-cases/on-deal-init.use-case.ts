@@ -6,7 +6,10 @@ import { DealFieldValuesHelperService } from '../../../lib/deal-helper/deal-valu
 import { PBXService } from '@/modules/pbx';
 import { BxSmartService } from '../services/bx-smart.service';
 import { BxCompanyService } from '../services/bx-company.service';
-import { BxDealDataKeys, BxParticipantsDataKeys } from '@alfa/entities';
+import {
+    BxDealDataKeys,
+    DEAL_INIT_PROCESSED_AT_BITRIX_ID,
+} from '@alfa/entities';
 import { AlfaProductService } from '@/modules/alfa-products';
 import { AlfaFieldsService } from '@/modules/alfa-fields';
 import { InitialBidTypeService } from '../../../lib/deal-helper/initial-contract-type.service';
@@ -146,7 +149,24 @@ export class OnDealInitUseCase {
                 deal,
                 dealValues,
             ));
+
+        //признак ставим последним шагом: пустое поле означает, что прием
+        //до конца не дошел, и подстраховочный крон заберет сделку повторно
+        if (deal && deal.ID) await this.markProcessed(bxDealService, deal.ID);
+
         return deal;
+    }
+
+    private async markProcessed(bxDealService: BxDealService, dealId: number) {
+        try {
+            await bxDealService.update(dealId, {
+                [DEAL_INIT_PROCESSED_AT_BITRIX_ID]: new Date().toISOString(),
+            });
+        } catch (error) {
+            //не роняем прием: без признака сделку просто перепроверит крон,
+            //а он перед прогоном убедится, что она уже не пустая
+            console.error('markProcessed', error);
+        }
     }
 
     private async syncDealContact(

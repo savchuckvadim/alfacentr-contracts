@@ -25,7 +25,6 @@ import { delay } from '@/lib';
 const DEFAULT_DOMAIN = 'alfacentr.bitrix24.ru';
 
 export class DocumentGenerateFlowService {
-
     private filesForSend: [string, string][] = [];
     private userId: number;
     private bxTimelineService: BxTimelineService;
@@ -39,7 +38,7 @@ export class DocumentGenerateFlowService {
         private readonly pbxService: PBXService,
         private readonly documentContractFieldsService: DocumentContractFieldsService,
         private readonly tgBot: TelegramService,
-    ) { }
+    ) {}
 
     async generateDocument(dto: DocumentGenerateDto) {
         const { bitrix } = await this.pbxService.init(DEFAULT_DOMAIN);
@@ -48,7 +47,6 @@ export class DocumentGenerateFlowService {
         // const contactService = new BxDealContactFlowService(bitrix, dealId);
         //пока что диск не используем так как он для отправки email своим сервером
         // const bxDiskFlowService = new BxDiskFlowService(bitrix, dealId);
-
 
         this.userId = dto.userId;
 
@@ -109,7 +107,6 @@ export class DocumentGenerateFlowService {
             dto.documentCounter,
         ));
 
-
         const contractTemplateContentData =
             this.documentContractFieldsService.getContractFields(
                 dto.clientType,
@@ -125,8 +122,9 @@ export class DocumentGenerateFlowService {
                 dto.email.email,
                 dto.seminarParticipantsCount,
             );
-        const ownBankFields = this.documentContractFieldsService.getOwnBankFields(dto.ownBank);
-        await delay(200)
+        const ownBankFields =
+            this.documentContractFieldsService.getOwnBankFields(dto.ownBank);
+        await delay(200);
         void (await this.bxTimelineService.send(
             '⌛ Ожидание генерации документов ...',
             'waiting',
@@ -146,21 +144,26 @@ export class DocumentGenerateFlowService {
         const result = await bitrix.api.callBatchWithConcurrency(1);
         this.prepareResult(result);
         const isPdfWaitExhausted =
-            await this.documentGeneratePdfService.pdfGenerate(
-                result,
-                entityId,
-            );
+            await this.documentGeneratePdfService.pdfGenerate(result, entityId);
 
         if (
             (dto.contractType === EContractType.seminar_ppk ||
                 dto.contractType === EContractType.ppk) &&
             dto.ppkApplicationData
         ) {
-            void (await this.ppkApplicationGenerateService.getPpkApplicationFile(
-                entityId,
-                currentPpkApplicationBitrixId,
-                dto.ppkApplicationData,
-            ));
+            const ppkApplicationError =
+                await this.ppkApplicationGenerateService.getPpkApplicationFile(
+                    entityId,
+                    currentPpkApplicationBitrixId,
+                    dto.ppkApplicationData,
+                );
+            //приложение ППК обязательно для этих договоров: если оно не собралось,
+            //проверка полей ниже все равно остановит отправку, но знать нужно сразу
+            if (ppkApplicationError) {
+                await this.tgBot.sendMessage(
+                    `ALFA DOCUMENT GENERATE: сделка ${entityId} — приложение ППК не сгенерировано: ${ppkApplicationError}`,
+                );
+            }
         }
 
         //повторно берем сделку и проверяем, что все обязательные
@@ -209,8 +212,6 @@ export class DocumentGenerateFlowService {
             'success',
         ));
 
-
-
         //test upload files to bitrix disk
         //загрузка в диск нужна для отправки документов с помощью email server
         // сейчас пока что отключаем загрузку в диск
@@ -222,11 +223,9 @@ export class DocumentGenerateFlowService {
 
         // }
 
-
-
         let mailResult: any = null;
         if (dto.email.needEmail && dto.email.email) {
-            await delay(100)
+            await delay(100);
             const emailDocumentFlowService = new EmailDocumentFlowService(
                 bitrix,
                 this.bxTimelineService,
@@ -245,7 +244,8 @@ export class DocumentGenerateFlowService {
             //     edoComment: dto.edoComment || '',
             //     needEdoEmail: true,
             // };
-            const emailDocumentFlowResult = await emailDocumentFlowService.flow(); //только переводит стадию. отправка бизнес процессом
+            const emailDocumentFlowResult =
+                await emailDocumentFlowService.flow(); //только переводит стадию. отправка бизнес процессом
             //чтобы отправлять сервером заменить emailDocumentFlowService.flow() на emailDocumentFlowService.flowWithServerSend(emailServerSendDocumentFlowDto);
             mailResult = emailDocumentFlowResult;
         } else {
@@ -271,5 +271,4 @@ export class DocumentGenerateFlowService {
 
         return updResult;
     }
-
 }

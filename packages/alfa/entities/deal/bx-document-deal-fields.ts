@@ -331,7 +331,26 @@ export const documentFields = {
         multiple: false,
         mandatory: false,
     },
+    /**
+     * Когда прием заявки нашим кодом дошел до конца.
+     * Флаг «Заявка обработана ?» для этого не годится: его выставляет портал
+     * сразу после отправки вебхука, не проверяя, ответил ли сервер.
+     * Пустое значение — сигнал подстраховочному крону забрать сделку
+     */
+    [EnumDealDocumentFieldCode.INIT_PROCESSED_AT]: {
+        id: '13762',
+        bitrixId: 'UF_CRM_INIT_PROCESSED_AT',
+        type: 'datetime',
+        name: 'Обработано приложением',
+        code: EnumDealDocumentFieldCode.INIT_PROCESSED_AT,
+        multiple: false,
+        mandatory: false,
+    },
 } as const;
+
+/** UF признака завершенной обработки заявки */
+export const DEAL_INIT_PROCESSED_AT_BITRIX_ID =
+    documentFields[EnumDealDocumentFieldCode.INIT_PROCESSED_AT].bitrixId;
 
 export type DocumentFieldContactIdForSendEmailRow =
     (typeof documentFields)['contact_id_for_send_email'];

@@ -14,6 +14,8 @@ export const ModalMenu: FC<{
     isOpen?: boolean;
     submitDisabled?: boolean;
     withoutCancel?: boolean;
+    /** ширина окна: под таблицы нужна шире стандартной */
+    contentClassName?: string;
     onOpenChange: (open: boolean) => void;
     onSubmit?: () => void;
 }> = ({
@@ -27,6 +29,7 @@ export const ModalMenu: FC<{
     isSubmitting,
     submitDisabled,
     withoutCancel,
+    contentClassName,
     onOpenChange,
     onSubmit,
 }) => {
@@ -61,7 +64,9 @@ export const ModalMenu: FC<{
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50">
-            <div className="bg-background opacity-100  rounded-lg p-6 max-w-md w-full mx-4 z-100 shadow-xl">
+            <div
+                className={`bg-background opacity-100 rounded-lg p-6 w-full mx-4 z-100 shadow-xl max-h-[90vh] overflow-y-auto ${contentClassName || 'max-w-md'}`}
+            >
                 <div className="flex items-center space-x-3 mb-4">
                     <div>
                         {title && (

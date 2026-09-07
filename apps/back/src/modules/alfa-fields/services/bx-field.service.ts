@@ -8,52 +8,53 @@ export class BxFieldsService {
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;
     }
+    /**
+     * Все поля сделки с актуальными элементами списков.
+     *
+     * Раньше здесь стоял userfield.list с filter { SORT: 1 }: SORT — это порядок
+     * сортировки поля, а не признак, поэтому в выборку попадали только поля
+     * с SORT = 1 (95 из 613). У остальных списки в рантайме не обновлялись,
+     * и новые элементы, добавленные в портале, до приложения не доезжали —
+     * в заявку и таймлайн уходил голый id элемента вместо названия.
+     *
+     * Берем два вызова параллельно: userfield.list отдает id, тип, множественность
+     * и полные списки, но без названий; crm.deal.fields отдает названия.
+     * Это заодно убрало дозапрос userfield.get на каждое поле
+     */
     async getDealFields(): Promise<AlfaBxField[]> {
-        //filds in special form with actual bx ids but without app codes
-        const list = await this.bitrix.deal.getFieldsList({
-            SORT: 1,
-        });
+        const [fieldsResponse, listResponse] = await Promise.all([
+            this.bitrix.deal.getFields(),
+            this.bitrix.deal.getFieldsList({}),
+        ]);
 
-        const batchResult = await this.getDetailFields(list.result);
-        const rowResults = this.bitrix.api.clearResult(
-            batchResult,
-        ) as IBXField[];
-        const fields = this.prepareFields(rowResults);
-        // const filtredFields = fields.filter(field => field.name.includes('Участник 2'))
-        // console.log('BxFieldsService filtredFields')
-        // filtredFields.map(field => {
-        //     if (field.name.includes('Участник 2 Дни участия')
-        //         || field.name.includes('Участник 2 Формат участия')
-        //     ) {
-        //         console.log(field.name)
-        //         console.log(field.bitrixId)
-        //         console.log(field.type)
-        //         console.log(field.list)
-        //         console.log(field.multiple)
-        //     }
-        // })
-        return fields;
+        const labels = (fieldsResponse?.result || {}) as Record<
+            string,
+            { formLabel?: string; title?: string; listLabel?: string }
+        >;
+        const rows = (listResponse?.result || []) as IBXField[];
+
+        return this.prepareFields(rows, labels);
     }
 
-    private async getDetailFields(fieldList: IBXField[]) {
-        for (const field of fieldList) {
-            const cmdCode = `get_field_${field.ID}`;
-            this.bitrix.batch.deal.getField(cmdCode, field.ID);
-        }
-        const result = await this.bitrix.api.callBatchWithConcurrency(3);
-        return result;
+    private prepareFields(
+        fields: IBXField[],
+        labels: Record<
+            string,
+            { formLabel?: string; title?: string; listLabel?: string }
+        >,
+    ): AlfaBxField[] {
+        return fields.map((field) => this.prepareField(field, labels));
     }
 
-    private prepareFields(fields: IBXField[]): AlfaBxField[] {
-        const result = [] as any[];
-        fields.map((field) => {
-            // result.push(field)
+    private prepareField(
+        field: IBXField,
+        labels: Record<
+            string,
+            { formLabel?: string; title?: string; listLabel?: string }
+        >,
+    ): AlfaBxField {
+        const label = labels[field.FIELD_NAME];
 
-            result.push(this.prepareField(field));
-        });
-        return result;
-    }
-    private prepareField(field: IBXField): AlfaBxField {
         return {
             id: field.ID,
             bitrixId: field.FIELD_NAME,
@@ -61,12 +62,20 @@ export class BxFieldsService {
             list: field.LIST?.map((listItem) =>
                 this.prepareFieldList(listItem),
             ),
-            name: field.EDIT_FORM_LABEL['ru'],
+            //userfield.list названий не отдает, берем их из crm.deal.fields;
+            //по названию идет сопоставление полей участников («Участник N»)
+            name:
+                label?.formLabel ||
+                label?.title ||
+                label?.listLabel ||
+                field.EDIT_FORM_LABEL?.['ru'] ||
+                '',
             code: field.XML_ID || '',
             multiple: field.MULTIPLE == 'Y',
             mandatory: field.MANDATORY == 'Y',
         };
     }
+
     private prepareFieldList(listItem: BitrixEnumerationOption) {
         return {
             bitrixId: listItem.ID,

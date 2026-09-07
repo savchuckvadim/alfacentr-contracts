@@ -2,6 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
     BxParticipantsDataKeys,
     IParticipant,
+    fieldTypes,
+    AlfaParticipantSmartItemUserFieldsEnum,
 } from '@alfa/entities';
 import { handleSliceError } from '@/modules/app/lib/thunk-error-handler';
 import {
@@ -66,6 +68,76 @@ const participantSlice = createSlice({
                     fld.value = pay.value;
                 }
             });
+        },
+        /**
+         * Пишет значение поля участника, добавляя само поле, если его нет.
+         * Нужно для служебных полей вроде дат участия: у существующих
+         * участников их может не быть вовсе, а changeEditable умеет только
+         * обновлять уже присутствующие поля
+         */
+        upsertEditableField: (
+            state,
+            action: PayloadAction<{
+                bitrixId: AlfaParticipantSmartItemUserFieldsEnum;
+                value: string;
+            }>,
+        ) => {
+            if (!state.editable) return;
+
+            const { bitrixId, value } = action.payload;
+            const existing = state.editable.fields.find(
+                fld => fld.bitrixId === bitrixId,
+            );
+            if (existing) {
+                existing.value = value;
+                return;
+            }
+
+            const meta = (
+                fieldTypes as Record<string, unknown>
+            )[bitrixId];
+            if (!meta) return;
+
+            state.editable.fields.push({
+                ...meta,
+                value,
+            } as (typeof state.editable.fields)[number]);
+        },
+        /**
+         * Применяет сохраненные в битрикс поля к списку участников.
+         *
+         * Нужно, потому что запись в CRM сама по себе не меняет состояние,
+         * а документы собираются из состояния: без этого только что
+         * введенные даты не попали бы в приложение ППК
+         */
+        applyParticipantFields: (
+            state,
+            action: PayloadAction<{
+                participantId: number;
+                fields: Record<string, string>;
+            }>,
+        ) => {
+            const { participantId, fields } = action.payload;
+            const participant = state.items.find(p => p.id === participantId);
+            if (!participant) return;
+
+            for (const [bitrixId, value] of Object.entries(fields)) {
+                const existing = participant.fields.find(
+                    fld => fld.bitrixId === bitrixId,
+                );
+                if (existing) {
+                    existing.value = value;
+                    continue;
+                }
+
+                const meta = (fieldTypes as Record<string, unknown>)[bitrixId];
+                if (!meta) continue;
+
+                participant.fields.push({
+                    ...(meta as object),
+                    value,
+                } as (typeof participant.fields)[number]);
+            }
         },
         changeMultipleField: (
             state,
@@ -226,6 +298,8 @@ export const {
     cancelEditable,
     changeEditable,
     changeMultipleField,
+    upsertEditableField,
+    applyParticipantFields,
 
     clearError,
 } = participantSlice.actions;

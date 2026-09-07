@@ -23,6 +23,8 @@ import { HelperModule } from './modules/helper/helper.module';
 import { ScheduleModule } from '@nestjs/schedule';
 
 import { OnDealInitModule } from './modules/on-deal-init/on-deal-init.module';
+import { PpkScheduleModule } from './modules/ppk-schedule/ppk-schedule.module';
+import { DealInitRecoveryModule } from './modules/deal-init-recovery/deal-init-recovery.module';
 import { AlfaProductsModule } from './modules/alfa-products';
 import { AlfaFieldsModule } from './modules/alfa-fields';
 import { FieldsModule } from './commands/fields/fields.module';
@@ -72,6 +74,10 @@ import { EmployeeEdoModule } from './common/employee-edo/employee-edo.module';
         SilentJobHandlersModule,
 
         OnDealInitModule,
+
+        PpkScheduleModule,
+
+        DealInitRecoveryModule,
         AlfaProductsModule,
         AlfaFieldsModule,
 
