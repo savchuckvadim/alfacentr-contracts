@@ -148,7 +148,7 @@ export const PpkApplicationConfirmSection: FC = () => {
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <Label className="text-xs">Email</Label>
+                                    <Label className="text-xs">Email (необязательно)</Label>
                                     <Input
                                         value={row.email}
                                         onChange={e =>
@@ -166,7 +166,7 @@ export const PpkApplicationConfirmSection: FC = () => {
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <Label className="text-xs">Телефон</Label>
+                                    <Label className="text-xs">Телефон (необязательно)</Label>
                                     <Input
                                         value={row.phone}
                                         onChange={e =>

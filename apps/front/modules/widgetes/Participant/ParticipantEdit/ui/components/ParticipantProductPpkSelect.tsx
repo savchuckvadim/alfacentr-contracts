@@ -13,6 +13,19 @@ import { Textarea } from '@workspace/ui/components/textarea';
 import { Card, CardContent } from '@workspace/ui/components/card';
 import { ParticipantPpkEventDates } from './ParticipantPpkEventDates';
 
+/**
+ * Значение поля программы приходит либо строкой, либо массивом строк —
+ * зависит от того, множественное поле в портале или нет. Каждая строка
+ * это отдельная программа, и даты обучения у нее свои
+ */
+const toTopicList = (
+    value: IParticipantField<AlfaParticipantSmartItemUserFieldsEnum>['value'],
+): string[] => {
+    if (value == null) return [];
+    const list = Array.isArray(value) ? value : [value];
+    return list.map(item => String(item).trim()).filter(Boolean);
+};
+
 export const ParticipantProductPpkSelect = ({
     field,
     changeEditable,
@@ -21,6 +34,7 @@ export const ParticipantProductPpkSelect = ({
     changeEditable: (code: BxParticipantsDataKeys, value: string) => void;
 }) => {
     const [isEdit, setIsEdit] = useState(false);
+    const topics = toTopicList(field.value);
     const { ppkProducts } = useAlfaProducts();
     const ppkProductItems = ppkProducts.map(
         product =>
@@ -93,20 +107,23 @@ export const ParticipantProductPpkSelect = ({
                                     )} */}
                                 </div>
 
-                                {field.value && field.value.length > 0 ? (
+                                {topics.length > 0 ? (
                                     <div className="space-y-2">
                                         <Textarea
                                             className="min-h-[40px] resize-none bg-muted/30 border-0 text-sm leading-relaxed"
-                                            value={field.value}
+                                            value={topics.join(', ')}
                                             readOnly
                                         />
                                         <div className="text-xs text-muted-foreground">
                                             Нажмите кнопку редактирования для
                                             изменения
                                         </div>
-                                        <ParticipantPpkEventDates
-                                            topic={field.value as string}
-                                        />
+                                        {topics.map(topic => (
+                                            <ParticipantPpkEventDates
+                                                key={topic}
+                                                topic={topic}
+                                            />
+                                        ))}
                                     </div>
                                 ) : (
                                     <div className="flex items-center justify-center h-20 bg-muted/20 rounded-md border-2 border-dashed border-muted-foreground/20">

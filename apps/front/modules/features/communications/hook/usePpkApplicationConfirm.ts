@@ -14,6 +14,7 @@ import {
 import { useCallback, useMemo, useState } from 'react';
 import { updateParticipantFields } from '@/modules/entities/participant/model/ParticipantThunk';
 import { applyParticipantFields } from '@/modules/entities/participant/model/ParticipantSlice';
+import { getParticipantFieldValue } from '@/modules/entities/participant/ui/utils/participant.utils';
 
 export interface PpkConfirmRow {
     participantId: number;
@@ -36,13 +37,15 @@ const CONTACT_BITRIX_ID: Record<
     phone: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Phone,
 };
 
+/**
+ * Значение поля участника бывает массивом строк, если поле в портале
+ * множественное. Берем общий помощник: он сводит массив к строке, а не
+ * отдает его как есть — иначе дальше .trim() падает и окно не открывается
+ */
 const getFieldValue = (
     participant: IParticipant,
     bitrixId: AlfaParticipantSmartItemUserFieldsEnum,
-): string => {
-    const field = participant.fields.find(f => f.bitrixId === bitrixId);
-    return (field?.value as string) || '';
-};
+): string => getParticipantFieldValue(participant, bitrixId);
 
 /**
  * Данные приложения ППК для модалки перед отправкой: пары «участник —
@@ -170,9 +173,14 @@ export const usePpkApplicationConfirm = () => {
         [],
     );
 
+    /**
+     * Обязательно только ФИО: без него строка документа бессмысленна.
+     * Почта и телефон — свободные строки, их допустимо оставить пустыми,
+     * отправку они не блокируют и красным не подсвечиваются
+     */
     const isContactInvalid = useCallback(
         (row: PpkConfirmRow, field: ContactField) =>
-            !(row[field] || '').trim(),
+            field === 'fio' && !String(row[field] ?? '').trim(),
         [],
     );
 
@@ -181,11 +189,7 @@ export const usePpkApplicationConfirm = () => {
         if (!isPpkContract || !rows.length) return true;
 
         return rows.every(
-            row =>
-                !isRowDatesInvalid(row) &&
-                (row.fio || '').trim() &&
-                (row.email || '').trim() &&
-                (row.phone || '').trim(),
+            row => !isRowDatesInvalid(row) && !!String(row.fio ?? '').trim(),
         );
     }, [isPpkContract, rows, isRowDatesInvalid]);
 

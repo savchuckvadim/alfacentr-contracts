@@ -30,7 +30,9 @@ export const ParticipantPpkEventDates: FC<ParticipantPpkEventDatesProps> = ({
     const dispatch = useAppDispatch();
     const editable = useAppSelector(state => state.participant.editable);
 
-    const normalizedTopic = (topic || '').trim();
+    //через String, а не (topic || ''): значение поля участника бывает
+    //массивом, и тогда .trim() у него просто нет — так уже падала страница
+    const normalizedTopic = String(topic ?? '').trim();
 
     const rawEvents = editable?.fields.find(
         field =>
