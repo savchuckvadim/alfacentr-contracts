@@ -1,19 +1,7 @@
 import {
     isConfirmThresholdReached,
     PPK_CONFIRM_DAYS_BEFORE,
-    toIsoDate,
 } from './ppk-schedule.service';
-
-describe('toIsoDate', () => {
-    it('дает календарную дату без смещения часового пояса', () => {
-        //конец дня по местному времени: при переводе через UTC дата уехала бы назад
-        expect(toIsoDate(new Date(2026, 7, 21, 23, 30))).toBe('2026-08-21');
-    });
-
-    it('дополняет месяц и день нулями', () => {
-        expect(toIsoDate(new Date(2026, 0, 5))).toBe('2026-01-05');
-    });
-});
 
 describe('isConfirmThresholdReached', () => {
     const today = '2026-08-21';

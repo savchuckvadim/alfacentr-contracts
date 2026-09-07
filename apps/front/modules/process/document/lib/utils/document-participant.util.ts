@@ -113,10 +113,12 @@ const getDocumentParticipant = (
         [EnumPpkApplicationParticipantFieldCode.fio]:
             getParticipantName(participant),
         [EnumPpkApplicationParticipantFieldCode.topic]: topic.topic,
-        [EnumPpkApplicationParticipantFieldCode.date_start]:
+        [EnumPpkApplicationParticipantFieldCode.date_start]: formatDocumentDate(
             savedEvent?.dateFrom || dateStart,
-        [EnumPpkApplicationParticipantFieldCode.date_end]:
+        ),
+        [EnumPpkApplicationParticipantFieldCode.date_end]: formatDocumentDate(
             savedEvent?.dateTo || dateEnd,
+        ),
         [EnumPpkApplicationParticipantFieldCode.email]:
             (getParticipantFieldValue(
                 participant,
@@ -132,11 +134,47 @@ const getDocumentParticipant = (
     } as IPpkApplicationParticipant;
 };
 
+const DOCUMENT_DATE_FORMAT = 'dd.MM.yyyy';
+//2026-09-04 и 2026-09-04T00:00:00+03:00
+const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})/;
+//уже приведенная к документу дата: 04.09.2026
+const DOCUMENT_DATE_PATTERN = /^\d{2}\.\d{2}\.\d{4}$/;
+
+/**
+ * Дата в человекочитаемом виде для приложения: 04.09.2026.
+ *
+ * В одну колонку попадают даты из двух источников: персональные хранятся как
+ * 2026-09-04 (в этом виде их отдает поле ввода, и в этом же виде их сравнивает
+ * ночная задача), а даты товара приходят уже приведенными к локали. Без общего
+ * форматирования в одной таблице соседствовали бы 2026-09-04 и 04.09.2026.
+ *
+ * Хранение при этом не меняется: приводим только то, что уходит в документ
+ */
+const formatDocumentDate = (value?: string | null): string => {
+    const raw = (value || '').trim();
+    if (!raw) return '';
+    if (DOCUMENT_DATE_PATTERN.test(raw)) return raw;
+
+    const isoParts = ISO_DATE_PATTERN.exec(raw);
+    //собираем вручную: new Date('2026-09-04') разбирается как полночь UTC
+    //и в часовых поясах западнее Гринвича отдал бы предыдущий день
+    if (isoParts) {
+        const [, year, month, day] = isoParts;
+        return `${day}.${month}.${year}`;
+    }
+
+    const parsed = new Date(raw);
+    //незнакомый формат не теряем: в ячейке лучше исходное значение, чем пусто
+    if (Number.isNaN(parsed.getTime())) return raw;
+
+    return format(parsed, DOCUMENT_DATE_FORMAT, { locale: ru });
+};
+
 const getProductDate = (
     products: IAlfaProduct[],
     dateType: 'start' | 'end',
 ) => {
-    let space = '';
+    const space = '';
 
     if (dateType === 'start') {
         const value =

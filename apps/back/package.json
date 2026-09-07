@@ -119,7 +119,10 @@
             "**/*.(t|j)s"
         ],
         "coverageDirectory": "../coverage",
-        "testEnvironment": "node"
+        "testEnvironment": "node",
+        "moduleNameMapper": {
+            "^@/(.*)$": "<rootDir>/$1"
+        }
     },
     "packageManager": "pnpm@10.12.4"
 }

@@ -8,8 +8,10 @@ services:
       dockerfile: docker/Dockerfile.front
       args:
         APP: front
-      cache_from:
-        - alfacentr-front:prod
+      # cache_from убран намеренно: билдер mybuilder работает на драйвере
+      # docker-container и не видит локальные образы демона, поэтому строка
+      # с локальным тегом трактовалась как ссылка на реестр и на каждой сборке
+      # давала "pull access denied". Кеш слоев берется из кеша самого билдера.
     container_name: front-alfacentr-prod
     ports:
       - "${PORT_ALFA}:3000"         # API доступен снаружи
@@ -21,6 +23,15 @@ services:
     volumes:
       - ./logs:/app/logs
     restart: unless-stopped
+    # Без проверки живости цикл ожидания в деплое видит health=none и считает
+    # готовым любой запустившийся контейнер, даже падающий на первом запросе.
+    # Любой ответ ниже 500 считаем живым: корень может отдавать 403 или редирект
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
     networks:
       - app-network-alfacentr
 
@@ -32,8 +43,7 @@ services:
       dockerfile: docker/Dockerfile.back
       args:
         APP: back
-      cache_from:
-        - alfacentr-api:prod
+      # cache_from убран, причина та же, что и у фронта выше
 
     container_name: nest-api-alfacentr
     ports:
@@ -53,6 +63,13 @@ services:
       - ./apps/back/keys:/app/keys
       - ./apps/back/storage:/app/storage
       - ./logs:/app/logs
+    # /api/health отдает {status: ok}; глобальный префикс api задан в main.ts
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/api/health',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
     networks:
       - app-network-alfacentr
 

@@ -1,112 +1,140 @@
-# 🐳 Multi-stage build
+# =============================================================================
+#  alfacentr :: apps/front (Next.js)  ->  образ alfacentr-front:prod
+#  Стадии: base -> manifests -> {deps | prod-deps} -> packages -> build -> prod
+#
+#  Что изменилось против прежней версии и зачем:
+#   * манифесты копируются ДО установки, поэтому слой установки переиспользуется,
+#     пока не менялись package.json и pnpm-lock.yaml;
+#   * --frozen-lockfile вместо --no-frozen-lockfile: pnpm не ходит в реестр за
+#     метаданными. Именно этот шаг ловил ECONNRESET;
+#   * --filter: ставим фронт и его workspace-зависимости, а не все 15 проектов;
+#   * хранилище pnpm в кеш-монтировании, общем с docker/Dockerfile.back;
+#   * в финальной стадии установка идет ДО копирования .next. Раньше .next
+#     копировался первым и инвалидировал установку на каждой сборке;
+#   * apps/back в контекст не попадает (вырезан в Dockerfile.front.dockerignore),
+#     поэтому его манифест не копируется. Отсутствие проекта из lock-файла
+#     для --frozen-lockfile не помеха;
+#   * убран интерактивный pnpm approve-builds: без терминала он бесполезен,
+#     сборочные скрипты разрешаются полем pnpm.onlyBuiltDependencies.
+#
+#  ВАЖНО: packages/alfa и packages/bx-rq подключаются через main: dist/index.js,
+#  а **/dist вырезан из контекста, поэтому оба пакета собираются здесь.
+#  Прежняя версия полагалась на dist, приезжавший с сервера вместе с COPY . .
+# =============================================================================
 
 FROM node:20 AS base
 
-
 ARG APP
 ARG NEXT_PUBLIC_NODE_MODE=production
 ENV NEXT_PUBLIC_NODE_MODE=${NEXT_PUBLIC_NODE_MODE}
+
+# CI=true — pnpm не спрашивает подтверждений без терминала.
+# Путь к хранилищу задан явно, чтобы кеш-монтирование било в него точно.
+ENV CI=true \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PNPM_HOME=/pnpm \
+    PATH=/pnpm:$PATH \
+    npm_config_store_dir=/pnpm/store \
+    npm_config_fetch_retries=5 \
+    npm_config_fetch_retry_maxtimeout=120000 \
+    npm_config_fetch_timeout=600000 \
+    npm_config_network_concurrency=8
+
 WORKDIR /app
 
-# Установка PNPM
-RUN npm install -g npm@11.3.0 && npm install -g pnpm
+# Версия строго как в поле packageManager, иначе pnpm догружает сам себя
+RUN npm i -g pnpm@10.12.4
 
-# Копируем все файлы сразу
-COPY . .
+# --------------------------------------------------------------- manifests --
+FROM base AS manifests
 
-RUN pnpm approve-builds
+COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc package.json ./
+COPY apps/front/package.json                 ./apps/front/package.json
+COPY packages/alfa/package.json              ./packages/alfa/package.json
+COPY packages/api/package.json               ./packages/api/package.json
+COPY packages/bitrix/package.json            ./packages/bitrix/package.json
+COPY packages/bx/package.json                ./packages/bx/package.json
+COPY packages/bx-rq/package.json             ./packages/bx-rq/package.json
+COPY packages/eslint-config/package.json     ./packages/eslint-config/package.json
+COPY packages/nest-api/package.json          ./packages/nest-api/package.json
+COPY packages/pbx/package.json               ./packages/pbx/package.json
+COPY packages/theme/package.json             ./packages/theme/package.json
+COPY packages/typescript-config/package.json ./packages/typescript-config/package.json
+COPY packages/ui/package.json                ./packages/ui/package.json
+COPY packages/ws/package.json                ./packages/ws/package.json
 
-RUN pnpm config set fetch-retries 5 && \
-    pnpm config set fetch-timeout 60000 && \
-    pnpm install
+# -------------------------------------------------------------------- deps --
+FROM manifests AS deps
+RUN --mount=type=cache,id=pnpm-store-alfacentr,target=/pnpm/store,sharing=locked \
+    pnpm install --frozen-lockfile --filter "alfacentr-front..." --reporter=append-only
 
+# --------------------------------------------------------------- prod-deps --
+# Чистая установка только прод-зависимостей из тех же манифестов.
+# Кешируется по тем же входам, что и deps, поэтому при обычном деплое = 0 с.
+FROM manifests AS prod-deps
+RUN --mount=type=cache,id=pnpm-store-alfacentr,target=/pnpm/store,sharing=locked \
+    pnpm install --frozen-lockfile --prod --filter "alfacentr-front..." --reporter=append-only
 
-# Сборка NextJS API и проверка
-# RUN pnpm run build
-RUN pnpm --filter alfacentr-front run build
+# ---------------------------------------------------------------- packages --
+# Общие пакеты собираются до копирования исходников фронта, чтобы правка
+# в apps/front не пересобирала их каждый раз.
+FROM deps AS packages
 
-# ==== PRODUCTION ====
+COPY packages ./packages
+
+RUN pnpm --filter "@alfa/entities" run build && \
+    pnpm --filter "@workspace/bx-rq" run build && \
+    test -f packages/alfa/dist/index.js && \
+    test -f packages/bx-rq/dist/index.js
+
+# ------------------------------------------------------------------- build --
+FROM packages AS build
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
+COPY apps/front ./apps/front
+
+# .next/cache при очистке каталога сборки Next сохраняет, монтировать безопасно
+RUN --mount=type=cache,id=next-cache-front,target=/app/apps/front/.next/cache \
+    pnpm --filter alfacentr-front run build && \
+    test -d apps/front/.next
+
+# -------------------------------------------------------------------- prod --
+# Раскладка финального образа оставлена ровно такой же, как была: рабочий
+# каталог /app, package.json фронта в корне, запуск через pnpm start.
+# Изменен только порядок: сначала манифесты и установка, потом артефакты.
 FROM node:20-slim AS prod
 
-
 ARG APP
 ARG NEXT_PUBLIC_NODE_MODE=production
 ENV NEXT_PUBLIC_NODE_MODE=${NEXT_PUBLIC_NODE_MODE}
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    CI=true \
+    PNPM_HOME=/pnpm \
+    PATH=/pnpm:$PATH \
+    npm_config_store_dir=/pnpm/store
+
 WORKDIR /app
 
+RUN npm i -g pnpm@10.12.4
 
-RUN npm install -g pnpm
+COPY --from=build /app/apps/front/package.json ./package.json
+COPY --from=build /app/package.json            ./root-package.json
+COPY --from=build /app/pnpm-lock.yaml          ./pnpm-lock.yaml
+COPY --from=build /app/pnpm-workspace.yaml     ./pnpm-workspace.yaml
+COPY --from=build /app/.npmrc                  ./.npmrc
 
-# Копируем только необходимые файлы
+# Собранные общие пакеты нужны до установки: на них ссылается package.json
+COPY --from=packages /app/packages ./packages
 
-COPY --from=base /app/apps/front/.next ./.next
-COPY --from=base /app/apps/front/package.json ./package.json
-COPY --from=base /app/package.json ./root-package.json
-COPY --from=base /app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=base /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
-COPY --from=base /app/packages ./packages
-COPY --from=base /app/apps/front/public ./public
-# COPY --from=base /app/apps/kpi-sales/next.config.js ./next.config.js
-COPY --from=base /app/apps/front/next.config.js ./next.config.js
-COPY --from=base /app/apps/front/.env ./.env
+RUN --mount=type=cache,id=pnpm-store-alfacentr,target=/pnpm/store,sharing=locked \
+    pnpm install --prod --no-frozen-lockfile --reporter=append-only
 
+# Артефакты сборки копируются последними: они меняются на каждом деплое
+# и не должны инвалидировать слой установки выше
+COPY --from=build /app/apps/front/.next          ./.next
+COPY --from=build /app/apps/front/public         ./public
+COPY --from=build /app/apps/front/next.config.js ./next.config.js
+COPY --from=build /app/apps/front/.env           ./.env
 
-# Установка PNPM и зависимостей
-RUN pnpm install --prod --no-frozen-lockfile && \
-    pnpm --filter alfacentr-front install --prod --no-frozen-lockfile
-
-
-
-# Запуск NextJS
 CMD ["pnpm", "start"]
-
-
-# FROM node:20 AS base
-
-# WORKDIR /app
-
-# # Установка PNPM
-# RUN npm install -g npm@11.3.0 && npm install -g pnpm
-
-# # Копируем все файлы сразу
-# COPY . .
-
-# RUN pnpm approve-builds
-# # Установка зависимостей и генерация Prisma Client
-# RUN pnpm config set fetch-retries 5 && \
-#     pnpm config set fetch-timeout 60000 && \
-#     pnpm install --no-frozen-lockfile
-
-
-# # Сборка NextJS API и проверка
-# RUN pnpm --filter kpi-sales run build
-
-
-# # ==== PRODUCTION ====
-# FROM node:20-slim AS prod
-
-# WORKDIR /app
-# RUN npm install -g pnpm
-
-# # Копируем только необходимые файлы
-
-# COPY --from=base /app/apps/kpi-sales/.next ./.next
-# COPY --from=base /app/apps/kpi-sales/package.json ./package.json
-# COPY --from=base /app/package.json ./root-package.json
-# COPY --from=base /app/pnpm-lock.yaml ./pnpm-lock.yaml
-# COPY --from=base /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
-# COPY --from=base /app/packages ./packages
-# COPY --from=base /app/apps/kpi-sales/public ./public
-# # COPY --from=base /app/apps/kpi-sales/next.config.js ./next.config.js
-# COPY --from=base /app/apps/kpi-sales/next.config.ts ./next.config.ts
-# COPY --from=base /app/apps/kpi-sales/.env ./.env
-
-
-# # Установка PNPM и зависимостей
-# RUN pnpm install --prod --no-frozen-lockfile && \
-#     pnpm --filter kpi-sales install --prod --no-frozen-lockfile
-
-
-
-# # Запуск NextJS
-# CMD ["pnpm", "start"]

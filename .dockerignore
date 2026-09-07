@@ -1,63 +1,109 @@
-# Dependencies
-# ✅ Основные каталоги зависимостей
-node_modules
+# =============================================================================
+#  ROOT .dockerignore — общий (fallback) контекст сборки
+#
+#  ВНИМАНИЕ #1 — .env ТРОГАТЬ НЕЛЬЗЯ.
+#  Правило `.env` без слэша матчит ТОЛЬКО корневой ./.env.
+#  Файлы apps/back/.env и apps/front/.env ОБЯЗАНЫ попадать в контекст:
+#     docker/Dockerfile.back  : COPY --from=base /app/apps/back/.env  ./.env
+#     docker/Dockerfile.front : COPY --from=base /app/apps/front/.env ./.env
+#  Они не в git — лежат только на сервере. Любое из правил
+#     **/.env      */.env      apps/*/.env      apps/**/.env
+#  МГНОВЕННО ЛОМАЕТ ПРОД. Не добавлять.
+#
+#  ВНИМАНИЕ #2 — здесь НЕТ ни одной строки с "!".
+#  Любое правило-исключение заставляет BuildKit/fsutil спускаться внутрь
+#  исключённых каталогов (вдруг там что-то надо вернуть), т.е. обходить
+#  ~105 000 файлов node_modules вместо того чтобы срезать каталог целиком.
+#  Не добавлять "!" — вместо этого не исключайте нужное.
+# =============================================================================
+
+# --- Зависимости -------------------------------------------------------------
 **/node_modules
-.pnpm-store
-./apps/back/node_modules
-./apps/front/node_modules
-./apps/bitrix/node_modules
-./apps/kpi-sales/node_modules
-./apps/web/node_modules
-./packages/api/node_modules
-./packages/bx/node_modules
-./packages/eslint-config/node_modules
-./packages/pbx/node_modules
-./packages/theme/node_modules
-./packages/ui/node_modules
-./packages/ws/node_modules
-./packages//typescript-config/node_modules
+**/.pnpm-store
+**/.pnp
+**/.pnp.js
 
-./packages/alfa/node_modules
-./packages/bitrix/node_modules
+# --- Артефакты сборки (пересобираются внутри образа) -------------------------
+**/dist
+**/.next
+**/out
+**/build
+**/.turbo
+**/.vercel
+**/*.tsbuildinfo
 
-
-./apps/back/db_data
-./apps/back/db_dev
-./apps/back/generated
-
-# Build outputs
-dist
-.next
-build
-*.tsbuildinfo
-*.log
-
-# Environment
-.env
-.env.*
-!.env.example
-
-# Version control
+# --- VCS / CI ----------------------------------------------------------------
 .git
 .gitignore
+.gitattributes
+.github
 
-# IDE
-.idea
+# --- Секреты (только корневые .env, см. ВНИМАНИЕ #1) -------------------------
+.env
+.env.*
+**/*.pem
+**/*.key
+**/*.p12
+keys
+apps/back/keys
+apps/front/keys
+
+# --- Runtime-данные: это bind-mount тома из docker-compose.yml ---------------
+# Прод-контейнер ПИШЕТ сюда прямо во время работы. Пока эти пути в контексте,
+# хэш слоя `COPY . .` меняется от каждого запроса к API — и кеш перед
+# 13-минутным `pnpm install` не попадает НИКОГДА.
+logs
+apps/back/logs
+apps/back/storage
+apps/back/uploads
+apps/back/generated
+apps/back/db_data
+apps/back/db_dev
+apps/back/db_prod
+apps/back/loki-data
+apps/back/nest-vscode-debugging
+loki
+loki-data
+prometheus
+promtail
+
+# --- Логи и crash-репорты ----------------------------------------------------
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+**/lerna-debug.log*
+**/report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# --- Тесты / покрытие --------------------------------------------------------
+**/coverage
+**/.nyc_output
+
+# --- Документация: не используется НИ ОДНОЙ стадией сборки -------------------
+# docs/ = 605 КБ .docx, корневые отчёты = 256 КБ .md.
+# Сейчас коммит только в них инвалидирует `COPY . .` и (через fallback-ветку
+# в deploy-alfa-prod.yml) запускает полную пересборку ОБОИХ образов.
+docs
+**/*.md
+**/*.docx
+**/*.doc
+**/*.pdf
+**/*.xlsx
+todo
+oldflow
+
+# --- Локальные dev/ops файлы -------------------------------------------------
+Dockerfile
+TestDockerfile
+docker-compose.yml
+docker-compose-full.yml
+docker-compose-test.yml
+deploy.yml
+analyze-time.ps1
+desktop.ini
+**/.DS_Store
 .vscode
-*.swp
-*.swo
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Testing
-coverage
-.nyc_output
-
-# Misc
-.DS_Store
-*.pem 
+.idea
+**/*.swp
+**/*.swo

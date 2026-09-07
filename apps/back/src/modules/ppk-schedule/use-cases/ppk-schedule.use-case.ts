@@ -6,6 +6,7 @@ import {
     PpkScheduleResult,
     PpkScheduleService,
 } from '../services/ppk-schedule.service';
+import { PROJECT_TIME_ZONE } from '@/lib/utils/project-time.util';
 
 const DEFAULT_DOMAIN = 'alfacentr.bitrix24.ru';
 
@@ -23,7 +24,12 @@ export class PpkScheduleUseCase {
         private readonly telegram: TelegramService,
     ) {}
 
-    @Cron(CronExpression.EVERY_DAY_AT_3AM, { name: 'ppk-schedule' })
+    //пояс задаем явно: контейнер идет по UTC, и без него «три ночи»
+    //пришлись бы на десять утра по Новосибирску
+    @Cron(CronExpression.EVERY_DAY_AT_3AM, {
+        name: 'ppk-schedule',
+        timeZone: PROJECT_TIME_ZONE,
+    })
     async handleCron(): Promise<void> {
         try {
             const result = await this.run();

@@ -1,53 +1,120 @@
-# 🐳 Multi-stage build
-FROM node:20 AS base
+# =============================================================================
+#  alfacentr :: apps/back (NestJS)  ->  образ alfacentr-api:prod
+#  Стадии: base -> manifests -> {deps | prod-deps} -> build -> prod
+#
+#  Почему так, а не COPY . . в начале:
+#   * манифесты копируются ДО установки, поэтому слой установки переиспользуется,
+#     пока не менялись package.json и pnpm-lock.yaml. Правка кода его не трогает;
+#   * ставим только back и его workspace-зависимости (--filter "back...").
+#     Раньше ставились все 15 проектов монорепозитория, 1955 пакетов, ради образа,
+#     которому из воркспейса нужен один @alfa/entities;
+#   * --frozen-lockfile: pnpm пропускает разрешение версий и не ходит в реестр
+#     за метаданными. Именно этот шаг раньше ловил ECONNRESET;
+#   * хранилище pnpm вынесено в кеш-монтирование, поэтому инвалидация слоя
+#     установки не означает повторную закачку архивов;
+#   * прод-зависимости ставятся один раз отдельной стадией, а не вторым
+#     проходом установки внутри финального образа.
+#
+#  Директива # syntax= намеренно НЕ используется: она заставляет BuildKit идти
+#  в docker.io за образом фронтенда до разбора файла, а RUN --mount=type=cache
+#  поддерживается встроенным фронтендом начиная с Docker 23.
+# =============================================================================
 
+FROM node:20 AS base
 
 RUN apt-get update && \
     apt-get install -y openssl libssl-dev ca-certificates && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-
 WORKDIR /app
 
-# Установка PNPM
-RUN npm i -g pnpm
+# CI=true — pnpm не спрашивает подтверждение на очистку node_modules без TTY.
+# Путь к хранилищу задан явно, чтобы кеш-монтирование ниже било в него точно.
+ENV CI=true \
+    PNPM_HOME=/pnpm \
+    PATH=/pnpm:$PATH \
+    npm_config_store_dir=/pnpm/store \
+    npm_config_fetch_retries=5 \
+    npm_config_fetch_retry_maxtimeout=120000 \
+    npm_config_fetch_timeout=600000 \
+    npm_config_network_concurrency=8
 
-# Копируем все файлы сразу
-COPY . .
+# Версия строго как в поле packageManager, иначе pnpm догружает сам себя
+RUN npm i -g pnpm@10.12.4
 
-# Установка зависимостей и генерация Prisma Client
-RUN pnpm config set fetch-retries 5 && \
-    pnpm config set fetch-timeout 60000 && \
-    pnpm install --no-frozen-lockfile && \
-    cd apps/back
-    
+# --------------------------------------------------------------- manifests --
+# Только пять манифестов, которые реально влияют на установку для бэкенда.
+# Остальные копировать НЕЛЬЗЯ: apps/front и девять packages/* вырезаны из
+# контекста в docker/Dockerfile.back.dockerignore, и COPY упал бы с not found.
+# Отсутствие проекта из lock-файла для --frozen-lockfile не помеха.
+# eslint-config и typescript-config обязательны: они прописаны как
+# workspace:* в devDependencies корневого package.json.
+FROM base AS manifests
 
-RUN cd packages/alfa && \
-    pnpm run build
+COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc package.json ./
+COPY apps/back/package.json                   ./apps/back/package.json
+COPY packages/alfa/package.json               ./packages/alfa/package.json
+COPY packages/eslint-config/package.json      ./packages/eslint-config/package.json
+COPY packages/typescript-config/package.json  ./packages/typescript-config/package.json
 
-# Сборка NestJS API и проверка
+# -------------------------------------------------------------------- deps --
+# Зависимости для сборки: back, @alfa/entities и корневой проект.
+# Корневой ставится всегда, поэтому tsc для сборки packages/alfa на месте.
+FROM manifests AS deps
+RUN --mount=type=cache,id=pnpm-store-alfacentr,target=/pnpm/store,sharing=locked \
+    pnpm install --frozen-lockfile --filter "back..." --reporter=append-only
+
+# --------------------------------------------------------------- prod-deps --
+# Отдельная чистая установка только прод-зависимостей из тех же манифестов.
+# Отдельная стадия, а не --prod поверх deps: переключение dev -> prod
+# заставляет pnpm пересоздавать node_modules целиком.
+FROM manifests AS prod-deps
+RUN --mount=type=cache,id=pnpm-store-alfacentr,target=/pnpm/store,sharing=locked \
+    pnpm install --frozen-lockfile --prod --filter "back..." --reporter=append-only
+
+# ------------------------------------------------------------------- build --
+FROM deps AS build
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
+# Сначала общий пакет и его сборка, только потом исходники бэкенда.
+# Порядок важен: при обычном деплое меняется apps/back/src, и слой сборки
+# @alfa/entities переживает эту правку. В обратном порядке tsc общего пакета
+# пересобирался бы каждый раз, а это почти четыре минуты по логу.
+COPY packages/alfa/tsconfig.json packages/alfa/index.ts ./packages/alfa/
+COPY packages/alfa/entities ./packages/alfa/entities
+COPY packages/alfa/bx-data  ./packages/alfa/bx-data
+
+RUN pnpm --filter "@alfa/entities" run build && \
+    test -f packages/alfa/dist/index.js || \
+    (echo "Сборка не удалась: нет packages/alfa/dist/index.js" && exit 1)
+
+COPY apps/back/nest-cli.json apps/back/tsconfig.json apps/back/tsconfig.build.json ./apps/back/
+COPY apps/back/src ./apps/back/src
+
 RUN pnpm --filter back run build && \
-    ls -la apps/back/dist || (echo "Build failed - dist directory not found" && exit 1)
+    test -f apps/back/dist/main.js || \
+    (echo "Сборка не удалась: нет apps/back/dist/main.js" && exit 1)
 
-# ==== PRODUCTION ====
+# .env копируется последним: он нужен только рантайму и меняется отдельно
+# от кода, так что его правка не должна ронять кеш сборки
+COPY apps/back/.env ./apps/back/.env
+
+# -------------------------------------------------------------------- prod --
+# Ни pnpm, ни установки. Раскладка воркспейса сохраняется один в один,
+# поэтому относительные симлинки изолированного линкера резолвятся.
 FROM node:20-slim AS prod
-
 WORKDIR /app
+ENV NODE_ENV=production
 
-# Копируем только необходимые файлы
-COPY --from=base /app/apps/back/dist ./dist
-COPY --from=base /app/apps/back/package.json ./package.json
-# COPY --from=base /app/apps/back/generated ./generated
-COPY --from=base /app/package.json ./root-package.json
-COPY --from=base /app/pnpm-workspace.yaml ./
-COPY --from=base /app/packages ./packages
-COPY --from=base /app/apps/back/.env ./.env
+COPY --from=prod-deps /app/node_modules               ./node_modules
+COPY --from=prod-deps /app/apps/back/node_modules     ./apps/back/node_modules
+COPY --from=build     /app/apps/back/package.json     ./apps/back/package.json
+COPY --from=build     /app/apps/back/dist             ./apps/back/dist
+COPY --from=build     /app/packages/alfa/package.json ./packages/alfa/package.json
+COPY --from=build     /app/packages/alfa/dist         ./packages/alfa/dist
+COPY --from=build     /app/apps/back/.env             ./.env
 
-
-# Установка PNPM и зависимостей
-RUN npm i -g pnpm && \
-    pnpm install --prod --no-frozen-lockfile && \
-    pnpm --filter back install --prod --no-frozen-lockfile
-
-# Запуск NestJS
-CMD ["node", "dist/main"]
+# Рабочий каталог остается /app, то есть process.cwd() === '/app'. Поэтому тома
+# ./apps/back/keys:/app/keys, ./apps/back/storage:/app/storage, ./logs:/app/logs
+# и чтение /app/.env работают ровно как раньше. Изменился только путь до main.
+CMD ["node", "apps/back/dist/main"]

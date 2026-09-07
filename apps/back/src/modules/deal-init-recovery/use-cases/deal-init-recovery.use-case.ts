@@ -7,6 +7,7 @@ import {
     DealInitRecoveryResult,
     DealInitRecoveryService,
 } from '../services/deal-init-recovery.service';
+import { PROJECT_TIME_ZONE } from '@/lib/utils/project-time.util';
 
 const DEFAULT_DOMAIN = 'alfacentr.bitrix24.ru';
 
@@ -25,8 +26,13 @@ export class DealInitRecoveryUseCase {
         private readonly onDealInit: OnDealInitUseCase,
     ) {}
 
-    //в @nestjs/schedule нет готовой константы на четверть часа
-    @Cron('0 */15 * * * *', { name: 'deal-init-recovery' })
+    //в @nestjs/schedule нет готовой константы на четверть часа.
+    //пояс на четвертьчасовом расписании ни на что не влияет, но держим
+    //его тем же, что и у остальных задач проекта
+    @Cron('0 */15 * * * *', {
+        name: 'deal-init-recovery',
+        timeZone: PROJECT_TIME_ZONE,
+    })
     async handleCron(): Promise<void> {
         try {
             const result = await this.run();

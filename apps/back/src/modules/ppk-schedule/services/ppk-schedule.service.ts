@@ -7,6 +7,10 @@ import {
     SmartStageEnum,
 } from '@alfa/entities';
 import { BitrixService } from '@/modules/bitrix';
+import {
+    addDaysToProjectDate,
+    getProjectDate,
+} from '@/lib/utils/project-time.util';
 
 /** За сколько дней до начала участник считается подтвержденным */
 export const PPK_CONFIRM_DAYS_BEFORE = 14;
@@ -34,14 +38,6 @@ export interface PpkScheduleResult {
     errors: string[];
 }
 
-/** Дата в формате YYYY-MM-DD по местному времени, без смещения UTC */
-export const toIsoDate = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = `${date.getMonth() + 1}`.padStart(2, '0');
-    const day = `${date.getDate()}`.padStart(2, '0');
-    return `${year}-${month}-${day}`;
-};
-
 /** Наступил ли порог подтверждения: до начала осталось не больше N дней */
 export const isConfirmThresholdReached = (
     nextEventDate: string,
@@ -50,10 +46,7 @@ export const isConfirmThresholdReached = (
 ): boolean => {
     if (!nextEventDate || nextEventDate < today) return false;
 
-    const threshold = new Date(`${today}T00:00:00`);
-    threshold.setDate(threshold.getDate() + daysBefore);
-
-    return nextEventDate <= toIsoDate(threshold);
+    return nextEventDate <= addDaysToProjectDate(today, daysBefore);
 };
 
 /**
@@ -66,7 +59,9 @@ export class PpkScheduleService {
     constructor(private readonly bitrix: BitrixService) {}
 
     async run(now: Date = new Date()): Promise<PpkScheduleResult> {
-        const today = toIsoDate(now);
+        //«сегодня» по Новосибирску: контейнер идет по UTC, и ночью
+        //системная дата отстает на сутки от той, по которой живет заказчик
+        const today = getProjectDate(now);
         const result: PpkScheduleResult = {
             checked: 0,
             dateUpdated: 0,
