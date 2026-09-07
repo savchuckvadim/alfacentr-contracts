@@ -50,11 +50,15 @@ export const CommunicationsConfirmMenu = () => {
     const { ownBank } = useOwnBank();
     const [bankError, setBankError] = useState(false);
     //приложение ППК: даты и контакты участников заполняются здесь же
+    //хук вызывается ТОЛЬКО здесь и раздаётся разделу пропсами. Раньше раздел
+    //вызывал его сам, и правки из окна жили в чужом состоянии: кнопка их не
+    //видела и оставалась неактивной, а сохранение писало прежние значения
+    const ppk = usePpkApplicationConfirm();
     const {
         isPpkContract,
         isReady: isPpkReady,
         saveEdits: savePpkEdits,
-    } = usePpkApplicationConfirm();
+    } = ppk;
 
     useEffect(() => {
         if (ownBank.bank) {
@@ -147,7 +151,7 @@ export const CommunicationsConfirmMenu = () => {
 
             <div className="flex flex-col gap-4">
 
-                {isPpkContract && <PpkApplicationConfirmSection />}
+                {isPpkContract && <PpkApplicationConfirmSection ppk={ppk} />}
 
                 {/* Дата акта */}
 

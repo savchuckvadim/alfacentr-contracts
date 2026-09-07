@@ -16,7 +16,14 @@ import { FC } from 'react';
  * учиться в разные периоды, поэтому даты задаются на паре
  * «участник — программа», а не у товара.
  */
-export const PpkApplicationConfirmSection: FC = () => {
+export const PpkApplicationConfirmSection: FC<{
+    /**
+     * Состояние приходит сверху и НЕ создаётся здесь своим вызовом хука:
+     * иначе правки из окна попадают в отдельный экземпляр состояния,
+     * которого не видят ни кнопка отправки, ни сохранение
+     */
+    ppk: ReturnType<typeof usePpkApplicationConfirm>;
+}> = ({ ppk }) => {
     const {
         rows,
         orphanedTopics,
@@ -24,7 +31,7 @@ export const PpkApplicationConfirmSection: FC = () => {
         setParticipantContact,
         isRowDatesInvalid,
         isContactInvalid,
-    } = usePpkApplicationConfirm();
+    } = ppk;
 
     const isLoading = useAppSelector(
         state => state.participant.loading || state.product.loading,
