@@ -30,7 +30,10 @@ export interface IBXProductRowRow {
     measureCode?: number | string;
     measureId?: number | string;
     sort?: number;
+    /** Ставка НДС в процентах. Если не передать, Битрикс поставит null */
     taxRate?: number;
+    /** Включён ли НДС в цену. Если не передать, Битрикс поставит 'N' */
+    taxIncluded?: 'Y' | 'N';
 }
 
 export interface IBXDealProductRowGet {

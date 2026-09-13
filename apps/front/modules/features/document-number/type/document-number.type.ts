@@ -1,8 +1,11 @@
 export interface IDocumentNumberUpdateDoneResponse {
     data: {
         prefix: string;
-        counter: number;
+        /** null, если бэкенд не смог выдать номер — записывать его нельзя */
+        counter: number | null;
         dealId: number;
+        error?: boolean;
+        message?: string;
     };
 }
 export interface IDocumentNumberUpdateDoneResult {

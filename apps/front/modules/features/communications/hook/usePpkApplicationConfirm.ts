@@ -4,48 +4,26 @@ import { useAppDispatch, useAppSelector } from '@/modules/app/';
 import {
     AlfaParticipantSmartItemUserFieldsEnum,
     EContractType,
-    IParticipant,
     IPpkEvent,
     isPpkEventDatesValid,
-    mergePpkEventsWithTopics,
-    parsePpkEvents,
     serializePpkEvents,
 } from '@alfa/entities';
+import {
+    buildPpkApplicationRows,
+    IPpkApplicationRow,
+    PPK_CONTACT_BITRIX_ID,
+    TPpkContactField,
+} from '@/modules/entities/participant/lib/ppk-application-rows';
 import { useCallback, useMemo, useState } from 'react';
 import { updateParticipantFields } from '@/modules/entities/participant/model/ParticipantThunk';
 import { applyParticipantFields } from '@/modules/entities/participant/model/ParticipantSlice';
-import { getParticipantFieldValue } from '@/modules/entities/participant/ui/utils/participant.utils';
 
-export interface PpkConfirmRow {
-    participantId: number;
-    topic: string;
-    fio: string;
-    email: string;
-    phone: string;
-    dateFrom: string;
-    dateTo: string;
-}
+/** Строка приложения ППК — та же, что в табе «Приложение ППК» */
+export type PpkConfirmRow = IPpkApplicationRow;
 
-type ContactField = 'fio' | 'email' | 'phone';
+type ContactField = TPpkContactField;
 
-const CONTACT_BITRIX_ID: Record<
-    ContactField,
-    AlfaParticipantSmartItemUserFieldsEnum
-> = {
-    fio: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Name,
-    email: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Email,
-    phone: AlfaParticipantSmartItemUserFieldsEnum.ufCrm12Phone,
-};
-
-/**
- * Значение поля участника бывает массивом строк, если поле в портале
- * множественное. Берем общий помощник: он сводит массив к строке, а не
- * отдает его как есть — иначе дальше .trim() падает и окно не открывается
- */
-const getFieldValue = (
-    participant: IParticipant,
-    bitrixId: AlfaParticipantSmartItemUserFieldsEnum,
-): string => getParticipantFieldValue(participant, bitrixId);
+const CONTACT_BITRIX_ID = PPK_CONTACT_BITRIX_ID;
 
 /**
  * Данные приложения ППК для модалки перед отправкой: пары «участник —
@@ -79,62 +57,25 @@ export const usePpkApplicationConfirm = () => {
     const { rows, orphanedTopics } = useMemo(() => {
         if (!isPpkContract) return { rows: [], orphanedTopics: [] };
 
-        //какие программы у какого участника — берем из готового распределения
-        const topicsByParticipant = new Map<number, string[]>();
-        for (const stat of Object.values(ppkDistribution.topicStats || {})) {
-            for (const participant of stat.participants || []) {
-                const list = topicsByParticipant.get(participant.id) || [];
-                list.push(stat.topic);
-                topicsByParticipant.set(participant.id, list);
-            }
-        }
+        //сборка пар «участник — программа» общая с табом «Приложение ППК»,
+        //здесь поверх неё лежат несохраненные правки окна
+        const built = buildPpkApplicationRows(participants, ppkDistribution);
 
-        const result: PpkConfirmRow[] = [];
-        const orphaned = new Set<string>();
+        const result: PpkConfirmRow[] = built.rows.map(row => {
+            const contacts = contactEdits[row.participantId] || {};
+            const edit = dateEdits[`${row.participantId}|${row.topic}`];
 
-        for (const participant of participants) {
-            const topics = topicsByParticipant.get(participant.id) || [];
-            if (!topics.length) continue;
+            return {
+                ...row,
+                fio: contacts.fio ?? row.fio,
+                email: contacts.email ?? row.email,
+                phone: contacts.phone ?? row.phone,
+                dateFrom: edit?.dateFrom ?? row.dateFrom,
+                dateTo: edit?.dateTo ?? row.dateTo,
+            };
+        });
 
-            const saved = parsePpkEvents(
-                getFieldValue(
-                    participant,
-                    AlfaParticipantSmartItemUserFieldsEnum.ufCrm12PpkEvents,
-                ),
-            );
-            const merged = mergePpkEventsWithTopics(saved, topics);
-            for (const orphan of merged.orphanedEvents) {
-                orphaned.add(orphan.topic);
-            }
-
-            const contacts = contactEdits[participant.id] || {};
-
-            for (const event of merged.events) {
-                const key = `${participant.id}|${event.topic}`;
-                const edit = dateEdits[key];
-
-                result.push({
-                    participantId: participant.id,
-                    topic: event.topic,
-                    fio:
-                        contacts.fio ??
-                        getFieldValue(
-                            participant,
-                            CONTACT_BITRIX_ID.fio,
-                        ),
-                    email:
-                        contacts.email ??
-                        getFieldValue(participant, CONTACT_BITRIX_ID.email),
-                    phone:
-                        contacts.phone ??
-                        getFieldValue(participant, CONTACT_BITRIX_ID.phone),
-                    dateFrom: edit?.dateFrom ?? event.dateFrom,
-                    dateTo: edit?.dateTo ?? event.dateTo,
-                });
-            }
-        }
-
-        return { rows: result, orphanedTopics: [...orphaned] };
+        return { rows: result, orphanedTopics: built.orphanedTopics };
     }, [
         isPpkContract,
         participants,

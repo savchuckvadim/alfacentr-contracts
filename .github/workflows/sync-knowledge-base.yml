@@ -1,0 +1,57 @@
+name: Синхронизация базы знаний
+
+# Источник истины для раздела «Семинары» — markdown в docs/knowledge-base.
+# Поэтому синхронизация привязана к изменению контента, а не к расписанию:
+# поправили статью, слили в main — страница обновилась.
+#
+# Почему не крон на сервере: деплой пропускает сборку, когда менялась только
+# документация (см. deploy-alfa-prod.yml), так что на сервер контент приезжает,
+# но контейнер не перезапускается. А в образ бэкенда docs/ не копируется вовсе.
+# Отдельная job в CI не зависит ни от того, ни от другого.
+#
+# Расписание можно добавить позже, если понадобится возвращать страницы к
+# репозиторию после ручных правок в базе знаний: раскомментировать schedule.
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - 'docs/knowledge-base/**'
+            - 'apps/back/scripts/sync-knowledge-base.mjs'
+            - '.github/workflows/sync-knowledge-base.yml'
+    workflow_dispatch:
+        inputs:
+            dry:
+                description: 'Только показать план, ничего не писать'
+                type: boolean
+                default: false
+    # schedule:
+    #     - cron: '17 4 * * 1'
+
+jobs:
+    sync:
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Синхронизировать раздел «Семинары»
+              env:
+                  BITRIX_DOMAIN: ${{ secrets.BITRIX_DOMAIN }}
+                  BITRIX_KEY: ${{ secrets.BITRIX_KEY }}
+                  DRY: ${{ inputs.dry && '1' || '0' }}
+              run: |
+                  set -eu
+                  if [ -z "${BITRIX_DOMAIN:-}" ] || [ -z "${BITRIX_KEY:-}" ]; then
+                    echo "❌ Нет секретов BITRIX_DOMAIN или BITRIX_KEY."
+                    echo "   Добавьте их в Settings → Secrets and variables → Actions."
+                    echo "   BITRIX_KEY в формате rest/{userId}/{token}, нужен scope note."
+                    exit 1
+                  fi
+                  node apps/back/scripts/sync-knowledge-base.mjs

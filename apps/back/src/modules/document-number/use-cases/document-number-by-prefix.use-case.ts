@@ -1,147 +1,175 @@
 import { PBXService } from '@/modules/pbx/pbx.servise';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { normalizePrefix } from '@alfa/entities';
 import { DocumentNumberByPrefixDto } from '../dto/document-number.dto';
 import {
-    CounterAddBxListDto,
-    CounterGetBxListDto,
-} from '../dto/add-counter-bx-list.dto';
+    ANCHOR_STAGE_ID,
+    BitrixApiClient,
+    DocumentCounterService,
+    SEMINAR_CATEGORY_ID,
+    SEMINAR_ENTITY_TYPE_ID,
+    SMART_DEAL_PARENT_FIELD,
+    SMART_LIST_ID_FIELD,
+    SMART_PREFIX_FIELD,
+} from '../services/document-counter.service';
+
+/** Откуда взяли элемент-счётчик — нужно для диагностики расхождений */
+export type CounterSource = 'smart-anchor' | 'list-by-name' | 'created';
+
+export interface DocumentNumberByPrefixResult {
+    prefix: string;
+    counter: number;
+    elementId: number;
+    source: CounterSource;
+}
 
 @Injectable()
 export class DocumentNumberByPrefixUseCase {
-    constructor(private readonly pbxService: PBXService) { }
+    private readonly logger = new Logger(DocumentNumberByPrefixUseCase.name);
 
-    async execute(dto: DocumentNumberByPrefixDto) {
-        // try {
-        console.log('✅DocumentNumberByPrefixUseCase  dto', dto);
-        const { bitrix, PortalModel } = await this.pbxService.init(
-            'alfacentr.bitrix24.ru',
+    constructor(
+        private readonly pbxService: PBXService,
+        private readonly counters: DocumentCounterService,
+    ) {}
+
+    async execute(
+        dto: DocumentNumberByPrefixDto,
+    ): Promise<DocumentNumberByPrefixResult> {
+        const prefix = normalizePrefix(dto.prefix || dto.dinamycPrefix);
+        if (!prefix) {
+            throw new Error(
+                `Пустой префикс, номер выдать нельзя. dealId=${dto.dealId}`,
+            );
+        }
+
+        return await this.counters.withLock(prefix, () =>
+            this.issueNumber(prefix, dto.dealId),
         );
-        const listId = 46;
-        const listResponse = await bitrix.list.getList(undefined, listId);
+    }
 
-        const list = listResponse.result;
-        const listCode = list.CODE;
-        const prefix = dto.prefix;
-        let counter = 0;
-        let elementResponse;
-        try {
-            elementResponse = await bitrix.api.call('lists.element.get', {
-                IBLOCK_TYPE_ID: 'lists',
-                IBLOCK_ID: listId,
-                // ELEMENT_CODE//
-                FILTER: {
-                    NAME: prefix,
-                },
-            });
-        } catch (error) {
-            console.error('❌ Error in document number by prefix:', error);
+    private async issueNumber(
+        prefix: string,
+        dealId: number,
+    ): Promise<DocumentNumberByPrefixResult> {
+        const { bitrix } = await this.pbxService.init('alfacentr.bitrix24.ru');
+
+        const found = await this.resolveCounterElement(bitrix, prefix);
+
+        if (!found) {
+            const elementId = await this.counters.createElement(bitrix, prefix);
+            this.logger.log(
+                `Создан счётчик для префикса «${prefix}»: элемент ${elementId}, номер 1 (сделка ${dealId})`,
+            );
+            await this.createSmartAnchor(bitrix, prefix, elementId, dealId);
+            return { prefix, counter: 1, elementId, source: 'created' };
         }
 
-        const addData: CounterAddBxListDto = {
-            IBLOCK_TYPE_ID: 'lists',
+        const counter = found.counter + 1;
+        await this.counters.writeCounter(
+            bitrix,
+            found.elementId,
+            prefix,
+            counter,
+        );
 
-            ELEMENT_CODE: this.transliterate(prefix),
-            IBLOCK_ID: 46,
+        this.logger.log(
+            `Префикс «${prefix}»: номер ${counter}, элемент ${found.elementId}, источник ${found.source} (сделка ${dealId})`,
+        );
 
-            FIELDS: {
-                CREATED_BY: 514,
-                NAME: prefix,
-                PROPERTY_190: 7,
-                PROPERTY_188: '156',
-            },
+        return {
+            prefix,
+            counter,
+            elementId: found.elementId,
+            source: found.source,
         };
-        const get = elementResponse?.result?.[0] as
-            | CounterGetBxListDto
-            | undefined;
-        let add = 0;
-        let updated = 0;
-        // console.log('✅ get elementAddResponse', elementResponse);
-        if (!get) {
-            // console.log('✅ try to add elementAddResponse', addData);
-            const elementAddResponse = await bitrix.api.call(
-                'lists.element.add',
-                addData,
+    }
+
+    /**
+     * Порядок важен:
+     * 1. Якорь БП — карточка смарта 159 с этим префиксом и заполненным
+     *    LIST_ID. Именно по ней БП находит счётчик, и если она есть,
+     *    брать надо тот же элемент.
+     * 2. Элемент списка 46 по названию — счётчик, который мы завели сами,
+     *    когда карточек смарта с таким префиксом ещё не было.
+     */
+    private async resolveCounterElement(
+        bitrix: BitrixApiClient,
+        prefix: string,
+    ): Promise<{
+        elementId: number;
+        counter: number;
+        source: CounterSource;
+    } | null> {
+        const anchorId = await this.counters.findAnchorElementId(
+            bitrix,
+            prefix,
+        );
+        if (anchorId) {
+            const counter = await this.counters.readCounter(
+                bitrix,
+                anchorId,
+                prefix,
             );
-            // console.log('✅ add elementAddResponse', elementAddResponse);
-            add = elementAddResponse.result;
-            counter = 1;
-        } else {
-            counter = this.getCounter(get);
-            // console.log('✅ try to update elementUpdateResponse', addData);
-            const updateData = {
-                ELEMENT_ID: get?.ID || 0,
-                IBLOCK_TYPE_ID: 'lists',
-                IBLOCK_ID: 46,
-                FIELDS: {
-                    NAME: prefix,
-                    PROPERTY_188: '156', //created by
-                    PROPERTY_190: counter,
-                    CODE: this.transliterate(prefix),
-                },
+            if (counter !== null) {
+                return { elementId: anchorId, counter, source: 'smart-anchor' };
             }
-            // console.log('✅ try to update elementUpdateResponse', updateData);
-            const elementUpdateResponse = await bitrix.api.call(
-                'lists.element.update',
-                updateData,
+            this.logger.warn(
+                `Префикс «${prefix}»: карточка смарта ссылается на элемент ${anchorId}, но его нет в списке счётчиков`,
             );
-            // console.log('✅ update elementUpdateResponse', elementUpdateResponse);
-            updated = elementUpdateResponse.result;
         }
 
-        return { get, add, updated, prefix, counter };
-        // } catch (error) {
-        //     return { error: error.message }
-        // }
+        const elements = await this.counters.findElementsByName(bitrix, prefix);
+        const best = this.counters.pickBest(elements, prefix);
+        return best ? { ...best, source: 'list-by-name' } : null;
     }
-    private getCounter(dto: CounterGetBxListDto) {
-        let counter = 0;
-        for (const key in dto.PROPERTY_190) {
-            counter = Number(dto.PROPERTY_190[key]);
-        }
-        counter += 1;
-        return counter;
-    }
-    private transliterate(text: string): string {
-        const map: Record<string, string> = {
-            а: 'a',
-            б: 'b',
-            в: 'v',
-            г: 'g',
-            д: 'd',
-            е: 'e',
-            ё: 'e',
-            ж: 'zh',
-            з: 'z',
-            и: 'i',
-            й: 'y',
-            к: 'k',
-            л: 'l',
-            м: 'm',
-            н: 'n',
-            о: 'o',
-            п: 'p',
-            р: 'r',
-            с: 's',
-            т: 't',
-            у: 'u',
-            ф: 'f',
-            х: 'h',
-            ц: 'ts',
-            ч: 'ch',
-            ш: 'sh',
-            щ: 'sch',
-            ъ: '',
-            ы: 'y',
-            ь: '',
-            э: 'e',
-            ю: 'yu',
-            я: 'ya',
-        };
 
-        return text
-            .toLowerCase()
-            .split('')
-            .map((char) => map[char] ?? char)
-            .join('');
+    /**
+     * Создаёт карточку-якорь в смарте 159 для нового префикса.
+     *
+     * Старый нумератор в БП ищет счётчик не в списке 46, а через карточку
+     * смарта с тем же префиксом и заполненным LIST_ID. Если такой карточки
+     * нет, он создаёт свой второй элемент списка и начинает нумерацию заново —
+     * именно так и разъехались 24 префикса. Якорь даёт БП найти наш счётчик,
+     * и править сам БП для этого не требуется.
+     *
+     * Ошибка создания якоря не должна ломать выдачу номера: номер уже выдан и
+     * корректен, поэтому здесь только предупреждение в лог.
+     */
+    private async createSmartAnchor(
+        bitrix: BitrixApiClient,
+        prefix: string,
+        elementId: number,
+        dealId: number,
+    ): Promise<void> {
+        try {
+            const response = await this.counters.call<{
+                result?: { item?: { id?: number } };
+            }>(
+                bitrix,
+                'crm.item.add',
+                {
+                    entityTypeId: SEMINAR_ENTITY_TYPE_ID,
+                    fields: {
+                        title: `Счётчик нумерации ${prefix}`,
+                        categoryId: SEMINAR_CATEGORY_ID,
+                        stageId: ANCHOR_STAGE_ID,
+                        [SMART_PREFIX_FIELD]: prefix,
+                        [SMART_LIST_ID_FIELD]: elementId,
+                        [SMART_DEAL_PARENT_FIELD]: dealId,
+                    },
+                },
+                `создание якоря смарта для префикса «${prefix}»`,
+            );
+
+            this.logger.log(
+                `Якорь для «${prefix}»: карточка смарта ${response?.result?.item?.id} -> счётчик ${elementId}`,
+            );
+        } catch (error) {
+            this.logger.warn(
+                `Якорь для «${prefix}» не создан: ${this.counters.message(
+                    error,
+                )}. Номер выдан, но БП может завести второй счётчик — проверьте префикс в списке счётчиков.`,
+            );
+        }
     }
 }

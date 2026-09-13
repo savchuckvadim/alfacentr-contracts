@@ -63,7 +63,39 @@ export const getProductTypeByProductName = (
 //     }
 // };
 
+/**
+ * Нормализует префикс: убирает невидимый мусор из названий товаров.
+ *
+ * Без этого «СЗ2309СП » и «СЗ2309СП» — два разных префикса: заводится второй
+ * счётчик, а сравнение с префиксом в сделке никогда не совпадает, и номер
+ * перевыдаётся при каждом открытии карточки.
+ *
+ * Коды символов заданы числами намеренно: escape-последовательности в
+ * регулярках слишком легко превратить в сами невидимые символы при правках.
+ */
+export function normalizePrefix(raw: string | undefined | null): string {
+    const ZERO_WIDTH_FROM = 0x200b;
+    const ZERO_WIDTH_TO = 0x200f;
+    const BIDI_FROM = 0x202a;
+    const BIDI_TO = 0x202e;
+    const BOM = 0xfeff;
+    const NBSP = 0x00a0;
+
+    return Array.from(String(raw ?? '').normalize('NFC'))
+        .filter(char => {
+            const code = char.codePointAt(0) as number;
+            if (code >= ZERO_WIDTH_FROM && code <= ZERO_WIDTH_TO) return false;
+            if (code >= BIDI_FROM && code <= BIDI_TO) return false;
+            return code !== BOM;
+        })
+        .map(char => (char.codePointAt(0) === NBSP ? ' ' : char))
+        .join('')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/** Префикс — это всё, что стоит после «[]» в названии товара */
 export function getPrefixByProductName(productName: string): string {
     const match = productName.match(/\[\]\s*(.*)/);
-    return match ? (match[1] as string) : '';
+    return match ? normalizePrefix(match[1] as string) : '';
 }

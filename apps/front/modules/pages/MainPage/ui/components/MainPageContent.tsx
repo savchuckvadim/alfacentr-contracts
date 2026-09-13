@@ -1,13 +1,30 @@
+'use client';
+
 import { FilterTabs, SimpleCard } from '@/modules/shared';
-import { CheckCircle, Package, Users } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { CalendarDaysIcon, CheckCircle, Package, Users } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { ParticipantsTableWidget } from '@/modules/widgetes/Participant/ParticipantsTable/ParticipantsTableWidget';
-import { ContractPreview, ProductsTableWidget } from '@/modules/widgetes';
+import {
+    ContractPreview,
+    ProductsTableWidget,
+    PpkApplicationTableWidget,
+    usePpkApplicationLive,
+} from '@/modules/widgetes';
 import { useIsUpContractType } from '@/modules/features';
 
 export const MainPageContent = () => {
     const [filter, setFilter] = useState<string>('main');
     const { isUp } = useIsUpContractType();
+
+    /**
+     * Состояние приложения ППК поднято сюда, а не в сам виджет: по нему же
+     * решается, показывать ли таб. Участников и программы могут создать
+     * в любой момент — состояние живёт в стору, поэтому таб появится сам,
+     * как только появится хотя бы одна пара «участник — программа».
+     */
+    const ppk = usePpkApplicationLive();
+    const withPpkApplication = ppk.isPpkContract && ppk.hasRows;
+
     const tabs = useMemo(() => {
         const items = [
             {
@@ -51,6 +68,14 @@ export const MainPageContent = () => {
                 content: <ParticipantsTableWidget />,
             });
         }
+        if (withPpkApplication) {
+            items.push({
+                value: 'ppk-application',
+                label: 'Приложение ППК',
+                icon: <CalendarDaysIcon />,
+                content: <PpkApplicationTableWidget ppk={ppk} />,
+            });
+        }
         items.push({
             value: 'contract',
             label: 'Что будет в договоре',
@@ -58,7 +83,16 @@ export const MainPageContent = () => {
             content: <ContractPreview />,
         });
         return items;
-    }, [isUp]);
+    }, [isUp, withPpkApplication, ppk]);
+
+    /**
+     * Открытый таб может исчезнуть: убрали последнюю программу ППК или
+     * сменился тип договора. Без возврата на «Основные данные» контент
+     * оказался бы пустым.
+     */
+    useEffect(() => {
+        if (!tabs.some(tab => tab.value === filter)) setFilter('main');
+    }, [tabs, filter]);
 
     const title = useMemo(
         () =>

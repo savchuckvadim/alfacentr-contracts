@@ -19,7 +19,10 @@
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./test/jest-e2e.json",
-        "key:generate": "node -e \"console.log(require('crypto').randomBytes(32).toString('base64'))\""
+        "key:generate": "node -e \"console.log(require('crypto').randomBytes(32).toString('base64'))\"",
+        "kb:sync": "node scripts/sync-knowledge-base.mjs",
+        "kb:sync:dry": "cross-env DRY=1 node scripts/sync-knowledge-base.mjs",
+        "report:docx": "node scripts/md-to-docx.mjs"
     },
     "dependencies": {
         "@alfa/entities": "workspace:*",

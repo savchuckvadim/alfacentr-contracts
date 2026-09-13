@@ -14,6 +14,7 @@ import {
 } from '@/modules/app/model/store';
 import { BxParticipantService } from '../lib/service/bx-participant.service';
 import { BxItemParticipantService } from '../lib/service/bx-item-participant.service';
+import { normalizeParticipantFields } from '../lib/normalize-participant-fields';
 
 export const fetchParticipants = createAsyncThunk<
     IParticipant[],
@@ -113,7 +114,7 @@ export const updateParticipant = createAsyncThunk<
 
         const bxResult = await service.updateParticipant(
             participantId,
-            itemFields,
+            normalizeParticipantFields(itemFields),
         );
 
         // Имитация успешного обновления
@@ -229,7 +230,7 @@ export const updateParticipantFields = createAsyncThunk<
 
             const service = new BxItemParticipantService();
             await service.updateParticipant(participantId, {
-                ...fields,
+                ...normalizeParticipantFields(fields),
                 ...(dealId
                     ? {
                           ufCrm12DealId: dealId.toString(),

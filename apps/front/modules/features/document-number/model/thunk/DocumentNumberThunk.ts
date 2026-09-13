@@ -105,7 +105,16 @@ export const documentNumberDone = createAsyncThunk<
             if (!dealId) {
                 return rejectWithValue('Deal not found');
             }
-            
+
+            // Бэкенд не смог выдать номер. Раньше в этом случае приходил
+            // фиксированный 334 и уходил в договор — теперь номера нет,
+            // и записывать в сделку нечего.
+            if (data.error || !data.counter) {
+                return rejectWithValue(
+                    data.message || 'Не удалось получить номер договора',
+                );
+            }
+
             await updateBxDeal(dealId, data.prefix, data.counter);
 
             return {

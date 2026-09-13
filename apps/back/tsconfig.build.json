@@ -5,7 +5,11 @@
         "test",
         "dist",
         "**/*spec.ts",
-        "nest-vscode-debugging"
+        "nest-vscode-debugging",
+        // Служебные скрипты вне src. Сейчас это .mjs и tsc их не видит, но
+        // появись здесь .ts — вычисляемый rootDir съехал бы с src на
+        // apps/back, и dist/main.js уехал бы в dist/src/main.js
+        "scripts"
     ],
     "compilerOptions": {
         "outDir": "./dist",

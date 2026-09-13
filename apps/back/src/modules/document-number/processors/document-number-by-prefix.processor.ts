@@ -41,19 +41,21 @@ export class DocumentNumberByPrefixQueueProcessor {
                 { socketId, dealId: dealId.toString() },
             );
         } catch (error) {
-            console.error('❌ Error in document number generation:', error);
-            const result = {
-                // get: CounterGetBxListDto | undefined;
-                // add: number;
-                // updated: number;
-                prefix: dto.dinamycPrefix || dto.prefix,
-                counter: 334
-            }
-            // Отправляем событие ошибки
+            this.logger.error(
+                `Не удалось выдать номер по префиксу «${
+                    dto.dinamycPrefix || dto.prefix
+                }» для сделки ${dealId}: ${error.message}`,
+            );
+
+            // Раньше здесь возвращался фиксированный counter: 334. Любые две
+            // ошибки подряд давали двум договорам один номер, поэтому номер
+            // при ошибке не выдаём вовсе — фронт показывает ошибку.
             this.wsEvents.emit(
                 WsEvents.DocumentNumberGenerated,
                 {
-                    ...result,
+                    prefix: dto.dinamycPrefix || dto.prefix,
+                    counter: null,
+                    error: true,
                     message:
                         error.message || 'Failed to generate document number',
                 },

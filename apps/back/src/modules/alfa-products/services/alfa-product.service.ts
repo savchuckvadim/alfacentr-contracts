@@ -37,6 +37,17 @@ const select = [
     bxProductData.SEMINAR_TOPIC.bitrixId,
     bxProductData.NAME_BID.bitrixId,
 ];
+/**
+ * НДС для товарных позиций сделки.
+ *
+ * У товаров в каталоге vatId не заполнен, поэтому ставку нельзя взять из
+ * товара — её задаём на товарной позиции. Ставка одна на все товары.
+ * Если не передать эти поля, crm.item.productrow.set поставит
+ * taxRate: null, taxIncluded: 'N', и сделка уйдёт в документы без НДС.
+ */
+const PRODUCT_TAX_RATE = 5;
+const PRODUCT_TAX_INCLUDED = 'Y' as const;
+
 /** Откуда пришло название, по которому искали товар */
 export type ProductResolveIssueSource = 'days' | 'ppk';
 
@@ -227,6 +238,8 @@ export class AlfaProductService {
 
                 productId: Number(product.id),
                 productName: product.name,
+                taxRate: PRODUCT_TAX_RATE,
+                taxIncluded: PRODUCT_TAX_INCLUDED,
                 measureId: 10,
                 measureCode: 792,
                 measureName: 'чел.',
