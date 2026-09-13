@@ -31,6 +31,8 @@ import { FieldsModule } from './commands/fields/fields.module';
 
 import { DocumentGenerateModule } from './modules/document-generate/document-generate.module';
 import { DocumentNumberModule } from './modules/document-number/document-number.module';
+import { BitrixBotModule } from './modules/bot/bitrix-bot';
+import { TelegramBotModule } from './modules/bot/telegram-bot';
 import { ValidateCheckModule } from './modules/validate-check/validate-check.module';
 import { RqModule } from './apps/rq/rq.module';
 import { CaseModule } from './apps/case/case.module';
@@ -99,6 +101,8 @@ import { EmployeeEdoModule } from './common/employee-edo/employee-edo.module';
         DocumentGenerateModule,
         DocumentEmailModule,
         DocumentNumberModule,
+        BitrixBotModule,
+        TelegramBotModule,
         ValidateCheckModule,
 
         HelperModule,

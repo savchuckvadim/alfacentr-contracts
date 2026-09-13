@@ -1,5 +1,8 @@
-import { AlfaParticipantSmartItemUserFieldsEnum } from '@alfa/entities';
-import { normalizeEmail, normalizePhone } from '@/modules/shared';
+import {
+    AlfaParticipantSmartItemUserFieldsEnum,
+    normalizeEmail,
+    normalizePhone,
+} from '@alfa/entities';
 
 /**
  * Какие поля участника чистим перед записью в CRM.

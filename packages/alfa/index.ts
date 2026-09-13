@@ -13,6 +13,7 @@ export * from './entities/document-generate/type/document-generate.type';
 export * from './entities/document-generate/type/request-document-generate.type';
 export type * from './entities/product/product.type';
 export * from './entities/product/product.util';
+export * from './entities/common/normalize-contact.util';
 export * from './entities/deal/bx-deal-stages.data';
 export * from './entities/deal/deal-document-readiness';
 
