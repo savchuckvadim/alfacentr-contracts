@@ -1,30 +1,32 @@
 # =============================================================================
-#  alfacentr :: apps/front (Next.js)  ->  образ alfacentr-front:prod
-#  Стадии: base -> manifests -> {deps | prod-deps} -> packages -> build -> prod
+#  alfacentr :: apps/front (Next.js, standalone)
+#  -> ghcr.io/savchuckvadim/alfacentr-front:<sha>
+#  Стадии: base -> manifests -> deps -> packages -> build -> prod
 #
-#  Что изменилось против прежней версии и зачем:
-#   * манифесты копируются ДО установки, поэтому слой установки переиспользуется,
-#     пока не менялись package.json и pnpm-lock.yaml;
-#   * --frozen-lockfile вместо --no-frozen-lockfile: pnpm не ходит в реестр за
-#     метаданными. Именно этот шаг ловил ECONNRESET;
-#   * --filter: ставим фронт и его workspace-зависимости, а не все 15 проектов;
-#   * хранилище pnpm в кеш-монтировании, общем с docker/Dockerfile.back;
-#   * в финальной стадии установка идет ДО копирования .next. Раньше .next
-#     копировался первым и инвалидировал установку на каждой сборке;
-#   * apps/back в контекст не попадает (вырезан в Dockerfile.front.dockerignore),
-#     поэтому его манифест не копируется. Отсутствие проекта из lock-файла
-#     для --frozen-lockfile не помеха;
-#   * убран интерактивный pnpm approve-builds: без терминала он бесполезен,
-#     сборочные скрипты разрешаются полем pnpm.onlyBuiltDependencies.
+#  Главное:
+#   * Next собирается с output: 'standalone' (apps/front/next.config.js).
+#     В .next/standalone лежат server.js и только те файлы node_modules,
+#     которые реально нужны серверу. Финальная стадия ничего не ставит.
+#     Раньше она делала pnpm install --prod без фильтра и без lock-файла:
+#     13 минут на медленном диске сервера и слой почти на гигабайт, экспорт
+#     которого ронял сессию buildkit;
+#   * .env в образ не попадает. Фронту после сборки переменные окружения не
+#     нужны, а единственная переменная, влияющая на бандл,
+#     NEXT_PUBLIC_NODE_MODE, приходит через ARG. apps/front/.env вырезан из
+#     контекста в Dockerfile.front.dockerignore, поэтому сборка на сервере и
+#     в GitHub Actions даёт одинаковый результат;
+#   * манифесты копируются ДО установки, --frozen-lockfile, --filter:
+#     слой установки переиспользуется, пока не менялись package.json и lock.
 #
-#  ВАЖНО: packages/alfa и packages/bx-rq подключаются через main: dist/index.js,
+#  packages/alfa и packages/bx-rq подключаются через main: dist/index.js,
 #  а **/dist вырезан из контекста, поэтому оба пакета собираются здесь.
-#  Прежняя версия полагалась на dist, приезжавший с сервера вместе с COPY . .
 # =============================================================================
 
 FROM node:20 AS base
 
-ARG APP
+# Встраивается в бандл при сборке: IS_PROD в modules/app/consts/app-global.ts.
+# При development приложение открывает тестовую сделку, поэтому по умолчанию
+# production, и в CI значение передаётся явно
 ARG NEXT_PUBLIC_NODE_MODE=production
 ENV NEXT_PUBLIC_NODE_MODE=${NEXT_PUBLIC_NODE_MODE}
 
@@ -68,13 +70,6 @@ FROM manifests AS deps
 RUN --mount=type=cache,id=pnpm-store-alfacentr,target=/pnpm/store,sharing=locked \
     pnpm install --frozen-lockfile --filter "alfacentr-front..." --reporter=append-only
 
-# --------------------------------------------------------------- prod-deps --
-# Чистая установка только прод-зависимостей из тех же манифестов.
-# Кешируется по тем же входам, что и deps, поэтому при обычном деплое = 0 с.
-FROM manifests AS prod-deps
-RUN --mount=type=cache,id=pnpm-store-alfacentr,target=/pnpm/store,sharing=locked \
-    pnpm install --frozen-lockfile --prod --filter "alfacentr-front..." --reporter=append-only
-
 # ---------------------------------------------------------------- packages --
 # Общие пакеты собираются до копирования исходников фронта, чтобы правка
 # в apps/front не пересобирала их каждый раз.
@@ -93,48 +88,38 @@ ENV NODE_OPTIONS=--max-old-space-size=4096
 
 COPY apps/front ./apps/front
 
-# .next/cache при очистке каталога сборки Next сохраняет, монтировать безопасно
+# .next/cache при очистке каталога сборки Next сохраняет, монтировать безопасно.
+# Проверяется именно раскладка standalone: server.js лежит по пути монорепо,
+# потому что корень трассировки — /app
 RUN --mount=type=cache,id=next-cache-front,target=/app/apps/front/.next/cache \
     pnpm --filter alfacentr-front run build && \
-    test -d apps/front/.next
+    test -f apps/front/.next/standalone/apps/front/server.js && \
+    test -d apps/front/.next/static
 
 # -------------------------------------------------------------------- prod --
-# Раскладка финального образа оставлена ровно такой же, как была: рабочий
-# каталог /app, package.json фронта в корне, запуск через pnpm start.
-# Изменен только порядок: сначала манифесты и установка, потом артефакты.
+# Ни pnpm, ни установки. Раскладка повторяет монорепо:
+#   /app/apps/front/server.js
+#   /app/apps/front/node_modules -> симлинки pnpm в /app/node_modules/.pnpm
+# Путь /app обязан совпадать со стадией build: симлинки pnpm копируются как
+# есть, а в server.js вписан абсолютный outputFileTracingRoot=/app.
 FROM node:20-slim AS prod
 
-ARG APP
-ARG NEXT_PUBLIC_NODE_MODE=production
-ENV NEXT_PUBLIC_NODE_MODE=${NEXT_PUBLIC_NODE_MODE}
+# HOSTNAME обязателен: server.js слушает адрес из этой переменной, а Docker
+# кладёт в неё id контейнера. Без 0.0.0.0 healthcheck на 127.0.0.1 не пройдёт
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
-    CI=true \
-    PNPM_HOME=/pnpm \
-    PATH=/pnpm:$PATH \
-    npm_config_store_dir=/pnpm/store
+    HOSTNAME=0.0.0.0 \
+    PORT=3000
 
 WORKDIR /app
 
-RUN npm i -g pnpm@10.12.4
+COPY --from=build /app/apps/front/.next/standalone ./
+# standalone не содержит статику (в том числе шрифты next/font) и public
+COPY --from=build /app/apps/front/.next/static     ./apps/front/.next/static
+COPY --from=build /app/apps/front/public           ./apps/front/public
 
-COPY --from=build /app/apps/front/package.json ./package.json
-COPY --from=build /app/package.json            ./root-package.json
-COPY --from=build /app/pnpm-lock.yaml          ./pnpm-lock.yaml
-COPY --from=build /app/pnpm-workspace.yaml     ./pnpm-workspace.yaml
-COPY --from=build /app/.npmrc                  ./.npmrc
+EXPOSE 3000
 
-# Собранные общие пакеты нужны до установки: на них ссылается package.json
-COPY --from=packages /app/packages ./packages
-
-RUN --mount=type=cache,id=pnpm-store-alfacentr,target=/pnpm/store,sharing=locked \
-    pnpm install --prod --no-frozen-lockfile --reporter=append-only
-
-# Артефакты сборки копируются последними: они меняются на каждом деплое
-# и не должны инвалидировать слой установки выше
-COPY --from=build /app/apps/front/.next          ./.next
-COPY --from=build /app/apps/front/public         ./public
-COPY --from=build /app/apps/front/next.config.js ./next.config.js
-COPY --from=build /app/apps/front/.env           ./.env
-
-CMD ["pnpm", "start"]
+# node как PID 1 сам обрабатывает SIGTERM: server.js вешает обработчики,
+# поэтому docker stop завершает сервер штатно, а не по таймауту, как с pnpm
+CMD ["node", "apps/front/server.js"]

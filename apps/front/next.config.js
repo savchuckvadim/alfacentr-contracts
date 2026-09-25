@@ -1,56 +1,50 @@
-import process from 'node:process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-// Проверяем наличие обязательных переменных окружения
-const requiredEnvVars = ['ONLINE_API_KEY', 'IN_BITRIX', 'LOG_FILE_PATH'];
-for (const envVar of requiredEnvVars) {
-    if (!process.env[envVar]) {
-        console.error(`Missing required environment variable: ${envVar}`);
-        throw new Error(`Missing required environment variable: ${envVar}`);
-    }
-}
+// Корень монорепо. Нужен standalone-сборке: от него Next считает пути
+// трассировки, и в образ попадают workspace-пакеты и node_modules из корня.
+// Next нашёл бы его и сам по pnpm-lock.yaml, но явное значение не зависит
+// от lock-файлов выше по дереву каталогов.
+const monorepoRoot = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    '../..',
+);
+
+/**
+ * Раньше здесь была проверка обязательных ONLINE_API_KEY, IN_BITRIX и
+ * LOG_FILE_PATH и блок env с ними же. Код фронта и пакетов эти переменные не
+ * читает, а сборка без них падала. Из-за этого образ нельзя было собрать без
+ * apps/front/.env, то есть в GitHub Actions. Хуже того, standalone-сборка
+ * вписывает весь конфиг вместе с env в server.js, и ключ оказался бы в образе.
+ *
+ * Единственная переменная, которая влияет на бандл, — NEXT_PUBLIC_NODE_MODE
+ * (modules/app/consts/app-global.ts). Она встраивается при сборке и задаётся
+ * через ARG в docker/Dockerfile.front, по умолчанию production.
+ */
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // compress: false, // <--- отключает gzip-сжатие и минификацию на сервере
+    // Next кладёт в .next/standalone готовый server.js и только нужные ему
+    // файлы из node_modules. Финальной стадии образа больше не нужен
+    // pnpm install, который шёл 13 минут и раздувал образ
+    output: 'standalone',
+    outputFileTracingRoot: monorepoRoot,
 
-    // // если хочешь также отключить минификацию сборки (клиентского JS), допиши:
-    // webpack(config, { dev, isServer }) {
-    //     if (!dev) {
-    //         config.optimization.minimize = false;
-    //     }
-    //     return config;
-    // },
-    // reactStrictMode: true,
-
-    // productionBrowserSourceMaps: true, // ✅ включаем sourcemaps для браузера
-    env: {
-        ONLINE_API_KEY: process.env.ONLINE_API_KEY,
-        LOG_FILE_PATH: process.env.LOG_FILE_PATH,
-        IN_BITRIX: process.env.IN_BITRIX,
-    },
-    // Добавляем поддержку TypeScript для конфигурации
     typescript: {
-        // Включаем проверку типов при сборке
         ignoreBuildErrors: false,
     },
 
-    // Настройки для монорепозитория
+    // Пакеты с main на src/*.ts транспилируются вместе с фронтом.
+    // @alfa/entities и @workspace/bx-rq подключаются из dist, их собирает
+    // стадия packages в docker/Dockerfile.front
     transpilePackages: [
         '@workspace/api',
         '@workspace/ui',
-        '@workspace/alfa',
         '@workspace/bitrix',
         '@workspace/bx-rq',
         '@workspace/theme',
         '@workspace/pbx',
         '@workspace/ws',
-        // 'lvovich',
-        // 'russian-nouns-js',
-        // 'number-to-words-ru',
-        // 'i',
-        // 'lucide-react',
-        // 'framer-motion',
-        // 'date-fns',
     ],
 };
 

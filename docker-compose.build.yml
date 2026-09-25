@@ -1,0 +1,27 @@
+# =============================================================================
+#  Сборка образов локально или на сервере. В обычном деплое не используется:
+#  образы собирает GitHub Actions.
+#
+#  Нужен в двух случаях:
+#   * проверить образы у себя перед мержем;
+#   * аварийно собрать на сервере, если GitHub недоступен.
+#
+#    docker compose -f docker-compose.yml -f docker-compose.build.yml build front-alfacentr
+#    docker compose up -d --no-deps front-alfacentr
+#
+#  Образ получает тот же тег, что указан в docker-compose.yml
+#  (ghcr.io/...:${FRONT_TAG:-latest}), поэтому следующий up возьмёт именно его.
+# =============================================================================
+
+services:
+  front-alfacentr:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.front
+      args:
+        NEXT_PUBLIC_NODE_MODE: production
+
+  api-alfacentr:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.back

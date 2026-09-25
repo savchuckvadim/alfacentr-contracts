@@ -1,31 +1,39 @@
+# =============================================================================
+#  Прод Alfacentr. Образы собирает GitHub Actions и кладёт в GHCR, сервер
+#  только скачивает их (.github/workflows/deploy-alfa-prod.yml).
+#
+#  Какая версия запущена, решают FRONT_TAG и API_TAG в корневом .env на
+#  сервере. Деплой сам вписывает туда sha выкаченного коммита, а в
+#  FRONT_TAG_PREV и API_TAG_PREV — версию, работавшую до него. Поэтому ручной
+#  `docker compose up -d` поднимает ровно выкаченные версии.
+#
+#  Откат одного сервиса на предыдущую версию. Её образ деплой оставляет на
+#  сервере, так что доступ к GHCR не нужен:
+#    1. в корневом .env заменить значение API_TAG на значение API_TAG_PREV
+#    2. docker compose up -d --no-deps api-alfacentr
+#  Откат на версию старше предыдущей: вписать в API_TAG sha нужного коммита,
+#  затем docker compose pull api-alfacentr и up, как выше. Образ :<sha> есть
+#  только у коммитов, где сервис пересобирался. Пакеты GHCR приватные, поэтому
+#  pull может попросить вход: docker login ghcr.io с PAT, у которого есть
+#  read:packages. Перезапуск старого запуска в GitHub Actions для отката не
+#  годится: деплой откажется выкатывать коммит старее уже выкаченного.
+#
+#  Сборка на самом сервере, если GitHub недоступен (аварийный путь):
+#    docker compose -f docker-compose.yml -f docker-compose.build.yml build api-alfacentr
+#    docker compose up -d --no-deps api-alfacentr
+# =============================================================================
+
 services:
 
-
   front-alfacentr:
-    image: alfacentr-front:prod
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.front
-      args:
-        APP: front
-      # cache_from убран намеренно: билдер mybuilder работает на драйвере
-      # docker-container и не видит локальные образы демона, поэтому строка
-      # с локальным тегом трактовалась как ссылка на реестр и на каждой сборке
-      # давала "pull access denied". Кеш слоев берется из кеша самого билдера.
+    image: ghcr.io/savchuckvadim/alfacentr-front:${FRONT_TAG:-latest}
     container_name: front-alfacentr-prod
     ports:
-      - "${PORT_ALFA}:3000"         # API доступен снаружи
-    environment:
-      - IN_BITRIX=true
-      - LOG_FILE_PATH=/app/logs/server.log
-      - NEXT_PUBLIC_NODE_MODE=${NODE_MODE}
-
-    volumes:
-      - ./logs:/app/logs
+      - "${PORT_ALFA}:3000"
+    # Переменные окружения фронту не нужны: standalone-сервер после сборки
+    # их не читает, а NEXT_PUBLIC_NODE_MODE встроен в бандл при сборке
     restart: unless-stopped
-    # Без проверки живости цикл ожидания в деплое видит health=none и считает
-    # готовым любой запустившийся контейнер, даже падающий на первом запросе.
-    # Любой ответ ниже 500 считаем живым: корень может отдавать 403 или редирект
+    # Любой ответ ниже 500 считаем живым: корень может отдавать редирект
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"]
       interval: 15s
@@ -35,34 +43,36 @@ services:
     networks:
       - app-network-alfacentr
 
-
   api-alfacentr:
-    image: alfacentr-api:prod
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.back
-      args:
-        APP: back
-      # cache_from убран, причина та же, что и у фронта выше
-
+    image: ghcr.io/savchuckvadim/alfacentr-api:${API_TAG:-latest}
     container_name: nest-api-alfacentr
     ports:
       - "${PORT_API_ALFA}:3000"
+    # Эти значения важнее одноимённых ключей из apps/back/.env:
+    # ConfigModule не перезаписывает то, что уже есть в окружении процесса
     environment:
       - NODE_ENV=production
       - REDIS_HOST=redis-alfacentr
       - REDIS_PORT=6379
       - PORT=3000
-
-               # для app.listen
     depends_on:
       - redis-alfacentr
     restart: unless-stopped
-
     volumes:
       - ./apps/back/keys:/app/keys
       - ./apps/back/storage:/app/storage
       - ./logs:/app/logs
+      # .env бэка живёт только на сервере и в образ не попадает. ConfigModule
+      # читает /app/.env, как и раньше. После правки файла достаточно
+      # `docker restart nest-api-alfacentr`, пересборка не нужна.
+      # create_host_path: false — если файла нет, контейнер не стартует.
+      # Иначе Docker молча создал бы на его месте пустой каталог
+      - type: bind
+        source: ./apps/back/.env
+        target: /app/.env
+        read_only: true
+        bind:
+          create_host_path: false
     # /api/health отдает {status: ok}; глобальный префикс api задан в main.ts
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/api/health',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"]
@@ -73,6 +83,11 @@ services:
     networks:
       - app-network-alfacentr
 
+  # Том /data у redis анонимный, его объявляет сам образ. Пересоздание через
+  # `up` том сохраняет, а `docker compose down` и `rm` его теряют. Там лежат
+  # очередь Bull генерации документов и реестр операторов бота. Поэтому деплой
+  # redis не пуллит и не пересоздаёт. Не добавлять сюда именованный том без
+  # переноса /data/dump.rdb: контейнер пересоздастся с пустой базой
   redis-alfacentr:
     image: redis:7
     container_name: redis-alfacentr
@@ -87,34 +102,7 @@ services:
     networks:
       - app-network-alfacentr
 
-  # db-alfacentr:
-  #   image: mysql:8.0
-  #   container_name: db-alfacentr
-  #   restart: "unless-stopped"
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: cfdx # Задай свой пароль для root
-  #     MYSQL_DATABASE: bitrix # Название базы данных
-  #     # MYSQL_USER: root # Имя пользователя
-  #     MYSQL_PASSWORD: cfdx # Пароль пользователя
-  #   ports:
-  #     - "3306:3306"
-  #   volumes:
-  #     - db_data:/var/lib/mysql
-  #     - ./apps/back/db_dev:/docker-entrypoint-initdb.d
-  #   networks:
-  #     - app-network-alfacentr
-
-  #   healthcheck:
-  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pcfdx"]
-  #     interval: 5s
-  #     timeout: 3s
-  #     retries: 5
-
-
-
-
 networks:
   app-network-alfacentr:
     driver: bridge
     name: app-network-alfacentr
-

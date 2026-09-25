@@ -1,217 +1,389 @@
-name: Monorepo on push to main
+name: Deploy Alfacentr prod
+
+# =============================================================================
+#  Образы собираются здесь, на раннерах GitHub, и кладутся в GHCR.
+#  Сервер только скачивает готовый образ и перезапускает контейнер.
+#
+#  Раньше всё собиралось на самом сервере: медленный диск, нестабильный npm,
+#  залипающий buildkit-билдер и 40-70 минут на коммит с правкой в packages/.
+#
+#  Что и когда собирается:
+#   * база сравнения — git-тег prod-deployed, последний УСПЕШНЫЙ деплой.
+#     Изменения упавших и отменённых запусков поэтому не теряются;
+#   * тега нет — это первый деплой через GHCR, собираются оба сервиса;
+#   * вручную: Actions → Deploy Alfacentr prod → Run workflow → force.
+#
+#  Откат и аварийная сборка на сервере описаны в шапке docker-compose.yml.
+# =============================================================================
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Собрать и выкатить принудительно'
+        type: choice
+        options: [none, back, front, both]
+        default: none
+
+# Один деплой за раз, по порядку. queue: max — ожидающие запуски не отменяют
+# друг друга: без него каждый новый пуш отменял бы уже стоящий в очереди
+concurrency:
+  group: alfacentr-prod-deploy
+  cancel-in-progress: false
+  queue: max
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_API: ghcr.io/savchuckvadim/alfacentr-api
+  IMAGE_FRONT: ghcr.io/savchuckvadim/alfacentr-front
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
-        timeout-minutes: 120
+  # ---------------------------------------------------------------------------
+  changes:
+    name: Что изменилось
+    # Выкатывается только main. Ручной запуск из другой ветки ничего не соберёт
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      back: ${{ steps.plan.outputs.back }}
+      front: ${{ steps.plan.outputs.front }}
+      compose: ${{ steps.plan.outputs.compose }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
-        steps:
-            - name: ✅ CI запущен
-              run: echo "🚀 Alfacentr monorepo GitHub Actions запущен"
+      - id: plan
+        env:
+          FORCE: ${{ inputs.force || 'none' }}
+        run: |
+          set -eu
+          back=false; front=false; compose=false
 
-            - name: Deploy to server via SSH
-              uses: appleboy/ssh-action@v0.1.10
-              with:
-                  host: ${{ secrets.SERVER_IP }}
-                  username: ${{ secrets.SERVER_USER }}
-                  key: ${{ secrets.SERVER_SSH_KEY }}
-                  passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
-                  # timeout — только установка SSH-соединения, не выполнение скрипта
-                  timeout: 60s
-                  # command_timeout — предел на весь скрипт. После первого удачного
-                  # прогона с прогретым кешем можно снижать до 45m
-                  command_timeout: 90m
+          BASE=$(git rev-parse -q --verify 'refs/tags/prod-deployed^{commit}' || true)
+          if [ -z "$BASE" ]; then
+            echo "Тега prod-deployed нет: первый деплой через GHCR, собираю оба сервиса"
+            back=true; front=true
+          else
+            CHANGED=$(git diff --name-only "$BASE" "$GITHUB_SHA")
+            echo "Изменения с последнего успешного деплоя ${BASE}:"
+            echo "$CHANGED" | head -n 100
 
-                  debug: true
-                  script: |
-                      set -eu
-                      echo "🧩 Подключение к серверу Alfacentr"
-                      cd /var/www/html/alfacentr
+            # Общие манифесты влияют на установку зависимостей в обоих образах
+            if echo "$CHANGED" | grep -qE '^(pnpm-lock\.yaml|pnpm-workspace\.yaml|package\.json|\.npmrc)$'; then
+              back=true; front=true
+            fi
+            # Бэк из workspace берёт только @alfa/entities и два конфиг-пакета
+            if echo "$CHANGED" | grep -qE '^(apps/back/|packages/(alfa|eslint-config|typescript-config)/|docker/Dockerfile\.back)'; then
+              back=true
+            fi
+            # Фронт зависит от всех пакетов
+            if echo "$CHANGED" | grep -qE '^(apps/front/|packages/|docker/Dockerfile\.front)'; then
+              front=true
+            fi
+            if echo "$CHANGED" | grep -qE '^docker-compose\.yml$'; then
+              compose=true
+            fi
+          fi
 
-                      # ---------------------------------------------------------------
-                      #  Отметка последнего УСПЕШНОГО деплоя.
-                      #
-                      #  Раньше здесь сравнивались коммиты до и после git pull. Если
-                      #  сборка падала уже после pull, репозиторий оставался на новом
-                      #  коммите, а образ — на старом. Следующий запуск видел, что
-                      #  коммиты совпадают, и выходил с успехом, ничего не собрав.
-                      #  Прод при этом работал на старом коде, а CI горел зелёным.
-                      #  Теперь ориентир — то, что реально выкачено, а не то, что скачано.
-                      # ---------------------------------------------------------------
-                      STATE_DIR="$HOME/.alfacentr-deploy"
-                      STATE_FILE="$STATE_DIR/last_success_sha"
-                      mkdir -p "$STATE_DIR"
+          case "$FORCE" in
+            back)  back=true ;;
+            front) front=true ;;
+            both)  back=true; front=true ;;
+          esac
 
-                      DIRTY=$(git status --porcelain --untracked-files=no || true)
-                      if [ -n "$DIRTY" ]; then
-                        echo "❌ Рабочее дерево на сервере грязное, git pull может не пройти:"
-                        echo "$DIRTY"
-                        exit 1
-                      fi
+          echo "План: back=$back front=$front compose=$compose" | tee -a "$GITHUB_STEP_SUMMARY"
+          {
+            echo "back=$back"
+            echo "front=$front"
+            echo "compose=$compose"
+          } >> "$GITHUB_OUTPUT"
 
-                      git pull origin main
-                      COMMIT_AFTER=$(git rev-parse HEAD)
-                      echo "📌 Текущий коммит: $COMMIT_AFTER"
+  # ---------------------------------------------------------------------------
+  build-back:
+    name: Сборка бэка
+    needs: changes
+    if: needs.changes.outputs.back == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
+        with:
+          # Путь, а не git-контекст по умолчанию: так действует
+          # docker/Dockerfile.back.dockerignore
+          context: .
+          file: docker/Dockerfile.back
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          tags: |
+            ${{ env.IMAGE_API }}:${{ github.sha }}
+          # mode=max: иначе промежуточные стадии с pnpm install не попадут
+          # в кеш, и установка пойдёт заново на каждой сборке
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,scope=api,mode=max
 
-                      BASE_SHA=$(cat "$STATE_FILE" 2>/dev/null || true)
-                      BOOTSTRAP=false
-                      if [ -z "${BASE_SHA:-}" ] || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
-                        BOOTSTRAP=true
-                      fi
+  # ---------------------------------------------------------------------------
+  build-front:
+    name: Сборка фронта
+    needs: changes
+    if: needs.changes.outputs.front == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/Dockerfile.front
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          # Встраивается в бандл. development открыл бы тестовую сделку
+          build-args: |
+            NEXT_PUBLIC_NODE_MODE=production
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          tags: |
+            ${{ env.IMAGE_FRONT }}:${{ github.sha }}
+          cache-from: type=gha,scope=front
+          cache-to: type=gha,scope=front,mode=max
 
-                      need_back=false
-                      need_front=false
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Выкатка на сервер
+    needs: [changes, build-back, build-front]
+    # Пропущенная сборка — не ошибка. Любая упавшая сборка останавливает
+    # выкатку целиком, и тег prod-deployed остаётся на месте
+    if: >-
+      ${{ !cancelled() && !contains(needs.*.result, 'failure') &&
+          (needs.changes.outputs.back == 'true' ||
+           needs.changes.outputs.front == 'true' ||
+           needs.changes.outputs.compose == 'true') }}
+    runs-on: ubuntu-latest
+    # Токен этой job уходит на сервер для docker pull, поэтому у него только
+    # чтение. Право записи для тега prod-deployed — в отдельной job ниже
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Скачать образы и перезапустить контейнеры
+        uses: appleboy/ssh-action@v1.2.5
+        env:
+          SHA: ${{ github.sha }}
+          BACK: ${{ needs.changes.outputs.back }}
+          FRONT: ${{ needs.changes.outputs.front }}
+          COMPOSE: ${{ needs.changes.outputs.compose }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE_API: ${{ env.IMAGE_API }}
+          IMAGE_FRONT: ${{ env.IMAGE_FRONT }}
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
+          timeout: 60s
+          command_timeout: 30m
+          envs: SHA,BACK,FRONT,COMPOSE,GHCR_USER,GHCR_TOKEN,IMAGE_API,IMAGE_FRONT
+          script: |
+            set -eu
+            cd /var/www/html/alfacentr
+            echo "🧩 Коммит $SHA: back=$BACK front=$FRONT compose=$COMPOSE"
 
-                      if [ "$BOOTSTRAP" = true ]; then
-                        # Состояние прод-образов неизвестно: собираем всё.
-                        # Пропускать сборку по diff здесь нельзя — можно навсегда
-                        # потерять изменения, которые не доехали до образа
-                        echo "ℹ️  Отметки успешного деплоя нет — собираю оба сервиса"
-                        need_back=true
-                        need_front=true
-                      elif [ "$BASE_SHA" = "$COMMIT_AFTER" ]; then
-                        echo "✅ Этот коммит уже успешно выкачен — делать нечего"
-                        docker compose ps || true
-                        exit 0
-                      else
-                        CHANGED=$(git diff --name-only "$BASE_SHA" "$COMMIT_AFTER")
-                        echo "📂 Изменения с последнего успешного деплоя:"
-                        echo "$CHANGED" | head -n 50
+            # --- код нужен серверу только ради docker-compose.yml -------------
+            DIRTY=$(git status --porcelain --untracked-files=no || true)
+            if [ -n "$DIRTY" ]; then
+              echo "❌ Рабочее дерево на сервере грязное:"
+              echo "$DIRTY"
+              exit 1
+            fi
+            git fetch -q origin main
+            # Перезапуск старого запуска не должен откатывать прод на старый
+            # коммит. Повтор последнего упавшего запуска разрешён: HEAD = SHA
+            HEAD_SHA=$(git rev-parse HEAD)
+            if [ "$HEAD_SHA" != "$SHA" ] && git merge-base --is-ancestor "$SHA" "$HEAD_SHA"; then
+              echo "❌ $SHA старее уже выкаченного $HEAD_SHA: похоже на перезапуск старого запуска"
+              echo "   Откат делается через API_TAG_PREV / FRONT_TAG_PREV, см. шапку docker-compose.yml"
+              exit 1
+            fi
+            git merge -q --ff-only "$SHA"
 
-                        # Пути, которые ни на один образ не влияют: документация,
-                        # отчёты, сам workflow. Раньше коммит с одними отчётами
-                        # не совпадал ни с одним шаблоном и по запасной ветке
-                        # пересобирал ОБА сервиса
-                        MEANINGFUL=$(echo "$CHANGED" | grep -vE '^(docs/|\.github/|[^/]*\.(md|docx|doc|pdf|xlsx)$|deploy\.yml$|analyze-time\.ps1$|desktop\.ini$)' || true)
+            # --- вход в GHCR во временном конфиге ------------------------------
+            # Отдельный DOCKER_CONFIG не трогает ~/.docker/config.json, где
+            # лежит вход для других проектов на этом сервере. Токен живёт,
+            # пока идёт job, и вместе с каталогом удаляется в конце
+            GHCR_CFG=$(mktemp -d)
+            trap 'rm -rf "$GHCR_CFG"' EXIT
+            echo "$GHCR_TOKEN" | DOCKER_CONFIG="$GHCR_CFG" docker login ghcr.io -u "$GHCR_USER" --password-stdin >/dev/null
+            pull() { DOCKER_CONFIG="$GHCR_CFG" docker pull -q "$1"; }
 
-                        if [ -z "$MEANINGFUL" ]; then
-                          echo "ℹ️  Изменилась только документация — сборка не нужна"
-                          printf '%s\n' "$COMMIT_AFTER" > "$STATE_FILE"
-                          docker compose ps || true
-                          exit 0
-                        fi
+            # --- теги выкаченных версий в корневом .env ------------------------
+            # API_TAG / FRONT_TAG — что работает сейчас, *_PREV — что работало
+            # до этого. Образы обеих версий остаются на сервере, поэтому откат
+            # не требует доступа к GHCR (см. шапку docker-compose.yml)
+            cur_tag() {
+              v=$(grep "^$1=" .env 2>/dev/null | tail -n1 | cut -d= -f2 | tr -d '\r' || true)
+              echo "${v:-latest}"
+            }
+            has_tag() { grep -q "^$1=" .env 2>/dev/null; }
+            set_tag() {
+              if has_tag "$1"; then
+                sed -i "s|^$1=.*|$1=$2|" .env
+              else
+                printf '\n%s=%s\n' "$1" "$2" >> .env
+              fi
+            }
 
-                        if echo "$MEANINGFUL" | grep -qE '^(apps/back/|docker/Dockerfile\.back|packages/)'; then
-                          need_back=true
-                        fi
-                        if echo "$MEANINGFUL" | grep -qE '^(apps/front/|docker/Dockerfile\.front|packages/)'; then
-                          need_front=true
-                        fi
-                        if echo "$MEANINGFUL" | grep -qE '^(pnpm-lock\.yaml|package\.json|pnpm-workspace\.yaml|turbo\.json|nx\.json|\.dockerignore|docker-compose\.yml|docker-compose-full\.yml|docker-compose-test\.yml)$'; then
-                          need_back=true
-                          need_front=true
-                        fi
+            # --- готовность: контейнер на НУЖНОМ образе, running и healthy -----
+            # Раньше ждали смены id контейнера. Если образ не менялся, compose
+            # контейнер не пересоздавал, и ожидание висело до таймаута
+            wait_ready() {
+              want=$(docker image inspect -f '{{.Id}}' "$2") || return 1
+              end=$(( $(date +%s) + 300 ))
+              while :; do
+                cid=$(docker compose ps -aq "$1" | head -n1)
+                have=$(docker inspect -f '{{.Image}}' "$cid" 2>/dev/null || echo none)
+                st=$(docker inspect -f '{{.State.Status}}' "$cid" 2>/dev/null || echo missing)
+                hl=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$cid" 2>/dev/null || echo unknown)
+                if [ "$have" = "$want" ] && [ "$st" = running ] && [ "$hl" = healthy ]; then
+                  echo "✅ $1 работает на $2"
+                  return 0
+                fi
+                if [ "$hl" = unhealthy ] || [ "$(date +%s)" -ge "$end" ]; then
+                  echo "❌ $1 не поднялся: status=$st health=$hl"
+                  docker logs --tail 200 "$cid" 2>&1 || true
+                  return 1
+                fi
+                echo "⌛ $1: status=$st health=$hl"
+                sleep 5
+              done
+            }
 
-                        if [ "$need_back" = false ] && [ "$need_front" = false ]; then
-                          echo "⚠️ Изменения не совпали ни с одним шаблоном — пересобираю оба (безопасный запасной вариант)"
-                          need_back=true
-                          need_front=true
-                        fi
-                      fi
+            # --- смоук-тест фронта -----------------------------------------------
+            # Healthcheck смотрит только на статичную главную. Здесь проверяется
+            # вход из Битрикса (POST -> 303) и страница приложения
+            smoke_front() {
+              docker compose exec -T front-alfacentr node -e "
+                const http = require('http');
+                const req = (method, path) => new Promise((ok, fail) => {
+                  const r = http.request({ host: '127.0.0.1', port: 3000, path, method }, (res) => { res.resume(); ok(res); });
+                  r.on('error', fail);
+                  r.end();
+                });
+                (async () => {
+                  const a = await req('POST', '/api/app');
+                  if (a.statusCode !== 303 || a.headers.location !== '/bitrix/main') {
+                    throw new Error('POST /api/app: ' + a.statusCode + ' ' + a.headers.location);
+                  }
+                  const m = await req('GET', '/bitrix/main');
+                  if (m.statusCode !== 200) throw new Error('GET /bitrix/main: ' + m.statusCode);
+                  console.log('✅ смоук-тест фронта пройден');
+                })().catch((e) => { console.error('❌ смоук-тест фронта: ' + e.message); process.exit(1); });
+              "
+            }
 
-                      echo "🧭 План: backend=$need_back frontend=$need_front"
+            # $1 сервис, $2 переменная тега, $3 репозиторий образа,
+            # $4 функция смоук-теста или пустая строка
+            deploy_svc() {
+              img="$3:$SHA"
+              prev=$(cur_tag "$2")
+              echo "⏳ $1: скачиваю $img (сейчас работает $prev)"
+              pull "$img" || return 1
+              env "$2=$SHA" docker compose up -d --no-deps "$1" || return 1
+              if wait_ready "$1" "$img" && { [ -z "$4" ] || "$4"; }; then
+                if [ "$prev" != "$SHA" ]; then set_tag "${2}_PREV" "$prev"; fi
+                set_tag "$2" "$SHA"
+                return 0
+              fi
+              if has_tag "$2"; then
+                echo "↩️  $1: возвращаю прежнюю версию $prev"
+                docker compose up -d --no-deps "$1" || true
+                wait_ready "$1" "$3:$prev" || echo "‼️  $1: прежняя версия тоже не поднялась, нужен ручной разбор"
+              fi
+              return 1
+            }
 
-                      echo "🔍 Проверяю Docker Compose v2..."
-                      docker compose version
+            # --- уборка: текущая и предыдущая версия остаются ------------------
+            keep_two() {
+              cur=$(cur_tag "$2")
+              prev=$(cur_tag "${2}_PREV")
+              docker images "$1" --format '{{.Tag}}' | while read -r t; do
+                case "$t" in
+                  "$cur"|"$prev"|"<none>") continue ;;
+                esac
+                docker rmi "$1:$t" >/dev/null 2>&1 || true
+              done
+            }
 
-                      export DOCKER_BUILDKIT=1
-                      # BUILDKIT_INLINE_CACHE как переменная окружения — пустышка,
-                      # это аргумент сборки. Убрана, чтобы не вводить в заблуждение
+            # redis только поднимаем, если он лежит, и не пуллим. Том /data у него
+            # анонимный: пересоздание через up его сохраняет, а down или rm
+            # теряет. Там очередь Bull и реестр операторов бота
+            docker compose up -d --no-deps redis-alfacentr
 
-                      # Базовые образы обновляем, кеш приложений не трогаем
-                      docker compose pull redis-alfacentr || true
-                      # --no-deps ниже redis не поднимет, поднимаем отдельно
-                      docker compose up -d redis-alfacentr || true
+            rc=0
+            if [ "$BACK" = true ]; then
+              deploy_svc api-alfacentr API_TAG "$IMAGE_API" "" || rc=1
+            fi
+            if [ "$FRONT" = true ]; then
+              deploy_svc front-alfacentr FRONT_TAG "$IMAGE_FRONT" smoke_front || rc=1
+            fi
 
-                      # ---------------------------------------------------------------
-                      #  Сборка и выкатка одного сервиса.
-                      #
-                      #  Раньше сначала собирались оба образа и только потом поднимались.
-                      #  Из-за этого падение фронта оставляло бэкенд собранным, но
-                      #  невыкаченным. Теперь каждый сервис поднимается сразу после
-                      #  своей сборки и не ждёт соседа
-                      # ---------------------------------------------------------------
-                      deploy_service() {
-                        svc="$1"
-                        cname="$2"
+            # Изменился docker-compose.yml: применить его к обоим сервисам
+            # с теми версиями, что сейчас записаны в .env
+            if [ "$rc" -eq 0 ] && [ "$COMPOSE" = true ]; then
+              docker compose up -d --no-deps api-alfacentr front-alfacentr || rc=1
+              wait_ready api-alfacentr "$IMAGE_API:$(cur_tag API_TAG)" || rc=1
+              wait_ready front-alfacentr "$IMAGE_FRONT:$(cur_tag FRONT_TAG)" || rc=1
+            fi
 
-                        old_id=$(docker ps -aq --filter "name=^/${cname}$" | head -n1)
+            docker compose ps
+            echo "📌 Версии в .env:"
+            grep -E '^(API|FRONT)_TAG' .env || true
+            if [ "$rc" -ne 0 ]; then
+              echo "❌ Деплой не удался, тег prod-deployed не сдвигается"
+              exit 1
+            fi
 
-                        echo "⏳ Сборка $svc..."
-                        if ! docker compose build "$svc"; then
-                          echo "❌ Сборка $svc не удалась"
-                          docker compose logs --tail 200 "$svc" || true
-                          return 1
-                        fi
+            keep_two "$IMAGE_API" API_TAG
+            keep_two "$IMAGE_FRONT" FRONT_TAG
+            docker image prune -f \
+              --filter "label=org.opencontainers.image.source=https://github.com/savchuckvadim/alfacentr-contracts" >/dev/null || true
+            echo "🏁 Деплой $SHA успешен"
 
-                        echo "⏳ Запускаю $svc (redis не трогаю)"
-                        if ! docker compose up -d --no-deps "$svc"; then
-                          echo "❌ Запуск $svc не удался"
-                          docker compose logs --tail 200 "$svc" || true
-                          return 1
-                        fi
-
-                        echo "⏳ Жду running/healthy для $svc..."
-                        timeout=900
-                        elapsed=0
-                        while true; do
-                          new_id=$(docker ps -aq --filter "name=^/${cname}$" | head -n1)
-                          status=$(docker inspect -f '{{.State.Status}}' "$new_id" 2>/dev/null || echo "missing")
-                          health=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$new_id" 2>/dev/null || echo "unknown")
-
-                          if [ -n "$new_id" ] && [ "$status" = "running" ] && \
-                             { [ "$health" = "healthy" ] || [ "$health" = "none" ]; } && \
-                             { [ -z "$old_id" ] || [ "$new_id" != "$old_id" ]; }; then
-                            echo "✅ $svc: $old_id -> $new_id (status=$status, health=$health)"
-                            return 0
-                          fi
-
-                          if [ "$health" = "unhealthy" ]; then
-                            echo "❌ $svc не прошёл проверку живости"
-                            docker logs "$cname" --tail 200 || true
-                            return 1
-                          fi
-
-                          if [ "$elapsed" -ge "$timeout" ]; then
-                            echo "❌ Таймаут ожидания $svc (status=$status, health=$health)"
-                            docker logs "$cname" --tail 200 || true
-                            return 1
-                          fi
-
-                          echo "⌛ Жду $svc... elapsed=${elapsed}s status=$status health=$health"
-                          sleep 5
-                          elapsed=$((elapsed + 5))
-                        done
-                      }
-
-                      rc=0
-                      if [ "$need_back" = true ]; then
-                        deploy_service api-alfacentr nest-api-alfacentr || rc=1
-                      fi
-                      if [ "$need_front" = true ]; then
-                        deploy_service front-alfacentr front-alfacentr-prod || rc=1
-                      fi
-
-                      docker compose ps || true
-
-                      if [ "$rc" -ne 0 ]; then
-                        echo "❌ Деплой завершился с ошибкой — отметка успеха НЕ обновляется,"
-                        echo "   следующий запуск повторит сборку с того же места"
-                        exit 1
-                      fi
-
-                      printf '%s\n' "$COMMIT_AFTER" > "$STATE_FILE"
-                      echo "🏁 Деплой успешен, отметка обновлена: $COMMIT_AFTER"
-
-                      # Чистим только висячие образы и только после успеха.
-                      # Кеш билдера (docker buildx prune) не трогаем — он и есть
-                      # то, что делает следующую сборку быстрой
-                      docker image prune -f || true
-
-                      [ "$need_back" = true ] && docker logs nest-api-alfacentr --tail 100 || true
-                      [ "$need_front" = true ] && docker logs front-alfacentr-prod --tail 100 || true
+  # ---------------------------------------------------------------------------
+  mark-deployed:
+    name: Отметить успешный деплой
+    needs: deploy
+    # Явное условие обязательно: без него job пропустится, если выше была
+    # пропущена одна из сборок, а это обычный случай
+    if: ${{ !cancelled() && needs.deploy.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - run: |
+          git tag -f prod-deployed "$GITHUB_SHA"
+          git push -f origin refs/tags/prod-deployed

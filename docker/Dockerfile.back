@@ -1,5 +1,5 @@
 # =============================================================================
-#  alfacentr :: apps/back (NestJS)  ->  образ alfacentr-api:prod
+#  alfacentr :: apps/back (NestJS)  ->  ghcr.io/savchuckvadim/alfacentr-api:<sha>
 #  Стадии: base -> manifests -> {deps | prod-deps} -> build -> prod
 #
 #  Почему так, а не COPY . . в начале:
@@ -95,10 +95,6 @@ RUN pnpm --filter back run build && \
     test -f apps/back/dist/main.js || \
     (echo "Сборка не удалась: нет apps/back/dist/main.js" && exit 1)
 
-# .env копируется последним: он нужен только рантайму и меняется отдельно
-# от кода, так что его правка не должна ронять кеш сборки
-COPY apps/back/.env ./apps/back/.env
-
 # -------------------------------------------------------------------- prod --
 # Ни pnpm, ни установки. Раскладка воркспейса сохраняется один в один,
 # поэтому относительные симлинки изолированного линкера резолвятся.
@@ -112,9 +108,14 @@ COPY --from=build     /app/apps/back/package.json     ./apps/back/package.json
 COPY --from=build     /app/apps/back/dist             ./apps/back/dist
 COPY --from=build     /app/packages/alfa/package.json ./packages/alfa/package.json
 COPY --from=build     /app/packages/alfa/dist         ./packages/alfa/dist
-COPY --from=build     /app/apps/back/.env             ./.env
 
-# Рабочий каталог остается /app, то есть process.cwd() === '/app'. Поэтому тома
-# ./apps/back/keys:/app/keys, ./apps/back/storage:/app/storage, ./logs:/app/logs
-# и чтение /app/.env работают ровно как раньше. Изменился только путь до main.
+# Рабочий каталог остается /app, то есть process.cwd() === '/app'. От него
+# зависят тома ./apps/back/keys:/app/keys и ./apps/back/storage:/app/storage.
+#
+# .env в образе НЕТ. docker-compose.yml монтирует apps/back/.env с сервера в
+# /app/.env, и ConfigModule (envFilePath: '.env') читает его как раньше.
+# Поэтому образ собирается в GitHub Actions без секретов, секреты не оседают
+# в слоях GHCR, а правка .env на сервере применяется docker restart, без
+# пересборки. Без смонтированного файла приложение упадёт на старте на
+# getOrThrow(MAIL_*) в mailer.config.ts — это и есть защита от пустого env.
 CMD ["node", "apps/back/dist/main"]
