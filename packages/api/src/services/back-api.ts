@@ -18,7 +18,6 @@ export enum EBACK_ENDPOINT {
     ALFA_DEAL_PRODUCTS = 'alfa-deal-products',
     DOCUMENT_NUMBER = 'document-number/by-prefix',
     VALIDATE_CHECK_EMAIL = 'validate-check/email',
-    VALIDATE_CHECK_PHONE = 'validate-check/phone',
 
     SEMINAR_GET_FIELDS_DATA = 'seminar/get-fields-data',
     SEMINAR_GET_DEAL_VALUES = 'seminar/get-deal-values',

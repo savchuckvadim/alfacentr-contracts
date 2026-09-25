@@ -1,53 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-//редирект next из post запроса в апп
-export async function POST(req: NextRequest) {
-    try {
-        // logServer(
-        //   'info',
-        //   'redirect from api/bitrix/app',
-        //   'KPI REPORT SALES api/bitrix/app',
-        //   'report post to get report redirect in bitrix',
-        //   'domain',
-        //   'ID',
-        //   {
-        //     req: req.json(),
-        //   },
-        //   new Date().toISOString()
-        // )
-
-        const response = NextResponse.redirect(
-            new URL('/bitrix/main', req.url),
-            303,
-        );
-
-        return response;
-    } catch (error) {
-        console.error('Ошибка обработки запроса:', error);
-        return NextResponse.json(
-            { error: 'Ошибка загрузки файла' },
-            { status: 500 },
-        );
-    }
+// Битрикс открывает приложение POST-запросом на /api/app.
+// Отвечаем 303 на страницу приложения, чтобы браузер перешёл на неё GET-ом.
+//
+// Location относительный специально: за nginx в Docker req.url содержит
+// внутренний адрес контейнера (localhost:3000), и абсолютный редирект
+// уводил фрейм Битрикса на localhost. Относительный путь браузер
+// разрешает от текущего домена, поэтому он работает и на Vercel,
+// и на собственном сервере.
+export async function POST() {
+    return new NextResponse(null, {
+        status: 303,
+        headers: { Location: '/bitrix/main' },
+    });
 }
 
-// const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://next.april-app.ru/kpi-sales';
-
-// //редирект next из post запроса в апп
-// export async function POST(req: NextRequest) {
-//   try {
-
-//     const response = NextResponse.redirect(new URL('/report', siteUrl), 303);
-
-//     return response;
-//   } catch (error) {
-//     console.error('Ошибка обработки запроса:', error);
-//     return NextResponse.json({ error: 'Ошибка загрузки файла' }, { status: 500 });
-//   }
-// }
-
-export async function GET(req: NextRequest) {
-    console.log(req);
+export async function GET() {
     return NextResponse.json({
         message: 'Этот маршрут поддерживает только POST-запросы',
     });

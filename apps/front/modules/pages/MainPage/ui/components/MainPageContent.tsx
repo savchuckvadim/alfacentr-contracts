@@ -1,16 +1,14 @@
 'use client';
 
 import { FilterTabs, SimpleCard } from '@/modules/shared';
-import { CalendarDaysIcon, CheckCircle, Package, Users } from 'lucide-react';
+import { Package } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { ParticipantsTableWidget } from '@/modules/widgetes/Participant/ParticipantsTable/ParticipantsTableWidget';
-import {
-    ContractPreview,
-    ProductsTableWidget,
-    PpkApplicationTableWidget,
-    usePpkApplicationLive,
-} from '@/modules/widgetes';
+import { usePpkApplicationLive } from '@/modules/widgetes';
 import { useIsUpContractType } from '@/modules/features';
+import {
+    IMainPageWidgetContext,
+    MAIN_PAGE_WIDGETS,
+} from '../../config/main-page-widgets';
 
 export const MainPageContent = () => {
     const [filter, setFilter] = useState<string>('main');
@@ -18,72 +16,58 @@ export const MainPageContent = () => {
 
     /**
      * Состояние приложения ППК поднято сюда, а не в сам виджет: по нему же
-     * решается, показывать ли таб. Участников и программы могут создать
-     * в любой момент — состояние живёт в стору, поэтому таб появится сам,
-     * как только появится хотя бы одна пара «участник — программа».
+     * решается, показывать ли таб и карточку на главном. Участников и
+     * программы могут создать в любой момент — состояние живёт в стору,
+     * поэтому виджет появится сам, как только появится хотя бы одна пара
+     * «участник — программа». Одна копия состояния на оба места показа:
+     * правки на главном табе видны в своём табе и наоборот.
      */
     const ppk = usePpkApplicationLive();
-    const withPpkApplication = ppk.isPpkContract && ppk.hasRows;
+
+    const ctx = useMemo<IMainPageWidgetContext>(
+        () => ({
+            isUp,
+            withPpkApplication: ppk.isPpkContract && ppk.hasRows,
+            ppk,
+        }),
+        [isUp, ppk],
+    );
 
     const tabs = useMemo(() => {
-        const items = [
+        const visible = MAIN_PAGE_WIDGETS.filter(widget =>
+            widget.isVisible(ctx),
+        );
+        const mainCards = visible
+            .filter(widget => widget.main)
+            .sort((a, b) => (a.main?.order ?? 0) - (b.main?.order ?? 0));
+
+        return [
             {
                 value: 'main',
                 label: 'Основные данные',
                 icon: <Package />,
                 content: (
-                    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
-                        <SimpleCard
-                            withCollapse={false}
-                            title="Товары"
-                            children={<ProductsTableWidget />}
-                        />
-                        {!isUp && (
+                    <div className="grid grid-cols-1 gap-6">
+                        {mainCards.map(widget => (
                             <SimpleCard
+                                key={widget.value}
                                 withCollapse={false}
-                                children={<ParticipantsTableWidget />}
-                            />
-                        )}
-                        <SimpleCard
-                            withCollapse={false}
-                            title="Договор"
-                            children={<ContractPreview />}
-                        />
+                                title={widget.main?.title}
+                            >
+                                {widget.render(ctx)}
+                            </SimpleCard>
+                        ))}
                     </div>
                 ),
             },
-            {
-                value: 'products',
-                label: 'Товары',
-                icon: <Package />,
-                content: <ProductsTableWidget />,
-            },
+            ...visible.map(widget => ({
+                value: widget.value,
+                label: widget.label,
+                icon: widget.icon,
+                content: widget.render(ctx),
+            })),
         ];
-
-        if (!isUp) {
-            items.push({
-                value: 'participants',
-                label: 'Участники',
-                icon: <Users />,
-                content: <ParticipantsTableWidget />,
-            });
-        }
-        if (withPpkApplication) {
-            items.push({
-                value: 'ppk-application',
-                label: 'Приложение ППК',
-                icon: <CalendarDaysIcon />,
-                content: <PpkApplicationTableWidget ppk={ppk} />,
-            });
-        }
-        items.push({
-            value: 'contract',
-            label: 'Что будет в договоре',
-            icon: <CheckCircle />,
-            content: <ContractPreview />,
-        });
-        return items;
-    }, [isUp, withPpkApplication, ppk]);
+    }, [ctx]);
 
     /**
      * Открытый таб может исчезнуть: убрали последнюю программу ППК или

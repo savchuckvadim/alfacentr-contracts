@@ -1,6 +1,7 @@
 export { default as LoadingScreen } from './LoadingScreen/ui/LoadingScreen';
 export { Header } from '../widgetes/Header/Header';
 export { Tooltip } from './Tooltip';
+export * from './Text';
 export * from './Cards';
 export * from './BackButton';
 

@@ -25,8 +25,14 @@ export const MainPage = () => {
             <ContactSyncConfirmMenu />
             {isProcessing && <Processing />}
             <div className="flex ">
-                {/* Левая часть - основная область */}
-                <div className="flex-1 p-2">
+                {/*
+                    Левая часть - основная область. min-w-0 обязателен:
+                    flex-элемент не ужимается меньше содержимого, и широкая
+                    таблица (приложение ППК с длинными программами) иначе
+                    растягивала колонку и выталкивала правую панель за экран,
+                    а overflow-x-auto внутри таблиц никогда не срабатывал
+                */}
+                <div className="min-w-0 flex-1 p-2">
                     <div className="h-full">
                         <MainPageContent />
                     </div>

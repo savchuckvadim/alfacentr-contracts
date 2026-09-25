@@ -86,7 +86,11 @@ export const CommunicationsConfirmMenu = () => {
 
     /**
      * Чистит вставленное/введенное значение прямо в поле, чтобы пробелы,
-     * переносы и невидимые спецсимволы не доходили до валидации и до битрикса
+     * переносы и невидимые спецсимволы не доходили до валидации и до битрикса.
+     *
+     * Для email вызывается на каждое нажатие. Для телефона — только по blur
+     * и при отправке: чистка телефона сохраняет пробелы, а переписывать поле
+     * во время набора незачем.
      */
     const normalizeOnChange = (
         field: 'email' | 'phone',
@@ -240,25 +244,21 @@ export const CommunicationsConfirmMenu = () => {
                         </Label>
                     )}
                 </div>
+                {/*
+                    Формат телефона не проверяем — только непустоту.
+                    Менеджеры вставляют номера с добавочными («+7… доб 123»)
+                    и по несколько через запятую; робот берёт номера не отсюда,
+                    а дальше строка читается людьми. Решение заказчика,
+                    сентябрь 2026.
+                */}
                 <Input
                     {...register('phone', {
                         required: 'Телефон обязателен',
-                        pattern: {
-                            value: /^(\+7|8|7)?[\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/,
-                            message: 'Некорректный номер',
-                        },
-                        onChange: e => {
-                            normalizeOnChange('phone', e.target.value);
-                        },
                         onBlur: e => {
                             updateField(
                                 BxDealDataKeys.exchange_doc_phone,
                                 normalizeOnChange('phone', e.target.value),
                             );
-                            // updateFieldWithAPI(
-                            //     BxDealDataKeys.exchange_doc_phone,
-                            //     e.target.value,
-                            // )
                         },
                     })}
                     className={errors.phone ? 'border-red-500' : ''}

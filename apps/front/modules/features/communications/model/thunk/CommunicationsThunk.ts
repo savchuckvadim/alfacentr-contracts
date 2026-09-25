@@ -5,38 +5,31 @@ import {
 } from '@/modules/app/model/store';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { BxDealDataKeys } from '@alfa/entities';
-import {
-    getValidateEmail,
-    getValidatePhone,
-} from '../../lib/helpers/validate-confirm.helper';
+import { getValidateEmail } from '../../lib/helpers/validate-confirm.helper';
 
-export const validateEmailAndPhone = createAsyncThunk<
-    { email: string; phone: string }, // ReturnType
+/**
+ * Проверка email сделки через бэк.
+ *
+ * Телефона здесь нет намеренно: его формат приложение не проверяет
+ * (решение заказчика, сентябрь 2026) — менеджеры пишут добавочные и
+ * несколько номеров через запятую, и это нормальная рабочая строка.
+ */
+export const validateEmail = createAsyncThunk<
+    { email: string }, // ReturnType
     void, // Arg
     {
         dispatch: AppDispatch;
         state: RootState;
         extra: ThunkExtraArgument;
     }
->(
-    'communications/ValidateEmailAndPhone',
-    async (_, { dispatch, getState, extra }) => {
-        // Получаем dispatch и state из деструктуризации
-        const state = getState();
-        const { getWSClient } = extra;
-        const dealData = state.deal.dealData;
-        const email = dealData?.find(
-            field => field.code === BxDealDataKeys.exchange_doc_email,
-        )?.value;
-        const phone = dealData?.find(
-            field => field.code === BxDealDataKeys.exchange_doc_phone,
-        )?.value;
+>('communications/ValidateEmail', async (_, { getState }) => {
+    const state = getState();
+    const dealData = state.deal.dealData;
+    const email = dealData?.find(
+        field => field.code === BxDealDataKeys.exchange_doc_email,
+    )?.value;
 
-        const emailValidateResult = await getValidateEmail(email as string);
-        const phoneValidateResult = (await getValidatePhone(
-            phone as string,
-        )) as string;
+    const emailValidateResult = await getValidateEmail(email as string);
 
-        return { email: emailValidateResult, phone: phoneValidateResult };
-    },
-);
+    return { email: emailValidateResult };
+});

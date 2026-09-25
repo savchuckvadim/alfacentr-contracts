@@ -17,9 +17,9 @@ const INVISIBLE_CODES = new Set([0x00ad, 0x200b, 0x200c, 0x200d, 0xfeff]);
 /**
  * Убирает невидимый мусор и все пробелы.
  *
- * Пробелы режутся целиком, а не только по краям: в email их не бывает, а в
- * телефоне они не значат ничего. Значения прилетают копипастом из писем, word
- * и мессенджеров, и вместе с ними — неразрывные пробелы и переносы строк.
+ * Пробелы режутся целиком, а не только по краям: в email их не бывает.
+ * Значения прилетают копипастом из писем, word и мессенджеров, и вместе с
+ * ними — неразрывные пробелы и переносы строк.
  */
 export const stripInvisible = (value: string | undefined | null): string =>
     Array.from(String(value ?? ''))
@@ -33,5 +33,19 @@ export const stripInvisible = (value: string | undefined | null): string =>
 export const normalizeEmail = (value: string | undefined | null): string =>
     stripInvisible(value);
 
+/**
+ * Телефон — свободная строка, пробелы в ней значимы.
+ *
+ * Менеджеры пишут «+73831234567 доб 123» и несколько номеров через запятую:
+ * так номера дальше передаются между отделами и читаются людьми. Формат
+ * приложение не проверяет (решение заказчика, сентябрь 2026), а чистка не
+ * должна склеивать «доб 123» в «доб123». Поэтому убираем только невидимые
+ * символы, а любые пробельные последовательности — неразрывные пробелы,
+ * переносы строк, табуляции — сводим к одному обычному пробелу.
+ */
 export const normalizePhone = (value: string | undefined | null): string =>
-    stripInvisible(value);
+    Array.from(String(value ?? ''))
+        .filter(char => !INVISIBLE_CODES.has(char.codePointAt(0) as number))
+        .join('')
+        .replace(/\s+/g, ' ')
+        .trim();

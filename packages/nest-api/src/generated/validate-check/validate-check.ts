@@ -5,10 +5,7 @@
  * API for alfacentr hooks and  frontends
  * OpenAPI spec version: 1.0
  */
-import type {
-    IValidateCheckEmailDto,
-    IValidateCheckPhoneDto,
-} from '.././model';
+import type { IValidateCheckEmailDto } from '.././model';
 
 import { customAxios } from '../../lib/back-api';
 
@@ -21,19 +18,8 @@ export const getValidateCheck = () => {
             data: iValidateCheckEmailDto,
         });
     };
-    const phone = (iValidateCheckPhoneDto: IValidateCheckPhoneDto) => {
-        return customAxios<void>({
-            url: `/api/validate-check/phone`,
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            data: iValidateCheckPhoneDto,
-        });
-    };
-    return { email, phone };
+    return { email };
 };
 export type EmailResult = NonNullable<
     Awaited<ReturnType<ReturnType<typeof getValidateCheck>['email']>>
->;
-export type PhoneResult = NonNullable<
-    Awaited<ReturnType<ReturnType<typeof getValidateCheck>['phone']>>
 >;

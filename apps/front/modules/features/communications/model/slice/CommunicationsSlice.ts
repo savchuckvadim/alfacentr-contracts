@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { validateEmailAndPhone } from '../thunk/CommunicationsThunk';
+import { validateEmail } from '../thunk/CommunicationsThunk';
 import { saveCurrentContact } from '../thunk/SaveCurrentContactThunk';
 
 export interface ICommunicationsState {
@@ -13,9 +13,9 @@ export interface ICommunicationsState {
         isConfirmActive: boolean;
         isSaving: boolean;
     };
+    /** Ошибок телефона нет: его формат не проверяется */
     errors: {
         email: string;
-        phone: string;
         name: string;
     };
     validateLoading: boolean;
@@ -33,7 +33,6 @@ const initialState: ICommunicationsState = {
     },
     errors: {
         email: '',
-        phone: '',
         name: '',
     },
     validateLoading: false,
@@ -54,12 +53,6 @@ export const communicationsSlice = createSlice({
             action: PayloadAction<boolean>,
         ) => {
             state.confirm.isConfirmed = action.payload;
-        },
-        setPhoneError: (
-            state: ICommunicationsState,
-            action: PayloadAction<string>,
-        ) => {
-            state.errors.phone = action.payload;
         },
         setEmailError: (
             state: ICommunicationsState,
@@ -93,21 +86,20 @@ export const communicationsSlice = createSlice({
         },
     },
     extraReducers: builder => {
-        //check email and phone
+        //check email
         builder.addCase(
-            validateEmailAndPhone.fulfilled,
+            validateEmail.fulfilled,
             (
                 state: ICommunicationsState,
-                action: PayloadAction<{ email: string; phone: string }>,
+                action: PayloadAction<{ email: string }>,
             ) => {
                 state.errors.email = action.payload.email;
-                state.errors.phone = action.payload.phone;
                 state.validateLoading = false;
             },
         );
         builder.addCase(
-            validateEmailAndPhone.pending,
-            (state: ICommunicationsState, action) => {
+            validateEmail.pending,
+            (state: ICommunicationsState) => {
                 state.validateLoading = true;
             },
         );

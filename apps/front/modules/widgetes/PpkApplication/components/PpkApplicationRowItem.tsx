@@ -3,18 +3,20 @@
 import { TableCell, TableRow } from '@workspace/ui/components/table';
 import { Input } from '@workspace/ui/components/input';
 import { Label } from '@workspace/ui/components/label';
-import { Button } from '@workspace/ui/components/button';
-import { CheckIcon, LoaderIcon, RotateCcwIcon } from 'lucide-react';
-import { memo } from 'react';
+import { KeyboardEvent, memo } from 'react';
 import {
     IPpkApplicationRow,
     TPpkContactField,
 } from '@/modules/entities/participant/lib/ppk-application-rows';
+import { TruncatedText } from '@/modules/shared/Text';
 import { TPpkRowSaveState } from '../hooks/use-ppk-application-live';
+import { PpkApplicationRowSaveControl } from './PpkApplicationRowSaveControl';
 
 export interface PpkApplicationRowItemProps {
     row: IPpkApplicationRow;
+    dirty: boolean;
     saveState: TPpkRowSaveState | undefined;
+    saveError: string | undefined;
     datesInvalid: boolean;
     fioMissing: boolean;
     onDatesChange: (
@@ -27,7 +29,8 @@ export interface PpkApplicationRowItemProps {
         field: TPpkContactField,
         value: string,
     ) => void;
-    onRetry: (participantId: number) => void;
+    onSave: (participantId: number) => void;
+    onDiscard: (participantId: number) => void;
 }
 
 /**
@@ -40,114 +43,129 @@ export interface PpkApplicationRowItemProps {
 export const PpkApplicationRowItem = memo<PpkApplicationRowItemProps>(
     ({
         row,
+        dirty,
         saveState,
+        saveError,
         datesInvalid,
         fioMissing,
         onDatesChange,
         onContactChange,
-        onRetry,
-    }) => (
-        <TableRow>
-            <TableCell>
-                <Input
-                    value={row.fio}
-                    onChange={e =>
-                        onContactChange(
-                            row.participantId,
-                            'fio',
-                            e.target.value,
-                        )
-                    }
-                    className={fioMissing ? 'border-red-500' : ''}
-                />
-                {fioMissing && (
-                    <Label className="text-xs text-red-500">
-                        Без ФИО строка не попадёт в документ
-                    </Label>
-                )}
-            </TableCell>
+        onSave,
+        onDiscard,
+    }) => {
+        //Enter в любом поле строки — записать участника, как кнопкой
+        const saveOnEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+            if (event.key !== 'Enter' || !dirty) return;
+            event.preventDefault();
+            onSave(row.participantId);
+        };
 
-            <TableCell className="text-xs text-muted-foreground">
-                {row.topic}
-            </TableCell>
+        return (
+            <TableRow>
+                <TableCell>
+                    <Input
+                        value={row.fio}
+                        title={row.fio}
+                        onChange={e =>
+                            onContactChange(
+                                row.participantId,
+                                'fio',
+                                e.target.value,
+                            )
+                        }
+                        onKeyDown={saveOnEnter}
+                        className={fioMissing ? 'border-red-500' : ''}
+                    />
+                    {fioMissing && (
+                        <Label className="text-xs text-red-500">
+                            Без ФИО строка не попадёт в документ
+                        </Label>
+                    )}
+                </TableCell>
 
-            <TableCell>
-                <Input
-                    type="date"
-                    value={row.dateFrom}
-                    onChange={e =>
-                        onDatesChange(row, e.target.value, row.dateTo)
-                    }
-                    className={datesInvalid ? 'border-red-500' : ''}
-                />
-            </TableCell>
+                {/*
+                    Название программы длинное, а ячейки таблицы по умолчанию
+                    не переносят строки — без обрезки колонка растягивала
+                    таблицу за пределы окна
+                */}
+                <TableCell className="whitespace-normal text-xs text-muted-foreground">
+                    <TruncatedText text={row.topic} />
+                </TableCell>
 
-            <TableCell>
-                <Input
-                    type="date"
-                    value={row.dateTo}
-                    onChange={e =>
-                        onDatesChange(row, row.dateFrom, e.target.value)
-                    }
-                    className={datesInvalid ? 'border-red-500' : ''}
-                />
-                {datesInvalid && (
-                    <Label className="text-xs text-red-500">
-                        {row.dateFrom && row.dateTo
-                            ? 'Начало позже окончания'
-                            : 'Заполните обе даты'}
-                    </Label>
-                )}
-            </TableCell>
+                <TableCell>
+                    <Input
+                        type="date"
+                        value={row.dateFrom}
+                        onChange={e =>
+                            onDatesChange(row, e.target.value, row.dateTo)
+                        }
+                        onKeyDown={saveOnEnter}
+                        className={datesInvalid ? 'border-red-500' : ''}
+                    />
+                </TableCell>
 
-            <TableCell>
-                <Input
-                    value={row.email}
-                    onChange={e =>
-                        onContactChange(
-                            row.participantId,
-                            'email',
-                            e.target.value,
-                        )
-                    }
-                />
-            </TableCell>
+                <TableCell>
+                    <Input
+                        type="date"
+                        value={row.dateTo}
+                        onChange={e =>
+                            onDatesChange(row, row.dateFrom, e.target.value)
+                        }
+                        onKeyDown={saveOnEnter}
+                        className={datesInvalid ? 'border-red-500' : ''}
+                    />
+                    {datesInvalid && (
+                        <Label className="text-xs text-red-500">
+                            {row.dateFrom && row.dateTo
+                                ? 'Начало позже окончания'
+                                : 'Заполните обе даты'}
+                        </Label>
+                    )}
+                </TableCell>
 
-            <TableCell>
-                <Input
-                    value={row.phone}
-                    onChange={e =>
-                        onContactChange(
-                            row.participantId,
-                            'phone',
-                            e.target.value,
-                        )
-                    }
-                />
-            </TableCell>
+                <TableCell>
+                    <Input
+                        value={row.email}
+                        title={row.email}
+                        onChange={e =>
+                            onContactChange(
+                                row.participantId,
+                                'email',
+                                e.target.value,
+                            )
+                        }
+                        onKeyDown={saveOnEnter}
+                    />
+                </TableCell>
 
-            <TableCell>
-                {saveState === 'saving' && (
-                    <LoaderIcon className="h-4 w-4 animate-spin text-muted-foreground" />
-                )}
-                {saveState === 'saved' && (
-                    <CheckIcon className="h-4 w-4 text-green-600" />
-                )}
-                {saveState === 'error' && (
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onRetry(row.participantId)}
-                        className="h-7 gap-1 px-2 text-xs text-red-600"
-                    >
-                        <RotateCcwIcon className="h-3 w-3" />
-                        Повторить
-                    </Button>
-                )}
-            </TableCell>
-        </TableRow>
-    ),
+                <TableCell>
+                    <Input
+                        value={row.phone}
+                        title={row.phone}
+                        onChange={e =>
+                            onContactChange(
+                                row.participantId,
+                                'phone',
+                                e.target.value,
+                            )
+                        }
+                        onKeyDown={saveOnEnter}
+                    />
+                </TableCell>
+
+                <TableCell>
+                    <PpkApplicationRowSaveControl
+                        participantId={row.participantId}
+                        dirty={dirty}
+                        saveState={saveState}
+                        error={saveError}
+                        onSave={onSave}
+                        onDiscard={onDiscard}
+                    />
+                </TableCell>
+            </TableRow>
+        );
+    },
 );
 
 PpkApplicationRowItem.displayName = 'PpkApplicationRowItem';

@@ -7,19 +7,20 @@ import {
     TableHeader,
     TableRow,
 } from '@workspace/ui/components/table';
-import { AlertTriangleIcon, LoaderIcon } from 'lucide-react';
+import { Button } from '@workspace/ui/components/button';
+import { AlertTriangleIcon, LoaderIcon, SaveIcon } from 'lucide-react';
 import { memo } from 'react';
 import { TPpkApplicationLive } from './hooks/use-ppk-application-live';
 import { PpkApplicationRowItem } from './components/PpkApplicationRowItem';
 
 /**
- * Приложение ППК отдельным табом: те же пары «участник — программа», что
- * уйдут в документ, но правки сохраняются на лету. Смысл — готовить даты
- * заранее, не открывая окно отправки.
+ * Приложение ППК в табе и на главном: те же пары «участник — программа»,
+ * что уйдут в документ, но правки записываются в CRM кнопкой в строке.
+ * Смысл — готовить даты заранее, не открывая окно отправки.
  *
  * Состояние приходит сверху и НЕ создаётся здесь своим вызовом хука: иначе
- * таб и его условие показа жили бы в разных экземплярах состояния, и правки
- * из таблицы не видел бы тот, кто решает, показывать таб или нет.
+ * главный таб, свой таб и условие показа жили бы в разных экземплярах
+ * состояния, и правки из одного места не видел бы никто другой.
  */
 export const PpkApplicationTableWidget = memo<{ ppk: TPpkApplicationLive }>(
     ({ ppk }) => {
@@ -30,9 +31,15 @@ export const PpkApplicationTableWidget = memo<{ ppk: TPpkApplicationLive }>(
             buildError,
             notReadyCount,
             saveState,
+            saveErrors,
+            dirtyParticipantIds,
+            dirtyCount,
+            isSavingAny,
             setRowDates,
             setContact,
-            retrySave,
+            save,
+            saveAll,
+            discard,
             isRowDatesInvalid,
             isFioMissing,
         } = ppk;
@@ -63,17 +70,38 @@ export const PpkApplicationTableWidget = memo<{ ppk: TPpkApplicationLive }>(
         if (!rows.length) return null;
 
         return (
-            <div className="flex flex-col gap-3">
+            <div className="flex min-w-0 flex-col gap-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-xs text-muted-foreground">
                         Даты у каждого участника свои — на одной программе можно
-                        указать разные периоды. Правки сохраняются сразу.
+                        указать разные периоды. Правки записываются в CRM
+                        кнопкой в строке или по Enter.
                     </p>
-                    {notReadyCount > 0 && (
-                        <span className="rounded bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800">
-                            Не готово строк: {notReadyCount}
-                        </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {notReadyCount > 0 && (
+                            <span className="rounded bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800">
+                                Не готово строк: {notReadyCount}
+                            </span>
+                        )}
+                        {dirtyCount > 0 && (
+                            <span className="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-800">
+                                Не сохранено: {dirtyCount}
+                            </span>
+                        )}
+                        {dirtyCount > 1 && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => void saveAll()}
+                                disabled={isSavingAny}
+                                className="h-7 gap-1 px-2 text-xs"
+                            >
+                                <SaveIcon className="h-3 w-3" />
+                                Сохранить всё
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 {orphanedTopics.length > 0 && (
@@ -87,31 +115,33 @@ export const PpkApplicationTableWidget = memo<{ ppk: TPpkApplicationLive }>(
                     </div>
                 )}
 
+                {/*
+                    Фиксированная раскладка: ширину колонок задаёт таблица, а не
+                    содержимое. Иначе длинное название программы растягивало
+                    таблицу, а с ней и всю страницу за пределы окна. Ниже
+                    минимальной ширины включается горизонтальная прокрутка
+                    внутри виджета, а не страницы
+                */}
                 <div className="overflow-x-auto">
-                    <Table>
+                    <Table className="min-w-[1000px] table-fixed">
+                        <colgroup>
+                            <col className="w-[17%]" />
+                            <col className="w-[21%]" />
+                            <col className="w-[13%]" />
+                            <col className="w-[13%]" />
+                            <col className="w-[14%]" />
+                            <col className="w-[12%]" />
+                            <col className="w-[10%]" />
+                        </colgroup>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="min-w-[180px]">
-                                    ФИО
-                                </TableHead>
-                                <TableHead className="min-w-[200px]">
-                                    Программа
-                                </TableHead>
-                                <TableHead className="min-w-[150px]">
-                                    Дата начала
-                                </TableHead>
-                                <TableHead className="min-w-[150px]">
-                                    Дата окончания
-                                </TableHead>
-                                <TableHead className="min-w-[180px]">
-                                    Email
-                                </TableHead>
-                                <TableHead className="min-w-[150px]">
-                                    Телефон
-                                </TableHead>
-                                <TableHead className="w-[90px]">
-                                    Сохранено
-                                </TableHead>
+                                <TableHead>ФИО</TableHead>
+                                <TableHead>Программа</TableHead>
+                                <TableHead>Дата начала</TableHead>
+                                <TableHead>Дата окончания</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead>Телефон</TableHead>
+                                <TableHead>Запись</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -119,12 +149,17 @@ export const PpkApplicationTableWidget = memo<{ ppk: TPpkApplicationLive }>(
                                 <PpkApplicationRowItem
                                     key={`${row.participantId}-${row.topic}`}
                                     row={row}
+                                    dirty={dirtyParticipantIds.has(
+                                        row.participantId,
+                                    )}
                                     saveState={saveState[row.participantId]}
+                                    saveError={saveErrors[row.participantId]}
                                     datesInvalid={isRowDatesInvalid(row)}
                                     fioMissing={isFioMissing(row)}
                                     onDatesChange={setRowDates}
                                     onContactChange={setContact}
-                                    onRetry={retrySave}
+                                    onSave={save}
+                                    onDiscard={discard}
                                 />
                             ))}
                         </TableBody>

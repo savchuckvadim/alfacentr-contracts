@@ -49,7 +49,6 @@ export * from './getFieldByIdParams';
 export * from './getFieldsParams';
 export * from './getRqRequestDto';
 export * from './iValidateCheckEmailDto';
-export * from './iValidateCheckPhoneDto';
 export * from './storeRqRequestDto';
 export * from './updateAddressRequestDto';
 export * from './updateAddressRequestDtoBxId';

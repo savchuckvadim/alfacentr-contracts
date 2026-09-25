@@ -38,7 +38,6 @@ export const useCommunications = () => {
                 phone?.value &&
                 name?.value &&
                 !errors.email &&
-                !errors.phone &&
                 !errors.name
             ),
         );
