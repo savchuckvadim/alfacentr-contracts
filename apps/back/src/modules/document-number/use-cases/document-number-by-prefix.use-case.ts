@@ -3,17 +3,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { normalizePrefix } from '@alfa/entities';
 import { DocumentNumberByPrefixDto } from '../dto/document-number.dto';
 import {
-    ANCHOR_STAGE_ID,
     BitrixApiClient,
     DocumentCounterService,
-    SEMINAR_CATEGORY_ID,
-    SEMINAR_ENTITY_TYPE_ID,
-    SMART_DEAL_PARENT_FIELD,
-    SMART_LIST_ID_FIELD,
-    SMART_PREFIX_FIELD,
 } from '../services/document-counter.service';
 
-/** Откуда взяли элемент-счётчик — нужно для диагностики расхождений */
+/**
+ * Откуда взяли элемент-счётчик — нужно для диагностики расхождений.
+ * smart-anchor — по карточке смарта с тем же префиксом, как это делает БП.
+ */
 export type CounterSource = 'smart-anchor' | 'list-by-name' | 'created';
 
 export interface DocumentNumberByPrefixResult {
@@ -56,11 +53,26 @@ export class DocumentNumberByPrefixUseCase {
         const found = await this.resolveCounterElement(bitrix, prefix);
 
         if (!found) {
+            /**
+             * Для нового префикса заводим только счётчик.
+             *
+             * Раньше вместе с ним создавалась служебная карточка смарта
+             * «Счётчик нумерации …» с префиксом и LIST_ID — чтобы нумератор
+             * в БП нашёл наш счётчик и не завёл свой. Это не работало: БП
+             * запускается на любую новую карточку, стирает у неё префикс и
+             * вычисляет заново из названий товаров. У служебной карточки
+             * товаров нет, префикс оставался пустым, и по префиксу она не
+             * находилась. Побочно БП создавал ей пустую сделку.
+             *
+             * Поэтому первая карточка смарта по такому префиксу всё равно
+             * заведёт лишний счётчик с единицей — и тут же сообщит об этом
+             * вебхуком. Расхождение закрывает HealCounterDuplicateUseCase:
+             * выдаёт карточке следующий номер из нашего счётчика.
+             */
             const elementId = await this.counters.createElement(bitrix, prefix);
             this.logger.log(
                 `Создан счётчик для префикса «${prefix}»: элемент ${elementId}, номер 1 (сделка ${dealId})`,
             );
-            await this.createSmartAnchor(bitrix, prefix, elementId, dealId);
             return { prefix, counter: 1, elementId, source: 'created' };
         }
 
@@ -86,9 +98,9 @@ export class DocumentNumberByPrefixUseCase {
 
     /**
      * Порядок важен:
-     * 1. Якорь БП — карточка смарта 159 с этим префиксом и заполненным
-     *    LIST_ID. Именно по ней БП находит счётчик, и если она есть,
-     *    брать надо тот же элемент.
+     * 1. Карточка смарта 159 с этим префиксом и заполненным LIST_ID. Именно
+     *    по ней БП находит счётчик, и если она есть, брать надо тот же
+     *    элемент — иначе приложение и БП считают каждый от своего.
      * 2. Элемент списка 46 по названию — счётчик, который мы завели сами,
      *    когда карточек смарта с таким префиксом ещё не было.
      */
@@ -121,55 +133,5 @@ export class DocumentNumberByPrefixUseCase {
         const elements = await this.counters.findElementsByName(bitrix, prefix);
         const best = this.counters.pickBest(elements, prefix);
         return best ? { ...best, source: 'list-by-name' } : null;
-    }
-
-    /**
-     * Создаёт карточку-якорь в смарте 159 для нового префикса.
-     *
-     * Старый нумератор в БП ищет счётчик не в списке 46, а через карточку
-     * смарта с тем же префиксом и заполненным LIST_ID. Если такой карточки
-     * нет, он создаёт свой второй элемент списка и начинает нумерацию заново —
-     * именно так и разъехались 24 префикса. Якорь даёт БП найти наш счётчик,
-     * и править сам БП для этого не требуется.
-     *
-     * Ошибка создания якоря не должна ломать выдачу номера: номер уже выдан и
-     * корректен, поэтому здесь только предупреждение в лог.
-     */
-    private async createSmartAnchor(
-        bitrix: BitrixApiClient,
-        prefix: string,
-        elementId: number,
-        dealId: number,
-    ): Promise<void> {
-        try {
-            const response = await this.counters.call<{
-                result?: { item?: { id?: number } };
-            }>(
-                bitrix,
-                'crm.item.add',
-                {
-                    entityTypeId: SEMINAR_ENTITY_TYPE_ID,
-                    fields: {
-                        title: `Счётчик нумерации ${prefix}`,
-                        categoryId: SEMINAR_CATEGORY_ID,
-                        stageId: ANCHOR_STAGE_ID,
-                        [SMART_PREFIX_FIELD]: prefix,
-                        [SMART_LIST_ID_FIELD]: elementId,
-                        [SMART_DEAL_PARENT_FIELD]: dealId,
-                    },
-                },
-                `создание якоря смарта для префикса «${prefix}»`,
-            );
-
-            this.logger.log(
-                `Якорь для «${prefix}»: карточка смарта ${response?.result?.item?.id} -> счётчик ${elementId}`,
-            );
-        } catch (error) {
-            this.logger.warn(
-                `Якорь для «${prefix}» не создан: ${this.counters.message(
-                    error,
-                )}. Номер выдан, но БП может завести второй счётчик — проверьте префикс в списке счётчиков.`,
-            );
-        }
     }
 }

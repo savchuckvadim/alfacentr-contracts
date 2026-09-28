@@ -7,7 +7,8 @@ import {
     SEMINAR_ENTITY_TYPE_ID,
     SMART_DOCUMENT_FIELDS,
     SMART_LIST_ID_FIELD,
-    SMART_NUMBER_FIELD,
+    SMART_NUMBER_CURRENT_DOC_FIELD,
+    SMART_NUMBER_DOC_FIELD,
     SMART_PREFIX_FIELD,
 } from '../services/document-counter.service';
 import { BpCounterCreatedDto } from '../dto/bp-counter-created.dto';
@@ -33,12 +34,44 @@ export interface HealCounterDuplicateResult {
     documentsAlreadyBuilt: boolean;
 }
 
+/** Чем закончилась одна перепроверка карточки после починки */
+export type VerifyOutcome =
+    /** Карточка в том виде, в каком её оставила починка */
+    | 'intact'
+    /** То же, и документы уже сформированы — наш номер в договоре */
+    | 'settled'
+    /** БП затёр запись своей единицей, записали заново */
+    | 'reapplied'
+    /** Карточку изменил кто-то другой — наша запись устарела, не трогаем */
+    | 'changed-by-other'
+    /** БП затёр запись, и документы успели сформировать с его номером */
+    | 'stale-in-documents'
+    | 'unreadable';
+
+/**
+ * Через сколько после починки перепроверять карточку.
+ *
+ * БП не ждёт ответа на вебхук: он ставит вызов в очередь и сразу пишет в
+ * карточку свой счётчик и единицу. На практике вебхук доходит секунд через
+ * десять, и наша запись ложится последней. Но порядок никем не гарантирован,
+ * поэтому дважды смотрим, не вернул ли БП своё.
+ */
+const VERIFY_DELAYS_MS = [5_000, 20_000];
+
+/** Поля карточки приходят как unknown; номер — строкой или числом */
+const asText = (value: unknown): string =>
+    typeof value === 'string' || typeof value === 'number'
+        ? String(value).trim()
+        : '';
+
 /**
  * Починка расхождения, которое устроил старый нумератор в БП Битрикса.
  *
  * БП ищет счётчик не в списке 46, а через карточку смарта с тем же префиксом и
  * заполненным LIST_ID. Не найдя такой карточки, он создаёт свой элемент списка
- * с номером 1 — и с этого момента существуют две независимые нумерации.
+ * с номером 1 — и с этого момента существуют две независимые нумерации. Так
+ * бывает с первой карточкой смарта по префиксу, который начало приложение:
+ * сделок БП не видит.
  *
  * Исходящий вебхук из ветки «Таких семинаров нет» зовёт этот сценарий сразу
  * после создания элемента. Здесь мы:
@@ -46,13 +79,22 @@ export interface HealCounterDuplicateResult {
  * 2. выдаём из него следующий номер под блокировкой;
  * 3. перецеливаем LIST_ID карточки на канонический элемент, чтобы следующий
  *    прогон БП пошёл уже по нему;
- * 4. пишем номер в карточку, но только если документы по ней ещё не
- *    сформированы — иначе номер уже в договоре и менять его нельзя;
- * 5. гасим созданный дубль, не удаляя.
+ * 4. пишем номер в карточку — в «Номер документа», из которого печатается
+ *    договор, и в «Номер текущего договора». Только если документы по ней ещё
+ *    не сформированы: иначе номер уже в договоре и менять его нельзя;
+ * 5. гасим созданный дубль, не удаляя;
+ * 6. через несколько секунд перепроверяем карточку и повторяем запись, если
+ *    БП вернул свои значения.
  */
 @Injectable()
 export class HealCounterDuplicateUseCase {
     private readonly logger = new Logger(HealCounterDuplicateUseCase.name);
+
+    /** Полем, а не константой в коде: тесты не должны ждать реальные секунды */
+    protected verifyDelaysMs: number[] = VERIFY_DELAYS_MS;
+
+    /** Перепроверка, запущенная последним вызовом, — чтобы её можно было дождаться */
+    private verification: Promise<void> = Promise.resolve();
 
     constructor(
         private readonly pbxService: PBXService,
@@ -82,9 +124,20 @@ export class HealCounterDuplicateUseCase {
             });
         }
 
-        return await this.counters.withLock(prefix, () =>
+        const result = await this.counters.withLock(prefix, () =>
             this.heal(bitrix, prefix, smartId, duplicateElementId, item),
         );
+
+        // Вне блокировки и без ожидания: перепроверка счётчик не трогает, а
+        // вебхуку нужен быстрый ответ
+        this.scheduleVerification(bitrix, result);
+
+        return result;
+    }
+
+    /** Дожидается перепроверки, запущенной последним вызовом execute */
+    whenVerified(): Promise<void> {
+        return this.verification;
     }
 
     private async heal(
@@ -124,17 +177,12 @@ export class HealCounterDuplicateUseCase {
         );
 
         const documentsAlreadyBuilt = this.hasDocuments(item);
-        const fields: Record<string, unknown> = {
-            [SMART_LIST_ID_FIELD]: canonical.elementId,
-        };
-        if (!documentsAlreadyBuilt) {
-            fields[SMART_NUMBER_FIELD] = String(counter);
-        }
 
-        await this.counters.call<unknown>(
+        await this.writeCard(
             bitrix,
-            'crm.item.update',
-            { entityTypeId: SEMINAR_ENTITY_TYPE_ID, id: smartId, fields },
+            smartId,
+            canonical.elementId,
+            documentsAlreadyBuilt ? null : counter,
             `перецеливание карточки ${smartId} на счётчик ${canonical.elementId}`,
         );
 
@@ -178,8 +226,141 @@ export class HealCounterDuplicateUseCase {
     }
 
     /**
+     * Запись починки в карточку: ссылка на рабочий счётчик и, если можно,
+     * номер. Номер идёт в оба поля сразу — договор печатается из «Номер
+     * документа», а «Номер текущего договора» держим тем же, чтобы карточка
+     * не противоречила сама себе до генерации.
+     */
+    private async writeCard(
+        bitrix: BitrixApiClient,
+        smartId: number,
+        elementId: number,
+        counter: number | null,
+        what: string,
+    ): Promise<void> {
+        const fields: Record<string, unknown> = {
+            [SMART_LIST_ID_FIELD]: elementId,
+        };
+        if (counter !== null) {
+            fields[SMART_NUMBER_DOC_FIELD] = String(counter);
+            fields[SMART_NUMBER_CURRENT_DOC_FIELD] = String(counter);
+        }
+
+        await this.counters.call<unknown>(
+            bitrix,
+            'crm.item.update',
+            { entityTypeId: SEMINAR_ENTITY_TYPE_ID, id: smartId, fields },
+            what,
+        );
+    }
+
+    private scheduleVerification(
+        bitrix: BitrixApiClient,
+        healed: HealCounterDuplicateResult,
+    ): void {
+        if (healed.action !== 'healed' && healed.action !== 'repointed-only') {
+            return;
+        }
+
+        this.verification = this.verify(bitrix, healed).catch((error) => {
+            this.logger.error(
+                `Вебхук БП, перепроверка карточки ${healed.smartId} не удалась: ${this.counters.message(
+                    error,
+                )}`,
+            );
+        });
+    }
+
+    private async verify(
+        bitrix: BitrixApiClient,
+        healed: HealCounterDuplicateResult,
+    ): Promise<void> {
+        for (const delay of this.verifyDelaysMs) {
+            await this.sleep(delay);
+
+            const outcome = await this.verifyOnce(bitrix, healed);
+
+            // Дальше смотреть незачем: номер уже в договоре либо карточку
+            // изменил кто-то другой, и наша запись устарела
+            if (
+                outcome === 'settled' ||
+                outcome === 'changed-by-other' ||
+                outcome === 'stale-in-documents'
+            ) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * Одна перепроверка. Запись повторяем только в одном случае — когда в
+     * карточке стоит ссылка на элемент, который БП создал именно в этом
+     * прогоне. Это подпись его записи: тем же шагом он ставит и единицу.
+     *
+     * Любое другое расхождение — не повод переписывать. Номер мог смениться
+     * законно: пришёл следующий вебхук по этой же карточке или БП после правки
+     * товаров выдал ей новый номер из общего счётчика. Вернув своё значение,
+     * мы бы затёрли более свежий номер.
+     */
+    private async verifyOnce(
+        bitrix: BitrixApiClient,
+        healed: HealCounterDuplicateResult,
+    ): Promise<VerifyOutcome> {
+        const { smartId, prefix, canonicalElementId, duplicateElementId } =
+            healed;
+        if (!canonicalElementId) return 'changed-by-other';
+
+        const item = await this.loadSmartItem(bitrix, smartId);
+        if (!item) return 'unreadable';
+
+        const listId = Number(item[SMART_LIST_ID_FIELD]) || null;
+        const numberDoc = asText(item[SMART_NUMBER_DOC_FIELD]);
+        const expected =
+            healed.numberWritten && healed.counter !== null
+                ? String(healed.counter)
+                : null;
+        const documentsBuilt = this.hasDocuments(item);
+
+        const listOk = listId === canonicalElementId;
+        const numberOk = expected === null || numberDoc === expected;
+        if (listOk && numberOk) {
+            return documentsBuilt ? 'settled' : 'intact';
+        }
+
+        const overwrittenByBp =
+            duplicateElementId !== null && listId === duplicateElementId;
+        if (!overwrittenByBp) {
+            this.logger.warn(
+                `Вебхук БП, перепроверка, префикс «${prefix}», карточка ${smartId}: карточку изменил кто-то другой (счётчик ${listId}, номер «${numberDoc}», ждали счётчик ${canonicalElementId}, номер «${expected ?? 'без изменений'}»). Запись не повторяем.`,
+            );
+            return 'changed-by-other';
+        }
+
+        const canWriteNumber = expected !== null && !documentsBuilt;
+        await this.writeCard(
+            bitrix,
+            smartId,
+            canonicalElementId,
+            canWriteNumber ? healed.counter : null,
+            `повторная запись починки в карточку ${smartId}`,
+        );
+
+        if (expected !== null && documentsBuilt) {
+            this.logger.error(
+                `Вебхук БП, перепроверка, префикс «${prefix}», карточка ${smartId}: БП вернул свой номер «${numberDoc}», и документы уже сформированы с ним. Выданный номер ${expected} в договор не попал — нужна ручная проверка. Счётчик карточки возвращён на ${canonicalElementId}.`,
+            );
+            return 'stale-in-documents';
+        }
+
+        this.logger.warn(
+            `Вебхук БП, перепроверка, префикс «${prefix}», карточка ${smartId}: БП затёр запись (счётчик ${listId}, номер «${numberDoc}»), записали заново — счётчик ${canonicalElementId}, номер «${expected ?? 'без изменений'}»`,
+        );
+        return 'reapplied';
+    }
+
+    /**
      * Канонический счётчик — это элемент, которым пользуется приложение:
-     * сначала якорь другой карточки смарта, затем элемент списка по названию.
+     * сначала по другой карточке смарта, затем элемент списка по названию.
      * Свежесозданный БП элемент и саму карточку из поиска исключаем.
      */
     private async findCanonical(
@@ -249,6 +430,10 @@ export class HealCounterDuplicateUseCase {
             // Файл приходит объектом с id и url — значит он есть
             return typeof value === 'object';
         });
+    }
+
+    protected sleep(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     private result(
