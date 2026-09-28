@@ -188,15 +188,74 @@ jobs:
       contents: read
       packages: read
     steps:
-      - name: Скачать образы и перезапустить контейнеры
+      # GHCR с прод-сервера почти не качает (замер 2026-09-28: ~85 КБ/с,
+      # образ в 16 МБ не скачался за 90 секунд). Поэтому образ скачивает
+      # раннер и передаёт на сервер по SSH, серверу реестр не нужен вовсе
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Подготовить SSH до сервера
+        env:
+          KEY: ${{ secrets.SERVER_SSH_KEY }}
+          PASSPHRASE: ${{ secrets.SERVER_SSH_PASSPHRASE }}
+          HOST: ${{ secrets.SERVER_IP }}
+        run: |
+          mkdir -p ~/.ssh
+          { printf '%s' "$KEY"; echo; } > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          {
+            echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK"
+            echo "SSH_AGENT_PID=$SSH_AGENT_PID"
+          } >> "$GITHUB_ENV"
+          echo '#!/bin/sh' > /tmp/askpass
+          echo 'echo "$PASSPHRASE"' >> /tmp/askpass
+          chmod +x /tmp/askpass
+          SSH_ASKPASS=/tmp/askpass SSH_ASKPASS_REQUIRE=force ssh-add ~/.ssh/deploy_key
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Доставить образы на сервер
+        timeout-minutes: 20
+        env:
+          SHA: ${{ github.sha }}
+          BACK: ${{ needs.changes.outputs.back }}
+          FRONT: ${{ needs.changes.outputs.front }}
+          HOST: ${{ secrets.SERVER_IP }}
+          SSH_USER: ${{ secrets.SERVER_USER }}
+          IMAGE_API: ${{ env.IMAGE_API }}
+          IMAGE_FRONT: ${{ env.IMAGE_FRONT }}
+        run: |
+          set -eu
+          imgs=""
+          if [ "$BACK" = "true" ];  then imgs="$imgs $IMAGE_API:$SHA"; fi
+          if [ "$FRONT" = "true" ]; then imgs="$imgs $IMAGE_FRONT:$SHA"; fi
+          if [ -z "$imgs" ]; then
+            echo "Образы не нужны: менялся только docker-compose.yml"
+            exit 0
+          fi
+          # zstd жмёт быстрее и сильнее; если на сервере его нет — gzip
+          if ssh "$SSH_USER@$HOST" 'command -v zstd >/dev/null'; then
+            CZ="zstd -T0 -3"; DZ="zstd -d"
+          else
+            CZ="gzip -1"; DZ="gunzip"
+          fi
+          for img in $imgs; do
+            docker pull -q "$img"
+            size=$(docker image inspect -f '{{.Size}}' "$img")
+            echo "→ $img ($((size / 1048576)) МБ до сжатия, $CZ)"
+            docker save "$img" | $CZ | ssh "$SSH_USER@$HOST" "$DZ | docker load"
+          done
+
+      - name: Перезапустить контейнеры
         uses: appleboy/ssh-action@v1.2.5
         env:
           SHA: ${{ github.sha }}
           BACK: ${{ needs.changes.outputs.back }}
           FRONT: ${{ needs.changes.outputs.front }}
           COMPOSE: ${{ needs.changes.outputs.compose }}
-          GHCR_USER: ${{ github.actor }}
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_API: ${{ env.IMAGE_API }}
           IMAGE_FRONT: ${{ env.IMAGE_FRONT }}
         with:
@@ -206,7 +265,7 @@ jobs:
           passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           timeout: 60s
           command_timeout: 30m
-          envs: SHA,BACK,FRONT,COMPOSE,GHCR_USER,GHCR_TOKEN,IMAGE_API,IMAGE_FRONT
+          envs: SHA,BACK,FRONT,COMPOSE,IMAGE_API,IMAGE_FRONT
           script: |
             set -eu
             cd /var/www/html/alfacentr
@@ -230,14 +289,14 @@ jobs:
             fi
             git merge -q --ff-only "$SHA"
 
-            # --- вход в GHCR во временном конфиге ------------------------------
-            # Отдельный DOCKER_CONFIG не трогает ~/.docker/config.json, где
-            # лежит вход для других проектов на этом сервере. Токен живёт,
-            # пока идёт job, и вместе с каталогом удаляется в конце
-            GHCR_CFG=$(mktemp -d)
-            trap 'rm -rf "$GHCR_CFG"' EXIT
-            echo "$GHCR_TOKEN" | DOCKER_CONFIG="$GHCR_CFG" docker login ghcr.io -u "$GHCR_USER" --password-stdin >/dev/null
-            pull() { DOCKER_CONFIG="$GHCR_CFG" docker pull -q "$1"; }
+            # Образы уже доставлены по SSH предыдущим шагом: GHCR с сервера
+            # почти не качает. Здесь только проверка, что доставка дошла
+            pull() {
+              docker image inspect "$1" >/dev/null 2>&1 || {
+                echo "❌ образа $1 нет на сервере: шаг доставки не отработал"
+                return 1
+              }
+            }
 
             # --- теги выкаченных версий в корневом .env ------------------------
             # API_TAG / FRONT_TAG — что работает сейчас, *_PREV — что работало

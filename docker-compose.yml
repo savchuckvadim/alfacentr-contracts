@@ -11,12 +11,14 @@
 #  сервере, так что доступ к GHCR не нужен:
 #    1. в корневом .env заменить значение API_TAG на значение API_TAG_PREV
 #    2. docker compose up -d --no-deps api-alfacentr
-#  Откат на версию старше предыдущей: вписать в API_TAG sha нужного коммита,
-#  затем docker compose pull api-alfacentr и up, как выше. Образ :<sha> есть
-#  только у коммитов, где сервис пересобирался. Пакеты GHCR приватные, поэтому
-#  pull может попросить вход: docker login ghcr.io с PAT, у которого есть
-#  read:packages. Перезапуск старого запуска в GitHub Actions для отката не
-#  годится: деплой откажется выкатывать коммит старее уже выкаченного.
+#  Откат на версию старше предыдущей: скачивать с сервера бесполезно, GHCR
+#  отдаёт ~85 КБ/с. Скачать образ на любой машине с нормальным каналом и
+#  передать по SSH (так же доставляет образы и деплой):
+#    docker pull ghcr.io/savchuckvadim/alfacentr-api:<sha>
+#    docker save ghcr.io/savchuckvadim/alfacentr-api:<sha> | gzip | ssh root@сервер 'gunzip | docker load'
+#  затем вписать sha в API_TAG и docker compose up -d --no-deps api-alfacentr.
+#  Перезапуск старого запуска в GitHub Actions для отката не годится: деплой
+#  откажется выкатывать коммит старее уже выкаченного.
 #
 #  Сборка на самом сервере, если GitHub недоступен (аварийный путь):
 #    docker compose -f docker-compose.yml -f docker-compose.build.yml build api-alfacentr
