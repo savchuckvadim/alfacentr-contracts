@@ -24,6 +24,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 import { OnDealInitModule } from './modules/on-deal-init/on-deal-init.module';
 import { PpkScheduleModule } from './modules/ppk-schedule/ppk-schedule.module';
+import { NumberDuplicatesModule } from './modules/number-duplicates/number-duplicates.module';
 import { DealInitRecoveryModule } from './modules/deal-init-recovery/deal-init-recovery.module';
 import { AlfaProductsModule } from './modules/alfa-products';
 import { AlfaFieldsModule } from './modules/alfa-fields';
@@ -78,6 +79,7 @@ import { EmployeeEdoModule } from './common/employee-edo/employee-edo.module';
         OnDealInitModule,
 
         PpkScheduleModule,
+        NumberDuplicatesModule,
 
         DealInitRecoveryModule,
         AlfaProductsModule,
