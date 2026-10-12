@@ -54,7 +54,10 @@ export class DocumentGenerateDocService {
         //     currentDocumentFields[
         //         EnumDealCurrentDocumentFieldCode.CURRENT_APPLICATION_DOC
         //     ].bitrixId;
-        const invoiceNumber = dto.documentCounter || '1';
+        //номер проверен в DocumentGenerateFlowService до первой команды
+        //пакета. Прежнее `|| '1'` не спасало от counter = "0" и в худшем
+        //случае печатало клиенту счёт с чужим номером
+        const invoiceNumber = dto.documentCounter;
         await this.getInvoicesFiles(dto.clientType, {
             fields: {
                 ...ownBankFields,

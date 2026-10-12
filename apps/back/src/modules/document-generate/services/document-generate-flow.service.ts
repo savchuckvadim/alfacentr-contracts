@@ -22,6 +22,7 @@ import { EmailDocumentFlowService } from '@/modules/flow/email-flow/email-docume
 import { IRequestDocumentGenerateResponse } from '../type/request-document-generate.type';
 // import { BxDiskFlowService } from '@/modules/flow/disk-flow/bx-disk-flow.service';
 import { delay } from '@/lib';
+import { assertDocumentCounter } from './assert-document-counter.util';
 const DEFAULT_DOMAIN = 'alfacentr.bitrix24.ru';
 
 export class DocumentGenerateFlowService {
@@ -41,6 +42,13 @@ export class DocumentGenerateFlowService {
     ) {}
 
     async generateDocument(dto: DocumentGenerateDto) {
+        //Номер обязателен: он идёт в заголовок документа, а Битрикс отвергает
+        //пакет целиком с «No value for required placeholder DocumentTitle».
+        //Падение приходит на середине, когда часть документов уже создана,
+        //поэтому проверяем до первой команды. Подставлять номер наугад нельзя:
+        //документ уйдёт клиенту с чужим номером
+        assertDocumentCounter(dto.documentCounter, dto.dealId);
+
         const { bitrix } = await this.pbxService.init(DEFAULT_DOMAIN);
         const dealId = Number(dto.dealId);
         const dealService = new BxDealStageFlowService(bitrix, dealId);

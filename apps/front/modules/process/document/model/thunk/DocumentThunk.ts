@@ -40,6 +40,26 @@ export const documentGenerate = createAsyncThunk<
         dispatch(communicationsActions.setConfirmCommunicationsActive(true));
         return false;
     }
+    /**
+     * Номер договора приходит отдельным запросом и до ответа лежит в стейте
+     * нулём (DocumentNumberSlice, initialState.counter = 0). Если менеджер
+     * успел нажать генерацию раньше ответа, на бэкенд уходил counter = "0",
+     * оттуда — в заголовок документа, и Битрикс отвечал «No value for required
+     * placeholder DocumentTitle». Пакет команд падал на середине: часть
+     * документов создавалась, часть нет (сделка 198090 от 12.10.2026).
+     *
+     * Поэтому до отправки убеждаемся, что номер действительно получен.
+     */
+    const { fetched, counter, error: numberError } = state.documentNumber;
+    if (!fetched || !Number(counter)) {
+        errorHandler.createCriticalError(
+            numberError
+                ? `Номер договора не получен: ${numberError}. Обновите страницу и попробуйте снова.`
+                : 'Номер договора ещё не получен. Подождите пару секунд и нажмите снова.',
+        );
+        return false;
+    }
+
     dispatch(communicationsActions.setConfirmCommunicationsActive(false));
     dispatch(communicationsActions.setEmailConfirmConfirmed(false));
     const { getWSClient } = extra;
