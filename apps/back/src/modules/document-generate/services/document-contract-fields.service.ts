@@ -14,6 +14,13 @@ import {
 } from '@alfa/entities';
 import { Injectable } from '@nestjs/common';
 
+/**
+ * Пустое значение в договоре печатается линией под ручное заполнение.
+ * Ноль или значение «на глаз» писать нельзя: договор уходит клиенту
+ */
+export const HANDWRITTEN_PLACEHOLDER =
+    '____________________________________________';
+
 @Injectable()
 export class DocumentContractFieldsService {
     constructor() { }
@@ -29,8 +36,8 @@ export class DocumentContractFieldsService {
         clientSignature: string,
         documentPrefixNumber: string,
         documentNumberCounter: string,
-        emailForDoc: string = '____________________________________________',
-        seminarParticipantsCount: string = '____________________________________________',
+        emailForDoc: string = HANDWRITTEN_PLACEHOLDER,
+        seminarParticipantsCount: string = HANDWRITTEN_PLACEHOLDER,
     ): {
         templateId: number;
         fields: Record<string, string | string[]>;
@@ -192,7 +199,10 @@ export class DocumentContractFieldsService {
                 field.code ===
                 DocumentGenerateFieldTemplateCode.DocumentParticipantsCount
             ) {
-                fields[field.templateCode] = seminarParticipantsCount;
+                //фронт присылает пустую строку, когда участников семинара нет:
+                //в договор идёт линия, менеджер впишет число руками
+                fields[field.templateCode] =
+                    seminarParticipantsCount || HANDWRITTEN_PLACEHOLDER;
             } else if (
                 field.code ===
                 DocumentGenerateFieldTemplateCode.DocumentContractEndDate

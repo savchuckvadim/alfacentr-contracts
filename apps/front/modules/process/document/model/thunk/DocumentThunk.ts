@@ -175,8 +175,19 @@ const getGenerateDocumentData = (
     const companyName = state.app.bitrix.company?.TITLE || clientCompanyTitle || '__';
     const companyId = Number(state.app.bitrix.company?.ID) || 0;
 
-    const products = state.product.items;
-    const productsCount = products.length;
+    /**
+     * Количество участников семинара для пункта договора.
+     *
+     * Раньше сюда уходило число ТОВАРНЫХ ПОЗИЦИЙ сделки: один товар — «1
+     * участник», два товара — «2», сколько бы людей ни было на самом деле.
+     * Считаем участников, которым распределены семинарские продукты;
+     * участники только с ППК в пункт про семинар не входят. Когда таких нет,
+     * отдаём пустую строку — бэкенд подставит линию под ручное заполнение,
+     * это честнее нуля или числа товаров.
+     */
+    const seminarParticipantsCount = Object.values(
+        state.participantProduct.seminarDistribution.participantToProducts,
+    ).filter(assigned => assigned && assigned.length > 0).length;
     const edoComment = state.dealEdoComment.value || '';
 
     const phone = state.deal.dealData?.find(
@@ -266,7 +277,8 @@ const getGenerateDocumentData = (
             phone,
             name,
         },
-        seminarParticipantsCount: `${productsCount}`,
+        seminarParticipantsCount:
+            seminarParticipantsCount > 0 ? `${seminarParticipantsCount}` : '',
         ppkApplicationData,
         edoComment,
         ownBank
