@@ -12,7 +12,7 @@ import {
     EnumFizRqFields,
     EnumOrganizationRqFields,
 } from '../../type/document-rq.type';
-import { FioT } from 'lvovich/lib/gender';
+import { getInitialsByFullName } from '@alfa/entities';
 
 export class BxClientRqService {
     public getClientRq(
@@ -782,25 +782,16 @@ export class BxClientRqService {
         return address;
     }
 
+    /**
+     * Фамилия с инициалами для подписи в договоре: «Иванов А. А.».
+     *
+     * Правило вынесено в @alfa/entities: подпись печатается в договоре, и
+     * покрыть её тестом можно только там, тестов во фронте нет. Приватный
+     * метод здесь с 21.04.2026 (коммит 3c74857) печатал один инициал вместо
+     * двух — отчество терялось всегда, и полгода подписи уходили клиентам
+     * обрезанными: «Иванов А.» вместо «Иванов А. А.».
+     */
     private getIinitialsNameByFullName(fullname: string): string {
-        const person = this.splitFullName(fullname);
-        const first = person.first?.[0]?.toUpperCase() || '';
-        const middle = person.middle?.[0]?.toUpperCase() || '';
-        let shortName = `${person.last}`;
-        if (first) {
-            shortName = `${person.last} ${first}.`;
-        } else {
-            shortName = `${person.last} ${middle}.`;
-        }
-        return shortName;
-    }
-
-    private splitFullName(fullName: string): FioT {
-        const parts = fullName.trim().split(/\s+/);
-        return {
-            last: parts[0] || null,
-            first: parts[1] || null,
-            middle: parts[2] || null,
-        };
+        return getInitialsByFullName(fullname);
     }
 }
