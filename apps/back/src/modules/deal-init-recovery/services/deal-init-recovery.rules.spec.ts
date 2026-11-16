@@ -80,8 +80,15 @@ describe('isRecoveryCandidate', () => {
     });
 
     it('слишком свежая: вебхук может выполняться прямо сейчас', () => {
+        //от порога, а не от числа: порог менялся (15 → 5 минут), а правило
+        //«моложе порога не трогаем» остается тем же
         expect(
-            isRecoveryCandidate(candidate({ dateCreate: minutesAgo(5) }), NOW),
+            isRecoveryCandidate(
+                candidate({
+                    dateCreate: minutesAgo(RECOVERY_MIN_AGE_MINUTES - 1),
+                }),
+                NOW,
+            ),
         ).toBe(false);
     });
 
