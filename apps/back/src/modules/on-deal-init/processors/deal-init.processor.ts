@@ -8,7 +8,10 @@ import { TelegramService } from '@/modules/telegram/telegram.service';
 
 import { OnDealInitUseCase } from '../use-cases/on-deal-init.use-case';
 import { OnDealInitRequestDto } from '../dto/on-deal-init-request.dto';
-import { DealInitJobData } from '../services/deal-init-job.rules';
+import {
+    DEAL_INIT_CONCURRENCY,
+    DealInitJobData,
+} from '../services/deal-init-job.rules';
 
 /**
  * Приём заявки идёт здесь, а не в обработчике вебхука.
@@ -34,7 +37,10 @@ export class DealInitProcessor {
         private readonly telegram: TelegramService,
     ) {}
 
-    @Process(JobNames.DEAL_INIT)
+    //concurrency задан явно: по одной заявке за раз. У Bull это и так
+    //значение по умолчанию, но здесь оно обязательное, а не удобное —
+    //параллельные приёмы одной воронки затирают товары друг друга
+    @Process({ name: JobNames.DEAL_INIT, concurrency: DEAL_INIT_CONCURRENCY })
     async handle(job: Job<DealInitJobData>): Promise<void> {
         const { dealId, domain } = job.data;
         this.logger.log(`Приём заявки: сделка ${dealId}`);
