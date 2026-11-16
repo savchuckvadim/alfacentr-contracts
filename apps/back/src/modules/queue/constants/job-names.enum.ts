@@ -13,4 +13,6 @@ export enum JobNames {
     DOCUMENT_NUMBER = 'document-number',
     DOCUMENT_NUMBER_BY_PREFIX = 'document-number-by-prefix',
     DOCUMENT_EMAIL_SEND = 'document-email-send',
+
+    DEAL_INIT = 'deal-init',
 }

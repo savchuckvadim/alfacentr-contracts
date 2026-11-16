@@ -20,10 +20,8 @@ import {
     normalizeSeminarDayValues,
 } from '../../../lib/deal-helper/normalize-seminar-days.helper';
 import { TelegramService } from '@/modules/telegram/telegram.service';
-import {
-    renderIssuesForTelegram,
-    renderIssuesForTimeline,
-} from '@/modules/alfa-products/services/product-resolve-issue.util';
+import { renderIssuesForTelegram } from '@/modules/alfa-products/services/product-resolve-issue.util';
+import { DealInitTimelineService } from '../services/deal-init-timeline.service';
 import { ProductResolveIssue } from '@/modules/alfa-products/services/alfa-product.service';
 import { IBXDeal } from '@/modules/bitrix';
 
@@ -49,6 +47,7 @@ export class OnDealInitUseCase {
         const bxCompanyService = new BxCompanyService(bitrix);
         const bxProductService = new AlfaProductService(bitrix);
         const bxDealContactSyncService = new BxDealContactSyncService(bitrix);
+        const timeline = new DealInitTimelineService(bitrix);
         await bxDealService.init(bitrix);
         await alfaFieldService.init(bitrix);
         await bxSmartService.init(bitrix);
@@ -61,6 +60,7 @@ export class OnDealInitUseCase {
             bxCompanyService,
             bxProductService,
             bxDealContactSyncService,
+            timeline,
         };
     }
     async onDealCreate(data: OnDealInitRequestDto) {
@@ -71,6 +71,7 @@ export class OnDealInitUseCase {
             bxCompanyService,
             bxProductService,
             bxDealContactSyncService,
+            timeline,
         } = await this.init(data.auth.domain);
 
         const { fieldData, bxFieldsIds } =
@@ -87,7 +88,7 @@ export class OnDealInitUseCase {
         const dealValues = normalizeSeminarDayValues(
             DealFieldValuesHelperService.getDealValues(deal, fieldData),
         );
-        await bxDealService.setTimelineInitProccess(data.dealId);
+        await timeline.start(data.dealId);
         const contractType =
             this.initialContractTypeService.initialContractType(dealValues);
 
@@ -123,9 +124,13 @@ export class OnDealInitUseCase {
                         candidates: [],
                     });
                 }
-                await this.notifyProductIssues(bxDealService, dealId, issues);
+                await this.notifyProductIssues(timeline, dealId, issues);
                 //добавляем участников
-                await bxSmartService.setParticipantsSmarts(dealValues, dealId);
+                const participants = await bxSmartService.setParticipantsSmarts(
+                    dealValues,
+                    dealId,
+                );
+                await timeline.participants(dealId, participants);
             }
         }
 
@@ -137,7 +142,7 @@ export class OnDealInitUseCase {
             deal.ID &&
             dealValues &&
             dealValues.length > 0 &&
-            (await bxDealService.setTimeline(deal.ID, dealValues));
+            (await timeline.bidInfo(deal.ID, dealValues));
 
         deal && deal.ID && (await bxCompanyService.searchCompany(deal, inn));
 
@@ -211,20 +216,14 @@ export class OnDealInitUseCase {
      * Упавшее уведомление не должно ронять прием заявки
      */
     private async notifyProductIssues(
-        bxDealService: BxDealService,
+        timeline: DealInitTimelineService,
         dealId: number,
         issues: ProductResolveIssue[],
     ) {
         if (!issues.length) return;
 
-        try {
-            await bxDealService.setTimelineComment(
-                dealId,
-                renderIssuesForTimeline(issues),
-            );
-        } catch (error) {
-            console.error('notifyProductIssues timeline', error);
-        }
+        //в таймлайн сервис пишет сам и ошибку глушит внутри
+        await timeline.productIssues(dealId, issues);
 
         try {
             await this.telegram.sendMessage(

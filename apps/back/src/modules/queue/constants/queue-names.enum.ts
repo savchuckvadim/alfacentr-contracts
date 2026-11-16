@@ -10,6 +10,7 @@ export enum QueueNames {
     SALES_KPI_REPORT = 'sales-kpi-report',
     PING = 'ping',
     TRANSCRIBE_AUDIO = 'transcribe-audio',
+    DEAL_INIT = 'deal-init',
     // добавишь по мере надобности
 
     //event service

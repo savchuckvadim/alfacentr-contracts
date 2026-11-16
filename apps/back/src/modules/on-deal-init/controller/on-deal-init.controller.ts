@@ -1,30 +1,87 @@
-import { Controller, Post, Body, Param, ValidationPipe } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Body,
+    Param,
+    ValidationPipe,
+    HttpCode,
+    HttpStatus,
+    BadRequestException,
+    Logger,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { OnDealInitUseCase } from '../use-cases/on-deal-init.use-case';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+
 import { BitrixHookDto } from '@/lib/dto';
-import { OnDealInitRequestDto } from '../dto/on-deal-init-request.dto';
+import { QueueNames } from '@/modules/queue/constants/queue-names.enum';
+import { JobNames } from '@/modules/queue/constants/job-names.enum';
+
 import { FrontDealUseCase } from '../use-cases/front-deal.use-case';
+import {
+    DEAL_INIT_JOB_ATTEMPTS,
+    DEAL_INIT_JOB_KEEP_MS,
+    getDealInitJobId,
+    toDealInitJobData,
+} from '../services/deal-init-job.rules';
 
 @ApiTags('Alfa on deal init')
 @Controller('seminar')
 export class OnDealInitController {
+    private readonly logger = new Logger(OnDealInitController.name);
+
     constructor(
-        private readonly alfaUseCase: OnDealInitUseCase,
+        @InjectQueue(QueueNames.DEAL_INIT)
+        private readonly dealInitQueue: Queue,
         private readonly frontDealUseCase: FrontDealUseCase,
     ) {}
 
+    /**
+     * Вебхук инициации заявки из бизнес-процесса #828.
+     *
+     * Отвечает сразу, не дожидаясь приёма: Битрикс рвёт соединение по
+     * своему таймауту, и за две недели ноября 2026 так оборвалась четверть
+     * вебхуков (65 из 242). Ответа он всё равно не читает — для него это
+     * выстрел без ответа, — но оборванное соединение означало, что заявка
+     * осталась пустой до прогона крона подхвата.
+     *
+     * Повторные вебхуки по одной сделке схлопываются по jobId: 16.11.2026
+     * Битрикс прислал пять запросов по сделке 204098 за десять секунд, и
+     * каждый запускал полный приём — задвоенные участники и гонка за номер.
+     */
     @ApiOperation({ summary: 'On deal init' })
     @Post('create-deal/:dealId')
+    @HttpCode(HttpStatus.ACCEPTED)
     async createDeal(
         @Body(ValidationPipe) body: BitrixHookDto,
         @Param('dealId') dealId: string,
     ) {
-        const fullDto = {
-            ...body,
-            dealId: Number(dealId),
-        } as OnDealInitRequestDto;
+        const data = toDealInitJobData(dealId, body?.auth?.domain);
+        if (!data) {
+            throw new BadRequestException(
+                'Нужны номер сделки и домен портала в auth.domain',
+            );
+        }
 
-        return this.alfaUseCase.onDealCreate(fullDto);
+        const job = await this.dealInitQueue.add(JobNames.DEAL_INIT, data, {
+            jobId: getDealInitJobId(data.dealId),
+            attempts: DEAL_INIT_JOB_ATTEMPTS,
+            removeOnComplete: {
+                age: Math.round(DEAL_INIT_JOB_KEEP_MS / 1000),
+            },
+            removeOnFail: false,
+        });
+
+        //null — повтор по той же сделке: задача уже в очереди или только
+        //что отработала, второй приём затёр бы её работу
+        const queued = Boolean(job?.id);
+        this.logger.log(
+            queued
+                ? `Заявка принята в очередь: сделка ${data.dealId}`
+                : `Повторный вебхук по сделке ${data.dealId} — уже в работе`,
+        );
+
+        return { dealId: data.dealId, queued };
     }
 
     @ApiOperation({ summary: 'Get deal values' })

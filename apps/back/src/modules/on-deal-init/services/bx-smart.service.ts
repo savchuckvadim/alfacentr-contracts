@@ -3,29 +3,39 @@ import { DealValue } from '../../../lib/deal-helper/deal-values-helper.service';
 import { EntityTypeIdEnum, IAlfaParticipantSmartItem } from '@alfa/entities';
 import { getParticipantValuesFromDeal } from '../../../lib/deal-helper/get-participant-product-values-from-deal.helepr';
 
-
 export class BxSmartService {
     private bitrix: BitrixService;
     // private smart: IAlfaParticipantSmartItem;
     private entityTypeId: EntityTypeIdEnum = EntityTypeIdEnum.PARTICIPANT;
-    constructor() { }
+    constructor() {}
 
     async init(bitrix: BitrixService) {
         this.bitrix = bitrix;
     }
 
+    /**
+     * Возвращает заведённых участников: приём пишет их в таймлайн сделки,
+     * иначе смарты создаются молча и при разборе обращений не видно, кого
+     * именно завела заявка и не задвоил ли кого повторный приём
+     */
     public async setParticipantsSmarts(
         dealValues: DealValue[],
         dealId: number,
-    ) {
+    ): Promise<IAlfaParticipantSmartItem[]> {
         const participants = getParticipantValuesFromDeal(dealValues, dealId);
+        const created: IAlfaParticipantSmartItem[] = [];
+
         for (const participant of participants) {
-            await this.add(this.entityTypeId, {
+            const item = {
                 ...participant,
                 ufCrm12DealId: dealId.toString(),
-            } as IAlfaParticipantSmartItem,
-            );
+            } as IAlfaParticipantSmartItem;
+
+            await this.add(this.entityTypeId, item);
+            created.push(item);
         }
+
+        return created;
     }
 
     public async getList(entityTypeId: string) {
