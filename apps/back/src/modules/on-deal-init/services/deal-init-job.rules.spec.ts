@@ -1,4 +1,8 @@
-import { getDealInitJobId, toDealInitJobData } from './deal-init-job.rules';
+import {
+    DealInitSource,
+    getDealInitJobId,
+    toDealInitJobData,
+} from './deal-init-job.rules';
 
 /**
  * Дедупликация приёма заявки. 16.11.2026 Битрикс прислал пять вебхуков по
@@ -26,7 +30,17 @@ describe('toDealInitJobData', () => {
         expect(toDealInitJobData('204098', domain)).toEqual({
             dealId: 204098,
             domain,
+            source: DealInitSource.HOOK,
         });
+    });
+
+    it('источник по умолчанию — вебхук, крон передаёт свой', () => {
+        expect(toDealInitJobData(204098, domain)?.source).toBe(
+            DealInitSource.HOOK,
+        );
+        expect(
+            toDealInitJobData(204098, domain, DealInitSource.RECOVERY)?.source,
+        ).toBe(DealInitSource.RECOVERY);
     });
 
     it('пробелы вокруг домена срезаются', () => {

@@ -36,10 +36,26 @@ export const DEAL_INIT_JOB_ATTEMPTS = 1;
 export const getDealInitJobId = (dealId: number | string): string =>
     `deal-init:${Number(dealId)}`;
 
+/**
+ * Кто поставил заявку в очередь.
+ *
+ * Нужно в логах: вебхук портала доходит с задержкой от секунд до минут
+ * (сделка 204296, 17.11.2026 — 7 минут), и сделку успевает забрать крон
+ * подхвата. Без источника в логе не ответить, кто пришёл первым и нужен
+ * ли вообще крон на такой частоте
+ */
+export enum DealInitSource {
+    /** Вебхук бизнес-процесса #828 */
+    HOOK = 'hook',
+    /** Крон подхвата недошедших заявок */
+    RECOVERY = 'recovery',
+}
+
 /** Заявка из вебхука: домен нужен, чтобы знать, в какой портал ходить */
 export interface DealInitJobData {
     dealId: number;
     domain: string;
+    source?: DealInitSource;
 }
 
 /**
@@ -49,6 +65,7 @@ export interface DealInitJobData {
 export const toDealInitJobData = (
     dealId: unknown,
     domain: unknown,
+    source: DealInitSource = DealInitSource.HOOK,
 ): DealInitJobData | null => {
     const id = Number(dealId);
     if (!Number.isInteger(id) || id <= 0) return null;
@@ -56,5 +73,9 @@ export const toDealInitJobData = (
     const host = typeof domain === 'string' ? domain.trim() : '';
     if (!host) return null;
 
-    return { dealId: id, domain: host };
+    return { dealId: id, domain: host, source };
 };
+
+/** Человекочитаемый источник для логов */
+export const getSourceLabel = (source?: DealInitSource): string =>
+    source === DealInitSource.RECOVERY ? 'крон подхвата' : 'вебхук БП';
