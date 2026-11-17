@@ -11,6 +11,7 @@ import { InitialBidTypeService } from '../../lib/deal-helper/initial-contract-ty
 import { TelegramModule } from '../telegram/telegram.module';
 import { QueueNames } from '../queue/constants/queue-names.enum';
 import { DealInitProcessor } from './processors/deal-init.processor';
+import { DealInitLockService } from './services/deal-init-lock.service';
 
 @Module({
     controllers: [OnDealInitController],
@@ -27,8 +28,11 @@ import { DealInitProcessor } from './processors/deal-init.processor';
         GetDealBidItemsUseCase,
         InitialBidTypeService,
         DealInitProcessor,
+        DealInitLockService,
     ],
-    //OnDealInitUseCase нужен подстраховочному крону — той же точке входа, что и вебхук
+    //GetDealBidItemsUseCase нужен фронту. OnDealInitUseCase больше никем
+    //снаружи не берётся: крон подхвата теперь кладёт сделку в очередь, а не
+    //принимает сам — приём идёт только через процессор этого модуля
     exports: [GetDealBidItemsUseCase, OnDealInitUseCase],
 })
 export class OnDealInitModule {}

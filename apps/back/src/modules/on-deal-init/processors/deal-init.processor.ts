@@ -11,7 +11,9 @@ import { OnDealInitRequestDto } from '../dto/on-deal-init-request.dto';
 import {
     DEAL_INIT_CONCURRENCY,
     DealInitJobData,
+    getSourceLabel,
 } from '../services/deal-init-job.rules';
+import { DealInitLockService } from '../services/deal-init-lock.service';
 
 /**
  * Приём заявки идёт здесь, а не в обработчике вебхука.
@@ -35,6 +37,7 @@ export class DealInitProcessor {
     constructor(
         private readonly onDealInit: OnDealInitUseCase,
         private readonly telegram: TelegramService,
+        private readonly lock: DealInitLockService,
     ) {}
 
     //concurrency задан явно: по одной заявке за раз. У Bull это и так
@@ -42,8 +45,23 @@ export class DealInitProcessor {
     //параллельные приёмы одной воронки затирают товары друг друга
     @Process({ name: JobNames.DEAL_INIT, concurrency: DEAL_INIT_CONCURRENCY })
     async handle(job: Job<DealInitJobData>): Promise<void> {
-        const { dealId, domain } = job.data;
-        this.logger.log(`Приём заявки: сделка ${dealId}`);
+        const { dealId, domain, source } = job.data;
+        //по источнику видно, кто успел первым — вебхук или крон. Вебхук
+        //портала доходит с задержкой до минут, и без этого в логе не
+        //отличить одно от другого
+        const from = getSourceLabel(source);
+
+        //замок против приёма внахлёст: задача могла удалиться по
+        //removeOnComplete, и тогда jobId повтор уже не отсекает
+        if (!(await this.lock.acquire(dealId))) {
+            this.logger.warn(
+                `Приём пропущен (${from}): сделка ${dealId} уже принимается`,
+            );
+            return;
+        }
+
+        this.logger.log(`Приём заявки (${from}): сделка ${dealId}`);
+        const startedAt = Date.now();
 
         try {
             await this.onDealInit.onDealCreate({
@@ -51,7 +69,11 @@ export class DealInitProcessor {
                 dealId,
             } as OnDealInitRequestDto);
 
-            this.logger.log(`Приём заявки завершён: сделка ${dealId}`);
+            //длительность в логе: по ней видно, укладывается ли приём в
+            //TTL замка и в окно подхвата, и какие заявки тяжелее прочих
+            this.logger.log(
+                `Приём завершён (${from}): сделка ${dealId}, ${Date.now() - startedAt} мс`,
+            );
         } catch (error) {
             const reason =
                 error instanceof Error ? error.message : String(error);
@@ -68,6 +90,10 @@ export class DealInitProcessor {
                 .catch(() => undefined);
 
             throw error;
+        } finally {
+            //снимаем и после ошибки: иначе крон подхвата пять минут не
+            //сможет забрать сделку, которая осталась пустой
+            await this.lock.release(dealId);
         }
     }
 }

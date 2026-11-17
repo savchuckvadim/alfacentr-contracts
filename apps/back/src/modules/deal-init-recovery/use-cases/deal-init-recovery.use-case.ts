@@ -1,8 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { PBXService } from '@/modules/pbx';
 import { TelegramService } from '@/modules/telegram/telegram.service';
-import { OnDealInitUseCase } from '@/modules/on-deal-init/use-cases/on-deal-init.use-case';
+import { QueueNames } from '@/modules/queue/constants/queue-names.enum';
+import { JobNames } from '@/modules/queue/constants/job-names.enum';
+import {
+    DEAL_INIT_JOB_ATTEMPTS,
+    DEAL_INIT_JOB_KEEP_MS,
+    DealInitSource,
+    getDealInitJobId,
+} from '@/modules/on-deal-init/services/deal-init-job.rules';
 import {
     DealInitRecoveryResult,
     DealInitRecoveryService,
@@ -23,7 +32,8 @@ export class DealInitRecoveryUseCase {
     constructor(
         private readonly pbx: PBXService,
         private readonly telegram: TelegramService,
-        private readonly onDealInit: OnDealInitUseCase,
+        @InjectQueue(QueueNames.DEAL_INIT)
+        private readonly dealInitQueue: Queue,
     ) {}
 
     //каждые 3 минуты: вебхук инициации стал регулярно не доходить, и при
@@ -56,19 +66,49 @@ export class DealInitRecoveryUseCase {
     async run(): Promise<DealInitRecoveryResult> {
         const { bitrix } = await this.pbx.init(DEFAULT_DOMAIN);
         const service = new DealInitRecoveryService(bitrix, (dealId) =>
-            this.onDealInit.onDealCreate({
-                auth: { domain: DEFAULT_DOMAIN },
-                dealId,
-            } as Parameters<OnDealInitUseCase['onDealCreate']>[0]),
+            this.enqueue(dealId),
         );
         return await service.run();
+    }
+
+    /**
+     * Крон не принимает заявку сам, а кладет её в ту же очередь, что и вебхук.
+     *
+     * Иначе крон и вебхук идут двумя независимыми путями и регулярно
+     * встречаются на одной сделке: 17.11.2026 по сделке 204296 крон принял
+     * её в 16:27 (форма была в 16:21, порог подхвата 5 минут), а вебхук
+     * портала доехал только в 16:28 — и участника завели дважды. Через
+     * общую очередь jobId схлопывает повтор независимо от того, кто пришёл
+     * первым.
+     */
+    private async enqueue(dealId: number): Promise<{ queued: boolean }> {
+        const job = await this.dealInitQueue.add(
+            JobNames.DEAL_INIT,
+            {
+                dealId,
+                domain: DEFAULT_DOMAIN,
+                source: DealInitSource.RECOVERY,
+            },
+            {
+                jobId: getDealInitJobId(dealId),
+                attempts: DEAL_INIT_JOB_ATTEMPTS,
+                removeOnComplete: {
+                    age: Math.round(DEAL_INIT_JOB_KEEP_MS / 1000),
+                },
+                removeOnFail: false,
+            },
+        );
+
+        return { queued: Boolean(job?.id) };
     }
 
     private renderResult(result: DealInitRecoveryResult): string {
         const lines = [
             'ALFA DEAL INIT RECOVERY: прогон завершен',
             `- кандидатов найдено: ${result.candidates}`,
-            `- обработано заново: ${result.processed}${
+            //крон сам заявку не принимает, а ставит в общую с вебхуком
+            //очередь — приём идёт в воркере
+            `- поставлено в очередь приёма: ${result.processed}${
                 result.processedIds.length
                     ? ` (${result.processedIds.join(', ')})`
                     : ''
