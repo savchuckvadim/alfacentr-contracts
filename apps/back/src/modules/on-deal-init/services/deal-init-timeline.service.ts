@@ -56,13 +56,21 @@ export class DealInitTimelineService {
      *
      * Нужно для разбора обращений: по комментарию видно, кого именно завела
      * заявка, и сразу понятно, задвоил ли кого-то повторный приём.
+     *
+     * skipped — участники заявки, которые в сделке уже были. При повторном
+     * приёме созданных нет вовсе, и без этого числа комментарий был бы
+     * пустым: менеджер не понял бы, сработал приём или нет.
      */
     async participants(
         dealId: number,
         participants: IAlfaParticipantSmartItem[],
+        skipped: number = 0,
     ): Promise<void> {
-        if (!participants?.length) return;
-        await this.comment(dealId, renderParticipantsForTimeline(participants));
+        if (!participants?.length && !skipped) return;
+        await this.comment(
+            dealId,
+            renderParticipantsForTimeline(participants, skipped),
+        );
     }
 
     /**

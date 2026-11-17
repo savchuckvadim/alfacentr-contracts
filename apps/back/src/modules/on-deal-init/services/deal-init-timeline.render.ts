@@ -30,7 +30,15 @@ const getName = (
  */
 export const renderParticipantsForTimeline = (
     participants: IAlfaParticipantSmartItem[],
+    skipped: number = 0,
 ): string => {
+    //повторный прием той же заявки никого не создает — но след оставить
+    //надо, иначе менеджер видит пустое место и не понимает, сработал ли
+    //прием вообще
+    if (!participants.length && skipped > 0) {
+        return `👥 [B]Участники заявки уже заведены: ${skipped}[/B] \nЗаявка принята повторно, новых участников нет.`;
+    }
+
     const lines = [`👥 [B]Заведены участники: ${participants.length}[/B]`];
 
     for (const [index, participant] of participants
@@ -57,6 +65,13 @@ export const renderParticipantsForTimeline = (
         lines.push(
             `• и ещё ${participants.length - MAX_PARTICIPANTS_IN_COMMENT}`,
         );
+    }
+
+    //часть заявки уже была в сделке: заявку правили и перепнули. Говорим об
+    //этом прямо — рядом с новыми остались прежние карточки, и менеджеру
+    //решать, какие из них лишние
+    if (skipped > 0) {
+        lines.push(`ℹ️ Уже были в сделке, повторно не заводили: ${skipped}`);
     }
 
     return lines.join(' \n');

@@ -125,12 +125,15 @@ export class OnDealInitUseCase {
                     });
                 }
                 await this.notifyProductIssues(timeline, dealId, issues);
-                //добавляем участников
-                const participants = await bxSmartService.setParticipantsSmarts(
-                    dealValues,
-                    dealId,
-                );
-                await timeline.participants(dealId, participants);
+                //заводим участников, которых в сделке ещё нет: ту же заявку
+                //регулярно принимают дважды — вебхук портала доходит с
+                //задержкой, и сделку успевает забрать крон подхвата
+                const { created, skipped } =
+                    await bxSmartService.setParticipantsSmarts(
+                        dealValues,
+                        dealId,
+                    );
+                await timeline.participants(dealId, created, skipped);
             }
         }
 
