@@ -51,11 +51,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             exception instanceof BadRequestException &&
             typeof exception.getResponse === 'function'
         ) {
-            return await this.handleValidationException(
-                exception,
-                request,
-                response,
-            );
+            return this.handleValidationException(exception, request, response);
         }
 
         // Разбор stack trace
@@ -99,7 +95,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         response.status(status).json(responseBody);
     }
 
-    private async handleValidationException(
+    private handleValidationException(
         exception: BadRequestException,
         request: Request,
         response: Response,
@@ -120,8 +116,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             : String(messageArray);
 
         const fullMessage = `❌ Validation error:\n- ${validationMessages}\n\n📍 URL: ${request.method} ${request.url} `;
+
+        /**
+         * В лог — да, в телеграм — нет.
+         *
+         * Непрошедшая валидация это не авария сервиса, а кривой или неполный
+         * ввод: например POST /api/case со склонением пустого ФИО, когда у
+         * организации не заполнена должность директора (17.11.2026). Такие
+         * сообщения не несут контекста — ни сделки, ни портала, ни вызвавшего,
+         * — разбирать по ним нечего, а канал тревог они забивают и заглушают
+         * настоящие сбои.
+         */
         this.logger.warn(fullMessage);
-        await this.telegram.sendMessage(fullMessage);
 
         return response.status(400).json({
             resultCode: EResultCode.ERROR,
