@@ -13,6 +13,7 @@ import {
 } from '../interface/bitrix-api.intterface';
 import { IPortal } from 'src/modules/portal/interfaces/portal.interface';
 import { BXApiSchema, EBxNamespace, TBXRequest, TBXResponse } from '../domain';
+import { buildBitrixErrorMessage } from './bitrix-error-message.util';
 
 export class BitrixBaseApi {
     private readonly logger = new Logger(BitrixBaseApi.name);
@@ -138,9 +139,12 @@ export class BitrixBaseApi {
             );
             return response.data;
         } catch (error) {
-            this.logger.error(`API call failed: ${error.message}`);
+            this.logger.error(`API call failed: ${method} — ${error.message}`);
             await this.telegramBot.sendMessageAdminError(
-                `Bitrix call error: ${JSON.stringify(error?.response?.data || error)}`,
+                buildBitrixErrorMessage(
+                    { method, domain: this.domain, data },
+                    error,
+                ),
             );
             throw error;
         }
@@ -209,9 +213,14 @@ export class BitrixBaseApi {
 
             return response.data;
         } catch (error) {
-            this.logger.error(`API call failed: ${error.message}`);
+            this.logger.error(
+                `API call failed: ${resultMethod} — ${error.message}`,
+            );
             await this.telegramBot.sendMessageAdminError(
-                `Bitrix call error: ${JSON.stringify(error?.response?.data || error)}`,
+                buildBitrixErrorMessage(
+                    { method: resultMethod, domain: this.domain, data },
+                    error,
+                ),
             );
             throw error;
         }
