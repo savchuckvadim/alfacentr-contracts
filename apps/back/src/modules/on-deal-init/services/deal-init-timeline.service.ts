@@ -11,6 +11,7 @@ import { ProductResolveIssue } from '@/modules/alfa-products/services/alfa-produ
 import { renderIssuesForTimeline } from '@/modules/alfa-products/services/product-resolve-issue.util';
 
 import { renderParticipantsForTimeline } from './deal-init-timeline.render';
+import { renderContactSyncIssue } from './contact-sync-issue.render';
 
 /**
  * Всё, что приём заявки пишет в таймлайн сделки.
@@ -71,6 +72,22 @@ export class DealInitTimelineService {
             dealId,
             renderParticipantsForTimeline(participants, skipped),
         );
+    }
+
+    /**
+     * Контакт для отправки документов не создан.
+     *
+     * Приём из-за этого не падает, но и молчать нельзя: без контакта
+     * письмо отправить некому, а заявка выглядит полностью принятой —
+     * товары и участники на месте. Раньше отказ портала виден был только
+     * в логах контейнера.
+     */
+    async contactSyncIssue(
+        dealId: number,
+        email: string,
+        error: unknown,
+    ): Promise<void> {
+        await this.comment(dealId, renderContactSyncIssue(email, error));
     }
 
     /**

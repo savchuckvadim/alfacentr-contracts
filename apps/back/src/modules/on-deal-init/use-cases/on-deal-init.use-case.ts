@@ -156,6 +156,7 @@ export class OnDealInitUseCase {
                 bxDealContactSyncService,
                 deal,
                 dealValues,
+                timeline,
             ));
 
         //признак ставим последним шагом: пустое поле означает, что прием
@@ -181,6 +182,7 @@ export class OnDealInitUseCase {
         bxDealContactSyncService: BxDealContactSyncService,
         deal: IBXDeal,
         dealValues: DealValue[],
+        timeline: DealInitTimelineService,
     ) {
         const getFieldByCode = (code: BxDealDataKeys) => {
             return dealValues.find((value) => value.code === code);
@@ -210,6 +212,15 @@ export class OnDealInitUseCase {
         } catch (error) {
             //инициация сделки не должна падать из-за синхронизации контакта
             console.error('syncDealContact error', error);
+
+            //но и молчать нельзя: без контакта письмо отправить некому, а
+            //заявка при этом выглядит принятой целиком. 18.11.2026 портал
+            //отверг адрес, и найти сделку удалось только по логам контейнера
+            await timeline.contactSyncIssue(
+                Number(deal.ID),
+                emailData.value as string,
+                error,
+            );
         }
     }
 
