@@ -4,6 +4,7 @@ import { ContractType } from '@/modules/features/contract-type/ui/ContractType';
 import { DocumentNumber } from '@/modules/features/document-number';
 import { OwnBankSelect } from '@/modules/features/own-bank';
 import { ReloadApp, BackButton } from '@/modules/shared';
+import { EdoCommentButton } from '@/modules/widgetes/EdoComment';
 import { ThemeToggler } from '@workspace/theme';
 import { useEffect, useState } from 'react';
 
@@ -41,6 +42,12 @@ export const DocumentGlobalConfig = () => {
             </div>
 
             <div className="flex items-center space-x-2 mr-5">
+                {/*
+                    Комментарий ОДО виден сразу: сотрудники ОДО читают его в
+                    приложении, не возвращаясь в карточку сделки. В плашке
+                    первая строка, полный текст и правка — в модальном окне
+                */}
+                <EdoCommentButton />
                 <ThemeToggler />
                 <ReloadApp />
             </div>

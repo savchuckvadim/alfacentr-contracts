@@ -1,12 +1,20 @@
 import { ReactNode } from 'react';
-import { CalendarDaysIcon, CheckCircle, Package, Users } from 'lucide-react';
+import {
+    CalendarDaysIcon,
+    CheckCircle,
+    MessageSquareText,
+    Package,
+    Users,
+} from 'lucide-react';
 import { ParticipantsTableWidget } from '@/modules/widgetes/Participant/ParticipantsTable/ParticipantsTableWidget';
 import {
     ContractPreview,
+    EdoCommentWidget,
     PpkApplicationTableWidget,
     ProductsTableWidget,
     TPpkApplicationLive,
 } from '@/modules/widgetes';
+import { DealEdoCommentName } from '@/modules/features/deal-edo-comment';
 
 /**
  * Всё, от чего зависит показ виджетов главной страницы.
@@ -77,6 +85,16 @@ export const MAIN_PAGE_WIDGETS: IMainPageWidget[] = [
         render: ctx => <PpkApplicationTableWidget ppk={ctx.ppk} />,
         //наверху главного: даты готовят заранее, до окна отправки
         main: { order: 0, title: 'Приложение ППК' },
+    },
+    {
+        //перед «Договором»: это то, что сотрудник ОДО должен прочитать
+        //прежде, чем смотреть на состав договора
+        value: 'edo-comment',
+        label: 'Комментарий ОДО',
+        icon: <MessageSquareText />,
+        isVisible: () => true,
+        render: () => <EdoCommentWidget />,
+        main: { order: 25, title: DealEdoCommentName },
     },
     {
         value: 'contract',
