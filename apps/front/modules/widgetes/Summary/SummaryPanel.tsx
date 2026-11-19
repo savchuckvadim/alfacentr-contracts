@@ -14,6 +14,7 @@ import { useAlfaProducts } from '@/modules/entities/product/hook/useAlfaProducts
 import {
     SummaryStatistics,
     // SummaryStatusInfo,
+    SummarySendOnlyButton,
     SummarySubmitButton,
 } from './components';
 import { useIsUpContractType } from '@/modules/features';
@@ -69,12 +70,21 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ className }) => {
                         description="Все данные проверены и готовы для обработки"
                     /> */}
 
-                    <div className="pt-2">
+                    <div className="pt-2 space-y-4">
                         <SummarySubmitButton
                             isLoading={isLoading}
                             isDisabled={isSubmitDisabled}
                             onSubmit={handleSubmit}
                         />
+
+                        {/*
+                            Повторная отправка нужна редко, поэтому кнопка
+                            неприметная и ниже основной. Но она на виду:
+                            иначе менеджер нажмёт «Отправить» и получит
+                            новый пакет с новым номером там, где нужен
+                            прежний
+                        */}
+                        <SummarySendOnlyButton isDisabled={isLoading} />
                     </div>
                 </CardContent>
             </Card>

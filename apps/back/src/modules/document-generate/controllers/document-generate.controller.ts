@@ -3,6 +3,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DocumentGenerateDto } from '../dto/document-generate.dto';
 import { IsDealReadyForSendDto } from '../dto/is-deal-ready-for-send.dto';
 import { IsDealReadyForSendUseCase } from '../use-cases/is-deal-ready-for-send.use-case';
+import { SendOnlyDto, SendOnlyResult } from '../dto/send-only.dto';
+import { SendOnlyUseCase } from '../use-cases/send-only.use-case';
 import { QueueDispatcherService } from '@/modules/queue/dispatch/queue-dispatcher.service';
 import { QueueNames } from '@/modules/queue/constants/queue-names.enum';
 import { JobNames } from '@/modules/queue/constants/job-names.enum';
@@ -13,6 +15,7 @@ export class DocumentGenerateController {
     constructor(
         private readonly job: QueueDispatcherService,
         private readonly isDealReadyForSendUseCase: IsDealReadyForSendUseCase,
+        private readonly sendOnlyUseCase: SendOnlyUseCase,
     ) {}
     @Post('')
     async generateDocument(@Body() dto: DocumentGenerateDto) {
@@ -33,6 +36,20 @@ export class DocumentGenerateController {
         @Body() dto: IsDealReadyForSendDto,
     ): Promise<boolean> {
         return await this.isDealReadyForSendUseCase.isDealReadyForSend(dto);
+    }
+
+    /**
+     * Очередь не нужна: тут нет ни генерации, ни работы с диском — только
+     * проверка полей, привязка контакта и смена стадии. Менеджер должен
+     * сразу увидеть, ушло письмо или чего-то не хватает
+     */
+    @ApiOperation({
+        summary:
+            'Отправить уже сформированные документы повторно, не пересобирая их',
+    })
+    @Post('send-only')
+    async sendOnly(@Body() dto: SendOnlyDto): Promise<SendOnlyResult> {
+        return await this.sendOnlyUseCase.sendOnly(dto);
     }
 
     //for dev without queue

@@ -8,6 +8,23 @@ import { EContractType, IRequestDocumentGenerateType } from '@alfa/entities';
 import { registerWSHandler } from '@/modules/shared/Websocket/ws-handlers-registry';
 import { documentGenerateDone } from '../../model/thunk/DocumentThunk';
 
+export interface ISendOnlyRequest {
+    dealId: number;
+    email: string;
+    name?: string;
+    phone?: string;
+    userId: number;
+    contractType?: EContractType;
+    domain?: string;
+}
+
+export interface ISendOnlyResult {
+    sent: boolean;
+    /** Поля сделки с документами, которых не хватает */
+    missing: { name: string; bitrixId: string }[];
+    contactId: number | null;
+}
+
 export class DocumentGenerateOwnService {
     constructor() { }
 
@@ -44,6 +61,31 @@ export class DocumentGenerateOwnService {
             return false;
         }
         return response.data === true;
+    }
+
+    /**
+     * Отправляет уже сформированные документы повторно.
+     *
+     * Пакет не пересобирается: номер договора, тема письма и файлы
+     * остаются прежними. Бэкенд сам проверит, что всё на месте, поставит
+     * получателя из заявки и переведёт стадию
+     */
+    async sendOnly(dto: ISendOnlyRequest): Promise<ISendOnlyResult> {
+        const response = await backAPI.service<ISendOnlyResult>(
+            EBACK_ENDPOINT.DOCUMENT_SEND_ONLY,
+            API_METHOD.POST,
+            dto,
+        );
+
+        if (response?.resultCode !== EResultCode.SUCCESS || !response.data) {
+            throw new Error(
+                response?.errors?.join(', ') ||
+                    response?.message ||
+                    'Не удалось отправить документы',
+            );
+        }
+
+        return response.data;
     }
 
     // async wsListener(socketId: string, wsClient: WSClient) {
