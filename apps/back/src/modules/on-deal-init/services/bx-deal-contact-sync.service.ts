@@ -1,5 +1,6 @@
 import { BitrixService, IBXContact } from '@/modules/bitrix';
 import { DOCUMENT_FIELD_CONTACT_ID_FOR_SEND_EMAIL_BITRIX_ID } from '@alfa/entities';
+import { pickContactByEmail } from '@/modules/flow/bitrix-deal-flow/deal-contact.rules';
 
 export interface IBxDealContactSyncDto {
     dealId: number;
@@ -62,28 +63,30 @@ export class BxDealContactSyncService {
         return contactResponse.result || [];
     }
 
+    /**
+     * Контакт с нужным адресом среди найденных.
+     *
+     * Фильтр EMAIL у crm.contact.list работает как «содержит», а не
+     * «равно», поэтому в выдачу попадают посторонние. Раньше при отсутствии
+     * рабочего адреса брался просто первый из списка, и ему же
+     * перезаписывался e-mail: чужой карточке подменялся адрес, а документы
+     * уходили не тому человеку. Теперь без точного совпадения возвращаем
+     * null — вызывающий заведёт новый контакт.
+     */
     protected async getContactByEmailType(
         contacts: IBXContact[],
     ): Promise<IBXContact | null> {
-        if (!contacts || contacts.length === 0) {
-            return null;
-        }
-        let contact = contacts.find((c) => {
-            const emails = c.EMAIL;
-            if (!Array.isArray(emails)) {
-                return false;
-            }
-            return emails.some(
-                (entry) =>
-                    (entry as { VALUE_TYPE?: string }).VALUE_TYPE ===
-                    EMAIL_VALUE_TYPE,
-            );
-        });
-        if (contacts && contacts.length > 0 && contacts[0] && !contact) {
-            contact = contacts[0];
-            await this.updateContactEmail(contact);
-        }
-        return contact ?? null;
+        const { exact, needsWorkType } = pickContactByEmail(
+            contacts,
+            this.email,
+        );
+        if (!exact) return null;
+
+        //адрес у контакта есть, но не помечен рабочим — робот отправки
+        //такой не видит, проставляем тип его же адресу
+        if (needsWorkType) await this.updateContactEmail(exact);
+
+        return exact;
     }
 
     protected async updateContactEmail(contact: IBXContact) {

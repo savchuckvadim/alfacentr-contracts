@@ -18,6 +18,7 @@ import { StorageService } from '@/core/storage';
 import { DealDocumentReadyService } from './deal-document-ready.service';
 import { IBitrixBatchResponseResult } from '@/modules/bitrix/core/interface/bitrix-api.intterface';
 import { BxDealStageFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-stage-flow.service';
+import { BxDealContactFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-contact-flow.service';
 import { EmailDocumentFlowService } from '@/modules/flow/email-flow/email-document-flow.service';
 import { IRequestDocumentGenerateResponse } from '../type/request-document-generate.type';
 // import { BxDiskFlowService } from '@/modules/flow/disk-flow/bx-disk-flow.service';
@@ -234,6 +235,32 @@ export class DocumentGenerateFlowService {
         let mailResult: any = null;
         if (dto.email.needEmail && dto.email.email) {
             await delay(100);
+
+            //Ставим контакт из заявки последним в сделке — прямо перед сменой
+            //стадии, по которой робот отправит документы. Робот «Отправить
+            //письмо клиенту» выбрать получателя не умеет и берёт рабочий
+            //e-mail последнего добавленного контакта.
+            //
+            //Делать это раньше бесполезно: привязку приёма сносит Битрикс,
+            //когда менеджер вручную ставит компанию. Сделка 204568
+            //(19.11.2026) — приём привязал контакт в 08:52, в 09:32
+            //менеджер поставил компанию, наш контакт удалён и заменён
+            //тремя контактами компании, в 12:30 робот отправил документы
+            //первому из них
+            await new BxDealContactFlowService(bitrix, Number(dealId))
+                .flow({
+                    email: dto.email.email,
+                    name: dto.email.name || '',
+                    phone: dto.email.phone || '',
+                    userId: dto.userId,
+                })
+                .catch((error) => {
+                    //не роняем генерацию: документы важнее, а о неверном
+                    //получателе менеджеру скажет комментарий ниже
+                    console.error('ensureContactForSend', dealId, error);
+                    return { contactId: null };
+                });
+
             const emailDocumentFlowService = new EmailDocumentFlowService(
                 bitrix,
                 this.bxTimelineService,
