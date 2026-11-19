@@ -43,8 +43,9 @@ export class DealInitTimelineService {
         if (!dealValues?.length) return;
 
         const layout = new BidInfoLayoutService(GetDealBidItemsType.BB);
-        const comment = layout.getComment(dealValues);
-        if (comment) await this.comment(dealId, comment);
+        //getComment возвращает минимум перевод строки — пустое отсечёт
+        //comment(), чтобы это работало для всех вызовов сразу
+        await this.comment(dealId, layout.getComment(dealValues));
     }
 
     /**
@@ -116,6 +117,11 @@ export class DealInitTimelineService {
      * один из них не стоит того, чтобы оборвать приём заявки на середине.
      */
     private async comment(dealId: number, comment: string): Promise<void> {
+        //портал отвергает комментарий без текста: «Empty comment message».
+        //Сюда прилетает строка из одних переводов строки, когда заявка
+        //почти пустая — обычная проверка на непустоту её пропускает
+        if (!comment?.trim()) return;
+
         try {
             await this.bitrix.timeline.addTimelineComment({
                 ENTITY_TYPE: BitrixEntityType.DEAL,
