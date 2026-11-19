@@ -4,25 +4,48 @@ import {
     toMissingList,
 } from './send-only.rules';
 
-const field = (name: string, bitrixId = 'UF_CRM_8_X') => ({
-    code: 'current_contract_without_pt',
-    name,
-    bitrixId,
-}) as never;
+const field = (name: string, bitrixId = 'UF_CRM_8_X') =>
+    ({
+        code: 'current_contract_without_pt',
+        name,
+        bitrixId,
+    }) as never;
+
+/** Для семинара обязательны 4 документа + тема письма */
+const SEMINAR_TOTAL = 5;
 
 describe('canSendOnly', () => {
-    it('полный пакет — отправляем', () => {
-        expect(canSendOnly([])).toBe(true);
-        expect(canSendOnly(null)).toBe(true);
-        expect(canSendOnly(undefined)).toBe(true);
+    it('полный комплект — отправляем', () => {
+        expect(canSendOnly([], SEMINAR_TOTAL)).toBe(true);
+        expect(canSendOnly(null, SEMINAR_TOTAL)).toBe(true);
     });
 
-    it('не хватает хотя бы одного документа — не отправляем', () => {
-        expect(canSendOnly([field('Текущий договор')])).toBe(false);
+    it('часть документов есть — отправку не блокируем, решает менеджер', () => {
+        //нет приложения ППК, но договор, счета и УПД на месте
+        expect(canSendOnly([field('Текущее приложение ППК')], 6)).toBe(true);
     });
 
-    it('нет приложения ППК — не отправляем', () => {
-        expect(canSendOnly([field('Текущее приложение ППК')])).toBe(false);
+    it('не сформировано вообще ничего — не отправляем', () => {
+        const nothing = [
+            field('Текущий договор без печати'),
+            field('Текущий акт'),
+            field('Текущий счет с печатью'),
+            field('Текущий счет без печати'),
+            field('Тема письма'),
+        ];
+
+        expect(canSendOnly(nothing, SEMINAR_TOTAL)).toBe(false);
+    });
+
+    it('один документ из пяти — уже есть что отправить', () => {
+        const almostNothing = [
+            field('Текущий акт'),
+            field('Текущий счет с печатью'),
+            field('Текущий счет без печати'),
+            field('Тема письма'),
+        ];
+
+        expect(canSendOnly(almostNothing, SEMINAR_TOTAL)).toBe(true);
     });
 });
 
@@ -50,11 +73,11 @@ describe('renderMissingForManager', () => {
 
     it('несколько — перечисляем поимённо', () => {
         const text = renderMissingForManager([
-            field('Текущий договор'),
+            field('Текущий договор без печати'),
             field('Текущее приложение ППК'),
         ]);
 
-        expect(text).toContain('Текущий договор');
+        expect(text).toContain('Текущий договор без печати');
         expect(text).toContain('Текущее приложение ППК');
     });
 

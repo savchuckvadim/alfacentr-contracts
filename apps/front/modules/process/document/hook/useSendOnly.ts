@@ -39,8 +39,6 @@ export const useSendOnly = () => {
         reset,
         isSending,
         result,
-        /** Документы не сформированы — кнопка нажата, но отправлять нечего */
-        missing: result && !result.sent ? result.missing : [],
         isSent: Boolean(result?.sent),
     };
 };

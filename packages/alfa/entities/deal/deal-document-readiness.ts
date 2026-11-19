@@ -22,10 +22,17 @@ type TCurrentDocumentFieldCode = keyof typeof currentDocumentFields;
 
 /**
  * Поля сделки, которые должны содержать документы после генерации
- * для любого типа договора
+ * для любого типа договора.
+ *
+ * Ровно тот набор, который робот прикладывает к письму клиенту. Договор
+ * с печатью, гарантийное письмо и коммерческие предложения в список не
+ * входят: робот берёт их, если они есть, но обязательными они не
+ * являются.
  */
 const BASE_REQUIRED_DOCUMENT_FIELD_CODES: TCurrentDocumentFieldCode[] = [
     EnumDealCurrentDocumentFieldCode.CURRENT_CONTRACT_WITHOUT_PT,
+    //поле называется «Текущий акт» с тех пор, когда акт ещё не заменили
+    //на УПД: лежит в нём УПД, он и уходит клиенту
     EnumDealCurrentDocumentFieldCode.CURRENT_ACT_WITH_PT,
     EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITH_PT,
     EnumDealCurrentDocumentFieldCode.CURRENT_INVOICES_WITHOUT_PT,

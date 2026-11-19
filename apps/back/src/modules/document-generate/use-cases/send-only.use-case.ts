@@ -4,6 +4,8 @@ import { BxDealContactFlowService } from '@/modules/flow/bitrix-deal-flow/bx-dea
 import { BxDealStageFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-stage-flow.service';
 import { BxTimelineService } from '@/modules/flow/timeline-flow/bx-timeline.service';
 
+import { getRequiredDocumentFields } from '@alfa/entities';
+
 import { SendOnlyDto, SendOnlyResult } from '../dto/send-only.dto';
 import { DealDocumentReadyService } from '../services/deal-document-ready.service';
 import {
@@ -47,15 +49,27 @@ export class SendOnlyUseCase {
             dto.contractType,
         );
 
-        if (!canSendOnly(missing)) {
-            const reason = renderMissingForManager(missing);
-            this.logger.warn(`Сделка ${dealId}: отправка отменена. ${reason}`);
+        const required = getRequiredDocumentFields(dto.contractType);
+        const reason = renderMissingForManager(missing);
+        const timeline = new BxTimelineService(
+            bitrix,
+            Number(dto.userId),
+            dealId,
+        );
 
-            //в таймлайн тоже: менеджер мог нажать кнопку и уйти, а по
-            //карточке будет видно, почему письмо не ушло
-            await new BxTimelineService(bitrix, Number(dto.userId), dealId)
+        //Полноту комплекта оценивает менеджер: он видит карточку и знает,
+        //что согласовано с клиентом. Останавливаем только когда в сделке
+        //нет ни одного документа — иначе робот отправит письмо с текстом
+        //«во вложении Договор, Счёт и УПД» и пустыми вложениями, а
+        //отозвать его нельзя
+        if (!canSendOnly(missing, required.length)) {
+            this.logger.warn(
+                `Сделка ${dealId}: отправка отменена, документов нет вовсе`,
+            );
+
+            await timeline
                 .send(
-                    `⚠️ [B]Повторная отправка отменена[/B] \n${reason} \nСформируйте документы заново.`,
+                    `⚠️ [B]Повторная отправка отменена[/B] \nВ сделке нет ни одного сформированного документа — отправлять нечего. \nНажмите «Отправить», чтобы собрать пакет.`,
                     'error',
                 )
                 .catch(() => undefined);
@@ -78,28 +92,27 @@ export class SendOnlyUseCase {
             userId: Number(dto.userId),
         });
 
-        const timeline = new BxTimelineService(
-            bitrix,
-            Number(dto.userId),
-            dealId,
-        );
-
         const stageFlow = new BxDealStageFlowService(bitrix, dealId);
         await stageFlow.changeStageFromEmailSent();
 
         this.logger.log(
-            `Сделка ${dealId}: документы отправлены повторно, контакт ${contactId}`,
+            `Сделка ${dealId}: документы отправлены повторно, контакт ${contactId}${
+                reason ? `. Неполный комплект: ${reason}` : ''
+            }`,
         );
 
         //Комментарий нужен для разбора обращений: по нему видно, что пакет
-        //уходил дважды и кому именно во второй раз
-        await timeline
-            .send(
-                `📧 [B]Повторная отправка документов[/B] \nДокументы не пересобирались — отправлен тот же пакет.`,
-                'email',
-            )
-            .catch(() => undefined);
+        //уходил дважды и кому именно во второй раз. Неполный комплект
+        //отмечаем отдельной строкой — отправку он не отменяет, но в
+        //карточке должно остаться, что клиент получил не всё
+        const lines = [
+            '📧 [B]Повторная отправка документов[/B]',
+            'Документы не пересобирались — отправлен тот же пакет.',
+        ];
+        if (reason) lines.push(`⚠️ ${reason}`);
 
-        return { sent: true, missing: [], contactId };
+        await timeline.send(lines.join(' \n'), 'email').catch(() => undefined);
+
+        return { sent: true, missing: toMissingList(missing), contactId };
     }
 }

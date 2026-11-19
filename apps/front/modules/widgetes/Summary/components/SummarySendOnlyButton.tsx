@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button } from '@workspace/ui/components/button';
+import { cn } from '@workspace/ui/lib/utils';
 import { Loader2, MailCheck, RotateCw } from 'lucide-react';
 
 import { useSendOnly } from '@/modules/process/document/hook/useSendOnly';
@@ -10,6 +11,14 @@ export interface SummarySendOnlyButtonProps {
     /** Пока идёт генерация пакета, повторная отправка бессмысленна */
     isDisabled?: boolean;
 }
+
+/**
+ * Поле в Битриксе называется «Текущий акт» — так было, пока акт не
+ * заменили на УПД. Переименовывать поле нельзя, оно в шаблонах и в
+ * роботе, но менеджеру показываем нынешнее название документа
+ */
+const getDocumentLabel = (name: string): string =>
+    name === 'Текущий акт' ? 'УПД' : name;
 
 /**
  * Повторная отправка уже сформированных документов.
@@ -25,7 +34,8 @@ export interface SummarySendOnlyButtonProps {
 export const SummarySendOnlyButton: React.FC<SummarySendOnlyButtonProps> = ({
     isDisabled,
 }) => {
-    const { sendOnly, isSending, isSent, missing } = useSendOnly();
+    const { sendOnly, isSending, isSent, result } = useSendOnly();
+    const missing = result?.missing ?? [];
 
     return (
         <div className="flex flex-col gap-2">
@@ -64,20 +74,36 @@ export const SummarySendOnlyButton: React.FC<SummarySendOnlyButtonProps> = ({
             )}
 
             {/*
-                Перечисляем поимённо: «не готово к отправке» не говорит,
-                что делать, а «нет приложения ППК» — говорит
+                Перечисляем поимённо: «комплект неполный» не говорит, что
+                делать, а «нет приложения ППК» — говорит.
+                После отправки это предупреждение, до — причина отказа:
+                отказываем только когда в сделке нет ни одного документа
             */}
             {missing.length > 0 && (
-                <div className="text-xs text-red-600">
-                    <p>Отправлять нечего, не сформированы документы:</p>
+                <div
+                    className={cn(
+                        'text-xs',
+                        isSent ? 'text-amber-600' : 'text-red-600',
+                    )}
+                >
+                    <p>
+                        {isSent
+                            ? 'Отправлено без этих документов:'
+                            : 'Отправлять нечего, не сформированы документы:'}
+                    </p>
                     <ul className="list-disc list-inside">
                         {missing.map(field => (
-                            <li key={field.bitrixId}>{field.name}</li>
+                            <li key={field.bitrixId}>
+                                {getDocumentLabel(field.name)}
+                            </li>
                         ))}
                     </ul>
-                    <p className="mt-1 text-gray-500">
-                        Нажмите «Отправить» выше — документы соберутся заново.
-                    </p>
+                    {!isSent && (
+                        <p className="mt-1 text-gray-500">
+                            Нажмите «Отправить» выше — документы соберутся
+                            заново.
+                        </p>
+                    )}
                 </div>
             )}
         </div>
