@@ -12,6 +12,10 @@ import { renderIssuesForTimeline } from '@/modules/alfa-products/services/produc
 
 import { renderParticipantsForTimeline } from './deal-init-timeline.render';
 import { renderContactSyncIssue } from './contact-sync-issue.render';
+import {
+    extractEdoComment,
+    renderEdoCommentForTimeline,
+} from './edo-comment.render';
 
 /**
  * Всё, что приём заявки пишет в таймлайн сделки.
@@ -41,6 +45,23 @@ export class DealInitTimelineService {
         const layout = new BidInfoLayoutService(GetDealBidItemsType.BB);
         const comment = layout.getComment(dealValues);
         if (comment) await this.comment(dealId, comment);
+    }
+
+    /**
+     * Комментарий для сотрудника ОДО, если он пришёл вместе с заявкой.
+     *
+     * В блок «Информация» не попадает: тот собирается по шаблону полей
+     * заявки, а это поле объявлено отдельно, среди полей документа.
+     * Пустой комментарий пропускаем — пустого заголовка в карточке не надо.
+     */
+    async edoComment(
+        dealId: number,
+        deal: Record<string, unknown> | null | undefined,
+    ): Promise<void> {
+        const comment = extractEdoComment(deal);
+        if (!comment) return;
+
+        await this.comment(dealId, renderEdoCommentForTimeline(comment));
     }
 
     /** Товары, которые не удалось подобрать — их менеджер добавляет руками */

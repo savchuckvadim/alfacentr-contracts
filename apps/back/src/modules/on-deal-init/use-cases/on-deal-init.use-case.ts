@@ -22,6 +22,7 @@ import {
 import { TelegramService } from '@/modules/telegram/telegram.service';
 import { renderIssuesForTelegram } from '@/modules/alfa-products/services/product-resolve-issue.util';
 import { DealInitTimelineService } from '../services/deal-init-timeline.service';
+import { EDO_COMMENT_BITRIX_ID } from '../services/edo-comment.render';
 import { ProductResolveIssue } from '@/modules/alfa-products/services/alfa-product.service';
 import { IBXDeal } from '@/modules/bitrix';
 
@@ -82,6 +83,9 @@ export class OnDealInitUseCase {
             'ASSIGNED_BY_ID',
             //без этого поля нельзя понять, привязана ли уже компания к сделке
             'COMPANY_ID',
+            //в шаблон полей заявки не входит — объявлено среди полей
+            //документа, поэтому запрашиваем отдельно
+            EDO_COMMENT_BITRIX_ID,
         ]);
         //поля выбора семинара из трех форм по отделам схлопываем в одно
         //поле дней участника — вся цепочка ниже написана под него
@@ -146,6 +150,10 @@ export class OnDealInitUseCase {
             dealValues &&
             dealValues.length > 0 &&
             (await timeline.bidInfo(deal.ID, dealValues));
+
+        //сразу за данными заявки: сотрудник ОДО читает комментарий вместе
+        //с ними, а не ищет его отдельно по карточке
+        deal && deal.ID && (await timeline.edoComment(deal.ID, deal));
 
         deal && deal.ID && (await bxCompanyService.searchCompany(deal, inn));
 
