@@ -40,6 +40,8 @@ export class SendOnlyUseCase {
         const { bitrix } = await this.pbxService.init(
             dto.domain || DEFAULT_DOMAIN,
         );
+        //чтобы в ошибках портала было видно, по какой сделке они пришли
+        bitrix.api.setScope(`повторная отправка, сделка ${dealId}`);
 
         //Проверяем, что отправлять есть что. Без этого робот отправит
         //письмо с неполным пакетом: для ППК-договоров обязательно ещё и

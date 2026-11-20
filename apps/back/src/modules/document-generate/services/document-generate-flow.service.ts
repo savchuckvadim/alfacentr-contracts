@@ -52,6 +52,8 @@ export class DocumentGenerateFlowService {
 
         const { bitrix } = await this.pbxService.init(DEFAULT_DOMAIN);
         const dealId = Number(dto.dealId);
+        //чтобы в ошибках портала было видно, по какой сделке они пришли
+        bitrix.api.setScope(`генерация документов, сделка ${dealId}`);
         const dealService = new BxDealStageFlowService(bitrix, dealId);
         // const contactService = new BxDealContactFlowService(bitrix, dealId);
         //пока что диск не используем так как он для отправки email своим сервером

@@ -91,6 +91,45 @@ describe('buildBitrixErrorMessage', () => {
         expect(message).toContain('Поле некорректно');
     });
 
+    it('по сообщению видно сделку, даже когда её нет в запросе', () => {
+        //реальный случай 20.11.2026: портал отверг адрес, а в запросе
+        //crm.contact.add номера сделки нет вовсе
+        const message = buildBitrixErrorMessage(
+            {
+                method: 'crm.contact.add',
+                domain,
+                scope: 'приём заявки, сделка 204836',
+                data: {
+                    fields: {
+                        NAME: 'Соболева Т.В.',
+                        EMAIL: [{ VALUE: 'Юрчикова Е.Ю.', TYPE: 'WORK' }],
+                    },
+                },
+            },
+            {
+                response: {
+                    data: {
+                        error_description:
+                            'Поле "Рабочий e-mail" содержит некорректный адрес.',
+                    },
+                },
+            },
+        );
+
+        expect(message).toContain('сделка 204836');
+        expect(message).toContain('приём заявки');
+    });
+
+    it('без scope сообщение не ломается', () => {
+        const message = buildBitrixErrorMessage(
+            { method: 'crm.deal.get', domain },
+            new Error('socket hang up'),
+        );
+
+        expect(message).not.toContain('где:');
+        expect(message).toContain('socket hang up');
+    });
+
     it('сообщение собирается и без данных запроса', () => {
         const message = buildBitrixErrorMessage(
             { method: 'crm.contact.add', domain },

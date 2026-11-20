@@ -50,6 +50,8 @@ export class DocumentEmailService {
         const { dealId, userId: userIdString, userName, domain, companyName } = dto;
         const userId = Number(userIdString);
         const { bitrix } = await this.pbxService.init(domain);
+        //чтобы в ошибках портала было видно, по какой сделке они пришли
+        bitrix.api.setScope(`отправка документов, сделка ${dealId}`);
 
 
         const bxTimelineService = new BxTimelineService(

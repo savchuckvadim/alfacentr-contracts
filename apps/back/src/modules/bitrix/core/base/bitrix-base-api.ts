@@ -22,6 +22,17 @@ export class BitrixBaseApi {
     private cmdBatch: Record<string, string> = {};
     private semaphore: Semaphore;
     private axiosOptions: any;
+    /**
+     * Чем сейчас занят этот экземпляр: «приём заявки, сделка 204836».
+     *
+     * Идёт в сообщение об ошибке. Нужен там, где номера сделки нет в самом
+     * запросе: 20.11.2026 портал отверг адрес в crm.contact.add, и по
+     * сообщению нельзя было понять, к какой заявке относится контакт.
+     *
+     * Экземпляр создаётся на каждый вызов pbx.init, так что контекст не
+     * протекает между сделками
+     */
+    private scope = '';
 
     constructor(
         private readonly telegramBot: TelegramService,
@@ -36,6 +47,15 @@ export class BitrixBaseApi {
             httpAgent: new http.Agent({ keepAlive: true }),
             httpsAgent: new https.Agent({ keepAlive: true }),
         };
+    }
+
+    /**
+     * Говорит, чем занят этот экземпляр — попадёт в сообщение об ошибке.
+     * Ставится там, где известна сделка: приём заявки, генерация
+     * документов, крон. Пустая строка сбрасывает
+     */
+    setScope(scope: string) {
+        this.scope = scope || '';
     }
 
     initFromPortal(portal: IPortal) {
@@ -142,7 +162,12 @@ export class BitrixBaseApi {
             this.logger.error(`API call failed: ${method} — ${error.message}`);
             await this.telegramBot.sendMessageAdminError(
                 buildBitrixErrorMessage(
-                    { method, domain: this.domain, data },
+                    {
+                        method,
+                        domain: this.domain,
+                        data,
+                        scope: this.scope,
+                    },
                     error,
                 ),
             );
@@ -218,7 +243,12 @@ export class BitrixBaseApi {
             );
             await this.telegramBot.sendMessageAdminError(
                 buildBitrixErrorMessage(
-                    { method: resultMethod, domain: this.domain, data },
+                    {
+                        method: resultMethod,
+                        domain: this.domain,
+                        data,
+                        scope: this.scope,
+                    },
                     error,
                 ),
             );

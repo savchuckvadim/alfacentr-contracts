@@ -66,6 +66,7 @@ export class OnDealInitUseCase {
     }
     async onDealCreate(data: OnDealInitRequestDto) {
         const {
+            bitrix,
             bxDealService,
             alfaFieldService,
             bxSmartService,
@@ -74,6 +75,12 @@ export class OnDealInitUseCase {
             bxDealContactSyncService,
             timeline,
         } = await this.init(data.auth.domain);
+
+        //в сообщениях об ошибках портала будет видно, к какой заявке они
+        //относятся: у части вызовов номера сделки в запросе нет вовсе —
+        //20.11.2026 портал отверг адрес в crm.contact.add, и найти сделку
+        //по сообщению было нельзя
+        bitrix.api.setScope(`приём заявки, сделка ${data.dealId}`);
 
         const { fieldData, bxFieldsIds } =
             await alfaFieldService.getDealFieldsDataWithIds();

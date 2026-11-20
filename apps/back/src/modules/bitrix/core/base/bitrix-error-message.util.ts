@@ -113,6 +113,14 @@ export interface BitrixErrorContext {
     method: string;
     domain: string;
     data?: unknown;
+    /**
+     * Чем занимались, когда упали: «приём заявки, сделка 204836».
+     *
+     * Нужен там, где номера сделки нет в самом запросе. Так случилось
+     * 20.11.2026 с crm.contact.add: портал отверг адрес, а по сообщению
+     * нельзя было понять, к какой заявке относится контакт
+     */
+    scope?: string;
 }
 
 /** Собирает сообщение для телеграма: что вызывали, куда, с чем и что ответили */
@@ -122,6 +130,7 @@ export const buildBitrixErrorMessage = (
 ): string => {
     const lines = [`Bitrix call error: ${context.method}`];
 
+    if (context.scope) lines.push(`где: ${context.scope}`);
     if (context.domain) lines.push(`портал: ${context.domain}`);
 
     const entityId = extractEntityId(context.data);
