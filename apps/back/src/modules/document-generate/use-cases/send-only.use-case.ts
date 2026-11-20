@@ -4,7 +4,8 @@ import { BxDealContactFlowService } from '@/modules/flow/bitrix-deal-flow/bx-dea
 import { BxDealStageFlowService } from '@/modules/flow/bitrix-deal-flow/bx-deal-stage-flow.service';
 import { BxTimelineService } from '@/modules/flow/timeline-flow/bx-timeline.service';
 
-import { getRequiredDocumentFields } from '@alfa/entities';
+import { BX_DEAL_STAGES_DATA, getRequiredDocumentFields } from '@alfa/entities';
+import { BitrixService } from '@/modules/bitrix';
 
 import { SendOnlyDto, SendOnlyResult } from '../dto/send-only.dto';
 import { DealDocumentReadyService } from '../services/deal-document-ready.service';
@@ -92,8 +93,18 @@ export class SendOnlyUseCase {
             userId: Number(dto.userId),
         });
 
+        //Робот срабатывает на переход между стадиями, а не на их значение.
+        //Если сделка уже на «Документы отправлены», повторная установка той
+        //же стадии перехода не создаёт — надо вернуть её на «Документы
+        //готовы» и поставить снова
         const stageFlow = new BxDealStageFlowService(bitrix, dealId);
-        await stageFlow.changeStageFromEmailSent();
+        const isAlreadySent = await this.isOnEmailSentStage(bitrix, dealId);
+
+        if (isAlreadySent) {
+            await stageFlow.resendEmail();
+        } else {
+            await stageFlow.changeStageFromEmailSent();
+        }
 
         this.logger.log(
             `Сделка ${dealId}: документы отправлены повторно, контакт ${contactId}${
@@ -114,5 +125,31 @@ export class SendOnlyUseCase {
         await timeline.send(lines.join(' \n'), 'email').catch(() => undefined);
 
         return { sent: true, missing: toMissingList(missing), contactId };
+    }
+
+    /**
+     * Стоит ли сделка уже на стадии отправки.
+     *
+     * От этого зависит, достаточно ли просто поставить стадию или нужен
+     * полный перезапуск. Ошибку чтения не роняем: лучше сделать
+     * перезапуск лишний раз, чем не отправить письмо
+     */
+    private async isOnEmailSentStage(
+        bitrix: BitrixService,
+        dealId: number,
+    ): Promise<boolean> {
+        try {
+            const response = await bitrix.deal.get(dealId, ['STAGE_ID']);
+            const stageId = String(response?.result?.STAGE_ID ?? '');
+
+            return stageId === String(BX_DEAL_STAGES_DATA.EMAIL_SENT.statusId);
+        } catch (error) {
+            this.logger.warn(
+                `Сделка ${dealId}: стадия не прочитана — ${
+                    error instanceof Error ? error.message : String(error)
+                }. Делаем перезапуск`,
+            );
+            return true;
+        }
     }
 }
