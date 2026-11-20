@@ -1,17 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
 import { PBXService } from '@/modules/pbx';
 import { TelegramService } from '@/modules/telegram/telegram.service';
-import { QueueNames } from '@/modules/queue/constants/queue-names.enum';
-import { JobNames } from '@/modules/queue/constants/job-names.enum';
-import {
-    DEAL_INIT_JOB_ATTEMPTS,
-    DEAL_INIT_JOB_KEEP_MS,
-    DealInitSource,
-    getDealInitJobId,
-} from '@/modules/on-deal-init/services/deal-init-job.rules';
+import { DealInitSource } from '@/modules/on-deal-init/services/deal-init-job.rules';
+import { DealInitEnqueueService } from '@/modules/on-deal-init/services/deal-init-enqueue.service';
 import {
     DealInitRecoveryResult,
     DealInitRecoveryService,
@@ -32,8 +24,7 @@ export class DealInitRecoveryUseCase {
     constructor(
         private readonly pbx: PBXService,
         private readonly telegram: TelegramService,
-        @InjectQueue(QueueNames.DEAL_INIT)
-        private readonly dealInitQueue: Queue,
+        private readonly dealInitEnqueue: DealInitEnqueueService,
     ) {}
 
     //каждые 3 минуты: вебхук инициации стал регулярно не доходить, и при
@@ -49,8 +40,15 @@ export class DealInitRecoveryUseCase {
     async handleCron(): Promise<void> {
         try {
             const result = await this.run();
-            //молчим, если делать было нечего: иначе канал зарастет отчетами
-            if (result.processed || result.markedOnly || result.errors.length) {
+            //молчим, если нового нет: иначе канал зарастет отчетами. Сделки,
+            //по которым задача уже идёт, не считаются — 20.11.2026 один и
+            //тот же отчёт про четыре заявки приходил каждые три минуты
+            if (
+                result.processed ||
+                result.markedOnly ||
+                result.gaveUpIds.length ||
+                result.errors.length
+            ) {
                 await this.telegram.sendMessage(this.renderResult(result));
             }
         } catch (error) {
@@ -81,25 +79,19 @@ export class DealInitRecoveryUseCase {
      * общую очередь jobId схлопывает повтор независимо от того, кто пришёл
      * первым.
      */
-    private async enqueue(dealId: number): Promise<{ queued: boolean }> {
-        const job = await this.dealInitQueue.add(
-            JobNames.DEAL_INIT,
-            {
-                dealId,
-                domain: DEFAULT_DOMAIN,
-                source: DealInitSource.RECOVERY,
-            },
-            {
-                jobId: getDealInitJobId(dealId),
-                attempts: DEAL_INIT_JOB_ATTEMPTS,
-                removeOnComplete: {
-                    age: Math.round(DEAL_INIT_JOB_KEEP_MS / 1000),
-                },
-                removeOnFail: false,
-            },
-        );
+    private async enqueue(dealId: number): Promise<{
+        status: 'queued' | 'revived' | 'already' | 'gave-up';
+    }> {
+        //Через общий сервис, а не queue.add напрямую: Bull при существующем
+        //jobId молча «успешно» ничего не добавляет, а упавшие задачи у нас
+        //хранятся. Прямой вызов навсегда закрывал сделку от подхвата
+        const { status } = await this.dealInitEnqueue.enqueue({
+            dealId,
+            domain: DEFAULT_DOMAIN,
+            source: DealInitSource.RECOVERY,
+        });
 
-        return { queued: Boolean(job?.id) };
+        return { status };
     }
 
     private renderResult(result: DealInitRecoveryResult): string {
@@ -115,6 +107,13 @@ export class DealInitRecoveryUseCase {
             }`,
             `- уже были не пустые, только помечены: ${result.markedOnly}`,
         ];
+
+        if (result.gaveUpIds.length) {
+            lines.push(
+                `- ПРИЁМ НЕ УДАЁТСЯ, нужен человек: ${result.gaveUpIds.join(', ')}`,
+                '  крон пробовал несколько раз и сдался; причину ищите в сообщениях «не принята»',
+            );
+        }
 
         if (result.errors.length) {
             lines.push(`- ошибок: ${result.errors.length}`);

@@ -56,7 +56,90 @@ export interface DealInitJobData {
     dealId: number;
     domain: string;
     source?: DealInitSource;
+    /** Сколько раз крон уже оживлял эту сделку после падения */
+    retries?: number;
+    /** Крон сдался и сообщил об этом — повторно не шумим */
+    gaveUp?: boolean;
 }
+
+/**
+ * Через сколько после падения задачу можно ставить заново.
+ *
+ * Для вебхука коротко: если сотрудник перепнул заявку вручную, ждать пять
+ * минут незачем. Для крона длиннее — он идёт каждые три минуты и без
+ * паузы молотил бы по порталу, который, возможно, всё ещё лежит
+ */
+export const getFailedCooldownMs = (source?: DealInitSource): number =>
+    source === DealInitSource.RECOVERY ? 5 * 60 * 1000 : 60 * 1000;
+
+/**
+ * Сколько раз крон оживляет одну сделку, прежде чем сдаться.
+ *
+ * Без предела сделка, которую приём не может принять никогда (битые
+ * данные, ошибка в коде), крутилась бы вечно и каждый раз забивала канал
+ */
+export const DEAL_INIT_MAX_RECOVERIES = 5;
+
+/** Что известно о задаче с тем же jobId, которая уже есть в очереди */
+export interface ExistingDealInitJob {
+    state: string;
+    /** Когда задача закончилась (мс), если закончилась */
+    finishedOn?: number | null;
+    retries?: number | null;
+}
+
+export type DealInitEnqueueAction =
+    /** задачи нет — ставим */
+    | 'add'
+    /** задача в работе или только что закончилась — не трогаем */
+    | 'skip'
+    /** старая задача упала или давно закончилась — убираем и ставим заново */
+    | 'revive'
+    /** крон перепробовал достаточно, дальше — только человек */
+    | 'give-up';
+
+/**
+ * Решает, что делать, когда сделку просят принять, а задача с её jobId
+ * уже есть.
+ *
+ * Bull при существующем jobId не добавляет ничего — в каком бы состоянии
+ * старая задача ни была. А у нас упавшие задачи не удаляются
+ * (removeOnFail: false), и первая же пятисотка портала навсегда закрывала
+ * сделку от повторного приёма. 20.11.2026 так застряли четыре заявки:
+ * крон каждые три минуты «ставил их в очередь», Bull молча отказывал, а
+ * сделки так и стояли пустыми.
+ */
+export const decideDealInitEnqueue = (
+    existing: ExistingDealInitJob | null | undefined,
+    now: number,
+    source: DealInitSource = DealInitSource.HOOK,
+): DealInitEnqueueAction => {
+    if (!existing) return 'add';
+
+    const finishedAgo = existing.finishedOn
+        ? now - existing.finishedOn
+        : Number.POSITIVE_INFINITY;
+    const exhausted =
+        source === DealInitSource.RECOVERY &&
+        (existing.retries ?? 0) >= DEAL_INIT_MAX_RECOVERIES;
+
+    switch (existing.state) {
+        case 'failed':
+            if (finishedAgo < getFailedCooldownMs(source)) return 'skip';
+            return exhausted ? 'give-up' : 'revive';
+
+        case 'completed':
+            //окно дедупликации: пачка вебхуков по одной сделке схлопывается
+            if (finishedAgo < DEAL_INIT_JOB_KEEP_MS) return 'skip';
+            //закончилась давно, а сделка опять просит приёма — значит
+            //человек перепнул её или приём не дошёл до признака
+            return exhausted ? 'give-up' : 'revive';
+
+        default:
+            //active, waiting, delayed, paused — уже в работе
+            return 'skip';
+    }
+};
 
 /**
  * Данные задачи из тела вебхука. Возвращает null, если принять нечего —

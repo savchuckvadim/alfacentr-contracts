@@ -10,20 +10,12 @@ import {
     Logger,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
 
 import { BitrixHookDto } from '@/lib/dto';
-import { QueueNames } from '@/modules/queue/constants/queue-names.enum';
-import { JobNames } from '@/modules/queue/constants/job-names.enum';
 
 import { FrontDealUseCase } from '../use-cases/front-deal.use-case';
-import {
-    DEAL_INIT_JOB_ATTEMPTS,
-    DEAL_INIT_JOB_KEEP_MS,
-    getDealInitJobId,
-    toDealInitJobData,
-} from '../services/deal-init-job.rules';
+import { toDealInitJobData } from '../services/deal-init-job.rules';
+import { DealInitEnqueueService } from '../services/deal-init-enqueue.service';
 
 @ApiTags('Alfa on deal init')
 @Controller('seminar')
@@ -31,8 +23,7 @@ export class OnDealInitController {
     private readonly logger = new Logger(OnDealInitController.name);
 
     constructor(
-        @InjectQueue(QueueNames.DEAL_INIT)
-        private readonly dealInitQueue: Queue,
+        private readonly dealInitEnqueue: DealInitEnqueueService,
         private readonly frontDealUseCase: FrontDealUseCase,
     ) {}
 
@@ -63,25 +54,22 @@ export class OnDealInitController {
             );
         }
 
-        const job = await this.dealInitQueue.add(JobNames.DEAL_INIT, data, {
-            jobId: getDealInitJobId(data.dealId),
-            attempts: DEAL_INIT_JOB_ATTEMPTS,
-            removeOnComplete: {
-                age: Math.round(DEAL_INIT_JOB_KEEP_MS / 1000),
-            },
-            removeOnFail: false,
-        });
+        //Bull при существующем jobId возвращает «успех» с id старой задачи,
+        //поэтому по ответу add не понять, поставили мы заявку или нет —
+        //решает сервис, он смотрит на состояние прежней задачи
+        const { status } = await this.dealInitEnqueue.enqueue(data);
+        const queued = status === 'queued' || status === 'revived';
 
-        //null — повтор по той же сделке: задача уже в очереди или только
-        //что отработала, второй приём затёр бы её работу
-        const queued = Boolean(job?.id);
         //время прихода пишем явно: вебхук портала доходит с задержкой от
         //секунд до минут (сделка 204296, 17.11.2026 — 7 минут от формы), и
         //по этой строке в логе видно задержку, не поднимая лог nginx
+        const messages: Record<string, string> = {
+            queued: 'поставлена в очередь',
+            revived: 'прежний приём упал — поставлена заново',
+            already: 'уже в работе или только что принята, повтор отброшен',
+        };
         this.logger.log(
-            queued
-                ? `Вебхук БП: сделка ${data.dealId} поставлена в очередь`
-                : `Вебхук БП: сделка ${data.dealId} уже в работе, повтор отброшен`,
+            `Вебхук БП: сделка ${data.dealId} ${messages[status] ?? status}`,
         );
 
         return { dealId: data.dealId, queued };

@@ -16,11 +16,21 @@ import {
 
 export interface DealInitRecoveryResult {
     candidates: number;
+    /** Реально поставлено в очередь: новые и оживлённые после падения */
     processed: number;
     processedIds: number[];
+    /** Задача по сделке уже идёт или только что отработала — не трогали */
+    alreadyQueued: number;
+    /** Приём не удавался столько раз, что дальше нужен человек */
+    gaveUpIds: number[];
     markedOnly: number;
     errors: string[];
 }
+
+/** Что вернул постановщик: ответ нужен, чтобы не отчитываться о том, чего не было */
+export type DealInitProcessOutcome =
+    | { status: 'queued' | 'revived' | 'already' | 'gave-up' }
+    | void;
 
 /**
  * Подхват заявок, которые не дошли до сервера.
@@ -32,7 +42,9 @@ export interface DealInitRecoveryResult {
 export class DealInitRecoveryService {
     constructor(
         private readonly bitrix: BitrixService,
-        private readonly processDeal: (dealId: number) => Promise<unknown>,
+        private readonly processDeal: (
+            dealId: number,
+        ) => Promise<DealInitProcessOutcome>,
     ) {}
 
     async run(now: Date = new Date()): Promise<DealInitRecoveryResult> {
@@ -40,6 +52,8 @@ export class DealInitRecoveryService {
             candidates: 0,
             processed: 0,
             processedIds: [],
+            alreadyQueued: 0,
+            gaveUpIds: [],
             markedOnly: 0,
             errors: [],
         };
@@ -53,9 +67,21 @@ export class DealInitRecoveryService {
         for (const deal of candidates) {
             try {
                 if (await this.isDealEmpty(deal.id)) {
-                    await this.processDeal(deal.id);
-                    result.processed++;
-                    result.processedIds.push(deal.id);
+                    const outcome = await this.processDeal(deal.id);
+                    const status = outcome ? outcome.status : 'queued';
+
+                    //Раньше отчёт считал всё «поставленным», даже когда Bull
+                    //молча отказал из-за старой упавшей задачи: 20.11.2026
+                    //четыре заявки так и висели пустыми, а крон каждые три
+                    //минуты рапортовал «поставлено в очередь: 4»
+                    if (status === 'already') {
+                        result.alreadyQueued++;
+                    } else if (status === 'gave-up') {
+                        result.gaveUpIds.push(deal.id);
+                    } else {
+                        result.processed++;
+                        result.processedIds.push(deal.id);
+                    }
                 } else {
                     //товары или участники уже есть — повторный прием сотрет
                     //ручные правки и задвоит участников, только помечаем

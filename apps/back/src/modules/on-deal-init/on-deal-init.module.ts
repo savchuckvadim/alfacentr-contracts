@@ -12,6 +12,7 @@ import { TelegramModule } from '../telegram/telegram.module';
 import { QueueNames } from '../queue/constants/queue-names.enum';
 import { DealInitProcessor } from './processors/deal-init.processor';
 import { DealInitLockService } from './services/deal-init-lock.service';
+import { DealInitEnqueueService } from './services/deal-init-enqueue.service';
 
 @Module({
     controllers: [OnDealInitController],
@@ -29,10 +30,13 @@ import { DealInitLockService } from './services/deal-init-lock.service';
         InitialBidTypeService,
         DealInitProcessor,
         DealInitLockService,
+        DealInitEnqueueService,
     ],
     //GetDealBidItemsUseCase нужен фронту. OnDealInitUseCase больше никем
     //снаружи не берётся: крон подхвата теперь кладёт сделку в очередь, а не
     //принимает сам — приём идёт только через процессор этого модуля
-    exports: [GetDealBidItemsUseCase, OnDealInitUseCase],
+    //DealInitEnqueueService — единственная дверь в очередь приёма: через
+    //неё ходят и вебхук, и крон подхвата
+    exports: [GetDealBidItemsUseCase, OnDealInitUseCase, DealInitEnqueueService],
 })
 export class OnDealInitModule {}
