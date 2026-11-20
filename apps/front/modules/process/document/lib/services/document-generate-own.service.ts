@@ -7,6 +7,7 @@ import {
 import { EContractType, IRequestDocumentGenerateType } from '@alfa/entities';
 import { registerWSHandler } from '@/modules/shared/Websocket/ws-handlers-registry';
 import { documentGenerateDone } from '../../model/thunk/DocumentThunk';
+import { documentSendOnlyDone } from '../../model/thunk/SendOnlyThunk';
 
 export interface ISendOnlyRequest {
     dealId: number;
@@ -16,6 +17,8 @@ export interface ISendOnlyRequest {
     userId: number;
     contractType?: EContractType;
     domain?: string;
+    /** Куда вернуть результат: отправка идёт в очереди */
+    socketId?: string;
 }
 
 export interface ISendOnlyResult {
@@ -64,28 +67,29 @@ export class DocumentGenerateOwnService {
     }
 
     /**
-     * Отправляет уже сформированные документы повторно.
+     * Ставит в очередь повторную отправку уже сформированных документов.
      *
      * Пакет не пересобирается: номер договора, тема письма и файлы
-     * остаются прежними. Бэкенд сам проверит, что всё на месте, поставит
-     * получателя из заявки и переведёт стадию
+     * остаются прежними. Отвечает сразу — сама отправка идёт в очереди,
+     * а результат приходит по веб-сокету событием document-send-only:done.
+     *
+     * Отправка делает три обращения к порталу, и каждое может упереться в
+     * таймаут: 20.11.2026 портал сорок минут отдавал пятисотки
      */
-    async sendOnly(dto: ISendOnlyRequest): Promise<ISendOnlyResult> {
-        const response = await backAPI.service<ISendOnlyResult>(
+    async sendOnly(dto: ISendOnlyRequest): Promise<void> {
+        const response = await backAPI.service<{ queued: boolean }>(
             EBACK_ENDPOINT.DOCUMENT_SEND_ONLY,
             API_METHOD.POST,
             dto,
         );
 
-        if (response?.resultCode !== EResultCode.SUCCESS || !response.data) {
+        if (response?.resultCode !== EResultCode.SUCCESS) {
             throw new Error(
                 response?.errors?.join(', ') ||
                     response?.message ||
-                    'Не удалось отправить документы',
+                    'Не удалось поставить отправку в очередь',
             );
         }
-
-        return response.data;
     }
 
     // async wsListener(socketId: string, wsClient: WSClient) {
@@ -99,6 +103,12 @@ export class DocumentGenerateOwnService {
     async registerDocumentWSHandlers() {
         registerWSHandler('document-generate:done', (data, dispatch) => {
             dispatch(documentGenerateDone(data));
+        });
+
+        //повторная отправка идёт в очереди, и только это событие говорит,
+        //чем она кончилась: ответ на запрос приходит до настоящей работы
+        registerWSHandler('document-send-only:done', (data, dispatch) => {
+            dispatch(documentSendOnlyDone(data));
         });
     }
 }

@@ -10,6 +10,8 @@ export enum JobNames {
     SERVICE_DEAL_INIT = 'service-deal-init',
 
     DOCUMENT_GENERATE = 'document-generate',
+    //повторная отправка уже собранных документов, без пересборки
+    DOCUMENT_SEND_ONLY = 'document-send-only',
     DOCUMENT_NUMBER = 'document-number',
     DOCUMENT_NUMBER_BY_PREFIX = 'document-number-by-prefix',
     DOCUMENT_EMAIL_SEND = 'document-email-send',

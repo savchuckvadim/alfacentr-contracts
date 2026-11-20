@@ -3,7 +3,7 @@
 import React from 'react';
 import { Button } from '@workspace/ui/components/button';
 import { cn } from '@workspace/ui/lib/utils';
-import { Loader2, MailCheck, RotateCw } from 'lucide-react';
+import { AlertTriangle, Loader2, MailCheck, RotateCw } from 'lucide-react';
 
 import { useSendOnly } from '@/modules/process/document/hook/useSendOnly';
 
@@ -34,13 +34,12 @@ const getDocumentLabel = (name: string): string =>
 export const SummarySendOnlyButton: React.FC<SummarySendOnlyButtonProps> = ({
     isDisabled,
 }) => {
-    const { sendOnly, isSending, isSent, result } = useSendOnly();
-    const missing = result?.missing ?? [];
+    const { sendOnly, isSending, isSent, missing, error } = useSendOnly();
 
     return (
         <div className="flex flex-col gap-2">
             <Button
-                onClick={() => void sendOnly()}
+                onClick={sendOnly}
                 disabled={isDisabled || isSending}
                 variant="outline"
                 size="sm"
@@ -56,7 +55,11 @@ export const SummarySendOnlyButton: React.FC<SummarySendOnlyButtonProps> = ({
                 ) : (
                     <>
                         <RotateCw className="w-4 h-4" />
-                        <span>Отправить повторно</span>
+                        <span>
+                            {error
+                                ? 'Повторить попытку'
+                                : 'Отправить повторно'}
+                        </span>
                     </>
                 )}
             </Button>
@@ -66,7 +69,7 @@ export const SummarySendOnlyButton: React.FC<SummarySendOnlyButtonProps> = ({
                 не изменится.
             </p>
 
-            {isSent && (
+            {isSent && !error && (
                 <p className="flex items-center gap-1.5 text-xs text-green-600">
                     <MailCheck className="w-3.5 h-3.5" />
                     Документы отправлены повторно
@@ -74,12 +77,29 @@ export const SummarySendOnlyButton: React.FC<SummarySendOnlyButtonProps> = ({
             )}
 
             {/*
-                Перечисляем поимённо: «комплект неполный» не говорит, что
-                делать, а «нет приложения ППК» — говорит.
-                После отправки это предупреждение, до — причина отказа:
-                отказываем только когда в сделке нет ни одного документа
+                Отправка идёт в очереди и трогает портал трижды. Если он
+                недоступен — менеджер должен узнать об этом и повторить, а
+                не считать, что письмо ушло: 20.11.2026 портал сорок минут
+                отдавал ошибки, и отправка падала на смене стадии
             */}
-            {missing.length > 0 && (
+            {error && (
+                <div className="flex gap-1.5 text-xs text-red-600">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    <div>
+                        <p className="font-medium">Отправить не получилось</p>
+                        <p className="text-gray-500">{error}</p>
+                        <p className="text-gray-500">
+                            Письмо не ушло. Нажмите «Повторить попытку».
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/*
+                Перечисляем поимённо: «комплект неполный» не говорит, что
+                делать, а «нет приложения ППК» — говорит
+            */}
+            {missing.length > 0 && !error && (
                 <div
                     className={cn(
                         'text-xs',

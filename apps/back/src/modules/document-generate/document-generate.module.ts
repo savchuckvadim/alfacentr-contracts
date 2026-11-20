@@ -5,6 +5,7 @@ import { DocumentBitrixGenerateUseCase } from './use-cases/document-bitrix-gener
 import { IsDealReadyForSendUseCase } from './use-cases/is-deal-ready-for-send.use-case';
 import { SendOnlyUseCase } from './use-cases/send-only.use-case';
 import { DocumentGenerateQueueProcessor } from './processors/document.processor';
+import { SendOnlyQueueProcessor } from './processors/send-only.processor';
 import { PBXModule } from '../pbx';
 import { DocumentContractFieldsService } from './services/document-contract-fields.service';
 import { PpkApplicationGenerateService } from './services/ppk-application-generate.service';
@@ -20,6 +21,7 @@ import { GetDealBidItemsUseCase } from '../on-deal-init/use-cases/get-deal-bid-i
         SendOnlyUseCase,
 
         DocumentGenerateQueueProcessor,
+        SendOnlyQueueProcessor,
         DocumentContractFieldsService,
         PpkApplicationGenerateService,
 

@@ -31,6 +31,7 @@ import { WSClient } from '@/modules/shared/Websocket/ws-client';
 import { WSClient as WSClientWorkspace } from '@workspace/ws';
 
 import { documentReducer } from '@/modules/process/document/';
+import { sendOnlyReducer } from '@/modules/process/document/model/slice/SendOnlySlice';
 import { dealEmailSubjectReducer } from '@/modules/features/deal-email-subject/';
 import { ownBankReducer } from '@/modules/features/own-bank';
 
@@ -57,6 +58,7 @@ const rootReducer = combineReducers({
     ownBank: ownBankReducer,
     //process
     document: documentReducer,
+    sendOnly: sendOnlyReducer,
 });
 
 // Middleware для обработки ошибок

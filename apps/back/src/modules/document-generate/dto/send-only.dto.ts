@@ -59,6 +59,15 @@ export class SendOnlyDto {
     @IsNotEmpty()
     @IsNumber()
     userId: number;
+
+    @ApiProperty({
+        description:
+            'Сокет, которому вернуть результат. Без него менеджер не узнает, упала отправка или прошла',
+        required: false,
+    })
+    @IsOptional()
+    @IsString()
+    socketId?: string;
 }
 
 export interface SendOnlyResult {

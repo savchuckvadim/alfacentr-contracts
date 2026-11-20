@@ -1,13 +1,18 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { BxDealDataKeys, EContractType } from '@alfa/entities';
 
-import { AppDispatch, RootState } from '@/modules/app/model/store';
-import { errorHandler } from '@/modules/app/lib/error-handler';
-
 import {
-    DocumentGenerateOwnService,
-    ISendOnlyResult,
-} from '../../lib/services/document-generate-own.service';
+    AppDispatch,
+    RootState,
+    ThunkExtraArgument,
+} from '@/modules/app/model/store';
+
+import { DocumentGenerateOwnService } from '../../lib/services/document-generate-own.service';
+import {
+    sendOnlyDone,
+    sendOnlyFailed,
+    sendOnlyStarted,
+} from '../slice/SendOnlySlice';
 
 /**
  * Повторная отправка уже сформированных документов.
@@ -18,15 +23,19 @@ import {
  * сделке 204568 контакт из заявки вытеснили контакты компании, и робот
  * отправил документы постороннему.
  *
- * Бэкенд перед отправкой проверит, что пакет на месте — для ППК-договоров
- * вместе с приложением ППК, — поставит получателя из заявки и переведёт
- * стадию.
+ * Работа идёт в очереди: отправка делает три обращения к порталу, и
+ * каждое может упереться в таймаут. Результат приходит по веб-сокету
+ * событием document-send-only:done — до тех пор кнопка ждёт.
  */
 export const documentSendOnly = createAsyncThunk<
-    ISendOnlyResult | null,
+    boolean,
     void,
-    { dispatch: AppDispatch; state: RootState }
->('document/sendOnly', async (_, { getState }) => {
+    {
+        dispatch: AppDispatch;
+        state: RootState;
+        extra: ThunkExtraArgument;
+    }
+>('document/sendOnly', async (_, { getState, dispatch, extra }) => {
     try {
         const state = getState();
 
@@ -45,9 +54,11 @@ export const documentSendOnly = createAsyncThunk<
             );
         }
 
+        dispatch(sendOnlyStarted());
+
         const service = new DocumentGenerateOwnService();
 
-        return await service.sendOnly({
+        await service.sendOnly({
             dealId,
             email,
             name: getField(BxDealDataKeys.exchange_doc_name) || '',
@@ -55,14 +66,35 @@ export const documentSendOnly = createAsyncThunk<
             userId: Number(state.app.bitrix.user?.ID) || 502,
             contractType: state.contractType.current?.code as EContractType,
             domain: state.app.domain,
+            //без сокета результат не вернётся, и кнопка останется ждать:
+            //сама отправка идёт в очереди
+            socketId: extra.getWSClient()?.id || '',
         });
+
+        return true;
     } catch (error) {
-        //показываем менеджеру, а не глушим: он нажал кнопку и ждёт ответа
-        errorHandler.createCriticalError(
-            error instanceof Error
-                ? error.message
-                : 'Не удалось отправить документы повторно',
+        dispatch(
+            sendOnlyFailed(
+                error instanceof Error
+                    ? error.message
+                    : 'Не удалось отправить документы повторно',
+            ),
         );
-        return null;
+        return false;
     }
 });
+
+/** Ответ из очереди: отправка прошла, не прошла или прошла не полностью */
+export const documentSendOnlyDone = (data: unknown) => {
+    const payload = (data || {}) as {
+        sent?: boolean;
+        missing?: { name: string; bitrixId: string }[];
+        error?: string | null;
+    };
+
+    return sendOnlyDone({
+        sent: Boolean(payload.sent),
+        missing: payload.missing || [],
+        error: payload.error || null,
+    });
+};

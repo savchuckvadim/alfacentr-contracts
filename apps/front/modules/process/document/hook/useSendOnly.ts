@@ -1,46 +1,33 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import { useAppDispatch } from '@/modules/app/lib/hooks/redux';
+import { useCallback } from 'react';
+import { useAppDispatch, useAppSelector } from '@/modules/app/lib/hooks/redux';
 
 import { documentSendOnly } from '../model/thunk/SendOnlyThunk';
-import type { ISendOnlyResult } from '../lib/services/document-generate-own.service';
+import { sendOnlyReset } from '../model/slice/SendOnlySlice';
 
 /**
  * Повторная отправка уже сформированных документов.
  *
- * Состояние держим в хуке, а не в сторе: оно нужно только кнопке и живёт
- * до следующего нажатия. В сторе ему пришлось бы заводить слайс и чистить
- * его при смене сделки.
+ * Состояние в сторе: отправка идёт в очереди, а результат приходит по
+ * веб-сокету отдельным событием — компонент к этому моменту мог
+ * перерисоваться.
  */
 export const useSendOnly = () => {
     const dispatch = useAppDispatch();
+    const { isSending, isSent, missing, error } = useAppSelector(
+        state => state.sendOnly,
+    );
 
-    const [isSending, setIsSending] = useState(false);
-    const [result, setResult] = useState<ISendOnlyResult | null>(null);
-
-    const sendOnly = useCallback(async () => {
-        setIsSending(true);
-        setResult(null);
-
-        try {
-            const response = await dispatch(documentSendOnly()).unwrap();
-            setResult(response);
-            return response;
-        } finally {
-            setIsSending(false);
-        }
+    const sendOnly = useCallback(() => {
+        void dispatch(documentSendOnly());
     }, [dispatch]);
 
-    const reset = useCallback(() => setResult(null), []);
+    const reset = useCallback(() => {
+        dispatch(sendOnlyReset());
+    }, [dispatch]);
 
-    return {
-        sendOnly,
-        reset,
-        isSending,
-        result,
-        isSent: Boolean(result?.sent),
-    };
+    return { sendOnly, reset, isSending, isSent, missing, error };
 };
 
 export default useSendOnly;
